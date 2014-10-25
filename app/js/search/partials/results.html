@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="css/results.css"/>
+<link rel="stylesheet" href="fontawesome/css/font-awesome.min.css"/>
+
+<div class="container-fluid">
+    <div class="row affix" style="z-index: 4;">
+        <div class="col-md-12 col-lg-12 well well-sm">
+            <span slider ng-model="rangeSlider.rangeValue" min="{{rangeSlider.min}}" max="{{rangeSlider.max}}" range="true" slider-id="rangeSlider" formater="myFormater"></span>
+            <button opt-kind ok-key="filter" type='button' class='btn btn-default' ok-sel=".hasPrice">Must Have Price</button>
+            <button opt-kind ok-key="filter" type='button' class='btn btn-default' ok-sel=".hasImage">Must Have Image</button>
+
+            <span class="btn-group" opt-kind ok-key="sortBy">
+                <button type="button" class="btn btn-default active" ok-sel="[data-distance]" ok-type="integer">Distance</button>
+                <button type="button" class="btn btn-default" ok-sel="[data-price]" ok-type="integer">Price</button>
+                <button type="button" class="btn btn-default" ok-sel="[data-postDate]" ok-type="integer">Date Posted</button>
+            </span>
+
+            <button type="button" class="btn btn-default" ng-model="showMap" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
+                <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show Map
+            </button>
+
+            <span class="btn-group">
+                <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="true"><i class="fa fa-th"></i></label>
+                <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="false"><i class="fa fa-list"></i></label>
+            </span>
+        </div>
+    </div>
+    <!-- ISOTOPECONTAINER -->
+    <div class="row">
+        <div class="affix col-lg-10 col-md-10 col-sm-9 col-xs-12 infiniteScrollContainer">
+            <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent >
+                <div id="isotopeContainer" isotope-container ng-class="{'no-transition':loading}">
+                    <div ng-repeat="result in results"
+                        isotope-item ng-click="openItem(this)"
+                        ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
+                        data-category="{{result.category}}"
+                        data-email="{{result.annotations.source_account}}"
+                        data-source="{{result.source}}"
+                        data-lat="{{result.location.lat}}"
+                        data-long="{{result.location.long}}"
+                        data-sourceUrl="{{result.external_url}}"
+                            >
+                        <div class="thumbnail">
+                            <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
+                            <img ng-if="!!result.images.length" src="{{result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
+                            <div ng-if="!result.images.length">No image found</div>
+                            <div class="caption">
+                                <h3 class="heading">{{result.heading}}</h3>
+                                <p class="price" data-price="{{result.price}}">{{result.price | currency}}</p>
+                                <p class="body">{{result.body}}</p>
+                                <p class="distance" data-distance="{{result.distanceFromUser}}"><i class="fa fa-location-arrow"></i>&nbsp;{{result.distanceFromUser | number:0}} mi.</p>
+                                <p ng-if="result.annotations.original_posting_date" class="post-date" data-postDate="{{result.annotations.original_posting_date}}">{{result.annotations.original_posting_date*1000 | date}}</p>
+                                <p>
+                                    <a href="#" class="btn btn-primary" role="button">Place Offer</a>
+                                    <a href="#" class="btn btn-default" role="button">I'm Interested</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<!--<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--<!--[if gt IE 8]><!-->
+
+<head lang="en">
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/newpost.css">
+    <link rel="stylesheet" href="/dropzone/downloads/css/basic.css">
+
+    <link rel="stylesheet" href="/medium-editor/dist/css/medium-editor.min.css">
+    <link rel="stylesheet" href="/medium-editor/dist/css/themes/bootstrap.css">
+
+</head>
+<body>
+
+    <div class="modal-header hts-post-title">
+            <span class="pull-left hover-pointer" ng-click="">
+                <i class="fa fa-arrows-alt"></i>
+            </span>
+        Create New Post
+            <span class="pull-right hover-pointer" ng-click="closePostCompose()">
+                <i class="fa fa-close"></i>
+            </span>
+    </div>
+    <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
+        <div id="htsPost" mentio contenteditable data-disable-double-return ng-focus="clearExample()" data-placeholder=""
+             class="editor form-control editable hts-input"
+             mentio-require-leading-space="true"
+             mentio-macros="macros"
+             mentio-id="'hashtag'"
+             mentio-typed-term="typedTerm"
+             ng-model="jsonObj.html_body">
+        </div>
+        <div class="inset-toolbar">
+            <button id="imageUpload" class="btn btn-default btn-sm float-button-left btn-danger">
+                <i class="fa fa-camera"></i>
+                <b>Add photo</b>
+            </button>
+            {{jsonObj.hints}}
+            <button class="btn btn-default btn-sm float-button-right btn-danger" ng-click="processPost()"><i class="fa fa-slack" ng-cloak><b>Sell it</b></i></button>
+        </div>
+        <div id="imgPreviewsContainer"></div>
+    </div>
+
+    <!--<div style="overflow: scroll;">-->
+    <!--<pre style="word-wrap: break-word; white-space: pre-wrap;">{{formatted_jsonObj()}}</pre>-->
+    <!--</div>-->
+
+    <mentio-menu
+            mentio-for="'hashtag'"
+            mentio-trigger-char="'#'"
+            mentio-items="products"
+            mentio-template-url="/product-mentions.tpl"
+            mentio-search="searchProducts(term)"
+            mentio-select="getProductTextRaw(item)">
+    </mentio-menu>
+
+    <mentio-menu
+            mentio-for="'hashtag'"
+            mentio-trigger-char="'@'"
+            mentio-items="places"
+            mentio-template-url="/place-mentions.tpl"
+            mentio-search="searchPlaces(term)"
+            mentio-select="getPlacesTextRaw(item)">
+    </mentio-menu>
+
+    <mentio-menu
+            mentio-for="'hashtag'"
+            mentio-trigger-char="'$'"
+            mentio-items="prices"
+            mentio-template-url="/price-mentions.tpl"
+            mentio-search="searchPrice(term)"
+            mentio-select="getPricesTextRaw(item)">
+    </mentio-menu>
+
+    <script type="text/ng-template" id="/product-mentions.tpl">
+        <ul class="list-group user-search demo-scrollable-menu">
+            <li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">
+
+                <span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+
+            </li>
+        </ul>
+    </script>
+
+    <script type="text/ng-template" id="/place-mentions.tpl">
+        <ul class="list-group user-search demo-scrollable-menu">
+            <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
+
+                <span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+
+            </li>
+        </ul>
+    </script>
+
+
+    <script type="text/ng-template" id="/price-mentions.tpl">
+        <ul class="list-group user-search demo-scrollable-menu">
+            <li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">
+
+                <span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+
+            </li>
+        </ul>
+    </script>
+
+</body>
+</html>

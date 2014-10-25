@@ -1,0 +1,45 @@
+{
+  "name": "hts_node_dev",
+  "version": "0.0.0",
+  "authors": [
+    "Brad Davis <bradrobertdavis@gmail.com>"
+  ],
+  "description": "HashtagSell Javascript Web Dependencies",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node",
+    "yui"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-bootstrap": "~0.11.0",
+    "fontawesome": "~4.2.0",
+    "jshashtable-3.0": "https://jshashtable.googlecode.com/files/jshashtable-3.0.zip",
+    "modernizr": "~2.8.3",
+    "ng-table": "~0.3.3",
+    "underscore": "~1.7.0",
+    "gmaps-samples-v3": "svn+http://gmaps-samples-v3.googlecode.com/svn/",
+    "gmaps-utility-library-v3": "svn+http://google-maps-utility-library-v3.googlecode.com/svn/",
+    "ment.io": "~0.9.12",
+    "medium-editor": "~1.9.0",
+    "dropzone": "~3.10.2",
+    "bootstrap": "~3.2.0",
+    "angular-isotope": "~0.1.14",
+    "angular": "1.2.26",
+    "angular-bootstrap-slider": "~0.0.8",
+    "seiyria-bootstrap-slider": "~4.0.8",
+    "ngInfiniteScroll": "~1.1.2",
+    "angular-images-loaded": "~0.0.5",
+    "imagesloaded": "~3.1.8"
+  }
+}

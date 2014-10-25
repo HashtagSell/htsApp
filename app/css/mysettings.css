@@ -1,0 +1,72 @@
+html,
+body {
+    font-family: "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+/* Wrapper for page content to push down footer */
+/*#wrap {*/
+    /*min-height: 100%;*/
+    /*height: auto !important;*/
+    /*height: 100%;*/
+    /* Negative indent footer by it's height */
+    /*margin: 0 auto -60px;*/
+/*}*/
+
+/* Set the fixed height of the footer here */
+/*#push,*/
+/*#footer {*/
+    /*height: 60px;*/
+/*}*/
+
+/*#footer {*/
+    /*background-color: #dfdfdf;*/
+/*}*/
+
+/* Lastly, apply responsive CSS fixes as necessary */
+/*@media (max-width: 767px) {*/
+    /*#footer {*/
+      /*margin-left: -20px;*/
+      /*margin-right: -20px;*/
+      /*padding-left: 20px;*/
+      /*padding-right: 20px;*/
+    /*}*/
+/*}*/
+
+/*.ng-table {*/
+    /*border: 1px solid #000;*/
+/*}*/
+
+
+
+/* Custom page CSS*/
+/*-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+/*.container {*/
+    /*width: auto;*/
+    /*max-width: 680px;*/
+/*}*/
+/*.container .credit {*/
+    /*margin: 20px 0;*/
+/*}*/
+
+/*.nav-tabs > li.active > a,*/
+/*.nav-tabs > li.active > a:hover,*/
+/*.nav-tabs > li.active > a:focus{*/
+    /* color: #e5f1ec; */
+    /*background-color: #dfdfdf;  */
+/*} */
+
+/*.centered {*/
+    /*text-align:center;*/
+/*}*/
+
+/*.vertical-centered {*/
+	/*vertical-align: middle;*/
+/*}*/
+
+/*.icons {*/
+  /*color:#777777;*/
+  /*padding:10px;*/
+  /*text-shadow:0 -1px 0px rgba(1,1,1,0.4);*/
+/*}*/

@@ -1,0 +1,206 @@
+body {
+	background: #f5f5f5;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+}
+
+/* Hack to resolve bootstrap + Google Maps bug: https://github.com/twitter/bootstrap/issues/1552 */
+#map-canvas img {
+	max-width: none;
+}
+
+
+.hentry {
+	border-bottom: 1px solid #eee;
+	padding: 1.5em 0;
+}
+
+
+.centered {
+    text-align:center;
+}
+
+
+#title{
+	text-rendering: optimizelegibility;
+}
+
+
+.body-with-pic{
+	margin-top:40px;
+	text-rendering: optimizelegibility;
+}
+
+.body-no-pic{
+	text-rendering: optimizelegibility;
+}
+
+
+#fav-share-buttons{
+	margin-top:10px;
+}
+
+
+#annotations{
+	margin-top: 16px;
+}
+
+.annotation-cell {
+	/* border: 1px solid #e5e5e5; */
+	margin-left:0px;
+	margin-right:0px;
+}
+
+.annotation-title{
+	text-align: center;
+	font-size: 11.9px;
+	margin: 5px 0px 0px 0px;
+	font-family: inherit;
+	font-weight: bold;
+	line-height: 20px;
+	color: grey;
+	text-rendering: optimizelegibility;
+}
+.annotation-elem{
+	text-align: center;
+	vertical-align: middle;
+	line-height: 20px;
+	width: auto;
+	font-size: 15px;
+	margin-top:6px;
+	margin-bottom:9px;
+	color: rgb(68, 68, 68);
+}
+
+.annotation-row{
+	border-top:1px solid rgba(140,138,138,1)
+}
+
+
+li:last-child .hentry, #content > .hentry {border: 0; margin: 0;}
+#content > .hentry {padding: 1em 0;}
+
+.entry-title {font-size: 1.429em; margin-bottom: 0;}
+.entry-title a:link, .entry-title a:visited {text-decoration: none;}
+
+.hentry .post-info * {font-style: normal;}
+
+	/* Content */
+	.hentry footer {margin-bottom: 2em;}
+	.hentry footer address {display: inline;}
+	#posts-list footer address {display: block;}
+
+	/* Blog Index */
+	#posts-list {list-style: none; margin: 0;}
+	#posts-list .hentry {padding-left: 200px; position: relative;}
+	#posts-list .hentry:hover {
+		background: #C64350;
+		color: #fff;
+	}
+	#posts-list .hentry:hover a:link, #posts-list .hentry:hover a:visited {
+		color: #F6CF74;
+		text-shadow: 1px 1px 1px #333;
+	}
+	
+	#posts-list footer {
+		left: 10px;
+		position: absolute;
+		top: 1.5em;
+		width: 190px;
+	}
+	
+/* Comments */
+
+#comments-list {list-style: none; margin: 0 1em;}
+#comments-list blockquote {
+	background: #f8f8f8;
+	clear: both;
+	font-style: normal;
+	margin: 0;
+	padding: 15px 20px;
+	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+#comments-list footer {color: #888; padding: .5em 1em 0 0; text-align: right;}
+
+#comments-list li:nth-child(2n) blockquote {background: #ffffff;}
+
+/* Add a Comment */
+
+
+#comments {
+  	background: #f5f5f5;
+	margin-bottom: 2em;
+	overflow: hidden;
+	width: 100%;
+}
+
+#comments label {
+  display: block;
+}
+
+
+#comments ol li:nth-child(2n+1) {
+  background-color: #ffffff;
+}
+
+#respond {
+	margin-top: 40px;
+}
+
+#respond textarea {
+	margin-bottom: 10px;
+	display: block;
+	width: 100%;
+
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	-ms-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	border-radius: 5px;
+
+	line-height: 1.4em;
+}
+
+#posts-list.has-comments li.no-comments {
+	display: none;
+}
+
+#map_canvas {
+	width: 100%;
+	height: 200px;
+}
+
+.imageCarousel img {
+	margin:0 auto;
+}
+
+.carouselRoundedCorners {
+	border: 1px solid #dcdcdc;
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.carousel-control {
+	font-size: 40px;
+}
+
+
+.carousel {
+	margin-bottom: 0px;
+}
+.div_backgrndimg
+{
+    background-image: url("/map/fade.png");
+    background-repeat: repeat-x;
+    height:200px;
+    width:100%;
+    z-index:2;
+    position:absolute;
+    pointer-events:none;
+}

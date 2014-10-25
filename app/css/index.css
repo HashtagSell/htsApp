@@ -1,0 +1,36 @@
+/* Hide text inside collapsed navbar */
+@media (max-width: 767px) {
+
+    .visible-xs.collapse.in {
+        display: block!important;
+    }
+    .visible-xs.collapse {
+        display: none!important;
+    }
+
+}
+
+
+/* Shadow under nav bar */
+.navbar-inner {
+    -webkit-box-shadow: 0 3px 3px rgba(0,0,0,0.175);
+    box-shadow: 0 3px 3px rgba(0,0,0,0.175);
+}
+
+/* User Pane */
+.bs-sidenav {
+    padding-left: 20px;
+}
+
+body {
+    padding-top: 70px;
+    background-color: #f4f4f4;
+}
+
+html {
+    background-color: #f4f4f4;
+}
+
+.logo {
+    padding-top: 5px;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+        <form name="RegisterFormV2" id="RegisterFormV2" class="form-horizontal" ng-submit="signupPassport(RegisterFormV2.$valid)" novalidate>
+            <div class="modal-header">
+                <h3>Private Beta Account Creation</h3>
+            </div>
+            <div class="modal-body">
+
+                <label class="control-label" for="email">Email Address:</label>
+                <div class="controls">
+                    <input type="email" id="email" name="email" ng-model="email" required/>
+                </div>
+
+                <br>
+
+
+                <label class="control-label" for="username">Username:</label>
+                <div class="controls">
+                    <input type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9._@&-]*$/" required/>
+                    <p ng-show="RegisterFormV2.username.$error.minlength" class="help-block"><small>Username is too short.</small></p>
+                    <p ng-show="RegisterFormV2.username.$error.maxlength" class="help-block"><small>Username is too long.</small></p>
+                    <p ng-show="RegisterFormV2.username.$error.pattern" class="help-block"><small>No whitespaces and special characters are limited.</small></p>
+                </div>
+
+
+                <br>
+
+                <label class="control-label" for="password">Password:</label>
+                <div class="controls">
+                    <input type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[A-Za-z][A-Za-z0-9]*$/" required/>
+                    <p ng-show="RegisterFormV2.password.$error.minlength" class="help-block"><small>Password is too short.</small></p>
+                    <p ng-show="RegisterFormV2.password.$error.pattern" class="help-block"><small>No spaces allowed.</small></p>
+                </div>
+
+                <br>
+
+                <label class="control-label" for="password_verify">Confirm Password:</label>
+                <div class="controls">
+                    <input type="password" id="password_verify" name="password_verify" ng-model="password_verify" match="password" required/>
+                    <p ng-show="RegisterFormV2.password_verify.$error.match" class="help-block"><small>Passwords do not match</small></p>
+                </div>
+
+                <br>
+
+                <label class="control-label" for="secret">Early Access Code:</label>
+                <div class="controls">
+                    <input type="text" id="secret" placeholder="Required" name="secret" ng-model="secret" required/>
+
+                    <br>
+                    <small style="color:red;">
+                        {{message}}
+                    </small>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input id="submit-create-account" class="btn btn-success" type="submit" value="Create Account" ng-disabled="RegisterFormV2.$invalid">
+                <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+            </div>
+        </form>
+</body>
+</html>

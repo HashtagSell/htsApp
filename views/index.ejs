@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html ng-app="htsApp">
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"><![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HashtagSell &middot; Rethinking Online Classifieds</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css">
+
+</head>
+
+<body class="ng-cloak" ng-controller="mainController">
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" ng-click="isCollapsed = !isCollapsed">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="visible-xs"><img src="/images/logo/HashtagSell_Logo_80px.svg"></a>
+                </div>
+
+
+                <nav class="hidden-xs">
+                    <ul class="nav navbar-nav navbar-left">
+                        <a href="/"><img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo"></a>
+                    </ul>
+
+
+                    <form class="navbar-form navbar-left" role="search" ng-controller="awesomeBarController" ng-submit="awesomeBarSubmit()">
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="query">
+                              <span class="input-group-btn">
+                                <button type="submit" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                              </span>
+                        </div><!-- /input-group -->
+                    </form>
+
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="navbar-form">
+                            <button type="submit" class="btn btn-default" ng-click="newPost()" ng-controller="newPostController">#Sell it!</button>
+                        </li>
+                        <li class="dropdown" on-toggle="toggled(open)" ng-controller="userMenuController">
+                            <a href class="dropdown-toggle">
+                                <span class="caret"></span>
+                                <img class='img-circle' src={{img.profilePhoto}} width="25px;"/>
+                            </a>
+                            <ul class="dropdown-menu" ng-if="!loggedIn()" ng-cloak ng-controller="authModals">
+                                <li><a href ng-click="signIn()">Sign In</a></li>
+                                <li><a href ng-click="signUp()">New Account</a></li>
+                            </ul>
+                            <ul class="dropdown-menu" ng-if="loggedIn()" ng-cloak>
+                                <li><a href ng-click="userSettings()">User Settings</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" ng-click="clearStorage()">Logout</a></li>
+                            </ul>
+                        </li>
+                    <ul>
+                </nav>
+
+                <nav class="visible-xs" collapse="!isCollapsed">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">AwesomeBar2</a></li>
+                    </ul>
+                </nav>
+
+            </div><!-- /.container-fluid -->
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="list-group col-lg-2 col-md-2 col-sm-3 hidden-xs bs-sidenav affix" ng-controller="userpane">
+                <a ng-repeat="item in items" href="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                    {{item.name}}
+                    <span class="badge">{{item.alerts}}</span>
+                </a>
+            </div>
+
+
+            <div ng-view class="col-lg-10 col-lg-offset-2 col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 col-xs-12"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
+    <script type="text/javascript" src="/angular/angular.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
+    <script type="text/javascript" src='/isotope/jquery.isotope.min.js'></script>
+    <script type="text/javascript" src='/angular-isotope/dist/angular-isotope.js'></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+    <script type="text/javascript" src='/dropzone/downloads/dropzone.min.js'></script>
+    <script type="text/javascript" src="/jshashtable-3.0/hashtable.js"></script>
+    <script type="text/javascript" src="/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap-slider/slider.js"></script>
+    <script type='text/javascript' src='/nginfiniteScroll/build/ng-infinite-scroll.min.js'></script>
+    <script type='text/javascript' src='/imagesloaded/imagesloaded.pkgd.min.js'></script>
+    <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
+
+
+    <script type="text/javascript" src="htsApp.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+    <script type="text/javascript" src="/js/shellPage/controllers/main.js"></script>
+    <script type="text/javascript" src="/js/userMenu/controllers/userMenu.js"></script>
+    <script type="text/javascript" src="/js/newPost/controllers/newPost.js"></script>
+    <script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>
+    <script type="text/javascript" src="/js/authentication/services/session.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/authModals.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/signIn.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/signUp.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/forgotPassword.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/changePassword.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/changePasswordModalCtrl.js"></script>
+    <script type="text/javascript" src="/js/authentication/controllers/checkEmailCtrl.js"></script>
+    <script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>
+    <script type="text/javascript" src="/js/awesomeBar/services/geolocationService.js"></script>
+    <script type="text/javascript" src="/js/awesomeBar/factories/updatePlaceholder.js"></script>
+    <script type="text/javascript" src="/js/userpane/controllers/userpane.js"></script>
+    <script type="text/javascript" src="/js/filterBar/controllers/filterBar.js"></script>
+    <script type="text/javascript" src="/js/search/controllers/search.js"></script>
+
+
+</body>
+</html>

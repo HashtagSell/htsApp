@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HashtagSell Sign In</title>
+</head>
+<body>
+
+    <form name="loginForm" id="loginForm" class="form-horizontal" ng-submit="loginPassport(loginForm.$valid)" novalidate>
+        <div class="modal-header">
+            <h3 id="myModalLabel">Private Beta Login!</h3>
+        </div>
+        <div class="modal-body">
+            <label class="control-label" for="email">Email Address:</label>
+            <div class="controls">
+                <input type="email" id="email" ng-model="email" required>
+            </div>
+            <br>
+            <label class="control-label" for="password">Password:</label>
+            <div class="controls">
+                <input type="password" id="password" ng-model="password" required>
+                <br>
+                <small style="color:red;">
+                    {{message}}
+                </small>
+                <br>
+                <a href ng-click="dismiss('signUp')">
+                    <small>Need an account?</small>
+                </a>
+                <small> | </small>
+                <a href ng-click="dismiss('forgot')">
+                    <small>Forgot your password?</small>
+                </a>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input class="btn btn-success" type="submit" value="Log In" id="submit" ng-disabled="loginForm.$invalid">
+            <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+        </div>
+    </form>
+
+
+
+
+    <!--<div class="modal-header">-->
+        <!--<h3 class="modal-title">Private Beta Login!</h3>-->
+    <!--</div>-->
+    <!--<div class="modal-body">-->
+        <!--<ul>-->
+            <!--<li ng-repeat="item in items">-->
+                <!--<a ng-click="selected.item = item">{{ item }}</a>-->
+            <!--</li>-->
+        <!--</ul>-->
+        <!--Selected: <b>{{ selected.item }}</b>-->
+    <!--</div>-->
+    <!--<div class="modal-footer">-->
+        <!--<button class="btn btn-primary" ng-click="ok()">OK</button>-->
+        <!--<button class="btn btn-warning" ng-click="cancel()">Cancel</button>-->
+    <!--</div>-->
+
+</body>
+</html>
