@@ -31,7 +31,6 @@ exports.fetch = function(term, lat, lon, promise){
         } else if (error) {
 
             console.log(error);
-            console.log("blah");
 
             promise(error, null);
 
