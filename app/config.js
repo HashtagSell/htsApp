@@ -56,7 +56,8 @@ htsApp.config(['$httpProvider', '$routeProvider', function ($httpProvider, $rout
         }).
         when('/interested', {
 //            templateUrl: 'partials/results_grid.html'
-            template: "Items I'm interested in",
+            templateUrl: "js/interested/partials/interested.html",
+            controller: 'myFavesController',
             resolve: { loginRequired: loginRequired }
         }).
         when('/notifications', {

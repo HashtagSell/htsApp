@@ -1,17 +1,5 @@
 htsApp.controller('searchController', ['$scope', '$timeout', 'searchFactory', function($scope, $timeout, searchFactory){
 
-//    $scope.addToList = function(number) {
-//        var s=angular.element('#isotopeContainer').scope();
-//        s.count = s.count || 0;
-//        var newItem={name:'add', number:number || s.count--, date: Date.now(), class:'purple'};
-//        s.results.push(newItem);
-//    };
-//
-//    $scope.addLastItem = function() {
-//        s.lastNumber = s.lastNumber || [];
-//        $scope.addToList(s.lastNumber.shift());
-//    };
-
     $scope.imgLoadedEvents = {
 
         always: function(instance) {
@@ -98,11 +86,11 @@ htsApp.controller('searchController', ['$scope', '$timeout', 'searchFactory', fu
 
     };
 
-    $scope.clearQueryParams = function() {
-        searchFactory.queryParams = {};
-        $scope.paginate(); //Kick off first query
+    $scope.initQuery = function() {
+        searchFactory.queryParams = {}; //Clear params from previous search if any
+        $scope.paginate();
     };
-    $scope.clearQueryParams(); //Kick off first query
+    $scope.initQuery(); //Kick off first query
 
 }]);
 
@@ -112,8 +100,6 @@ htsApp.factory('searchFactory', ['$http', '$routeParams', '$location', '$q', '$l
     var factory = {};
 
     factory.query = function(){
-
-        console.log("why twice?");
 
         var deferred = $q.defer();
 

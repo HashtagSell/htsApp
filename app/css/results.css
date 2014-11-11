@@ -6,6 +6,7 @@
 
 .isotope-item {
     z-index: 2;
+    left: 10px !important;
 }
 
 .isotope-hidden.isotope-item {
@@ -17,11 +18,11 @@
 
 .isotope,
 .isotope .isotope-item {
-    -webkit-transition-duration: 0.5s;
-    -moz-transition-duration: 0.5s;
-    -ms-transition-duration: 0.5s;
-    -o-transition-duration: 0.5s;
-    transition-duration: 0.5;
+    -webkit-transition-duration: 0.4s;
+    -moz-transition-duration: 0.4s;
+    -ms-transition-duration: 0.4s;
+    -o-transition-duration: 0.4s;
+    transition-duration: 0.4;
 }
 
 .isotope {
@@ -68,18 +69,18 @@
 
 .grid-item {
     width: 259px;
-    padding-right: 12px;
+    padding-right: 18px;
 }
 
 .grid-item .heading {
-    width: 200px;
+    width: 230px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .grid-item .body {
-    width: 170px;
+    width: 230px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -104,7 +105,7 @@
 }
 
 .list-item .heading {
-    width: 90%;
+    width: 95%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -125,7 +126,49 @@
     /*width:100%;*/
 }
 
+ribbon{
+    clear:both;
+    position:absolute;
+    color:#fff;
+    background:#149bdf;
+    text-shadow:0 -1px #149bdf, 0 1px #149bdf;
+    font-size:1.1em;
+    float:left;
+    padding:4px 10px 4px 10px;
+    margin-left:-10px;
+    margin-top:4px;
+    margin-bottom:20px;
 
+    -moz-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -webkit-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -o-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+ribbon:before{
+    content:" ";
+    background:url(/images/priceRibbon/ribbon.png);
+    display:block;
+    width:10px;
+    height:10px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    margin-bottom:-10px;
+    z-index:-1;
+}
+
+.thumbnail {
+    -moz-column-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    column-break-inside: avoid;
+    margin: 0 0px 15px;
+    border: 0px solid #FAFAFA;
+    -webkit-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    -moz-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+}
 
 
 
@@ -154,3 +197,12 @@
     background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
 }​
+
+/*Remove blue glow from around bootstrap 3 buttons.*/
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: none; ! important; outline-style: none;
+}
+
+.btn:focus {
+    outline: none; ! important; outline-style: none;
+}

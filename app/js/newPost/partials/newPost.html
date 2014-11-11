@@ -50,7 +50,7 @@
     <!--<pre style="word-wrap: break-word; white-space: pre-wrap;">{{formatted_jsonObj()}}</pre>-->
     <!--</div>-->
 
-    <mentio-menu
+    <mentio-menu style="z-index: 1100 !important;"
             mentio-for="'hashtag'"
             mentio-trigger-char="'#'"
             mentio-items="products"
@@ -59,7 +59,7 @@
             mentio-select="getProductTextRaw(item)">
     </mentio-menu>
 
-    <mentio-menu
+    <mentio-menu style="z-index: 1100 !important;"
             mentio-for="'hashtag'"
             mentio-trigger-char="'@'"
             mentio-items="places"
@@ -68,7 +68,7 @@
             mentio-select="getPlacesTextRaw(item)">
     </mentio-menu>
 
-    <mentio-menu
+    <mentio-menu style="z-index: 1100 !important;"
             mentio-for="'hashtag'"
             mentio-trigger-char="'$'"
             mentio-items="prices"

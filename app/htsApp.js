@@ -1,4 +1,4 @@
-var htsApp = angular.module('htsApp', ['ngRoute', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded']);
+var htsApp = angular.module('htsApp', ['ngRoute', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable']);
 
 
 

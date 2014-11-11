@@ -6,14 +6,14 @@ exports.fetch = function(term, lat, lon, promise){
     var three_taps_api = "http://search.3taps.com";
     var auth_token = "?auth_token=f2862071ede0bbd93bee4f091c522a9e";
     var source = "&source=CRAIG|EBAYM|BKPGE|AUTOD|E_BAY|EBAYM";
-    var heading = "&heading="+term;
-    var lat = "&lat="+lat;
-    var lon = "&long="+lon;
+    var heading = "&heading=" + term;
+    var lat = "&lat=" + lat;
+    var lon = "&long=" + lon;
     var sort = "&sort=distance";
     var retvals = "&retvals=category";
     var rpp = "&rpp=99";
 
-    var concatURL = three_taps_api+auth_token+source+heading+lat+lon+sort+retvals+rpp;
+    var concatURL = three_taps_api + auth_token + source + heading + lat + lon + sort + retvals + rpp;
 
     console.log(concatURL);
 
@@ -22,7 +22,7 @@ exports.fetch = function(term, lat, lon, promise){
 
             var categories = JSON.parse(body);
 
-            weighCategories(categories, function(popularCategories){
+            weighCategories(categories, function (popularCategories) {
 
                 console.log(popularCategories);
                 promise(null, popularCategories);

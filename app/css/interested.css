@@ -1,0 +1,51 @@
+.delete-label {
+    visibility: hidden;
+}
+
+li.label-list:hover span.delete-label{
+    visibility: visible;
+}
+
+.hashtag-faves-label {
+    float: left;
+    margin-right:10px;
+
+}
+
+.hashtag-faves-label td{
+    padding: 0px 3px 0px 3px;
+    border: 1px solid indianred;
+    background-color: indianred !important;
+    color: white;
+}
+
+
+.custom-table-header {
+    position: fixed;
+    width: 100%;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #dddddd;
+    z-index: 1;
+    margin-bottom: 0px;
+}
+
+
+.table-big-nudge {
+    margin-top:80px;
+    position: absolute;
+    margin-bottom: 0px;
+}
+
+.table-nudge {
+    margin-top:44px;
+    position: absolute;
+    margin-bottom: 0px;
+}
+
+.ng-table-pager {
+    display: none;
+}
+
+.fave-batch-button {
+    cursor: pointer;
+}

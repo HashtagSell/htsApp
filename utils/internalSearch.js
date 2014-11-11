@@ -77,7 +77,7 @@ exports.query = function(req, result, promise){
 
                 }
             });
-        }
+        };
 
         //Logs the users query and returns their previous search (if there is one) that way we know what concentric circle to define for distance query
         logQuery(req, vendorResponse, result, maxDistance, performDistanceQuery);
@@ -145,25 +145,63 @@ function deg2rad(deg) {
 
 
 function logQuery(req, vendorResponse, result, maxDistance, callback){
+    console.log("in log query");
 
-    if(req.user.local.email) {
-        var email = req.user.local.email;
-    } else {
+    console.log(req.user);
+
+    if(!req.user    ) {
         var email = "";
+    } else {
+        var email = req.user.local.email;
     }
+
+    console.log(email);
+
     var heading = result.query.q;
+
+    console.log(heading);
+
     var source = result.query.source;
+
+    console.log(source);
+
     var rpp = result.query.rpp;
+
+    console.log(rpp);
+
     var lat = result.location.latitude;
+
+    console.log(lat);
+
     var lon = result.location.longitude;
+
+    console.log(lon);
+
     var category = result.popularCategories;
+
+    console.log(category);
+
     var sort = result.query.sort;
+
+    console.log(sort);
+
     var retvals = result.query.retvals;
 
+    console.log(retvals);
+
     var anchor = vendorResponse.anchor;
+
+    console.log(anchor);
+
     var next_page = vendorResponse.next_page;
+
+    console.log(next_page);
+
     var next_tier = vendorResponse.next_tier;
 
+    console.log(next_tier);
+
+    console.log("got all vars");
 
 
     Analytics.findOneAndUpdate(
@@ -186,6 +224,7 @@ function logQuery(req, vendorResponse, result, maxDistance, callback){
         },
         { upsert: true, new:false },
         function(err, result){
+            console.log("we are here");
             if(err){
                 console.log(err);
             } else if (!result){
