@@ -52,7 +52,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'Se
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
-        $location.path("/search/"+$scope.query+"/");
+        $location.path("/results/"+$scope.query+"/");
 //        if ($scope.userLocationObject.manualCitySearch.lat && $scope.userLocationObject.manualCitySearch.lon) {
 //            console.log($scope.userLocationObject.manualCitySearch);
 //            console.log("redirecting");

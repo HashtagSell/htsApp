@@ -305,7 +305,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                         $http.get('../search_old?', {
                             params: {
                                 heading: selectedProduct.value,
-                                source: 'CRAIG|E_BAY',
+                                source: 'CRAIG',
                                 rpp: 99,
                                 retvals: "price,category,annotations",
                                 logic: true
@@ -415,7 +415,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                 }
 
 
-                                //Loop through annotations of each result and count the annotation if its in our annotaiton Dictionary its in our popular category
+                                //Loop through annotations of each result and count the annotation if its in our annotation Dictionary its in our popular category
                                 console.log("Looping though all results again");
                                 var annotationsHashTable = new Hashtable();
                                 var annotationCount = 0;
@@ -464,37 +464,6 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                 }
 
 
-                                //Gather our popular annotations
-                                console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
-                                var annotationObj = {};
-                                var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
-
-                                console.log("Annotations should weigh more than: ", avg_weight);
-
-                                var hintsString = "Hint: Consider adding ";
-                                annotationsHashTable.each(function (key) {
-
-                                    var weight = Math.abs(annotationsHashTable.get(key));
-
-                                    console.log(key, " has weight of", weight);
-
-                                    if (weight >= avg_weight) {
-
-                                        hintsString += annotationsDictionary.get(key) + ", ";
-
-                                        console.log(weight, ">=", avg_weight);
-                                        annotationObj[key] = null;
-
-                                    }
-                                });
-
-                                factory.jsonTemplate.annotations = annotationObj;
-
-                                hintsString = hintsString.substring(0, hintsString.length - 2);
-                                hintsString += " of the " + factory.jsonTemplate.mentions.hashtags[0].hashtag;
-                                factory.jsonTemplate.hints = hintsString;
-
-
                                 $http.get('../search/categories?', {
                                     params: {
                                         categoryCode: mostPopularCategory
@@ -504,12 +473,51 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                     factory.jsonTemplate.category_name = data.metadata.name;
                                     factory.jsonTemplate.category_group = data.metadata.group_code;
                                     factory.jsonTemplate.category_group_name = data.metadata.group_name;
+
+                                    if(annotationsHashTable.size() > 0) {
+
+                                        //Gather our popular annotations
+                                        console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
+                                        var annotationObj = {};
+                                        var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
+
+                                        console.log("Annotations should weigh more than: ", avg_weight);
+
+                                        var hintsString = "Use the \"&\" symbol to include the ";
+                                        annotationsHashTable.each(function (key) {
+
+                                            var weight = Math.abs(annotationsHashTable.get(key));
+
+                                            console.log(key, " has weight of", weight);
+
+                                            if (weight >= avg_weight) {
+
+                                                hintsString += annotationsDictionary.get(key) + ", ";
+
+                                                console.log(weight, ">=", avg_weight);
+                                                annotationObj[key] = null;
+
+                                            }
+                                        });
+
+                                        factory.jsonTemplate.annotations = annotationObj;
+
+                                        hintsString = hintsString.substring(0, hintsString.length - 2);
+                                        hintsString += " of the " + factory.jsonTemplate.mentions.hashtags[0].hashtag;
+                                        factory.jsonTemplate.hints = hintsString;
+
+                                    } else {
+
+                                        factory.jsonTemplate.hints = "Looks like your listing belongs in the " + factory.jsonTemplate.category_name + " category.  Add more #'s to describe your item if this is incorrect.";
+
+                                    }
+
+
+                                    console.log("---------------------------");
+                                    console.log("done weighing all hashtags!");
+                                    console.log("---------------------------");
+
                                 });
-
-
-                                console.log("---------------------------");
-                                console.log("done weighing all hashtags!");
-                                console.log("---------------------------");
 
                             }
                         });

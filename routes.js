@@ -13,13 +13,13 @@ module.exports = function(app, passport) {
     // Locations Lookup ====================
     // =====================================
     var reference = require('./api/reference_api'); //Lookup 3taps formatted metro codes
-    app.get('/search/locations', isLoggedIn, reference.locationMetadata);
+    app.get('/search/locations', reference.locationMetadata);
 
 
     // =====================================
     // Categories Lookup ===================
     // =====================================
-    app.get('/search/categories', isLoggedIn, reference.categoryMetadata);
+    app.get('/search/categories', reference.categoryMetadata);
 
 
     // =====================================

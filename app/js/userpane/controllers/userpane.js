@@ -3,23 +3,23 @@ htsApp.controller('userpane', function($scope) {
     $scope.items = [{
         name: "My Profile",
         alerts: null,
-        link: "#profile"
+        link: "profile"
     },{
         name: "My Feed",
         alerts: null,
-        link: "#feed"
+        link: "feed"
     },{
         name: "I'm Selling",
         alerts: 2,
-        link: "#selling"
+        link: "selling"
     },{
         name: "I'm Interested",
         alerts: null,
-        link: "#interested"
+        link: "interested"
     },{
         name: "Notifications",
         alerts: 6,
-        link: "#notifications"
+        link: "notifications"
     }];
 
 });

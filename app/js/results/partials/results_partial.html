@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="css/results.css"/>
-<link rel="stylesheet" href="fontawesome/css/font-awesome.min.css"/>
+<link rel="stylesheet" href="css/splash.css"/>
 
 <div class="container-fluid">
     <div class="row affix" style="z-index: 4;">
@@ -30,7 +30,7 @@
             <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent >
                 <div id="isotopeContainer" isotope-container ng-class="{'no-transition':loading}">
                     <div ng-repeat="result in results"
-                        isotope-item ng-click="openItem(this)"
+                        isotope-item ng-click="openSplash(this)"
                         ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
                         data-category="{{result.category}}"
                         data-email="{{result.annotations.source_account}}"

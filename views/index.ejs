@@ -90,20 +90,23 @@
     <div class="container-fluid">
         <div class="row">
             <div class="list-group col-lg-2 col-md-2 col-sm-3 hidden-xs bs-sidenav affix" ng-controller="userpane">
-                <a ng-repeat="item in items" href="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                <a ng-repeat="item in items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
                     {{item.name}}
                     <span class="badge">{{item.alerts}}</span>
                 </a>
             </div>
 
 
-            <div ng-view class="col-lg-10 col-lg-offset-2 col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 col-xs-12"></div>
+            <div ui-view class="col-lg-10 col-lg-offset-2 col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 col-xs-12"></div>
         </div>
     </div>
 
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>
+    <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>-->
+
+    <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
+
     <script type="text/javascript" src="/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
     <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
@@ -139,8 +142,9 @@
     <script type="text/javascript" src="/js/awesomeBar/factories/updatePlaceholder.js"></script>
     <script type="text/javascript" src="/js/userpane/controllers/userpane.js"></script>
     <script type="text/javascript" src="/js/filterBar/controllers/filterBar.js"></script>
-    <script type="text/javascript" src="/js/search/controllers/search.js"></script>
+    <script type="text/javascript" src="/js/results/controllers/results.controller.js"></script>
     <script type="text/javascript" src="/js/interested/controllers/interestedController.js"></script>
+    <script type="text/javascript" src="/js/splash/factories/splash.factory.js"></script>
 
 
 </body>

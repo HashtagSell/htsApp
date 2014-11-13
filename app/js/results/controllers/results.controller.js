@@ -1,4 +1,4 @@
-htsApp.controller('searchController', ['$scope', '$timeout', 'searchFactory', function($scope, $timeout, searchFactory){
+htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', '$location', '$state', 'splash.factory', function($scope, $timeout, searchFactory, $location, $state, splashFactory){
 
     $scope.imgLoadedEvents = {
 
@@ -21,8 +21,23 @@ htsApp.controller('searchController', ['$scope', '$timeout', 'searchFactory', fu
     };
 
 
-    $scope.openItem = function(elem) {
-        console.log("open item")
+    $scope.openSplash = function(elems) {
+
+        console.log('all elems copied into splash.factory');
+        splashFactory.annotations = elems.result.annotations;
+        splashFactory.body = elems.result.body;
+        splashFactory.category = elems.result.category;
+        splashFactory.category_group = elems.result.category_group;
+        splashFactory.distanceFromUser = elems.result.distanceFromUser;
+        splashFactory.external_id = elems.result.external_id;
+        splashFactory.external_url = elems.result.external_url;
+        splashFactory.heading = elems.result.heading;
+        splashFactory.images = elems.result.images;
+        splashFactory.location = elems.result.location;
+        splashFactory.price = elems.result.price;
+        splashFactory.source = elems.result.source;
+
+        $state.go('results.splash');
     };
 
     $scope.rangeSlider = {
@@ -95,7 +110,7 @@ htsApp.controller('searchController', ['$scope', '$timeout', 'searchFactory', fu
 }]);
 
 
-htsApp.factory('searchFactory', ['$http', '$routeParams', '$location', '$q', '$log', function($http, $routeParams, $location, $q, $log){
+htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', function($http, $stateParams, $location, $q, $log){
 
     var factory = {};
 
@@ -103,7 +118,7 @@ htsApp.factory('searchFactory', ['$http', '$routeParams', '$location', '$q', '$l
 
         var deferred = $q.defer();
 
-        var search_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/search?q=" + $routeParams.q;
+        var search_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/search?q=" + $stateParams.q;
 
         if(factory.queryParams.anchor) {
             search_api += "&anchor=" + factory.queryParams.anchor + "&next_page=" + factory.queryParams.next_page + "&next_tier=" + factory.queryParams.next_tier;
@@ -130,5 +145,5 @@ htsApp.factory('searchFactory', ['$http', '$routeParams', '$location', '$q', '$l
         return deferred.promise;
     };
 
-    return factory
+    return factory;
 }]);

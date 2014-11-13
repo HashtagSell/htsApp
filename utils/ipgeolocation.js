@@ -3,7 +3,7 @@ var request = require("request");
 exports.lookup = function(ip, promise){
 
     if(ip == "127.0.0.1"){
-        ip = "76.21.93.50"
+        ip = "76.21.93.50";
     };
 
     var service1 = "http://freegeoip.net/json/"+ip;
