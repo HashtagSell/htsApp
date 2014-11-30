@@ -1,76 +1,83 @@
 <link rel="stylesheet" href="css/interested.css"/>
 
-<div ng-controller="myFavesController" ng-class="showFaves.value ? 'faves-expanded' : 'faves-collapsed'" class="faves-collapsed animate">
-    <div class="table-responsive below-subnav">
-        <table ng-table="tableParams" class="table table-responsive custom-table-header">
-            <thead>
-            <tr ng-show="checkboxes.checked">
-                <th>
+<div ui-view></div>
 
-                </th>
-                <th colspan="1" class="fave-batch-button">
 
-                    <dropdown-multiselect selectedlabels="selected_labels" userlabels="UserLabels" selectedfaves="checkboxes.items">
+            <div class="container-fluid">
+                <div class="row">
+                    <table ng-table="tableParams" class="table">
+                        <thead>
+                            <tr ng-show="checkboxes.checked">
+                                <th>
 
-                    </dropdown-multiselect>
+                                </th>
+                                <th colspan="4" class="fave-batch-button">
 
-                </th>
-                <th colspan="1" class="fave-batch-button" ng-model="batchContact" ng-click="batchEmail(checkboxes)">
-                    <i class="fa fa-envelope">&nbsp;&nbsp;Contact Seller</i>
-                </th>
-                <th colspan="2" class="fave-batch-button" ng-model="batchTrash" ng-click="batchRemoveFaves(checkboxes)">
-                    <i class="fa fa-trash">&nbsp;&nbsp;Trash</i>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="1" width="30">
-                    <input type="checkbox" style="text-align: center; vertical-align: middle;" ng-model="checkboxes.masterCheck" id="select_all" name="filter-checkbox" value="">
-                </th>
-                <th  colspan="2" class="text-center">
-                    <input type="text" ng-model="filters.$" placeholder="Filter Favorites" style="width:98%; margin:0px;"/>
-                </th>
-                <th colspan="2" style="vertical-align: middle;" class="text-center sortable" ng-class="{
-                                'sort-asc': tableParams.isSortBy('price', 'asc'),
-                                'sort-desc': tableParams.isSortBy('price', 'desc')
-                            }"
-                    ng-click="tableParams.sorting({'price' : tableParams.isSortBy('price', 'asc') ? 'desc' : 'asc'})">
-                    <div>Price</div>
-                </th>
-            </tr>
-            </thead>
-        </table>
-        <table ng-table="tableParams" class="table table-responsive table-striped table-hover table-padding" ng-class="checkboxes.checked ? 'table-big-nudge' : 'table-nudge'">
-            <thead>
+                                    <dropdown-multiselect selectedlabels="selected_labels" userlabels="UserLabels" selectedfaves="checkboxes.items">
 
-            </thead>
-            <tbody>
-            <tr ng-repeat="favorite in $data">
-                <td width="30" style="text-align: center; vertical-align: middle;">
-                    <input type="checkbox" ng-model="checkboxes.items[favorite.id]" />
-                </td>
-                <td style="width:70px; cursor: pointer;" ng-click='openItemInTab(favorite)'>
-                    <img ng-src="{{favorite.img}}" style="width:70px; height:70px;">
-                </td>
-                <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openItemInTab(favorite)'>
-                    {{favorite.heading}}
-                    <br>
-                    <small>
-                        <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
-                            <tr>
-                                <td>#{{label}}&nbsp;&nbsp;</td>
-                                <td ng-click="removeIndividualLabel()" style="cursor: pointer; z-index: 10;">x</td>
+                                    </dropdown-multiselect>
+
+                                </th>
+                                <th colspan="4" class="fave-batch-button" ng-model="batchContact" ng-click="batchEmail(checkboxes)">
+                                    <i class="fa fa-envelope">&nbsp;&nbsp;Contact Seller</i>
+                                </th>
+                                <th colspan="4" class="fave-batch-button" ng-model="batchTrash" ng-click="batchRemoveFaves(checkboxes)">
+                                    <i class="fa fa-trash">&nbsp;&nbsp;Trash</i>
+                                </th>
                             </tr>
-                        </table>
-                    </small>
-                </td>
-                <td style="vertical-align: middle;">
-                    {{favorite.price | currency : symbol}}
-                </td>
-                <td style="width:20px; vertical-align: middle;">
-                    <i class="fa fa-minus-circle fa-2x" ng-click="removeFave({id: favorite.id});" style="color:red; cursor: pointer;"></i>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+                            <tr>
+                                <th colspan="1" width="30px">
+                                    <input type="checkbox" style="text-align: center; vertical-align: middle;" ng-model="checkboxes.masterCheck" id="select_all" name="filter-checkbox">
+                                </th>
+                                <th  colspan="9" class="text-center">
+                                    <input type="text" ng-model="filters.$" placeholder="Filter Favorites" style="width:98%; margin:0px;"/>
+                                </th>
+                                <th colspan="2" style="vertical-align: middle;" class="text-center sortable" ng-class="{
+                                                'sort-asc': tableParams.isSortBy('price', 'asc'),
+                                                'sort-desc': tableParams.isSortBy('price', 'desc')
+                                            }"
+                                    ng-click="tableParams.sorting({'price' : tableParams.isSortBy('price', 'asc') ? 'desc' : 'asc'})">
+                                    <div>Price</div>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <table ng-table="tableParams" class="table table-striped table-hover table-padding" ng-class="checkboxes.checked ? 'table-big-nudge' : 'table-nudge'">
+                        <thead>
+
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="favorite in $data">
+                                <td width="30" style="text-align: center; vertical-align: middle;">
+                                    <input type="checkbox" ng-model="checkboxes.items[favorite.external_id]" />
+                                </td>
+                                <td style="width:70px; cursor: pointer;" ng-click='openSplash(favorite)'>
+                                    <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
+                                </td>
+                                <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)'>
+                                    {{::favorite.heading}}
+                                    <br>
+                                    <small>
+                                        <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
+                                            <tr>
+                                                <td>#{{label}}&nbsp;&nbsp;</td>
+                                                <td ng-click="removeIndividualLabel()" style="cursor: pointer; z-index: 10;">x</td>
+                                            </tr>
+                                        </table>
+                                    </small>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    {{::favorite.price | currency : symbol}}
+                                </td>
+                                <td style="width:20px; vertical-align: middle;">
+                                    <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite);" style="color:red; cursor: pointer;"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>

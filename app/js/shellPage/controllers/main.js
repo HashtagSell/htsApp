@@ -1,3 +1,4 @@
-htsApp.controller('mainController', ['$scope', function($scope){
+htsApp.controller('mainController', ['$scope', function ($scope) {
+
 
 }]);

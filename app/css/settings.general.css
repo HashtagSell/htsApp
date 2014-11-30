@@ -1,0 +1,20 @@
+.safeSearch-checkmark {
+    position: absolute;
+    right: -10px;
+    top: 30px;
+    color: green;
+}
+
+.location-checkmark {
+    position: absolute;
+    right: -10px;
+    top: 150px;
+    color: green;
+}
+
+.defaultEmail-checkmark {
+    position: absolute;
+    right: -10px;
+    top: 90px;
+    color: green;
+}

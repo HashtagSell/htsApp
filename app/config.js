@@ -43,6 +43,10 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
 
 
     $stateProvider.
+        state('new-post', {
+            url: "/new-post",
+            controller: 'newPostController'
+        }).
         state('profile', {
             url: "/profile",
             template: "My Profile"
@@ -62,6 +66,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
             controller: 'myFavesController',
             resolve: { loginRequired: loginRequired }
         }).
+        state('interested.splash', {
+            url: "/:id",
+            controller: 'splashController',
+            resolve: { loginRequired: loginRequired }
+        }).
         state('notifications', {
             url: "/notifications",
             template: "My Notifications",
@@ -69,51 +78,36 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('settings', {
             url: "/settings",
-            template: "User Settings",
+            templateUrl: "js/settings/partials/settings_partial.html",
             resolve: { loginRequired: loginRequired }
         }).
-        state('results.splash', {
-            url: "splash",
-            resolve: { loginRequired: loginRequired },
-            onEnter: ['$stateParams', '$state', '$modal', 'splash.factory', function($stateParams, $state, $modal, splashFactory) {
-                var splashInstance = $modal.open({
-                    backdrop: false,
-                    templateUrl: "js/splash/partials/splash_content.html",
-                    windowTemplateUrl: "js/splash/partials/splash_window.html",
-                    resolve: {
-                        //item: function() { new Item(123).get(); }
-                    },
-                    controller: ['$scope', function($scope) {
-
-                        $scope.annotations = splashFactory.annotations;
-                        $scope.body = splashFactory.body;
-                        $scope.category = splashFactory.category;
-                        $scope.category_group = splashFactory.category_group;
-                        $scope.distanceFromUser = splashFactory.distanceFromUser;
-                        $scope.external_id = splashFactory.external_id;
-                        $scope.external_url = splashFactory.external_url;
-                        $scope.heading = splashFactory.heading;
-                        $scope.images = splashFactory.images;
-                        $scope.location = splashFactory.location;
-                        $scope.price = splashFactory.price;
-                        $scope.source = splashFactory.source;
-
-                    }]
-                });
-
-                splashInstance.result.then(function (selectedItem) {
-                    console.log(selectedItem);
-                }, function () {
-                    console.log('Splash dismissed at: ' + new Date());
-                    $state.go('results');
-                });
-
-            }]
+        state('settings.general', {
+            url: "/general",
+            templateUrl: "js/settings/partials/settings.general_partial.html",
+            controller: "settings.general.controller",
+            resolve: { loginRequired: loginRequired }
+        }).
+        state('settings.profile', {
+            url: "/profile",
+            templateUrl: "js/settings/partials/settings.profile_partial.html",
+            controller: "settings.profile.controller",
+            resolve: { loginRequired: loginRequired }
+        }).
+        state('settings.payment', {
+            url: "/payment",
+            templateUrl: "js/settings/partials/settings.payment_partial.html",
+            controller: "settings.payment.controller",
+            resolve: { loginRequired: loginRequired }
         }).
         state('results', {
             url: '/results/:q/',
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html"
+        }).
+        state('results.splash', {
+            url: ":id",
+            controller: 'splashController',
+            resolve: { loginRequired: loginRequired }
         }).
         state('reset', {
             url: '/reset/:uid/',
@@ -123,4 +117,19 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         state('otherwise', {
             url: '/feed'
         });
+
+}]);
+
+
+
+
+htsApp.run(['$rootScope', 'sideNavFactory', function ($rootScope, sideNavFactory) {
+
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+            //console.log(event, toState, toParams, fromState, fromParams);
+            sideNavFactory.updateState(toState);
+
+        }
+    )
+
 }]);

@@ -1,7 +1,10 @@
-//This factory handles all our ajax posts to the server for sign-in, account creation, password reset, and changing the actual password
-htsApp.factory('splash.factory', ['$http', 'Session', '$q', '$window', function ($http, Session, $q) {
+/**
+ * Created by braddavis on 11/15/14.
+ */
+htsApp.factory('splashFactory', function () {
 
     var factory = {};
 
+
     return factory;
-}]);
+});

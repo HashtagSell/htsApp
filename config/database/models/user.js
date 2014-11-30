@@ -33,9 +33,9 @@ var userSchema = mongoose.Schema({
     },
     user_settings    : {
         name         : String,
-        rpp          : { type: Number, default: 15 },
+        location_type: { type: String, default: "Approximate" },
         safe_search  : { type: Boolean, default: true },
-        email_provider : { type: String, default: "ask" },
+        email_provider : { type: String, default: "Ask" },
         user_labels  : [],
         favorites    : []
     },

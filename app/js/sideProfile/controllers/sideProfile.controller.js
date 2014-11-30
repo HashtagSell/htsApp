@@ -1,5 +1,4 @@
-//Controller manages the Create Acount and Sign In menu on top right
-htsApp.controller('userMenuController', ['$scope', 'authFactory', 'Session', function ($scope, authFactory, Session) {
+htsApp.controller('sideProfile', ['$scope', 'authFactory', 'Session', function ($scope, authFactory, Session) {
 
     $scope.user = {};
 
@@ -18,7 +17,7 @@ htsApp.controller('userMenuController', ['$scope', 'authFactory', 'Session', fun
     };
 
     $scope.showUserSettings = function () {
-      alert("update view user settings");
+        alert("update view user settings");
     };
 
     $scope.img = {};

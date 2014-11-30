@@ -23,10 +23,9 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
             };
 
             $scope.macros = {
-                'brb': 'Be right back',
-                'omw': 'On my way',
+                'obo': '*Or Best Offer*',
                 '(smile)': '<img src="http://a248.e.akamai.net/assets.github.com/images/icons/emoji/smile.png"' +
-                    ' height="20" width="20">'
+                ' height="20" width="20">'
             };
 
             $scope.closePostCompose = function () {
@@ -474,7 +473,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                     factory.jsonTemplate.category_group = data.metadata.group_code;
                                     factory.jsonTemplate.category_group_name = data.metadata.group_name;
 
-                                    if(annotationsHashTable.size() > 0) {
+                                    if (annotationsHashTable.size() > 0) {
 
                                         //Gather our popular annotations
                                         console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
@@ -540,7 +539,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                         var deferred = $q.defer();
 
                         //Get predictions from google
-                        googlePlacesService.getPlacePredictions({ input: term }, function (predictions, status) {
+                        googlePlacesService.getPlacePredictions({input: term}, function (predictions, status) {
 
                             deferred.resolve(predictions);
                         });

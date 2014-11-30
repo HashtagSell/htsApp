@@ -171,13 +171,28 @@ ribbon:before{
 }
 
 
+.star {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+}
+
+.starHighlighted {
+    position: absolute;
+    color: red;
+    right: 20px;
+    top: 5px;
+}
+
+
 
 
 .infiniteScrollContainer {
     overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
     height:100%;
-    right:0px;
-    margin-top:63px;
+    right:7px;
+    padding-top:63px;
 }
 
 

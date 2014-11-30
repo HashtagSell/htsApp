@@ -16,86 +16,81 @@
     <!-- Styles -->
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/splash.css">
     <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css">
     <link rel="stylesheet" href="/ng-table/ng-table.min.css">
     <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css">
 
 </head>
 
 <body class="ng-cloak" ng-controller="mainController">
-
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="navbar-inner">
             <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" ng-click="isCollapsed = !isCollapsed">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="/" class="visible-xs"><img src="/images/logo/HashtagSell_Logo_80px.svg"></a>
-                </div>
-
-
-                <nav class="hidden-xs">
-                    <ul class="nav navbar-nav navbar-left">
-                        <a href="/"><img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo"></a>
-                    </ul>
-
-
-                    <form class="navbar-form navbar-left" role="search" ng-controller="awesomeBarController" ng-submit="awesomeBarSubmit()">
-                        <div class="input-group">
-                            <input type="text" class="form-control" ng-model="query">
-                              <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                              </span>
-                        </div><!-- /input-group -->
-                    </form>
-
-
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="navbar-form">
-                            <button type="submit" class="btn btn-default" ng-click="newPost()" ng-controller="newPostController">#Sell it!</button>
+                <nav class="row">
+                    <ul class="nav navbar-nav row">
+                        <li class="col-lg-1 col-md-2 col-sm-1 hidden-xs">
+                            <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo" ui-sref="feed">
                         </li>
-                        <li class="dropdown" on-toggle="toggled(open)" ng-controller="userMenuController">
+                        <li class="col-lg-4 col-lg-offset-3 col-md-6 col-md-offset-1 col-sm-6 col-sm-offset-1 col-xs-5 col-xs-offset-1">
+                            <form role="search" ng-controller="awesomeBarController" ng-submit="awesomeBarSubmit()" class="logo">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="query">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-default" type="button">
+                                                <span class="glyphicon glyphicon-search"></span>
+                                            </button>
+                                        </span>
+                                    </input>
+                                </div><!-- /input-group -->
+                            </form>
+                        </li>
+                        <li class="col-lg-1 col-lg-offset-2 col-md-2 col-sm-3 col-xs-4 logo" ng-controller="newPostController">
+                            <!--<a ng-click="newPost()">#Sell It</a>-->
+                            <button type="button" class="btn btn-danger" ng-click="newPost()">#Sell it!</button>
+                        </li>
+                        <li class="dropdown col-lg-1 col-md-1 col-sm-1 col-xs-1" on-toggle="toggled(open)" ng-controller="userMenuController">
                             <a href class="dropdown-toggle">
-                                <span class="caret"></span>
-                                <img class='img-circle' src={{img.profilePhoto}} width="25px;"/>
+                                <img class='img-circle' ng-src={{img.profilePhoto}} width="30px;"/>
                             </a>
                             <ul class="dropdown-menu" ng-if="!loggedIn()" ng-cloak ng-controller="authModals">
                                 <li><a href ng-click="signIn()">Sign In</a></li>
                                 <li><a href ng-click="signUp()">New Account</a></li>
                             </ul>
                             <ul class="dropdown-menu" ng-if="loggedIn()" ng-cloak>
-                                <li><a href ng-click="userSettings()">User Settings</a></li>
+                                <li><a ui-sref="settings.general">User Settings</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#" ng-click="clearStorage()">Logout</a></li>
                             </ul>
                         </li>
                     <ul>
                 </nav>
-
-                <nav class="visible-xs" collapse="!isCollapsed">
-                    <ul class="nav navbar-nav navbar-left">
-                        <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">AwesomeBar2</a></li>
-                    </ul>
-                </nav>
-
             </div><!-- /.container-fluid -->
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
-            <div class="list-group col-lg-2 col-md-2 col-sm-3 hidden-xs bs-sidenav affix" ng-controller="userpane">
-                <a ng-repeat="item in items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
-                    {{item.name}}
-                    <span class="badge">{{item.alerts}}</span>
-                </a>
-            </div>
 
+            <div class="col-lg-2 col-md-2 col-sm-3 hidden-xs bs-profile-nav">
+                <div ng-controller="sideProfile" class="profile">
+                    <a ui-sref="profile" class="profileCircle">
+                        <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
+                    </a>
+                </div>
+                <div ng-controller="newPostController" class="sellButton">
+                    <button type="submit" class="btn btn-danger btn-sm custom-button btn-block" ng-click="newPost()">#Sell it!</button>
+                </div>
+
+                <!--SideNav-->
+                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                        {{item.name}}
+                        <span class="badge">{{item.alerts}}</span>
+                    </a>
+                </div>
+            </div>
 
             <div ui-view class="col-lg-10 col-lg-offset-2 col-md-10 col-md-offset-2 col-sm-9 col-sm-offset-3 col-xs-12"></div>
         </div>
@@ -103,8 +98,6 @@
 
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
-    <!--<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular-route.min.js"></script>-->
-
     <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
 
     <script type="text/javascript" src="/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
@@ -113,7 +106,10 @@
     <script type="text/javascript" src='/isotope/jquery.isotope.js'></script>
     <script type="text/javascript" src='/underscore/underscore-min.js'></script>
     <script type="text/javascript" src='/angular-isotope/dist/angular-isotope.js'></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+    <script type="text/javascript" src='/angular-touch/angular-touch.min.js'></script>
+    <script type="text/javascript" src="/angular-carousel/dist/angular-carousel.min.js"></script>
+
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
     <script type="text/javascript" src='/dropzone/downloads/dropzone.min.js'></script>
     <script type="text/javascript" src="/jshashtable-3.0/hashtable.js"></script>
     <script type="text/javascript" src="/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
@@ -121,13 +117,14 @@
     <script type='text/javascript' src='/nginfiniteScroll/build/ng-infinite-scroll.min.js'></script>
     <script type='text/javascript' src='/imagesloaded/imagesloaded.pkgd.min.js'></script>
     <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
+    <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.min.js"></script>
 
 
     <script type="text/javascript" src="htsApp.js"></script>
     <script type="text/javascript" src="config.js"></script>
     <script type="text/javascript" src="/js/shellPage/controllers/main.js"></script>
     <script type="text/javascript" src="/js/userMenu/controllers/userMenu.js"></script>
-    <script type="text/javascript" src="/js/newPost/controllers/newPost.js"></script>
+    <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
     <script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>
     <script type="text/javascript" src="/js/authentication/services/session.js"></script>
     <script type="text/javascript" src="/js/authentication/controllers/authModals.js"></script>
@@ -140,12 +137,18 @@
     <script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/services/geolocationService.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/factories/updatePlaceholder.js"></script>
-    <script type="text/javascript" src="/js/userpane/controllers/userpane.js"></script>
+    <script type="text/javascript" src="/js/sideNav/controllers/sideNav.controller.js"></script>
+    <script type="text/javascript" src="/js/sideNav/factories/sideNav.factory.js"></script>
+    <script type="text/javascript" src="/js/sideProfile/controllers/sideProfile.controller.js"></script>
     <script type="text/javascript" src="/js/filterBar/controllers/filterBar.js"></script>
     <script type="text/javascript" src="/js/results/controllers/results.controller.js"></script>
     <script type="text/javascript" src="/js/interested/controllers/interestedController.js"></script>
+    <script type="text/javascript" src="/js/interested/factories/interested.factory.js"></script>
+    <script type="text/javascript" src="/js/splash/controllers/splash.controller.js"></script>
     <script type="text/javascript" src="/js/splash/factories/splash.factory.js"></script>
-
+    <script type="text/javascript" src="/js/settings/controllers/settings.general.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/controllers/settings.profile.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/controllers/settings.payment.controller.js"></script>
 
 </body>
 </html>

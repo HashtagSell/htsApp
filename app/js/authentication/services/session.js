@@ -8,7 +8,7 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
 
         var deferred = $q.defer();
 
-        console.log("posting to /updateUserSettings")
+        console.log("posting to /updateUserSettings");
         $http.post('/updateUserSettings', { "userSettings": userSettingsObject})
 
             .then(function (response) {
@@ -16,16 +16,17 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
                 if (response.data.success) {
 
                     deferred.resolve();
-                    console.log(response);
-                    console.log("here is our response from server");
-
+                    console.log("here is our response from server", response);
+                    console.log("CHECKING IF WE HAVE CALLBACK");
                     if (callback) {
+                        console.log("NOW WE SHOULD UPDATE TABLE!!");
                         callback();
+
                     }
 
                 } else {
 
-                    console.log("error");
+                    console.log(response);
                 }
             },            //error
             function (data, status, headers, config) {
@@ -87,14 +88,27 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
 
     //Set a particular user setting in HTML5 session storage then update the server
     this.setSessionValue = function (key, value, callback) {
-        console.log("set " + key + " in HTML5 user settings to " + value);
+        console.log("set " + key + " in HTML5 user settings to ", value);
         var userObj = this.getSessionObj();
+        console.log("here is user obj", userObj);
         userObj[key] = value;
         var data = {};
         data.user_settings = userObj;
         this.create(data);
         this.updateServer(callback);
     };
+
+
+    this.addFaveToSession = function (fave, callback) {
+        var userObj = this.getSessionObj();
+        console.log("here is user obj", userObj);
+        userObj.favorites.push(fave);
+        var data = {};
+        data.user_settings = userObj;
+        this.create(data);
+        this.updateServer(callback);
+    };
+
 
     return this;
 }]);

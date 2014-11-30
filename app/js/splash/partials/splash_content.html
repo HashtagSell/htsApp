@@ -1,59 +1,156 @@
-<div class="splash-content">
-    <button class="btn btn-lg btn-outline" ng-click="$dismiss()">close</button>
-    Annotation: {{annotations}}
 
-    <br>
-    <br>
 
-    Body: {{body}}
+<div class="container-fluid splash-content">
 
-    <br>
-    <br>
+    <div class="row">
+        <div class="col-lg-offset-11 col-lg-1 col-md-offset-11 col-md-1 col-sm-offset-9 col-sm-3 col-xs-offset-9 col-xs-3 close-button">
+            <button class="btn btn-lg btn-outline" ng-click="$dismiss()"><i class="fa fa-times"></i></button>
+        </div>
+    </div>
 
-    Category: {{category}}
+    <!--Google Map-->
+    <div class="row">
+        <ui-gmap-google-map center='map.center' zoom='map.zoom'>
 
-    <br>
-    <br>
+            <ui-gmap-marker coords="marker.coords" idkey="marker.id">
 
-    Category Group: {{category_group}}
+            </ui-gmap-marker>
 
-    <br>
-    <br>
 
-    Distance From User: {{distanceFromUser}}
+        </ui-gmap-google-map>
 
-    <br>
-    <br>
 
-    External ID: {{external_id}}
+    </div>
 
-    <br>
-    <br>
+    <div class="row overlay-fade">
 
-    Exernal URL: {{external_url}}
+    </div>
 
-    <br>
-    <br>
+    <div class="row overlay-details">
+        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-3 hidden-xs bs-profile-nav">
+                    <div ng-controller="sideProfile" class="profile">
+                        <a ui-sref="profile" class="profileCircle">
+                            <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
+                        </a>
+                    </div>
+                    <div ng-controller="newPostController" class="sellButton">
+                        <button type="submit" class="btn btn-danger btn-sm custom-button" ng-click="newPost()">#Sell it!</button>
+                    </div>
 
-    Heading: {{heading}}
+                    <!--SideNav-->
+                    <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                        <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                            {{item.name}}
+                            <span class="badge">{{item.alerts}}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+                <!--<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-row-spacer" ng-if="images.length > 1" ng-repeat="image in images" >-->
+                    <!--<img src="{{image.full || image.thumb}}" class="img-responsive" ng-mouseenter="$parent.$parent.imageHover = image.full || image.thumb">-->
 
-    <br>
-    <br>
+                <!--</div>-->
+        </div>
 
-    Images: {{images}}
+        <div class="col-lg-10 col-md-9 col-sm-9 col-xs-9">
 
-    <br>
-    <br>
+            <div class="row">
+                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-8">
+                    <h1 class="heading" ng-bind-html="heading">
 
-    Locations: {{location}}
+                    </h1>
+                </div>
 
-    <br>
-    <br>
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                    <h1 class="price">
+                        {{price | currency}}
+                    </h1>
+                </div>
+            </div>
 
-    Price: {{price}}
 
-    <br>
-    <br>
+            <div class="row">
 
-    Source: {{source}}
+                <!--Annotation: {{annotations}}-->
+
+
+                <ul rn-carousel rn-carousel-buffered rn-carousel-controls class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <li ng-repeat="image in images">
+                        <div class="layer" ng-if="image.full" ng-style="{'background-image': 'url(' + image.full + ')'}">
+
+
+                        </div>
+                        <div class="layer" ng-if="!image.full && image.thumb" ng-style="{'background-image': 'url(' + image.thumb + ')'}">
+
+
+                        </div>
+                        <div class="layer" ng-if="!image.full && !image.thumb && image.images" ng-style="{'background-image': 'url(' + image.images + ')'}">
+
+
+                        </div>
+                    </li>
+                </ul>
+
+                <!--Far right column contains body, annotations, and commenting system.-->
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+
+                    <!--Annotations-->
+                    <div class="row">
+                        <div ng-repeat="(key, value) in annotations" ng-if="validateAnnotation(key)">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <div class="row">
+                                    {{key}}
+                                </div>
+                                <div class="row">
+                                    {{value}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!--Body-->
+                    <div class="row">
+                        <div ng-bind-html="body">
+
+                        </div>
+                    </div>
+
+
+                    <!--Commenting System-->
+                    <div class="row">
+                        COMMENTING SYSTEM HERE
+                    </div>
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+                <!--Category: {{category}}-->
+
+                <!--Category Group: {{category_group}}-->
+
+                <!--Distance From User: {{distanceFromUser}}-->
+
+                <!--Exernal URL: {{external_url}}-->
+
+                <!--Images: {{images}}-->
+
+                <!--Source: {{source}}-->
+            </div>
+
+        </div>
+    </div>
 </div>

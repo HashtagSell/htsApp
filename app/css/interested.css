@@ -21,25 +21,25 @@ li.label-list:hover span.delete-label{
 
 
 .custom-table-header {
-    position: fixed;
-    width: 100%;
-    background-color: #f4f4f4;
-    border-bottom: 1px solid #dddddd;
-    z-index: 1;
-    margin-bottom: 0px;
+    /*position: fixed;*/
+    /*width: 100%;*/
+    /*background-color: #f4f4f4;*/
+    /*border-bottom: 1px solid #dddddd;*/
+    /*z-index: 1;*/
+    /*margin-bottom: 0px;*/
 }
 
 
 .table-big-nudge {
-    margin-top:80px;
-    position: absolute;
-    margin-bottom: 0px;
+    /*margin-top:80px;*/
+    /*position: absolute;*/
+    /*margin-bottom: 0px;*/
 }
 
 .table-nudge {
-    margin-top:44px;
-    position: absolute;
-    margin-bottom: 0px;
+    /*margin-top:44px;*/
+    /*position: absolute;*/
+    /*margin-bottom: 0px;*/
 }
 
 .ng-table-pager {

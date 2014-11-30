@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="css/results.css"/>
-<link rel="stylesheet" href="css/splash.css"/>
+
+<div ui-view></div>
 
 <div class="container-fluid">
     <div class="row affix" style="z-index: 4;">
@@ -24,36 +25,40 @@
             </span>
         </div>
     </div>
+    <!--isotope-item ng-click="openSplash(this)"-->
     <!-- ISOTOPECONTAINER -->
     <div class="row">
         <div class="affix col-lg-10 col-md-10 col-sm-9 col-xs-12 infiniteScrollContainer">
             <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent >
                 <div id="isotopeContainer" isotope-container ng-class="{'no-transition':loading}">
                     <div ng-repeat="result in results"
-                        isotope-item ng-click="openSplash(this)"
+                        isotope-item
+                        ng-click="openSplash(this)"
                         ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
-                        data-category="{{result.category}}"
-                        data-email="{{result.annotations.source_account}}"
-                        data-source="{{result.source}}"
-                        data-lat="{{result.location.lat}}"
-                        data-long="{{result.location.long}}"
-                        data-sourceUrl="{{result.external_url}}"
-                        data-postDate="{{result.annotations.original_posting_date}}"
+                        data-category="{{::result.category}}"
+                        data-email="{{::result.annotations.source_account}}"
+                        data-source="{{::result.source}}"
+                        data-lat="{{::result.location.lat}}"
+                        data-long="{{::result.location.long}}"
+                        data-sourceUrl="{{::result.external_url}}"
+                        data-postDate="{{::result.annotations.original_posting_date}}"
                             >
-                        <div class="thumbnail">
+                        <div class="thumbnail" style="cursor: pointer">
                             <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
-                            <ribbon data-price="{{result.price}}">{{result.price | currency}}</ribbon>
-                            <img ng-if="!!result.images.length" src="{{result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
+                            <ribbon data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
+                            <hts-fave-toggle></hts-fave-toggle>
+                            <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
                             <div ng-if="!result.images.length">No image found</div>
                             <div class="caption">
-                                <h4 class="heading">{{result.heading}}</h4>
-                                <p class="body">{{result.body}}</p>
-                                <p class="distance" data-distance="{{result.distanceFromUser}}"><i class="fa fa-location-arrow"></i>&nbsp;{{result.distanceFromUser | number:0}} mi.</p>
-                                <p data-postDate="{{result.annotations.original_posting_date}}"></p>
+                                <h4 class="heading">{{::result.heading}}</h4>
+                                <p class="body">{{::result.body}}</p>
+                                <p class="distance" data-distance="{{::result.distanceFromUser}}"><i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.</p>
+                                <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
                                 <p>
                                     <a href="#" class="btn btn-default" role="button">Place Offer</a>
                                     <a href="#" class="btn btn-default" role="button">I'm Interested</a>
                                 </p>
+                                <!--<span ng-click="">favorite</span>-->
                             </div>
                         </div>
                     </div>

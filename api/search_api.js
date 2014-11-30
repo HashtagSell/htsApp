@@ -65,7 +65,7 @@ exports.vendor = function(req, res){
 
                         result.location = JSON.parse(locationData);
 
-                        console.log(result.location);
+                        //console.log(result.location);
 
                         callback(null, res, req, result);
                     });

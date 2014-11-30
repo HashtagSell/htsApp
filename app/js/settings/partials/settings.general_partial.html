@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="css/settings.general.css"/>
+
+<div class="row">
+    <div class="col-lg-3 col-md-8 col-sm-8 col-xs-11">
+            <div>
+                <label>Safe Search:</label>
+                <select class="form-control" ng-model="safeSearch" ng-options="opt for opt in options.safeSearch" ng-change="setSafeSearch(safeSearch)"></select>
+                <i ng-show="safeSearchUpdated" class="fa fa-check-circle fa-2x safeSearch-checkmark"></i>
+            </div>
+
+            <div>
+                <label>Default Email:</label>
+                <select class="form-control" ng-model="defaultEmail" ng-options="opt for opt in options.defaultEmail" ng-change="setDefaultEmail(defaultEmail)"></select>
+                <i ng-show="defaultEmailUpdated" class="fa fa-check-circle fa-2x defaultEmail-checkmark"></i>
+            </div>
+
+            <div>
+                <label>Location:</label>
+                <select class="form-control" ng-model="location" ng-options="opt for opt in options.location" ng-change="setLocation(location)"></select>
+                <i ng-show="locationUpdated" class="fa fa-check-circle fa-2x location-checkmark"></i>
+            </div>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', '$location', '$state', 'splash.factory', function($scope, $timeout, searchFactory, $location, $state, splashFactory){
+htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', 'favesFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory, favesFactory){
 
     $scope.imgLoadedEvents = {
 
@@ -20,24 +20,11 @@ htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', 
 
     };
 
-
-    $scope.openSplash = function(elems) {
-
-        console.log('all elems copied into splash.factory');
-        splashFactory.annotations = elems.result.annotations;
-        splashFactory.body = elems.result.body;
-        splashFactory.category = elems.result.category;
-        splashFactory.category_group = elems.result.category_group;
-        splashFactory.distanceFromUser = elems.result.distanceFromUser;
-        splashFactory.external_id = elems.result.external_id;
-        splashFactory.external_url = elems.result.external_url;
-        splashFactory.heading = elems.result.heading;
-        splashFactory.images = elems.result.images;
-        splashFactory.location = elems.result.location;
-        splashFactory.price = elems.result.price;
-        splashFactory.source = elems.result.source;
-
-        $state.go('results.splash');
+    //passes properties associated with clicked DOM element to splashFactory for detailed view
+    $scope.openSplash = function(elems){
+        splashFactory.result = elems.result;
+        console.log(splashFactory.result);
+        $state.go('results.splash', { id: elems.result.external_id });
     };
 
     $scope.rangeSlider = {
@@ -47,10 +34,12 @@ htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', 
         rangeValue : [2,20]
     };
 
+    //Adds $ before the price slider values
     $scope.myFormater = function(value) {
         return "$"+value;
     };
 
+    //Tracks state of map visible or not
     $scope.showMap = 0;
 
     $scope.reLayout = function(){
@@ -60,8 +49,10 @@ htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', 
 
     };
 
+    //Tracks state of grid visible or not
     $scope.gridView = true;
 
+    //Tracks state of page if items are currently being loaded into view
     $scope.loading = false;
 
     $scope.results = [];
@@ -86,15 +77,33 @@ htsApp.controller('results.controller', ['$scope', '$timeout', 'searchFactory', 
 
                 $scope.results = $scope.results.concat(response.data.merged.postings);
 
+                if(response.data.merged.next_page == 0){ //If next_page equal to zero then we have no more results to display
+
+                    //TODO: Use modal service to notify users
+                    alert("no more results");
+
+                    $scope.noMoreResults = true;
+
+                    alert("No more results.");
+
+                    //dialogs.notify('Something Happened!','Something happened that I need to tell you.');
+
+                }
+
             }
 
             $timeout(function(){
-                $scope.loading = false;
+                if(!$scope.noMoreResults) {
+                    $scope.loading = false;
+                }
             }, 1000);
 
 
         }, function () {
 
+            console.log(response);
+
+            //TODO: Use modal service to notify users
             alert("search error");
 
         });
@@ -120,6 +129,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var search_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/search?q=" + $stateParams.q;
 
+        //TODO: Check if next_page param equal to 0.  this indicates no more results.
+
         if(factory.queryParams.anchor) {
             search_api += "&anchor=" + factory.queryParams.anchor + "&next_page=" + factory.queryParams.next_page + "&next_tier=" + factory.queryParams.next_tier;
         }
@@ -130,14 +141,15 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
             then(function (response, status, headers, config) {
 
                 console.log(response);
-                factory.queryParams.anchor = response.data.merged.anchor;
-                factory.queryParams.next_page = response.data.merged.next_page;
-                factory.queryParams.next_tier = response.data.merged.next_tier;
 
-                deferred.resolve(response);
+                    factory.queryParams.anchor = response.data.merged.anchor;
+                    factory.queryParams.next_page = response.data.merged.next_page;
+                    factory.queryParams.next_tier = response.data.merged.next_tier;
+
+                    deferred.resolve(response);
+
             },
             function (response, status, headers, config) {
-
 
                 deferred.reject(response);
             });
@@ -147,3 +159,30 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
     return factory;
 }]);
+
+
+htsApp.directive('htsFaveToggle', function(){
+    return {
+        restrict: 'E',
+        template: '<button type="button" ng-click="toggleFave(result); $event.stopPropagation();" class="btn btn-default" ng-class="{starHighlighted: favorited, star: !favorited}"><i class="fa fa-star"></i></button>',
+        controller: ['$scope', '$element', 'favesFactory', function ($scope, $element, favesFactory) {
+
+            favesFactory.checkFave($scope.result, function (response) {
+                $scope.favorited = response;
+                console.log("done checking");
+            });
+
+            $scope.toggleFave = function (item) {
+                if (!$scope.favorited) { //If not already favorited
+                    favesFactory.addFave(item, function () {  //Add the favorite and flag as done
+                        $scope.favorited = !$scope.favorited;
+                    });
+                } else { //toggle off favorite
+                    favesFactory.removeFave(item, function () {
+                        $scope.favorited = !$scope.favorited;
+                    });
+                }
+            };
+        }]
+    };
+});
