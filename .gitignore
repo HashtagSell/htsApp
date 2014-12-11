@@ -34,9 +34,12 @@ node_modules
 .lock-wscript
 
 # Installed during deployment
-# Modified librarys shoudl be saved in other directory and versioned
+# Modified librarys should be saved in other directory and versioned
 bower_components
 
 # Old Modules before angular implementation these only used for reference
 angular-modules
+
+# uploads folder temporarily stores photo uploads
+uploads
 
