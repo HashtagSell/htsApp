@@ -20,6 +20,11 @@ li.label-list:hover span.delete-label{
 }
 
 
+.labels-input {
+    margin: 0px 15px 0px 15px;
+}
+
+
 .custom-table-header {
     /*position: fixed;*/
     /*width: 100%;*/

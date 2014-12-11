@@ -191,7 +191,7 @@ exports.upload = function(req, res) {
             easyimg.info(path).then(
                 function(image) {
                     console.log(image);
-                    if(image.width > 253){  //If larger than 253 px wide then create thumnail
+                    if(image.width > 253){  //If larger than 253 px wide then create thumbnail
                         var thumb_name = 'thumb_' + name;
                         var thumb_path = 'uploads/' + thumb_name;
                         var thumb_url = "http://images.hashtagsell.com/" + thumb_name;

@@ -89,7 +89,7 @@ exports.forgotPassword = function(req, res){
                 {
                     user:{
                         name: user.user_settings.name,
-                        activation: "http://"+req.headers.host+"/#/reset/"+user.local.resetPasswordToken,
+                        activation: "http://"+req.headers.host+"/#/reset/"+user.local.resetPasswordToken+"/",
                         email: email
                     },
                     images:{
@@ -138,52 +138,119 @@ exports.forgotPassword = function(req, res){
 
 exports.reset = function(req, res){
 
-    var token = req.body.token;
-    var password = req.body.password
-
-    User.findOne({ 'local.resetPasswordToken': token }, function (err, user) {
-
-        // if there are any errors, return the error before anything else
-        console.log(user);
-
-        if (err) {
-            console.log(err);
-            return res.json(
-                {
-                    error: err
-                }
-            )
-
-            // if no user is found, return the message
-        } else if (!user) {
-            return res.json(
-                {
-                    error: "no user found with that email/token"
-                }
-            )
 
 
-        } else if (user){
+    if(req.body.token && req.body.password) {  //user forgot their password and is recovering via email
 
-            user.local.resetPasswordExpires = undefined;
-            user.local.resetPasswordToken = undefined;
-            user.local.password = user.generateHash(password);
+        var token = req.body.token;
+        var password = req.body.password;
+
+        User.findOne({'local.resetPasswordToken': token}, function (err, user) {
+
+            // if there are any errors, return the error before anything else
+            console.log(user);
+
+            if (err) {
+                console.log(err);
+                return res.json(
+                    {
+                        error: err
+                    }
+                )
+
+                // if no user is found, return the message
+            } else if (!user) {
+                return res.json(
+                    {
+                        error: "No user found with that email/token."
+                    }
+                )
 
 
-            user.save(function(err) {
-                if (err) {
-                    throw err;
+            } else if (user) {
+
+                user.local.resetPasswordExpires = undefined;
+                user.local.resetPasswordToken = undefined;
+                user.local.password = user.generateHash(password);
+
+
+                user.save(function (err) {
+                    if (err) {
+                        throw err;
+                    } else {
+                        return res.json(
+                            {
+                                success: true
+                            }
+                        )
+
+                    }
+                });
+            }
+        });
+    } else if (req.body.currentPassword && req.body.newPassword) {  // User is updating their password from user settings.
+
+        var email = req.user.local.email;
+        var currentPassword = req.body.currentPassword;
+        var newPassword = req.body.newPassword;
+
+        User.findOne({'local.email': email}, function (err, user) {
+
+            // if there are any errors, return the error before anything else
+            console.log(user);
+
+            if (err) {
+                console.log(err);
+                return res.json(
+                    {
+                        error: err
+                    }
+                );
+
+                // if no user is found, return the message
+            } else if (!user) {
+                return res.json(
+                    {
+                        error: "Couldn't find user.  Please contact support."
+                    }
+                );
+
+
+            } else if (user) { //found user with email.  check if current passwords match.
+
+                if(user.validPassword(currentPassword)){
+
+                    user.local.password = user.generateHash(newPassword);
+
+
+                    user.save(function (err) {
+                        if (err) {
+                            throw err;
+                        } else {
+                            return res.json(
+                                {
+                                    success: true
+                                }
+                            );
+
+                        }
+                    });
+
+
+
                 } else {
+
                     return res.json(
                         {
-                            success: true
+                            error: "Current password incorrect."
                         }
-                    )
-
+                    );
                 }
-            });
-        }
-    });
+            }
+        });
+
+
+    }
 };
 
 

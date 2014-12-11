@@ -87,14 +87,14 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                 if ($scope.numImages) {
                     $scope.dropzoneConfig.init();
                 } else {
-                    $scope.publishPost()
+                    $scope.publishPost();
                 }
             };
 
 
             $scope.publishPost = function () {
                 console.log($scope.jsonObj);
-                alert("publishing post");
+                alert("Publishing post.  THis ");
                 var newPost = $scope.jsonObj;
 
                 //loop through the hashtags and formulat the heading of post

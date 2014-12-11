@@ -24,7 +24,7 @@
 
 </head>
 
-<body class="ng-cloak" ng-controller="mainController">
+<body class="ng-cloak">
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="navbar-inner">
             <div class="container-fluid">
@@ -38,7 +38,7 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" ng-model="query">
                                         <span class="input-group-btn">
-                                            <button type="submit" class="btn btn-default" type="button">
+                                            <button type="submit" class="btn btn-danger" type="button">
                                                 <span class="glyphicon glyphicon-search"></span>
                                             </button>
                                         </span>
@@ -50,18 +50,18 @@
                             <!--<a ng-click="newPost()">#Sell It</a>-->
                             <button type="button" class="btn btn-danger" ng-click="newPost()">#Sell it!</button>
                         </li>
-                        <li class="dropdown col-lg-1 col-md-1 col-sm-1 col-xs-1" on-toggle="toggled(open)" ng-controller="userMenuController">
+                        <li class="dropdown col-lg-1 col-md-1 col-sm-1 col-xs-1" on-toggle="toggled(open)" ng-controller="userMenu">
                             <a href class="dropdown-toggle">
-                                <img class='img-circle' ng-src={{img.profilePhoto}} width="30px;"/>
+                                <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="30px;"/>
                             </a>
-                            <ul class="dropdown-menu" ng-if="!loggedIn()" ng-cloak ng-controller="authModals">
+                            <ul class="dropdown-menu" ng-if="!userObj.user_settings.loggedIn" ng-cloak>
                                 <li><a href ng-click="signIn()">Sign In</a></li>
                                 <li><a href ng-click="signUp()">New Account</a></li>
                             </ul>
-                            <ul class="dropdown-menu" ng-if="loggedIn()" ng-cloak>
+                            <ul class="dropdown-menu" ng-if="userObj.user_settings.loggedIn" ng-cloak>
                                 <li><a ui-sref="settings.general">User Settings</a></li>
                                 <li class="divider"></li>
-                                <li><a href="#" ng-click="clearStorage()">Logout</a></li>
+                                <li><a href="#" ng-click="logout()">Logout</a></li>
                             </ul>
                         </li>
                     <ul>
@@ -76,7 +76,8 @@
             <div class="col-lg-2 col-md-2 col-sm-3 hidden-xs bs-profile-nav">
                 <div ng-controller="sideProfile" class="profile">
                     <a ui-sref="profile" class="profileCircle">
-                        <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
+                        <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="70px;"/>
+                        <span ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</span>
                     </a>
                 </div>
                 <div ng-controller="newPostController" class="sellButton">
@@ -122,18 +123,16 @@
 
     <script type="text/javascript" src="htsApp.js"></script>
     <script type="text/javascript" src="config.js"></script>
-    <script type="text/javascript" src="/js/shellPage/controllers/main.js"></script>
-    <script type="text/javascript" src="/js/userMenu/controllers/userMenu.js"></script>
+    <script type="text/javascript" src="/js/userMenu/controllers/userMenu.controller.userMenu.js"></script>
     <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
     <script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>
-    <script type="text/javascript" src="/js/authentication/services/session.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/authModals.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/signIn.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/signUp.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/forgotPassword.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/changePassword.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/changePasswordModalCtrl.js"></script>
-    <script type="text/javascript" src="/js/authentication/controllers/checkEmailCtrl.js"></script>
+    <script type="text/javascript" src="/js/session/services/session.js"></script>
+    <script type="text/javascript" src="/js/authModals/factories/authModal.factory.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/signInModal/controllers/signIn.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/signUpModal/controllers/signUp.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/forgotPasswordModal/controllers/forgotPassword.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/checkEmailModal/controllers/checkEmailCtrl.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/updatePasswordModal/controllers/updatePassword.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/services/geolocationService.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/factories/updatePlaceholder.js"></script>
@@ -144,11 +143,12 @@
     <script type="text/javascript" src="/js/results/controllers/results.controller.js"></script>
     <script type="text/javascript" src="/js/interested/controllers/interestedController.js"></script>
     <script type="text/javascript" src="/js/interested/factories/interested.factory.js"></script>
+    <script type="text/javascript" src="/js/interested/directives/interested.htsfavetoggle.js"></script>
     <script type="text/javascript" src="/js/splash/controllers/splash.controller.js"></script>
     <script type="text/javascript" src="/js/splash/factories/splash.factory.js"></script>
-    <script type="text/javascript" src="/js/settings/controllers/settings.general.controller.js"></script>
-    <script type="text/javascript" src="/js/settings/controllers/settings.profile.controller.js"></script>
-    <script type="text/javascript" src="/js/settings/controllers/settings.payment.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/general/controllers/settings.general.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/profile/controllers/settings.profile.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/payment/controllers/settings.payment.controller.js"></script>
 
 </body>
 </html>

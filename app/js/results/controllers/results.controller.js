@@ -1,4 +1,4 @@
-htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', 'favesFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory, favesFactory){
+htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory){
 
     $scope.imgLoadedEvents = {
 
@@ -159,30 +159,3 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
     return factory;
 }]);
-
-
-htsApp.directive('htsFaveToggle', function(){
-    return {
-        restrict: 'E',
-        template: '<button type="button" ng-click="toggleFave(result); $event.stopPropagation();" class="btn btn-default" ng-class="{starHighlighted: favorited, star: !favorited}"><i class="fa fa-star"></i></button>',
-        controller: ['$scope', '$element', 'favesFactory', function ($scope, $element, favesFactory) {
-
-            favesFactory.checkFave($scope.result, function (response) {
-                $scope.favorited = response;
-                console.log("done checking");
-            });
-
-            $scope.toggleFave = function (item) {
-                if (!$scope.favorited) { //If not already favorited
-                    favesFactory.addFave(item, function () {  //Add the favorite and flag as done
-                        $scope.favorited = !$scope.favorited;
-                    });
-                } else { //toggle off favorite
-                    favesFactory.removeFave(item, function () {
-                        $scope.favorited = !$scope.favorited;
-                    });
-                }
-            };
-        }]
-    };
-});

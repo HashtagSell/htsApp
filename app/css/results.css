@@ -179,7 +179,7 @@ ribbon:before{
 
 .starHighlighted {
     position: absolute;
-    color: red;
+    color: red !important;
     right: 20px;
     top: 5px;
 }

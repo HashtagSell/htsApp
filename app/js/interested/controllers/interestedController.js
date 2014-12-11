@@ -1,9 +1,29 @@
 /**
  * Created by braddavis on 10/29/14.
  */
-htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', function($scope, $window, favesFactory, splashFactory, $state) {
-    //This value evaluated in results.ejs to toggle show/hide favorites class
-    $scope.showFaves = favesFactory.uiToggleStatus;
+htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', function($scope, $window, favesFactory, splashFactory, $state, ngTableParams, $filter, Session) {
+
+    $scope.currentFaves = Session.userObj.user_settings.favorites;
+
+    favesFactory.tableParams = new ngTableParams({
+        page: 1,            // show first page
+        count: 2000, // include all favorites on page one
+        filter: {},         // initial filter
+        sorting: {}         // initial sort
+    }, {
+        counts: [], //hides page sizes
+        total: $scope.currentFaves.length, // length of data
+        getData: function($defer, params) {
+            // use build-in angular filter
+            var filteredData = $filter('filter')($scope.currentFaves, favesFactory.filterString);
+            var orderedData = params.sorting() ?
+                $filter('orderBy')(filteredData, params.orderBy()) :
+                filteredData;
+
+            params.total(orderedData.length); // set total for recalc pagination
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+    });
 
     //Sets up ng-table params
     $scope.tableParams = favesFactory.tableParams;
@@ -24,12 +44,12 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     // watch for data checkboxes
     $scope.$watch('checkboxes.items', function(values) {
-        if (!favesFactory.currentFavorites) {
+        if (!$scope.currentFaves) {
             return;
         }
         var checked = 0, unchecked = 0;
-        totalFaves = favesFactory.currentFavorites.length;
-        angular.forEach(favesFactory.currentFavorites, function(favorite) {
+        totalFaves = $scope.currentFaves.length;
+        angular.forEach($scope.currentFaves, function(favorite) {
             checked   +=  ($scope.checkboxes.items[favorite.external_id]) || 0;
             unchecked += (!$scope.checkboxes.items[favorite.external_id]) || 0;
         });
@@ -49,7 +69,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     // watch for master checkbox
     $scope.$watch('checkboxes.masterCheck', function(value) {
-        angular.forEach(favesFactory.currentFavorites, function(favorite) {
+        angular.forEach($scope.currentFaves, function(favorite) {
             if (angular.isDefined(favorite.external_id)) {
                 $scope.checkboxes.items[favorite.external_id] = value;
             }
@@ -117,27 +137,40 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
         template: "<span class='dropdown'>"+
         "<i class='fa fa-tags dropdown-toggle' ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
         "<ul class='dropdown-menu'>"+
-        "<input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
-        "<li ng-repeat='label in userlabels | filter:query' class='label-list'><a ng-click='setSelectedItem()'><span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}<span ng-class='isChecked(label.name)'><span/></a></li>" +
-        "<li><a dropdown-toggle ng-click='createNewLabel(query)' ng-show='ifQueryUnique(query)'>{{query}} (create new)</a></li>" +
-        "<li><a dropdown-toggle ng-click='applyChanges()' ng-show='updatesNecessary'>Apply</a></li>" +
+        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
+        "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
+        "       <a ng-click='setSelectedItem()'>" +
+        "           <span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}" +
+        "           <span ng-class='isChecked(label.name)'><span/>" +
+        "       </a>" +
+        "   </li>" +
+        "   <li>" +
+        "       <a dropdown-toggle ng-click='createNewLabel(query)' ng-show='ifQueryUnique(query)'>{{query}} (create new)</a>" +
+        "   </li>" +
+        "   <li>" +
+        "       <a dropdown-toggle ng-click='applyChanges()' ng-show='updatesNecessary'>Apply</a>" +
+        "   </li>" +
         "</ul>" +
         "</span>" ,
-        controller: ['$scope', 'favesFactory', function($scope, favesFactory){
+        controller: ['$scope', 'favesFactory', 'Session', function($scope, favesFactory, Session){
+
+            $scope.currentFaves = Session.userObj.user_settings.favorites;
 
             $scope.openDropdown = function(){
 
                 $scope.selectedlabels = [];
                 $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
 
-                var currentFavorites = favesFactory.currentFavorites;
+                console.log($scope);
+
+                var currentFavorites = $scope.currentFaves;
 
                 angular.forEach($scope.selectedfaves, function(selected, id) {
                     if(selected) {  //Make sure the item is checked
                         for(i=0; i<currentFavorites.length; i++){
                             if(currentFavorites[i].external_id == id && currentFavorites[i].labels){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
 
-                                for(j=0; j<currentFavorites[i].labels.length; j++){
+                                for(j=0; j<currentFavorites[i].labels.length; j++){ //Loop though all the labels applied to the selected favorite
                                     var discoveredLabel = currentFavorites[i].labels[j];
                                     if (!_.contains($scope.selectedlabels, discoveredLabel)) {
                                         $scope.selectedlabels.push(discoveredLabel);
@@ -168,7 +201,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
             $scope.createNewLabel = function(newLabel){
                 var newLabelObj = {name : newLabel};  //formalize the new label
 //                $scope.selectedlabels = []; //Uncheck all the selected labels so that only the new one is applied.
-                favesFactory.addFavoriteLabel(newLabelObj); //hand new lable to faves factory for processing
+                favesFactory.addFavoriteLabel(newLabelObj); //hand new label to faves factory for processing
                 $scope.userlabels = favesFactory.getUserLabels(); //get the update user labels TODO: Need a callback here
                 $scope.setSelectedItem(newLabelObj.name);  //pass the name of the new label to get applied to selected favorites
                 $scope.applyChanges(); //
@@ -192,19 +225,25 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
 
             //Adds or removes label from each selected favorite
             $scope.applyChanges = function(){
-                var currentFavorites = favesFactory.currentFavorites; //get all the users favorited items
+                var currentFavorites = $scope.currentFaves; //get all the users favorited items
+
+                console.log('looping thought selected faves', $scope.selectedfaves);
 
                 angular.forEach($scope.selectedfaves, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
                     if(selectedStatus) {  //Make sure the favorite is checked
+                        console.log('this item selected', selectedStatus, id);
                         for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
                             if(currentFavorites[i].external_id == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                                console.log(currentFavorites[i].external_id, id);
                                 currentFavorites[i].labels = $scope.selectedlabels;  //Applies all the checked user labels to the favorite TODO: We should not overwrite all the labels but instead add or remove them
-                                favesFactory.updateFave(currentFavorites[i]); //pass each favorite to faves factory to update the server TODO: Send multiple favorites at once to create less database traffic
-                                //TODO:Select all should only select items on screen.  Not items hidden from filter
                             }
                         }
                     }
                 });
+
+                favesFactory.updateFavorites(currentFavorites);
+                //TODO:Select all should only select items on screen.  Not items hidden from filter
+
                 $scope.selectedfaves = {}; //uncheck all the selected favorites from the view
                 $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
             };
@@ -227,7 +266,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
             //toggles checkmark next to user label
             $scope.isChecked = function (labelname) {
                 if (_.contains($scope.selectedlabels, labelname)) { //check if toggle label is already in list of selected labels
-                    return 'icon-ok pull-right';
+                    return 'fa fa-check pull-right';
                 }
                 return false;
             };

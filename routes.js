@@ -6,6 +6,10 @@ module.exports = function(app, passport) {
     var search = require('./api/search_api'); //Proxy between HTS and 3TAPS
     app.get('/search', search.vendor);
 
+
+    // =====================================
+    // ========= SEARCH PROXY (RETIRE SOON) USED WHEN USER CREATES NEW POST ==============
+    // =====================================
     var search_old = require('./api/search_api_old'); //Proxy between HTS and 3TAPS
     app.get('/search_old', search_old.vendor);
 
@@ -60,7 +64,13 @@ module.exports = function(app, passport) {
     // Photo Upload ======================
     // =====================================
     app.post('/upload', isLoggedIn, function(req, res) {
-        posting_api.upload(req, res);
+
+        if (req.files.profilePhoto) { // based on param the user is updating profile photo
+            console.log(req.files);
+            console.log("we are updating profile photo");
+        } else { // user is uploading photos appended to post
+            posting_api.upload(req, res);
+        }
     });
 
 
@@ -69,7 +79,7 @@ module.exports = function(app, passport) {
     // LOGIN ===============================
     // =====================================
     app.post('/login', function(req, res) {
-        passport.authenticate('local-login', function(err, user, msg) {
+        passport.authenticate('local-login', function (err, user, msg) {
             if (err)   {
                 return res.json({ error: err.message });
             }
@@ -78,7 +88,7 @@ module.exports = function(app, passport) {
             }
             req.login(user, {}, function(err) {
                 if (err) {
-                    console.log("error occurred during passport login")
+                    console.log("error occurred during passport login");
                     return res.json({error : err});
                 }
                 return res.json(

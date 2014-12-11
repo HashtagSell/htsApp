@@ -33,6 +33,7 @@
                     <div ng-controller="sideProfile" class="profile">
                         <a ui-sref="profile" class="profileCircle">
                             <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
+                            <span ng-show="user.name"> @{{user.name}}</span>
                         </a>
                     </div>
                     <div ng-controller="newPostController" class="sellButton">

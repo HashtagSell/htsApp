@@ -3,7 +3,6 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
 
     var factory = {};
 
-
     // =====================================
     // LOGIN ===============================
     // =====================================
@@ -103,6 +102,35 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
         var deferred = $q.defer();
 
         $http.post('/reset', { "password": password, "token": token})
+
+            .then(function (passportResponse) {
+
+                if (passportResponse.data) {
+
+                    deferred.resolve(passportResponse.data);
+
+                }
+            },            //error
+            function (data, status, headers, config) {
+                deferred.reject();
+
+            });
+
+        return deferred.promise;
+
+    };
+
+
+
+
+    // =====================================
+    // UPDATE PASSWORD WHILE LOGGED IN =====
+    // =====================================
+    factory.updatePassword = function (currentPassword, newPassword) {
+
+        var deferred = $q.defer();
+
+        $http.post('/reset', { "currentPassword": currentPassword, "newPassword": newPassword})
 
             .then(function (passportResponse) {
 

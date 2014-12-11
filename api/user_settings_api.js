@@ -7,6 +7,8 @@ exports.push = function(req, res) {
 
     var updatedUserSettings = req.body.userSettings;
 
+    console.log(updatedUserSettings);
+
     //Search our users collection by the username and update their user_settings object
     User.findOne({ 'user_settings.name': updatedUserSettings.name }, function (err, user) {
 
@@ -18,7 +20,7 @@ exports.push = function(req, res) {
             // if no user is found, then this is a bad activation id
         } else if (!user) {
 
-            console.log("not a real id");
+            console.log("Server could not find user to update");
             res.json({error : "user name not found"});
 
 

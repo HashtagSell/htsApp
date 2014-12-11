@@ -5,6 +5,8 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     var factory = {};
 
+    console.log(Session.userObj);
+
     //DEFAULT MENU
     factory.defaultMenu = [{
         name: "My Feed",
@@ -16,7 +18,7 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
         link: "selling"
     }, {
         name: "I'm Interested",
-        alerts: Session.getSessionValue('favorites').length,
+        alerts: Session.userObj.user_settings.favorites.length,
         link: "interested"
     }, {
         name: "Notifications",
@@ -30,11 +32,11 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     //SPLASH SCREEN MENU
     factory.splashMenu = [{
-        name: "Submit Offer",
+        name: "Make an Offer",
         alerts: null,
         link: "selling"
     }, {
-        name: "Favorite",
+        name: "I'm Interested",
         alerts: null,
         link: "interested"
     }, {
@@ -62,7 +64,8 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
     }];
 
 
-    factory.updateState = function (toState) {
+    //This function called by ui-router as moves through application.  Updates choice in side nav dynamically.
+    factory.updateSideNav = function (toState) {
 
         console.log(toState.name);
 

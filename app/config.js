@@ -5,34 +5,19 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
     //function assigned to routes that can only be accessed when user logged in
-    var loginRequired = ['$q', '$location', '$modal', '$log', 'Session', function($q, $location, $modal, $log, Session) {
+    var loginRequired = ['$q', '$location', 'Session', 'authModalFactory', function ($q, $location, Session, authModalFactory) {
         var deferred = $q.defer();
 
-        if(! Session.getLoginStatus()) {
+        if (!Session.userObj.user_settings.loggedIn) {
             deferred.reject();
             $location.path('/');
 
 
-            var modalInstance = $modal.open({
-                templateUrl: 'js/authentication/partials/signIn.html',
-                controller: 'signInModalController'
-            });
-
-            modalInstance.result.then(function (reason) {
-
-            }, function (reason) {
-                console.log(reason);
-                if(reason == "signUp"){
-//                    $scope.signUp();
-                } else if (reason == "forgot"){
-//                    $scope.forgotPassword();
-                }
-                $log.info('Modal dismissed at: ' + new Date());
-            });
+            authModalFactory.signInModal();
 
 
         } else {
-            deferred.resolve()
+            deferred.resolve();
         }
 
         return deferred.promise;
@@ -49,7 +34,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('profile', {
             url: "/profile",
-            template: "My Profile"
+            template: "My Profile",
+            resolve: { loginRequired: loginRequired }
         }).
         state('feed', {
             url: "/feed",
@@ -78,24 +64,24 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('settings', {
             url: "/settings",
-            templateUrl: "js/settings/partials/settings_partial.html",
+            template: "<div ui-view></div>",
             resolve: { loginRequired: loginRequired }
         }).
         state('settings.general', {
             url: "/general",
-            templateUrl: "js/settings/partials/settings.general_partial.html",
+            templateUrl: "js/settings/general/partials/settings.general_partial.html",
             controller: "settings.general.controller",
             resolve: { loginRequired: loginRequired }
         }).
         state('settings.profile', {
             url: "/profile",
-            templateUrl: "js/settings/partials/settings.profile_partial.html",
+            templateUrl: "js/settings/profile/partials/settings.profile_partial.html",
             controller: "settings.profile.controller",
             resolve: { loginRequired: loginRequired }
         }).
         state('settings.payment', {
             url: "/payment",
-            templateUrl: "js/settings/partials/settings.payment_partial.html",
+            templateUrl: "js/settings/payment/partials/settings.payment_partial.html",
             controller: "settings.payment.controller",
             resolve: { loginRequired: loginRequired }
         }).
@@ -106,8 +92,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('results.splash', {
             url: ":id",
-            controller: 'splashController',
-            resolve: { loginRequired: loginRequired }
+            controller: 'splashController'
         }).
         state('reset', {
             url: '/reset/:uid/',
@@ -127,7 +112,7 @@ htsApp.run(['$rootScope', 'sideNavFactory', function ($rootScope, sideNavFactory
 
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
             //console.log(event, toState, toParams, fromState, fromParams);
-            sideNavFactory.updateState(toState);
+            sideNavFactory.updateSideNav(toState);
 
         }
     )

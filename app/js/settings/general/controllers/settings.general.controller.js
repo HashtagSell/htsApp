@@ -13,8 +13,8 @@ htsApp.controller('settings.general.controller', ['$scope', '$timeout', 'Session
 
 
     $scope.getSafeSearch = function(){
-        var value = Session.getSessionValue('safe_search');
-        if (value){
+        //var value = Session.getSessionValue('safe_search');
+        if (Session.userObj.user_settings.safe_search){
             return $scope.options.safeSearch[0];
         } else {
             return $scope.options.safeSearch[1];
@@ -47,8 +47,8 @@ htsApp.controller('settings.general.controller', ['$scope', '$timeout', 'Session
 
 
     $scope.getDefaultEmail = function(){
-        var value = Session.getSessionValue('email_provider');
-        switch (value) {
+        //var value = Session.getSessionValue('email_provider');
+        switch (Session.userObj.user_settings.email_provider) {
             case 'Ask':
                 return $scope.options.defaultEmail[0];
             case 'Gmail':
@@ -79,8 +79,8 @@ htsApp.controller('settings.general.controller', ['$scope', '$timeout', 'Session
 
 
     $scope.getLocation = function(){
-        var value = Session.getSessionValue('location_type');
-        switch (value) {
+        //var value = Session.getSessionValue('location_type');
+        switch (Session.userObj.user_settings.location_type) {
             case 'Approximate':
                 return $scope.options.location[0];
             case 'Exact':
