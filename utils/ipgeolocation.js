@@ -2,15 +2,25 @@ var request = require("request");
 
 exports.lookup = function(ip, promise){
 
-    if(ip == "127.0.0.1"){
+    var isPrivateOrLocalIP = function (ip) {
+        var parts = ip.split('.');
+        if (parts[0] === '10' ||
+            (parts[0] === '172' && (parseInt(parts[1], 10) >= 16 && parseInt(parts[1], 10) <= 31)) ||
+            (parts[0] === '192' && parts[1] === 168)) {
+            return true;
+        } else if (ip === "127.0.0.1") {
+            return true;
+        }
+        return false;
+    };
+
+    if(isPrivateOrLocalIP(ip)){
         ip = "216.38.134.18";
     }
 
-    var service1 = "http://localhost:8080/json/"+ip;
+    var freeGeoIp = "http://localhost:8080/json/"+ip;
 
-    console.log(service1);
-
-    request(service1, function (error, response, body) {
+    request(freeGeoIp, function (error, response, body) {
 
         if (!error && response.statusCode == 200) {
 
