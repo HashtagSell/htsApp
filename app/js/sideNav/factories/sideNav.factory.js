@@ -9,7 +9,7 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     //DEFAULT MENU
     factory.defaultMenu = [{
-        name: "My Feed",
+        name: "My Feeds",
         alerts: null,
         link: "feed"
     }, {

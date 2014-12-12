@@ -3,11 +3,15 @@
  */
 htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session', '$templateCache', 'authModalFactory', function ($scope, $window, Session, $templateCache, authModalFactory) {
 
-    $scope.updatePassword = function () {
-
-        authModalFactory.updatePasswordModal();
-
+    $scope.bindingObj = {
+        currentlyUploadingProfilePhoto: false,
+        requireUpdate: true
     };
+
+    $scope.updatePassword = function () {
+        authModalFactory.updatePasswordModal();
+    };
+
 
     $scope.dropzoneConfig = {
         'options': { // passed into the Dropzone constructor
@@ -23,52 +27,25 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
             thumbnailHeight: 90,
             previewsContainer: "#preview",
             previewTemplate: $templateCache.get('profileUploadTemplate.tpl'),
-            clickable: ".initProfileImageUpload",
+            clickable: ".triggerProfileImageUpload",
             dictDefaultMessage: ''
         },
         'eventHandlers': {
-            'sendingmultiple': function (file, xhr, formData) {
-                console.log("sending for upload!");
-            },
-            'successmultiple': function (file, response) {
-
-                console.log(response);
-
-                var newPost = $scope.jsonObj;
-
-                newPost.images = response.images;
-
-                $scope.publishPost();
-
-            },
             'addedfile': function () {
-                console.log("image added");
+                console.log($scope);
+                $scope.$apply(function(){
+                    $scope.bindingObj.currentlyUploadingProfilePhoto = true;
+                });
+                console.log($scope);
             }
-        },
-        'init': {}
+        }
     };
 
 
-
-
-
-
-    $scope.saveButtonDisabled = true;
-
     $scope.userObj = Session.userObj;
 
-    if(!$scope.userObj.user_settings.profile_photo){
-        $scope.userObj.user_settings.profile_photo = "/images/userMenu/user-placeholder.png";
-    }
-
-    if(!$scope.userObj.user_settings.profile_header) {
-        $scope.userObj.user_settings.profile_header = "/images/userMenu/header-placeholder.gif";
-    }
-
-    console.log($scope.userObj);
-
     $scope.requireUpdate = function() {
-        $scope.saveButtonDisabled = false;
+        $scope.bindingObj.requireUpdate = false;
     };
 
 }]);

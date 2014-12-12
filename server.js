@@ -1,6 +1,6 @@
 var express  = require('express');
 var app      = express();
-var port     = (process.env.VCAP_APP_PORT || 8081);
+var port     = (process.env.PORT || 8081);
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -75,4 +75,4 @@ require('./routes.js')(app, passport); // load our routes and pass in our app an
 
 // launch ======================================================================
 app.listen(port);
-console.log('Go go gadget HashtagSell...Port: ' + port);
+console.log('HashtagSell | '+process.env.NODE_ENV+' ENV | PORT: ' + port);

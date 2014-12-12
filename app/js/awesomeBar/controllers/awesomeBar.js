@@ -1,4 +1,4 @@
-htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'Session', 'geolocationService', 'UpdatePlaceholder', function ($window, $scope, $location, Session, geolocationService, UpdatePlaceholder) {
+htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', function ($window, $scope, $location) {
 
 
 //    //This function will add the appropirate HTML into any div with the class .awesomeBar
@@ -62,7 +62,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'Se
 //        } else {
 //
 //        }
-    }
+    };
 
 }]);
 

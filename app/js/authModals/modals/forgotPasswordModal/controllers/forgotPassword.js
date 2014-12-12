@@ -18,7 +18,7 @@ htsApp.controller('forgotPasswordController', ['$scope', '$modalInstance', 'auth
 
             }, function () {
 
-                $scope.message = "Please contact support.  Sorry for the trouble"
+                $scope.message = "Please contact support.  Sorry for the trouble";
 
             });
         }

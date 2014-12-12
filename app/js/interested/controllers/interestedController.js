@@ -56,15 +56,15 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
         console.log("checked: ", checked, "unchecked: ", unchecked);
 
-        if ((unchecked == 0) && totalFaves != 0 || (checked == 0) && totalFaves != 0) {
+        if ((unchecked === 0) && totalFaves !== 0 || (checked === 0) && totalFaves !== 0) {
             $scope.checkboxes.masterCheck = (checked == totalFaves);
         }
-        if(checked == 0 || totalFaves == 0){
+        if(checked === 0 || totalFaves === 0){
             $scope.checkboxes.checked = false;
         } else {
             $scope.checkboxes.checked = true;
         }
-        angular.element(document.getElementById("select_all")).prop("indeterminate", (checked != 0 && unchecked != 0));
+        angular.element(document.getElementById("select_all")).prop("indeterminate", (checked !== 0 && unchecked !== 0));
     }, true);
 
     // watch for master checkbox
@@ -103,7 +103,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     $scope.UserLabels = favesFactory.getUserLabels(); //Gets all the users custom labels for the labels dropdown
     $scope.selected_labels = []; //Stores which labels are checked or not
-    $scope.preselected = {name : []}  //Labels that should be pre-checked when user drops down labels menu
+    $scope.preselected = {name : []};  //Labels that should be pre-checked when user drops down labels menu
 
     $scope.removeIndividualLabel = function($event){
         event.stopPropagation();
@@ -187,7 +187,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
             $scope.ifQueryUnique = function(query){
                 var unique = true; //by default the create label functionality is shown
                 if(!query){ //if the filter string is null
-                    unique = false //don't show create label
+                    unique = false; //don't show create label
                 } else { //the input field has a value
                     _.find($scope.userlabels, function (label) { //loop through the users labels
                         if(label.name == query){ //if the filter string matches a label name
@@ -271,5 +271,5 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
                 return false;
             };
         }]
-    }
+    };
 }]);

@@ -142,8 +142,8 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
 
         console.log(bccList);
 
-        if(bccList.length == 0){ //Inform the user none of the selected favorites have email address we can email
-            alert("These favorited items have no emails.")
+        if(bccList.length === 0){ //Inform the user none of the selected favorites have email address we can email
+            alert("These favorited items have no emails.");
         } else if (bccList.length == 1){ //Don't send to batchEmail function if we only have one email
             //quickComposeFactory.init(bccList[0]);
         } else {
@@ -166,7 +166,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
     favesFactory.removeFavoriteLabel = function(labelToRemove, callback){
 //        Session.removeFavoriteLabel(labelToRemove, callback);
 
-        var sessionObj = Session.userObj;; //Get entire session object
+        var sessionObj = Session.userObj; //Get entire session object
         sessionObj.user_settings.user_labels = _.without(sessionObj.user_settings.user_labels, _.findWhere(sessionObj.user_settings.user_labels, labelToRemove)); //find the user label and remove it from session object
 
 

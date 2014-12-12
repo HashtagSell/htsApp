@@ -77,16 +77,12 @@ htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout',
 
                 $scope.results = $scope.results.concat(response.data.merged.postings);
 
-                if(response.data.merged.next_page == 0){ //If next_page equal to zero then we have no more results to display
+                if(response.data.merged.next_page === 0){ //If next_page equal to zero then we have no more results to display
 
                     //TODO: Use modal service to notify users
-                    alert("no more results");
+                    alert("no more results...modal service soon");
 
                     $scope.noMoreResults = true;
-
-                    alert("No more results.");
-
-                    //dialogs.notify('Something Happened!','Something happened that I need to tell you.');
 
                 }
 

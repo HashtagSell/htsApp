@@ -1,13 +1,13 @@
 var request = require("request");
 var path = require('path');
+var common   = require('../config/common.js');
+var config   = common.config();
 
 
 exports.query = function(result, promise){
 
-
-
     var three_taps_api = "http://search.3taps.com";
-    var auth_token = "?auth_token=f2862071ede0bbd93bee4f091c522a9e";
+    var auth_token = "?auth_token="+config.THREE_TAPS_KEY;
     var heading = "&heading=" + result.query.q;
 
 

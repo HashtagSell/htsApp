@@ -68,14 +68,14 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                     'addedfile': function () {
                         console.log("image added");
                         if ($scope.numImages) {
-                            $scope.numImages + 1
+                            $scope.numImages = $scope.numImages+1;
                         } else {
                             $scope.numImages = 1;
                         }
                     },
                     'removedfile': function () {
                         console.log("image removed");
-                        $scope.numImages - 1;
+                        $scope.numImages = $scope.numImages - 1;
                     }
                 },
                 'init': {}
@@ -100,7 +100,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                 //loop through the hashtags and formulat the heading of post
                 newPost.heading = '';
                 for (i = 0; i < newPost.mentions.hashtags.length; i++) {
-                    if (!i == newPost.mentions.hashtags.length - 1) {
+                    if (i !== newPost.mentions.hashtags.length - 1) {
                         newPost.heading += newPost.mentions.hashtags[i].hashtag + " ";
                     } else {
                         newPost.heading += newPost.mentions.hashtags[i].hashtag;
@@ -112,7 +112,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                 $http.post('/newpost', newPost).
                     success(function (status) {
                         console.log("-----Post Complete----");
-                        console.log(status)
+                        console.log(status);
                     });
             };
 
@@ -281,7 +281,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                         //                $scope.products = products
                         //                return products;
                         //            });
-                    }
+                    };
 
 
                     factory.getProductMetaData = function (selectedProduct) {
@@ -350,12 +350,25 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                 var totalPrice = 0;
                                 var catHashTable = new Hashtable();
                                 var loopCounter = 0;
+                                var mostPopularCategory = null;
+
+                                var rankCategory = function (category) {
+
+                                    var currentCategoryCount = Math.abs(catHashTable.get(category));
+
+                                    console.log(category, " was found ", currentCategoryCount, "times");
+
+                                    if (currentCategoryCount > largest) {
+                                        largest = currentCategoryCount;
+                                        mostPopularCategory = category;
+                                    }
+                                };
 
                                 for (i = 0; i < factory.jsonTemplate.mentions.hashtags.length; i++) {
 
                                     console.log("HASHTAG IS: ", factory.jsonTemplate.mentions.hashtags[i].hashtag, "!!!!!!!!!!!");
 
-                                    var results = factory.jsonTemplate.mentions.hashtags[i].results;
+                                    results = factory.jsonTemplate.mentions.hashtags[i].results;
 
                                     if (results) {
 
@@ -365,7 +378,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
 
                                             var categoryCode = results[j].category;
 
-                                            loopCounter++
+                                            loopCounter++;
 
                                             //Tally how many times each category of items is returned
                                             if (catHashTable.containsKey(categoryCode)) {
@@ -393,18 +406,8 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                         console.log("Our avg weight for winning category is: ", avgWeight);
 
                                         var largest = 0;
-                                        var mostPopularCategory = null;
-                                        catHashTable.each(function (category) {
 
-                                            var currentCategoryCount = Math.abs(catHashTable.get(category));
-
-                                            console.log(category, " was found ", currentCategoryCount, "times");
-
-                                            if (currentCategoryCount > largest) {
-                                                largest = currentCategoryCount;
-                                                mostPopularCategory = category;
-                                            }
-                                        });
+                                        catHashTable.each(rankCategory(category));
 
                                         console.log("our most popular category is: ", mostPopularCategory);
                                         factory.jsonTemplate.category = mostPopularCategory;
@@ -423,27 +426,27 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
 
                                     console.log("ANNOTATION HASHTAG IS: ", factory.jsonTemplate.mentions.hashtags[j].hashtag, "!!!!!!!!!!!");
 
-                                    var results = factory.jsonTemplate.mentions.hashtags[j].results;
+                                    results = factory.jsonTemplate.mentions.hashtags[j].results;
 
                                     if (results) {
 
-                                        var numOfCategoryResults = results.length;
+                                        var numOfCategoryResultsAgain = results.length;
 
-                                        for (i = 0; i < numOfCategoryResults; i++) {
-                                            var categoryCode = results[i].category;
+                                        for (i = 0; i < numOfCategoryResultsAgain; i++) {
+                                            var categoryCodeAgain = results[i].category;
 
 
                                             //Tally how many times each category of items is returned
-                                            if (categoryCode == mostPopularCategory) {
+                                            if (categoryCodeAgain == mostPopularCategory) {
                                                 var annotationObj = results[i].annotations;
                                                 if (annotationObj) {
                                                     for (var key in annotationObj) {
                                                         if (annotationsDictionary.containsKey(key)) {
-                                                            annotationCount++
+                                                            annotationCount++;
                                                             if (annotationsHashTable.containsKey(key)) {
-                                                                var count = annotationsHashTable.get(key);
-                                                                var plusOne = count + 1;
-                                                                annotationsHashTable.put(key, plusOne);
+                                                                var countAgain = annotationsHashTable.get(key);
+                                                                var plusOneAgain = countAgain + 1;
+                                                                annotationsHashTable.put(key, plusOneAgain);
                                                             } else {
                                                                 annotationsHashTable.put(key, 1);
                                                             }
@@ -456,7 +459,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                                                 }
 
                                             } else {
-                                                console.log("omitting cause", categoryCode, "is not popular", mostPopularCategory);
+                                                console.log("omitting cause", categoryCodeAgain, "is not popular", mostPopularCategory);
                                             }
                                         }
                                     }
@@ -561,11 +564,16 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
 
                         var deferred = $q.defer();
 
+                        var city = null;
+                        var state = null;
+                        var country = null;
+                        var zipcode = null;
+
                         googleMaps.getDetails(request, function (placeMetaData, status) {
 
                             if (status != google.maps.places.PlacesServiceStatus.OK) {
-                                console.log(status)
-                                return
+                                console.log(status);
+                                return;
                             }
 
                             placeMetaData.description = selectedPlace.description;
@@ -578,40 +586,41 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
                             if (placeMetaData.formatted_address) {
                                 locationObj.formatted_address = placeMetaData.formatted_address;
                             }
-                            ;
+
 
 
                             if (placeMetaData.geometry.location.lat()) {
                                 locationObj.lat = placeMetaData.geometry.location.lat();
                                 locationObj.long = placeMetaData.geometry.location.lng();
                             }
-                            ;
+
 
 
                             if (placeMetaData.address_components) {
+
                                 for (var i = 0; i < placeMetaData.address_components.length; ++i) {
 
                                     //Get State
                                     if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
-                                        var state = placeMetaData.address_components[i].short_name;
+                                        state = placeMetaData.address_components[i].short_name;
                                         locationObj.state = state;
                                     }
 
                                     //Get City
                                     if (placeMetaData.address_components[i].types[0] == "locality") {
-                                        var city = placeMetaData.address_components[i].long_name;
+                                        city = placeMetaData.address_components[i].long_name;
                                         locationObj.short_name = city;
                                     }
 
                                     //Get Country
                                     if (placeMetaData.address_components[i].types[0] == "country") {
-                                        var country = placeMetaData.address_components[i].short_name;
+                                        country = placeMetaData.address_components[i].short_name;
                                         locationObj.country = country;
                                     }
 
                                     //Get Zipcode
                                     if (placeMetaData.address_components[i].types[0] == "postal_code") {
-                                        var zipcode = placeMetaData.address_components[i].short_name;
+                                        zipcode = placeMetaData.address_components[i].short_name;
                                         locationObj.zipcode = zipcode;
                                     }
 
@@ -708,7 +717,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
-    }
+    };
 }]);
 
 
@@ -754,9 +763,9 @@ htsApp.directive('dropzone', function () {
 
             config.init = function () {
                 dropzone.processQueue();
-            }
+            };
         }
-    }
+    };
 });
 
 
