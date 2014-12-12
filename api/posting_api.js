@@ -1,15 +1,16 @@
 var fs = require('fs');
 var AWS = require('aws-sdk');
-var accessKeyId =  process.env.AWS_ACCESS_KEY || "AKIAJEBBRHS2AU362L4Q";
-var secretAccessKey = process.env.AWS_SECRET_KEY || "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";
+var common   = require('../config/common.js');
+var config   = common.config();
+
 var easyimg = require('easyimage');
 var HashTable = require('hashtable');
 
 AWS.config.region = 'us-west-2';
 
 AWS.config.update({
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey
+    accessKeyId: config.AWS_ACCESS_KEY,
+    secretAccessKey: config.AWS_SECRET_KEY
 });
 
 
