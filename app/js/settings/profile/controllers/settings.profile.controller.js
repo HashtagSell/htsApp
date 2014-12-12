@@ -16,8 +16,7 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
     $scope.dropzoneConfig = {
         'options': { // passed into the Dropzone constructor
             paramName: "profilePhoto", // The name that will be used to transfer the file
-            maxFilesize: 15, // MB
-            maxFiles: 1,
+            maxFilesize: 10, // MB
             acceptedFiles: '.jpeg,.jpg,.png,.gif',
             url: "/upload",
             autoProcessQueue: true,
@@ -32,11 +31,22 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
         },
         'eventHandlers': {
             'addedfile': function () {
-                console.log($scope);
                 $scope.$apply(function(){
                     $scope.bindingObj.currentlyUploadingProfilePhoto = true;
                 });
-                console.log($scope);
+            },
+            'success': function (response) {
+
+                var S3response = JSON.parse(response.xhr.response);
+
+                console.log(S3response);
+
+                Session.setSessionValue('profile_photo', S3response.url, $scope.$apply(function () {
+                    $scope.bindingObj.currentlyUploadingProfilePhoto = false;
+                }));
+            },
+            'complete' : function () {
+                console.log('complete');
             }
         }
     };
@@ -44,7 +54,7 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
 
     $scope.userObj = Session.userObj;
 
-    $scope.requireUpdate = function() {
+    $scope.requireUpdate = function () {
         $scope.bindingObj.requireUpdate = false;
     };
 

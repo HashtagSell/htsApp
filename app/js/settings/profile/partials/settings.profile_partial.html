@@ -21,7 +21,7 @@
                     <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
                 </div>
 
-                <div id="preview" dropzone="dropzoneConfig">
+                <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="preview" dropzone="dropzoneConfig">
 
                 </div>
             </div>
@@ -82,7 +82,7 @@
             <img class="img-circle" data-dz-thumbnail />
             <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                 <div class="progress-bar progress-bar-info" style="width:0%;" data-dz-uploadprogress></div>
-            </div>              m
+            </div>
         </div>
         <div>
             <strong class="error text-danger" data-dz-errormessage></strong>
