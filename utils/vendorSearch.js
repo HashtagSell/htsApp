@@ -1,17 +1,14 @@
-var request = require("request");
-var path = require('path');
 var common   = require('../config/common.js');
 var config   = common.config();
 
-
 exports.query = function(result, promise){
 
-    var three_taps_api = "http://search.3taps.com";
-    var auth_token = "?auth_token="+config.THREE_TAPS_KEY;
-    var heading = "&heading=" + result.query.q;
+    //Instantiate Josh's 3Taps wrapper.  Pass in API key from global env variable.
+    var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false });
 
+    //Anchor details have already been looked up in mongo store.
 
-    if(!result.anchorDetails) {
+    if(!result.anchorDetails) {  //If we do not have anchor then this is first query
 
         result.vendorFormattedCategories = prepareCategories(result.popularCategories);
         result.query.source = "CRAIG|EBAYM|BKPGE|AUTOD|E_BAY";
@@ -19,19 +16,18 @@ exports.query = function(result, promise){
         result.query.retvals = "heading,price,body,external_url,category,category_group,images,location,external_id,annotations,source";
         result.query.rpp = "35";
 
-        var lat = "&lat=" + result.location.latitude;
-        var lon = "&long=" + result.location.longitude;
-        var categories = "&category=" + result.vendorFormattedCategories;
-        var source = "&source=" + result.query.source;
-        var sort = "&sort=" + result.query.sort;
-        var retvals = "&retvals=" + result.query.retvals;
-        var rpp = "&rpp=" + result.query.rpp;
+        var options = {
+            category        : result.vendorFormattedCategories,
+            heading         : result.query.q,
+            lat             : result.location.latitude,
+            long            : result.location.longitude,
+            retvals         : result.query.retvals,
+            rpp             : result.query.rpp,
+            sort            : result.query.sort,
+            source          : result.query.source
+        };
 
-        //http://search.3taps.com?source=CRAIG|EBAYM|BKPGE|AUTOD|E_BAY|EBAYM&rpp=15&heading=tires&lat=37.3541&long=-121.9552&category=VPAR|~PPPP|~PMSM|~PMSW|~PWSM|~PWSW|~POTH|~MMMM|~MESC|~MFET|~MJOB|~MMSG|~MPNW|~MSTR|~MOTH&sort=distance&retvals=heading,price,body,external_url,category,category_group,images,location,external_id,annotations,source
-        var concatURL = three_taps_api + auth_token + source + heading + lat + lon + categories + sort + retvals + rpp;
-
-    } else {
-        console.log("paginated");
+    } else {  //This is paginated query and anchor details were recovered from mongo store
 
         result.location = {};
         result.location.latitude = result.anchorDetails.lat;
@@ -43,37 +39,26 @@ exports.query = function(result, promise){
         result.popularCategories = result.anchorDetails.category;
         result.vendorFormattedCategories = prepareCategories(result.popularCategories);
 
-        console.log(result.location.latitude, result.location.longitude);
-
-        var lat = "&lat=" + result.location.latitude;
-        var lon = "&long=" + result.location.longitude;
-        var categories = "&category=" + result.vendorFormattedCategories;
-        var source = "&source=" + result.query.source;
-        var sort = "&sort=" + result.query.sort;
-        var rpp = "&rpp=" + result.query.rpp;
-        var retvals = "&retvals=" + result.query.retvals;
-        var anchor = "&anchor=" + result.anchorDetails.anchor;
-        var page = "&page=" + result.anchorDetails.next_page;
-
-        var concatURL = three_taps_api + auth_token + source + heading + lat + lon + categories + sort + retvals + rpp + anchor + page;
-
+        var options = {
+            anchor          : result.anchorDetails.anchor,
+            category        : result.vendorFormattedCategories,
+            heading         : result.query.q,
+            lat             : result.location.latitude,
+            long            : result.location.longitude,
+            page            : result.anchorDetails.next_page,
+            retvals         : result.query.retvals,
+            rpp             : result.query.rpp,
+            sort            : result.query.sort,
+            source          : result.query.source
+        };
     }
 
-    console.log(concatURL);
-
-    request(concatURL, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-
-            var results = JSON.parse(body);
-
-            promise(null, results);
-
-        } else if (error) {
-
-            console.log(error);
-
-            promise(error, null);
-
+    //Search 3Taps!
+    threeTapsClient.search(options, function (err, data) {
+        if(!err){
+            promise(null, data);
+        } else {
+            promise(err, null);
         }
     });
 };
