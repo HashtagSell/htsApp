@@ -407,7 +407,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', function ($scope, $m
 
                                         var largest = 0;
 
-                                        catHashTable.each(rankCategory(category));
+                                        catHashTable.each(rankCategory);
 
                                         console.log("our most popular category is: ", mostPopularCategory);
                                         factory.jsonTemplate.category = mostPopularCategory;
