@@ -45,6 +45,8 @@ exports.vendor = function(req, res){
 
                 var clientIp = req.connection.remoteAddress;
 
+
+
                 if (clientIp) {
 
                     var promise = new Promise(function (resolve, reject) {

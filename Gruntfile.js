@@ -58,6 +58,7 @@ module.exports = function(grunt) {
         nodemon: {
             dev: {
                 script: 'server.js',
+                watch: ['./api/**/*.js', './config/**/*.js', './utils/**/*.js', './views/**/*.js'],
                 options: {
                     nodeArgs: ['--debug'],
                     env: {
@@ -83,7 +84,7 @@ module.exports = function(grunt) {
                         nodemon.on('restart', function () {
                             // Delay before server listens on port
                             setTimeout(function() {
-                                require('fs').writeFileSync('.rebooted', 'rebooted');
+                                require('fs').writeFileSync('.rebooted', 'rebooted: ' + new Date());
                             }, 1000);
                         });
                     }
@@ -91,8 +92,13 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            files: ['<%= jshint.files %>'],
-            tasks: ['jshint'],
+            'client-javascript': {
+                files: ['<%= jshint.files %>'],
+                tasks: ['jshint'],
+                options: {
+                    livereload: true,
+                }
+            },
             server: {
                 files: ['.rebooted'],
                 options: {
