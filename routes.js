@@ -65,8 +65,8 @@ module.exports = function(app, passport) {
     // =====================================
     app.post('/upload', isLoggedIn, function(req, res) {
 
-        if (req.files.profilePhoto) { // based on param the user is updating profile photo
-            user_settings_api.updateProfilePhoto(req, res);
+        if (req.files.profilePhoto || req.files.bannerPhoto) { // based on param the user is updating profile photo
+            user_settings_api.updateUserPhotos(req, res);
 
         } else { // user is uploading photos appended to post
             posting_api.upload(req, res);

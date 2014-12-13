@@ -13,7 +13,7 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Change Photo:</label>
+                <label class="pull-right">Profile Photo:</label>
             </div>
             <div class="col-lg-6 col-md-4">
 
@@ -21,7 +21,7 @@
                     <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
                 </div>
 
-                <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="preview" dropzone="dropzoneConfig">
+                <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
 
                 </div>
             </div>
@@ -31,10 +31,15 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Change Header:</label>
+                <label class="pull-right">Heading Banner:</label>
             </div>
-            <div class="col-lg-6 col-md-4">
-                <img ng-src={{userObj.user_settings.profile_header}} width="180px;"/>
+
+            <div ng-hide="bindingObj.currentlyUploadingBannerPhoto">
+                <img class='triggerBannerImageUpload' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
+            </div>
+
+            <div ng-show="bindingObj.currentlyUploadingBannerPhoto" id="bannerPreview" dropzone="bannerDropzoneConfig">
+
             </div>
         </div>
 
@@ -80,6 +85,23 @@
         <!-- This is used as the file preview template -->
         <div class="triggerProfileImageUpload">
             <img class="img-circle" data-dz-thumbnail />
+            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div class="progress-bar progress-bar-info" style="width:0%;" data-dz-uploadprogress></div>
+            </div>
+        </div>
+        <div>
+            <strong class="error text-danger" data-dz-errormessage></strong>
+        </div>
+    </div>
+</script>
+
+
+<!-- Template loaded into dropzone for heading upload -->
+<script type="text/ng-template" id="bannerUploadTemplate.tpl">
+    <div>
+        <!-- This is used as the file preview template -->
+        <div class="triggerBannerImageUpload">
+            <img class="heading-banner" data-dz-thumbnail />
             <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                 <div class="progress-bar progress-bar-info" style="width:0%;" data-dz-uploadprogress></div>
             </div>

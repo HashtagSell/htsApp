@@ -5,7 +5,7 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
         user_settings : JSON.parse($window.localStorage.getItem("hts_storage")) || {
             loggedIn: false,
             profile_photo: '/images/userMenu/user-placeholder.png',
-            profile_header: '/images/userMenu/header-placeholder.gif',
+            banner_photo: '/images/userMenu/header-placeholder.gif',
             favorites: []
         }
     };
@@ -70,7 +70,7 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
             return this.userObj;
         } else {
             this.userObj.loggedIn = !!$window.localStorage.hts_storage;
-            this.userObj.profile_header = "/images/userMenu/header-placeholder.gif";
+            this.userObj.banner_photo = "/images/userMenu/header-placeholder.gif";
             this.userObj.profile_photo = "/images/userMenu/user-placeholder.png";
             return this.userObj;
         }

@@ -5,6 +5,7 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
 
     $scope.bindingObj = {
         currentlyUploadingProfilePhoto: false,
+        currentlyUploadingBannerPhoto: false,
         requireUpdate: true
     };
 
@@ -13,7 +14,7 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
     };
 
 
-    $scope.dropzoneConfig = {
+    $scope.profileDropzoneConfig = {
         'options': { // passed into the Dropzone constructor
             paramName: "profilePhoto", // The name that will be used to transfer the file
             maxFilesize: 10, // MB
@@ -24,7 +25,7 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
             addRemoveLinks: false,
             thumbnailWidth: 90,
             thumbnailHeight: 90,
-            previewsContainer: "#preview",
+            previewsContainer: "#profilePreview",
             previewTemplate: $templateCache.get('profileUploadTemplate.tpl'),
             clickable: ".triggerProfileImageUpload",
             dictDefaultMessage: ''
@@ -43,6 +44,48 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
 
                 Session.setSessionValue('profile_photo', S3response.url, $scope.$apply(function () {
                     $scope.bindingObj.currentlyUploadingProfilePhoto = false;
+                }));
+            },
+            'complete' : function () {
+                console.log('complete');
+            }
+        }
+    };
+
+
+
+
+
+    $scope.bannerDropzoneConfig = {
+        'options': { // passed into the Dropzone constructor
+            paramName: "bannerPhoto", // The name that will be used to transfer the file
+            maxFilesize: 10, // MB
+            acceptedFiles: '.jpeg,.jpg,.png,.gif',
+            url: "/upload",
+            autoProcessQueue: true,
+            uploadMultiple: false,
+            addRemoveLinks: false,
+            thumbnailWidth: 180,
+            thumbnailHeight: 120,
+            previewsContainer: "#bannerPreview",
+            previewTemplate: $templateCache.get('bannerUploadTemplate.tpl'),
+            clickable: ".triggerBannerImageUpload",
+            dictDefaultMessage: ''
+        },
+        'eventHandlers': {
+            'addedfile': function () {
+                $scope.$apply(function(){
+                    $scope.bindingObj.currentlyUploadingBannerPhoto = true;
+                });
+            },
+            'success': function (response) {
+
+                var S3response = JSON.parse(response.xhr.response);
+
+                console.log(S3response);
+
+                Session.setSessionValue('banner_photo', S3response.url, $scope.$apply(function () {
+                    $scope.bindingObj.currentlyUploadingBannerPhoto = false;
                 }));
             },
             'complete' : function () {

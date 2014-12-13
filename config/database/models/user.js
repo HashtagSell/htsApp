@@ -38,7 +38,7 @@ var userSchema = mongoose.Schema({
         safe_search  : { type: Boolean, default: true },
         email_provider : { type: String, default: "Ask" },
         profile_photo : { type: String, default: "/images/userMenu/user-placeholder.png" },
-        profile_header : { type: String, default: "/images/userMenu/header-placeholder.gif" },
+        banner_photo : { type: String, default: "/images/userMenu/header-placeholder.gif" },
         user_labels  : [],
         favorites    : []
     },

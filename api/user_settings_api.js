@@ -55,7 +55,7 @@ exports.push = function(req, res) {
 
 
 
-exports.updateProfilePhoto = function (req, res) {
+exports.updateUserPhotos = function (req, res) {
 
     async.waterfall([
         function(callback){
@@ -64,11 +64,17 @@ exports.updateProfilePhoto = function (req, res) {
             console.log("Get profile photo payload");
             console.log("***************************");
 
-            var profileImage = req.files.profilePhoto;
+            if(req.files.profilePhoto) {
+                var image = req.files.profilePhoto;
+                image.type = 'profilePhoto';
+            } else if (req.files.bannerPhoto) {
+                var image = req.files.bannerPhoto;
+                image.type = 'bannerPhoto';
+            }
 
-            console.log(profileImage);
+            console.log(image);
 
-            fs.readFile(profileImage.path, function (err, file_buffer) {
+            fs.readFile(image.path, function (err, file_buffer) {
 
                 if(err){
 
@@ -79,12 +85,12 @@ exports.updateProfilePhoto = function (req, res) {
                     var params = {
                         ACL: 'public-read',
                         Bucket: config.S3_BUCKET,
-                        Key: profileImage.name,
+                        Key: image.name,
                         Body: file_buffer,
-                        ContentType: profileImage.mimetype
+                        ContentType: image.mimetype
                     };
 
-                    callback(null, params, profileImage);
+                    callback(null, params, image);
                 }
 
             });
@@ -151,7 +157,13 @@ exports.updateProfilePhoto = function (req, res) {
 
                 } else if (user) { //found user with email.  check if current passwords match.
 
-                    user.user_settings.profile_photo = 'http://' + config.S3_BUCKET + "/" + image.name;
+                    var S3ImageUrl = 'http://' + config.S3_BUCKET + "/" + image.name;
+
+                    if(image.type == 'profilePhoto') {
+                        user.user_settings.profile_photo = S3ImageUrl;
+                    } else if (image.type == 'bannerPhoto') {
+                        user.user_settings.banner_photo = S3ImageUrl;
+                    }
 
                     user.save(function (err) {
                         if (err) {
@@ -160,7 +172,7 @@ exports.updateProfilePhoto = function (req, res) {
 
                             callback( null, {
                                 success : true,
-                                url : user.user_settings.profile_photo
+                                url : S3ImageUrl
                             });
                         }
                     });
