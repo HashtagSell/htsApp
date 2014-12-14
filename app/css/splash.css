@@ -88,3 +88,36 @@
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+.close-button {
+    border-radius: 0px 0px 6px 6px !important;
+}
+
+.splash-content .annotationKey {
+    text-align: center;
+}
+
+.splash-content .annotationValue {
+    text-align: center;
+}
+
+.splash-content .description-block {
+    padding: 20px 50px 0px 50px;
+}
+
+.splash-content .item-body {
+    margin-top: 25px;
+    white-space: pre-line;
+    line-height: 22px;
+}
+
+.splash-content .item-body p {
+
+    font-family: "Courier New", Courier, monospace;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 13px;
+    margin:0 28px;
+    text-indent: -28px;
+
+}

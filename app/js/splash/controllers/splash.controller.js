@@ -3,13 +3,10 @@
  */
 htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', function ($scope, $sce, $state, $modal, splashFactory) {
 
-    var splashInstanceCtrl = ['$scope', function ($scope) {
+    var splashInstanceCtrl = ['$scope', '$q', function ($scope, $q) {
 
         console.log(splashFactory.result);
 
-        if(splashFactory.result.annotations) {
-            $scope.annotations = splashFactory.result.annotations;
-        }
         $scope.body = $sce.trustAsHtml(splashFactory.result.body);
         $scope.category = splashFactory.result.category;
         $scope.category_group = splashFactory.category_group;
@@ -31,8 +28,46 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                 latitude: splashFactory.result.location.lat,
                 longitude: splashFactory.result.location.long
             },
+            options: {
+                zoomControl : false,
+                mapTypeControl : false
+            },
             zoom: 17
         };
+
+
+        //Infowindow above map marker displays address or cross streets.  If data not supplied by 3Taps we use google to reverse geocode lat lon
+        $scope.reverseGeocode = function (locationObj) {
+            if (locationObj.formatted_address) {
+
+                $scope.formatted_address = locationObj.formatted_address;
+
+            } else {
+
+                var geocoder = new google.maps.Geocoder();
+                var latlng = new google.maps.LatLng(locationObj.lat, locationObj.long);
+
+                geocoder.geocode({'latLng': latlng}, function (results, status) {
+
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        if (results[1]) {
+                            console.log('reverse geocoded info', results[1].formatted_address);
+
+                            $scope.formatted_address = results[1].formatted_address;
+                        } else {
+                            $scope.infoWindow.show = false;
+                        }
+                    } else {
+                        $scope.infoWindow.show = false;
+                        console.log('geocoder failed???');
+                    }
+                });
+
+
+            }
+        };
+
+        $scope.reverseGeocode(splashFactory.result.location);
 
         $scope.marker = {
             id: 0,
@@ -40,6 +75,10 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                 latitude: splashFactory.result.location.lat,
                 longitude: splashFactory.result.location.long
             }
+        };
+
+        $scope.infoWindow = {
+            show: true
         };
 
         console.log($scope.marker);
@@ -71,16 +110,33 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         annotationsDictionary.put("size_dimensions","Dimensions");
 
 
-        $scope.validateAnnotation = function (annotationKey) {
-            
-            var title = annotationsDictionary.get(annotationKey);
 
-            if (title) {
-                $scope[annotationKey] = title;
-            }
+        $scope.sanitizeAnnotations = function (annoationsObj) {
 
-            return title;
+            $scope.sanitizedAnnotationsObj = {};
+
+            angular.forEach(annoationsObj, function(value, key) {
+                console.log(key + ': ' + value);
+
+                var validatedKey = annotationsDictionary.get(key);
+
+                if (validatedKey) {
+                    $scope.sanitizedAnnotationsObj[validatedKey] = value;
+                }
+
+
+            });
+
+            return $scope.sanitizedAnnotationsObj;
         };
+
+
+        if(splashFactory.result.annotations) {
+
+            $scope.annotations = $scope.sanitizeAnnotations(splashFactory.result.annotations);
+
+            console.log('here are sanatized annotations', $scope.annotations);
+        }
 
     }];
 

@@ -3,23 +3,22 @@
 <div class="container-fluid splash-content">
 
     <div class="row">
-        <div class="col-lg-offset-11 col-lg-1 col-md-offset-11 col-md-1 col-sm-offset-9 col-sm-3 col-xs-offset-9 col-xs-3 close-button">
-            <button class="btn btn-lg btn-outline" ng-click="$dismiss()"><i class="fa fa-times"></i></button>
+        <div class="col-lg-offset-11 col-lg-1 col-md-offset-11 col-md-1 col-sm-offset-9 col-sm-3 col-xs-offset-9 col-xs-3">
+            <button class="btn btn-lg btn-outline close-button" ng-click="$dismiss()"><i class="fa fa-times"></i></button>
         </div>
     </div>
 
     <!--Google Map-->
     <div class="row">
-        <ui-gmap-google-map center='map.center' zoom='map.zoom'>
+        <ui-gmap-google-map center='map.center' zoom='map.zoom'  options='map.options'>
 
-            <ui-gmap-marker coords="marker.coords" idkey="marker.id">
-
+            <ui-gmap-marker coords="marker.coords" idkey="marker.id" options="marker.options">
+                <ui-gmap-window show="infoWindow.show">
+                    {{::formatted_address}}
+                </ui-gmap-window>
             </ui-gmap-marker>
 
-
         </ui-gmap-google-map>
-
-
     </div>
 
     <div class="row overlay-fade">
@@ -29,7 +28,7 @@
     <div class="row overlay-details">
         <div class="col-lg-2 col-md-3 col-sm-3 col-xs-3">
             <div class="row">
-                <div class="col-lg-2 col-md-2 col-sm-3 hidden-xs bs-profile-nav">
+                <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
                     <div ng-controller="sideProfile" class="profile">
                         <a ui-sref="profile" class="profileCircle">
                             <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
@@ -59,14 +58,14 @@
 
             <div class="row">
                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-8">
-                    <h1 class="heading" ng-bind-html="heading">
-
+                    <h1 class="heading">
+                        {{::heading}}
                     </h1>
                 </div>
 
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
                     <h1 class="price">
-                        {{price | currency}}
+                        {{::price | currency}}
                     </h1>
                 </div>
             </div>
@@ -95,17 +94,17 @@
                 </ul>
 
                 <!--Far right column contains body, annotations, and commenting system.-->
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 description-block">
 
                     <!--Annotations-->
                     <div class="row">
-                        <div ng-repeat="(key, value) in annotations" ng-if="validateAnnotation(key)">
+                        <div ng-repeat="(key, value) in annotations">
                             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                <div class="row">
-                                    {{key}}
-                                </div>
-                                <div class="row">
-                                    {{value}}
+                                <h4 class="row annotationKey">
+                                    {{::key}}
+                                </h4>
+                                <div class="row annotationValue">
+                                    {{::value}}
                                 </div>
                             </div>
                         </div>
@@ -113,16 +112,16 @@
 
 
                     <!--Body-->
-                    <div class="row">
+                    <div class="row item-body">
                         <div ng-bind-html="body">
-
+                            <!--{{::body}}-->
                         </div>
                     </div>
 
 
                     <!--Commenting System-->
                     <div class="row">
-                        COMMENTING SYSTEM HERE
+                        Q/A MODULE HERE
                     </div>
 
 
