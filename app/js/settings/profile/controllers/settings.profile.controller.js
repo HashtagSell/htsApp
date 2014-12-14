@@ -98,7 +98,15 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
     $scope.userObj = Session.userObj;
 
     $scope.requireUpdate = function () {
+
         $scope.bindingObj.requireUpdate = false;
+    };
+
+    $scope.submitUpdatedProfile = function () {
+        Session.setSessionValue('biography', $scope.userObj.user_settings.biography, function () {
+            $scope.bindingObj.requireUpdate = true;
+
+        });
     };
 
 }]);
