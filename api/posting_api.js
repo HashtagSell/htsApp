@@ -6,6 +6,9 @@ var config   = common.config();
 var easyimg = require('easyimage');
 var HashTable = require('hashtable');
 
+// load up the analytics model
+var PostModel = require('../config/database/models/hts_post_model.js');
+
 AWS.config.region = 'us-west-2';
 
 AWS.config.update({
@@ -37,10 +40,6 @@ exports.savePost = function(req, res){
 
     userPost.body = body_plain_text;
 
-
-    // load up the analytics model
-    var PostModel = require('../config/database/models/hts_post_model.js');
-
     //Write post to hts_posts collection
     var newPost = PostModel(userPost);
     newPost.save(function (err) {
@@ -48,15 +47,43 @@ exports.savePost = function(req, res){
         if (err) {
 
             console.log(err);
-            res.send({success:false, error:err});
-        }
-        else {
+            res.send({success: false, error: err});
+
+        } else {
             console.log("success!");
-            res.send({success:true});
+            res.send({success: true});
 
         }
-    })
+    });
 };
+
+
+
+
+
+
+exports.getPosts = function (req, res) {
+    PostModel.find({ 'seller_id' : req.user._id }, function (err, posts) {
+
+        if (err) {
+            console.log(err);
+            return res.send({error: err});
+
+            // if no user is found, return the message
+        } else if (!posts) {
+            return res.send({error: "No user found with that email/token."});
+
+
+        } else if (posts) {
+
+            console.log(posts);
+
+            res.send(posts);
+        }
+    });
+
+};
+
 
 
 

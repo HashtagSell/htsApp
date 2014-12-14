@@ -60,6 +60,18 @@ module.exports = function(app, passport) {
 
 
 
+
+    // =====================================
+    //  Get all users posts ================
+    // =====================================
+    app.get('/getposts', isLoggedIn, function(req, res) {
+        posting_api.getPosts(req, res);
+    });
+
+
+
+
+
     // =====================================
     // Photo Upload ======================
     // =====================================
