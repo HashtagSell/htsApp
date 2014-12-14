@@ -86,7 +86,7 @@
 
                 <!--SideNav-->
                 <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
-                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
                         {{item.name}}
                         <span class="badge">{{item.alerts}}</span>
                     </a>
@@ -117,6 +117,7 @@
     <script type='text/javascript' src='/nginfiniteScroll/build/ng-infinite-scroll.min.js'></script>
     <script type='text/javascript' src='/imagesloaded/imagesloaded.pkgd.min.js'></script>
     <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
+    <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
     <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.min.js"></script>
 
     <!--ANGULAR-->
