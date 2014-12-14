@@ -66,8 +66,10 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     //This function called by ui-router as moves through application.  Updates choice in side nav dynamically.
     factory.updateSideNav = function (toState) {
-
-        console.log(toState.name);
+        //
+        //console.log(toState.name);
+        //
+        //console.log('here is watch me', factory.watchme);
 
         switch (toState.name) {
             case 'settings':
