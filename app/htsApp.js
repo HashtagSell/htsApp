@@ -1,39 +1,6 @@
 var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel']);
 
 
-htsApp.directive('userMenu', function(){
-    return {
-        templateUrl: 'userMenu/partials/usermenu.html'
-    };
-});
-
-
-htsApp.directive('awesomeBar', function(){
-    return {
-        templateUrl: 'awesomeBar/partials/awesomeBar.html'
-    };
-});
-
-
-
-//Verifies is password field match
-htsApp.directive('match', function () {
-    return {
-        require: 'ngModel',
-        restrict: 'A',
-        scope: {
-            match: '='
-        },
-        link: function (scope, elem, attrs, ctrl) {
-            scope.$watch(function () {
-                return (ctrl.$pristine && angular.isUndefined(ctrl.$modelValue)) || scope.match === ctrl.$modelValue;
-            }, function (currentValue) {
-                ctrl.$setValidity('match', currentValue);
-            });
-        }
-    };
-});
-
 
 //Forcing XHR requests via Angular $http (AJAX)
 htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function ($httpProvider, $stateProvider, $urlRouterProvider) {
@@ -80,7 +47,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('selling', {
             url: "/selling",
-            template: "Items I'm Selling",
+            templateUrl: "js/selling/partials/selling.partials.listSoldItems.html",
+            controller: 'selling.controller.listSoldItems',
             resolve: { loginRequired: loginRequired }
         }).
         state('interested', {
@@ -144,12 +112,28 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
 
 
 
-
+//Updates sideNav when user clicks to navigate around application.
 htsApp.run(['$rootScope', 'sideNavFactory', function ($rootScope, sideNavFactory) {
-
     $rootScope.$on('$stateChangeSuccess', function (event, toState) {
             sideNavFactory.updateSideNav(toState);
-        }
-    )
-
+    });
 }]);
+
+
+//Verifies is password field match
+htsApp.directive('match', function () {
+    return {
+        require: 'ngModel',
+        restrict: 'A',
+        scope: {
+            match: '='
+        },
+        link: function (scope, elem, attrs, ctrl) {
+            scope.$watch(function () {
+                return (ctrl.$pristine && angular.isUndefined(ctrl.$modelValue)) || scope.match === ctrl.$modelValue;
+            }, function (currentValue) {
+                ctrl.$setValidity('match', currentValue);
+            });
+        }
+    };
+});
