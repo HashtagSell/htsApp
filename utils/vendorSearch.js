@@ -57,6 +57,7 @@ exports.query = function(result, promise){
     threeTapsClient.search(options, function (err, data) {
         if(!err){
             promise(null, data);
+            console.log(data);
         } else {
             promise(err, null);
         }

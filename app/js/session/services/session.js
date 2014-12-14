@@ -57,25 +57,6 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
         $window.localStorage.removeItem("hts_storage");
     };
 
-
-    //Get all the user setttings from HTML5 session storage
-    this.getSessionObj = function () {
-//        console.log("Get all user settings from HTML5 session");
-
-        this.userObj.loggedIn = !!$window.localStorage.hts_storage;
-
-        if (this.userObj.loggedIn) {
-            this.userObj = JSON.parse($window.localStorage.getItem("hts_storage"));
-            this.userObj.loggedIn = !!$window.localStorage.hts_storage;
-            return this.userObj;
-        } else {
-            this.userObj.loggedIn = !!$window.localStorage.hts_storage;
-            this.userObj.banner_photo = "/images/userMenu/header-placeholder.gif";
-            this.userObj.profile_photo = "/images/userMenu/user-placeholder.png";
-            return this.userObj;
-        }
-    };
-
     //Get a particular user setting from HTML5 session storage
     this.getSessionValue = function (key) {
         if (this.userObj.user_settings[key]) {
