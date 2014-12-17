@@ -1,20 +1,16 @@
 var common   = require('../config/common.js');
 var config   = common.config();
+var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false });
 
 exports.query = function(result, promise){
-
-    //Instantiate Josh's 3Taps wrapper.  Pass in API key from global env variable.
-    var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false });
-
-    //Anchor details have already been looked up in mongo store.
 
     if(!result.anchorDetails) {  //If we do not have anchor then this is first query
 
         result.vendorFormattedCategories = prepareCategories(result.popularCategories);
-        result.query.source = "CRAIG|EBAYM|BKPGE|AUTOD|E_BAY";
-        result.query.sort = "distance";
-        result.query.retvals = "heading,price,body,external_url,category,category_group,images,location,external_id,annotations,source";
-        result.query.rpp = "35";
+        result.query.source = config.THREE_TAPS_DEFAULT_SOURCES;
+        result.query.sort = config.THREE_TAPS_DEFAULT_SORT;
+        result.query.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
+        result.query.rpp = config.THREE_TAPS_DEFAULT_RPP;
 
         var options = {
             category        : result.vendorFormattedCategories,
@@ -27,7 +23,7 @@ exports.query = function(result, promise){
             source          : result.query.source
         };
 
-    } else {  //This is paginated query and anchor details were recovered from mongo store
+    } else {  //This is paginated query and anchor details were recovered from Mongo analytics collection
 
         result.location = {};
         result.location.latitude = result.anchorDetails.lat;
@@ -65,6 +61,7 @@ exports.query = function(result, promise){
 };
 
 
+//Converts [{category:RRRR},{category:SSSS}] to 'RRRR|SSSS'
 function prepareCategories(categories) {
 
     var vendorCategoryString = '';
@@ -79,4 +76,87 @@ function prepareCategories(categories) {
     }
 
     return vendorCategoryString;
-}
+};
+
+
+
+
+exports.poll = function(result, promise){
+
+    if(!result.query.anchor) {  //If we do not have an anchor then this is first query
+
+        //Generate anchor from 5 min ago
+        var anchorDate = new Date();
+        anchorDate.setMinutes(anchorDate.getMinutes() - 5);
+
+
+        threeTapsClient.anchor({
+            timestamp : anchorDate
+        }, function (err, data) {
+
+            //Store our starting anchor that 3Taps handed back
+            result.anchor = data.anchor;
+
+            //Get categories from param in GET request
+            result.vendorFormattedCategories = result.query.categories;
+
+            //Use our default 3Taps parameters
+            result.source = config.THREE_TAPS_DEFAULT_SOURCES;
+            result.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
+
+            var options = {
+                anchor          : result.anchor,
+                category_group  : result.vendorFormattedCategories,
+                'location.city' : result.location.cityCode,
+                retvals         : result.retvals,
+                source          : result.source
+            };
+
+            console.log('Options passed into polling API call');
+            console.log(options);
+
+            //Search 3Taps polling API
+            threeTapsClient.poll(options, function (err, data) {
+                if(!err){
+                    promise(null, data);
+
+                } else {
+                    promise(err, null);
+                }
+            });
+
+
+        });
+
+    } else {  //This is paginated query and anchor details were recovered from mongo store
+
+        result.anchor = result.query.anchor;
+        result.location = {};
+        result.location.cityCode = result.query.cityCode;
+        result.vendorFormattedCategories = result.query.categories;
+        result.source = config.THREE_TAPS_DEFAULT_SOURCES;
+        result.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
+
+        var options = {
+            anchor          : result.anchor,
+            category_group  : result.vendorFormattedCategories,
+            'location.city' : result.location.cityCode,
+            retvals         : result.retvals,
+            source          : result.source
+        };
+
+        console.log('Options passed into polling API call');
+        console.log(options);
+
+        threeTapsClient.poll(options, function (err, data) {
+            if(!err){
+                promise(null, data);
+
+            } else {
+                promise(err, null);
+            }
+        });
+
+    }
+
+};
