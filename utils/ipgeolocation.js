@@ -1,4 +1,6 @@
 var request = require("request");
+var common   = require('../config/common.js');
+var config   = common.config();
 
 exports.lookup = function(ip, promise){
 
@@ -16,9 +18,10 @@ exports.lookup = function(ip, promise){
 
     if(isPrivateOrLocalIP(ip)){
         ip = "216.38.134.18";
+        //ip = "104.156.240.172";
     }
 
-    var freeGeoIp = "http://localhost:8080/json/"+ip;
+    var freeGeoIp = config.FREEGEOIP_URL + ip;
 
     request(freeGeoIp, function (error, response, body) {
 
