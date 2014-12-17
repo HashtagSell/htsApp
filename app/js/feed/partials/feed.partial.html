@@ -1,0 +1,39 @@
+<div ui-view></div>
+
+<button class="btn btn-default" ng-click="scrollRefresh()">Get more</button>
+
+<div class="col-lg-10 col-md-9 col-sm-9 col-xs-12">
+    <!--{{results}}-->
+    <div ng-repeat="result in results"
+         ng-click="openSplash(this)"
+         ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
+         data-category="{{::result.category}}"
+         data-email="{{::result.annotations.source_account}}"
+         data-source="{{::result.source}}"
+         data-lat="{{::result.location.lat}}"
+         data-long="{{::result.location.long}}"
+         data-sourceUrl="{{::result.external_url}}"
+         data-postDate="{{::result.annotations.original_posting_date}}"
+            >
+        <div class="thumbnail" style="cursor: pointer">
+            <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
+            <ribbon data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
+            <hts-fave-toggle></hts-fave-toggle>
+            <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
+            <div ng-if="!result.images.length">No image found</div>
+            <div class="caption">
+                <h4 class="heading">{{::result.heading}}</h4>
+                <p class="body">{{::result.body}}</p>
+                <p class="distance" data-distance="{{::result.distanceFromUser}}">
+                    <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                </p>
+                <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
+                <p class="text-center">
+                    <a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>
+                    <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
+                </p>
+                <!--<span ng-click="">favorite</span>-->
+            </div>
+        </div>
+    </div>
+</div>
