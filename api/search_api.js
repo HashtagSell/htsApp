@@ -1,6 +1,3 @@
-var request = require("request");
-var analyticsApi = require("./analytics_datastore_api.js");
-var path = require('path');
 var async = require('async');
 var Promise = require('promise');
 var geolocation = require("../utils/ipgeolocation.js");
