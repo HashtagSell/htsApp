@@ -43,7 +43,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('feed', {
             url: "/feed",
-            template: "My Feed"
+            templateUrl: "js/feed/partials/feed.partial.html",
+            controller: "feed.controller"
+        }).
+        state('feed.splash', {
+            url: "/:id",
+            controller: 'splashController',
+            resolve: { loginRequired: loginRequired }
         }).
         state('selling', {
             url: "/selling",
