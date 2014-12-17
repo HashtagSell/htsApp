@@ -8,8 +8,6 @@ htsApp.factory('lookupItemsForSale', ['$http', '$stateParams', '$location', '$q'
 
     var factory = {};
 
-
-
     factory.init = function () {
 
         var deferred = $q.defer();
