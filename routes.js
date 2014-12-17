@@ -7,11 +7,22 @@ module.exports = function(app, passport) {
     app.get('/search', search.vendor);
 
 
+
     // =====================================
     // ========= SEARCH PROXY (RETIRE SOON) USED WHEN USER CREATES NEW POST ==============
     // =====================================
     var search_old = require('./api/search_api_old'); //Proxy between HTS and 3TAPS
     app.get('/search_old', search_old.vendor);
+
+
+
+    // =====================================
+    // ========= USER FEED ==============
+    // =====================================
+    var feed = require('./api/feed_api'); //Proxy between HTS and 3TAPS Polling
+    app.get('/userfeed', feed.poll);
+
+
 
     // =====================================
     // Locations Lookup ====================
@@ -20,10 +31,12 @@ module.exports = function(app, passport) {
     app.get('/search/locations', reference.locationMetadata);
 
 
+
     // =====================================
     // Categories Lookup ===================
     // =====================================
     app.get('/search/categories', reference.categoryMetadata);
+
 
 
     // =====================================
@@ -33,10 +46,12 @@ module.exports = function(app, passport) {
     app.get('/cronjob/categories', isAdmin, cron.updateCategories);
 
 
+
     // =====================================
     // CRON Locations ======================
     // =====================================
     app.get('/cronjob/locations', isAdmin, cron.updateLocations);
+
 
 
     // =====================================
@@ -84,6 +99,7 @@ module.exports = function(app, passport) {
             posting_api.upload(req, res);
         }
     });
+
 
 
 
