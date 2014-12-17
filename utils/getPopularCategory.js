@@ -1,6 +1,8 @@
 var request = require("request");
 var HashTable = require('hashtable');
 
+
+//TODO: Convert this to 3Tap API Wrapper
 exports.fetch = function(term, lat, lon, promise){
 
     var three_taps_api = "http://search.3taps.com";
@@ -91,17 +93,6 @@ function weighCategories(categories, callback){
                 loopCounter++
             }
         });
-
-//        console.log("our most popular categories are:");
-//        var popularCategories = [];
-//        var avgWeight = Math.abs(totalAvgWeight/loopCounter);
-//        catHashTable.forEach(function (key, count) {
-//
-//            if(count >= avgWeight){
-//                popularCategories.push({category:key});
-//                console.log(key, " was found ", count, "times. Greater than", avgWeight);
-//            }
-//        });
 
         callback(popularCategories);
     }
