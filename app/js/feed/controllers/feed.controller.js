@@ -7,6 +7,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     var updateFeed = function(){
 
+        $scope.currentDate = Math.floor(Date.now() / 1000);
+
         feedFactory.poll().then(function (response) {
 
             if(response.status !== 200) {
@@ -44,7 +46,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
     var intervalUpdate = $interval(updateFeed, 30000, 0, true);
-    $scope.$on('$destroy', function () { $interval.cancel(intervalUpdate); });
+    $scope.$on('$destroy', function () {
+        $interval.cancel(intervalUpdate);
+    });
 
 
 
@@ -61,3 +65,17 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
 }]);
+
+
+htsApp.filter('secondsToTimeString', function() {
+    return function(seconds) {
+        var days = Math.floor(seconds / 86400);
+        var hours = Math.floor((seconds % 86400) / 3600);
+        var minutes = Math.floor(((seconds % 86400) % 3600) / 60);
+        var timeString = '';
+        if(days > 0) timeString += (days > 1) ? (days + " days ") : (days + " day ");
+        if(hours > 0) timeString += (hours > 1) ? (hours + " hours ") : (hours + " hour ");
+        if(minutes >= 0) timeString += (minutes > 1) ? (minutes + " minutes ") : (minutes + " minute ");
+        return timeString;
+    };
+});
