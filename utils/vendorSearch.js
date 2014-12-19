@@ -94,36 +94,42 @@ exports.poll = function(result, promise){
             timestamp : anchorDate
         }, function (err, data) {
 
-            //Store our starting anchor that 3Taps handed back
-            result.anchor = data.anchor;
+            if(err){
+                console.log(err);
+            } else {
 
-            //Get categories from param in GET request
-            result.vendorFormattedCategories = result.query.categories;
+                //Store our starting anchor that 3Taps handed back
+                result.anchor = data.anchor;
 
-            //Use our default 3Taps parameters
-            result.source = config.THREE_TAPS_DEFAULT_SOURCES;
-            result.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
+                //Get categories from param in GET request
+                result.vendorFormattedCategories = result.query.categories;
 
-            var options = {
-                anchor          : result.anchor,
-                category_group  : result.vendorFormattedCategories,
-                'location.city' : result.location.cityCode,
-                retvals         : result.retvals,
-                source          : result.source
-            };
+                //Use our default 3Taps parameters
+                result.source = config.THREE_TAPS_DEFAULT_SOURCES;
+                result.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
 
-            console.log('Options passed into polling API call');
-            console.log(options);
+                var options = {
+                    anchor: result.anchor,
+                    category_group: result.vendorFormattedCategories,
+                    'location.city': result.location.cityCode,
+                    retvals: result.retvals,
+                    source: result.source
+                };
 
-            //Search 3Taps polling API
-            threeTapsClient.poll(options, function (err, data) {
-                if(!err){
-                    promise(null, data);
+                console.log('Options passed into polling API call');
+                console.log(options);
 
-                } else {
-                    promise(err, null);
-                }
-            });
+                //Search 3Taps polling API
+                threeTapsClient.poll(options, function (err, data) {
+                    if (!err) {
+                        console.log(data);
+                        promise(null, data);
+
+                    } else {
+                        promise(err, null);
+                    }
+                });
+            }
 
 
         });
@@ -150,6 +156,7 @@ exports.poll = function(result, promise){
 
         threeTapsClient.poll(options, function (err, data) {
             if(!err){
+                console.log(data);
                 promise(null, data);
 
             } else {
