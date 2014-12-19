@@ -24,68 +24,62 @@
 
 </head>
 
-<body class="ng-cloak">
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="navbar-inner">
-            <div class="container-fluid">
-                <nav class="row">
-                    <ul class="nav navbar-nav row">
-                        <li class="col-lg-1 col-md-2 col-sm-1 hidden-xs">
-                            <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo" ui-sref="feed">
-                        </li>
-                        <li class="col-lg-4 col-lg-offset-3 col-md-6 col-md-offset-1 col-sm-6 col-sm-offset-1 col-xs-5 col-xs-offset-1">
-                            <form role="search" ng-controller="awesomeBarController" ng-submit="awesomeBarSubmit()" class="logo">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" ng-model="query">
-                                        <span class="input-group-btn">
-                                            <button type="submit" class="btn btn-danger" type="button">
-                                                <span class="glyphicon glyphicon-search"></span>
-                                            </button>
-                                        </span>
-                                    </input>
-                                </div><!-- /input-group -->
-                            </form>
-                        </li>
-                        <li class="col-lg-1 col-lg-offset-2 col-md-2 col-sm-3 col-xs-4 logo" ng-controller="newPostController">
-                            <!--<a ng-click="newPost()">#Sell It</a>-->
-                            <button type="button" class="btn btn-danger" ng-click="newPost()">#Sell it!</button>
-                        </li>
-                        <li class="dropdown col-lg-1 col-md-1 col-sm-1 col-xs-1" on-toggle="toggled(open)" ng-controller="userMenu">
-                            <a href class="dropdown-toggle">
-                                <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="30px;"/>
-                            </a>
-                            <ul class="dropdown-menu" ng-if="!userObj.user_settings.loggedIn" ng-cloak>
-                                <li><a href ng-click="signIn()">Sign In</a></li>
-                                <li><a href ng-click="signUp()">New Account</a></li>
-                            </ul>
-                            <ul class="dropdown-menu" ng-if="userObj.user_settings.loggedIn" ng-cloak>
-                                <li><a ui-sref="settings.general">User Settings</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#" ng-click="logout()">Logout</a></li>
-                            </ul>
-                        </li>
-                    <ul>
-                </nav>
-            </div><!-- /.container-fluid -->
+<body>
+    <div class="navbar navbar-default nav-links navbar-fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" ui-sref="feed">
+                <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
+            </a>
+            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-5 col-xs-offset-0 awesomeBar" ng-controller="awesomeBarController">
+                <form role="search" ng-submit="awesomeBarSubmit()">
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="query">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-danger" type="button">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </span>
+                        </input>
+                    </div>
+                </form>
+            </div>
+            <ul class="nav navbar-nav pull-right">
+                <li ng-controller="newPostController">
+                    <button type="button" class="btn btn-danger" ng-click="newPost()">Create New Post</button>
+                </li>
+                <li class="dropdown" ng-controller="userMenu">
+                    <a href class="dropdown-toggle" on-toggle="toggled(open)">
+                        <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn" ng-cloak>
+                        <li><a href ng-click="signIn()">Sign In</a></li>
+                        <li><a href ng-click="signUp()">New Account</a></li>
+                    </ul>
+                    <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn" ng-cloak>
+                        <li><a ui-sref="settings.general">User Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#" ng-click="logout()">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
 
     <div class="container-fluid">
         <div class="row">
-
             <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
-                <div ng-controller="sideProfile" class="profile">
-                    <a ui-sref="profile" class="profileCircle">
-                        <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="70px;"/>
-                        <span ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</span>
-                    </a>
+                <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" ui-sref="profile" style="cursor: pointer">
+                    <div class="profileCircle">
+                        <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
+                    </div>
                 </div>
-                <div ng-controller="newPostController" class="sellButton">
-                    <button type="submit" class="btn btn-danger btn-sm custom-button btn-block" ng-click="newPost()">#Sell it!</button>
+                <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
+                    <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"k> @{{userObj.user_settings.name}}</div>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost()">Create New Post</button>
                 </div>
 
                 <!--SideNav-->
-                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
                     <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
                         {{item.name}}
                         <span class="badge">{{item.alerts}}</span>
@@ -150,6 +144,8 @@
     <script type="text/javascript" src="/js/settings/payment/controllers/settings.payment.controller.js"></script>
     <script type="text/javascript" src="/js/selling/controllers/selling.controller.listSoldItems.js"></script>
     <script type="text/javascript" src="/js/selling/factories/selling.factories.listSoldItems.js"></script>
+    <script type="text/javascript" src="/js/feed/controllers/feed.controller.js"></script>
+    <script type="text/javascript" src="/js/feed/factories/feed.factory.js"></script>
 
     <!--ONLY LOADED IN PRODUCTION-->
     <!--<script type="text/javascript" src="/dist/HashtagSell.min.js"></script>-->
