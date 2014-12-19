@@ -1,0 +1,75 @@
+ribbon{
+    clear:both;
+    position:absolute;
+    color:#fff;
+    background:#149bdf;
+    text-shadow:0 -1px #149bdf, 0 1px #149bdf;
+    font-size:1.1em;
+    float:left;
+    padding:4px 10px 4px 10px;
+    margin-left:-14px;
+    margin-top:4px;
+    margin-bottom:20px;
+
+    -moz-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -webkit-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -o-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+ribbon:before{
+    content:" ";
+    background:url(/images/priceRibbon/ribbon.png);
+    display:block;
+    width:10px;
+    height:10px;
+    position:absolute;
+    bottom:0;
+    left:0;
+    margin-bottom:-10px;
+    z-index:-1;
+}
+
+.thumbnail {
+    -moz-column-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    column-break-inside: avoid;
+    margin: 0 0px 15px;
+    border: 0px solid #FAFAFA;
+    -webkit-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    -moz-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+}
+
+
+.star {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+}
+
+.starHighlighted {
+    position: absolute;
+    color: red !important;
+    right: 20px;
+    top: 5px;
+}
+
+/*Remove blue glow from around bootstrap 3 buttons.*/
+.btn:focus, .btn:active:focus, .btn.active:focus {
+    outline: none; ! important; outline-style: none;
+}
+
+.btn:focus {
+    outline: none; ! important; outline-style: none;
+}
+
+.img-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    max-height: 320px;
+    height: auto;
+}
