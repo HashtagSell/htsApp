@@ -71,3 +71,34 @@ exports.categoryMetadata = function(req, res){
     });
 
 };
+
+
+
+
+exports.getAllCategories = function(req, res){
+
+    var CategoryModel = require("../config/database/models/3TapsCategory.js");
+
+    //Search our users collection by the username and update their user_settings object
+    CategoryModel.find({}, function (err, categories) {
+
+        //systematic error. Redirect to page so user can report error.
+        if (err) {
+            console.log("error");
+            res.json({error : err});
+
+            // if no user is found, then this is a bad activation id
+        } else if (!categories) {
+
+            console.log("category not found");
+            res.json({error : "category not found"});
+
+            // found user that needs activation
+        } else if (categories) {
+
+            res.send({success:true, categories: categories});
+
+        }
+    });
+
+};

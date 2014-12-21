@@ -64,6 +64,41 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     };
 
 
+
+    $scope.getCategories = function () {
+        feedFactory.lookupCategories().then(function (response) {
+
+            console.log(response);
+
+            if(response.status !== 200) {
+
+                console.log(response.data.error);
+
+            } else if (response.status === 200) {
+
+                $scope.categories = response.data.categories;
+
+            }
+        }, function (response) {
+
+            console.log(response);
+
+            //TODO: Use modal service to notify users
+            alert("category lookup error");
+
+        });
+    };
+    $scope.getCategories();
+
+
+    $scope.categorySelected = function ($item, $model, $label) {
+        console.log('item', $item);
+        console.log('model', $model);
+        console.log('label', $label);
+    };
+
+
+
 }]);
 
 

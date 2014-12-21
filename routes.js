@@ -33,14 +33,21 @@ module.exports = function(app, passport) {
 
 
     // =====================================
-    // Categories Lookup ===================
+    // Categories Metadata Lookup ==========
     // =====================================
     app.get('/search/categories', reference.categoryMetadata);
 
 
 
     // =====================================
-    // CRON Categories =====================
+    // Get list of all possible categories =
+    // =====================================
+    app.get('/search/categorylookup', reference.getAllCategories);
+
+
+
+    // =====================================
+    // CRON Update categories cache ========
     // =====================================
     var cron = require('./api/admin/cronJobs'); //Lookup 3taps formatted metro codes
     app.get('/cronjob/categories', isAdmin, cron.updateCategories);
