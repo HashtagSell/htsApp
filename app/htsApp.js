@@ -127,16 +127,16 @@ htsApp.run(['$rootScope', 'sideNavFactory', function ($rootScope, sideNavFactory
 
 
 //Verifies is password field match
-htsApp.directive('match', function () {
+htsApp.directive('matchinput', function () {
     return {
         require: 'ngModel',
         restrict: 'A',
         scope: {
-            match: '='
+            matchinput: '='
         },
         link: function (scope, elem, attrs, ctrl) {
             scope.$watch(function () {
-                return (ctrl.$pristine && angular.isUndefined(ctrl.$modelValue)) || scope.match === ctrl.$modelValue;
+                return (ctrl.$pristine && angular.isUndefined(ctrl.$modelValue)) || scope.matchinput === ctrl.$modelValue;
             }, function (currentValue) {
                 ctrl.$setValidity('match', currentValue);
             });
