@@ -41,14 +41,14 @@
     border: 1px solid #ddd;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    height: 60px;
+    height: 90px;
 }
 
 .bs-profile-nav .profile .profileCircle {
     position: absolute;
     left: 10px;
     z-index: 1;
-    margin-top: 4px;
+    margin-top: 32px;
 }
 
 
