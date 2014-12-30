@@ -87,7 +87,7 @@ exports.poll = function(result, promise){
 
         //Generate anchor from 5 min ago
         var anchorDate = new Date();
-        anchorDate.setMinutes(anchorDate.getMinutes() - 5);
+        anchorDate.setMinutes(anchorDate.getMinutes() - 10);
 
 
         threeTapsClient.anchor({
