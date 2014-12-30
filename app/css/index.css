@@ -14,7 +14,7 @@
 
 .bs-profile-nav {
     /*padding-left: 20px;*/
-    text-align: center;
+    /*text-align: center;*/
     position: fixed;
 }
 
@@ -75,23 +75,31 @@
     text-align: left;
 }
 
-body {
-    padding-top: 70px;
+html, body {
     background-color: #f4f4f4;
-    /*font-family: "Open Sans",Helvetica,Arial,sans-serif;*/
-}
-
-html {
-    background-color: #f4f4f4;
+    padding-top: 40px;
 }
 
 
-.container-fluid {
-    padding-right: 35px;
-    padding-left: 35px;
-    margin-right: auto;
-    margin-left: auto;
+.outer-container {
+    /*border: 1px solid purple;*/
+    position: fixed;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    height: 100%;
 }
+
+.inner-container {
+    max-height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    /*padding: 10px;*/
+}
+
+/*.inner-container::-webkit-scrollbar {*/
+    /*display: none;*/
+/*}*/
 
 
 .navbar {
