@@ -1,5 +1,4 @@
 // app/models/user.js
-// load the things we need
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 
@@ -40,7 +39,24 @@ var userSchema = mongoose.Schema({
         profile_photo : { type: String, default: "/images/userMenu/user-placeholder.png" },
         banner_photo : { type: String, default: "/images/userMenu/header-placeholder.gif" },
         user_labels  : [],
-        favorites    : []
+        favorites    : [],
+        feed_categories : {
+            type: Array,
+            default: [
+                {
+                    "name" : "Real Estate",
+                    "code" : "RRRR"
+                },
+                {
+                    "name" : "For Sale",
+                    "code" : "SSSS"
+                },
+                {
+                    "name" : "Vehicles",
+                    "code" : "VVVV"
+                }
+            ]
+        }
     },
     stats            : {
         activated    : { type: Boolean, default: false },
