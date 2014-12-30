@@ -1,5 +1,22 @@
 htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory){
 
+    $scope.priceFiltered = false;
+    $scope.imageFiltered = false;
+
+
+    $scope.togglePriceFilter = function () {
+        $scope.priceFiltered = !$scope.priceFiltered;
+    };
+
+    $scope.toggleImageFilter = function () {
+        $scope.imageFiltered = !$scope.imageFiltered;
+    };
+
+    $scope.test = function () {
+        return 'blah';
+    };
+
+
     $scope.imgLoadedEvents = {
 
         always: function(instance) {
@@ -33,6 +50,14 @@ htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout',
         step: 1,
         rangeValue : [2,20]
     };
+
+    //Unbind and destroy isotope if user is leaving results or results splash page.  Speeds up route change by 10000%
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        if(toState.name !== 'results' && toState.name !== 'results.splash') {
+            $scope.$emit('iso-method', {name: 'destroy'});
+        }
+    });
+
 
     //Adds $ before the price slider values
     $scope.myFormater = function(value) {
