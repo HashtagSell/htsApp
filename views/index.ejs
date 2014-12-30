@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/ng-table/ng-table.min.css">
     <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css">
+    <link rel="stylesheet" href="/slick.js/slick/slick.css">
 
 </head>
 
@@ -66,7 +67,7 @@
     </div>
 
     <div class="container-fluid">
-        <div class="row">
+        <div class="row-fluid">
             <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
                 <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" ui-sref="profile" style="cursor: pointer">
                     <div class="profileCircle">
@@ -74,7 +75,7 @@
                     </div>
                 </div>
                 <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
-                    <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"k> @{{userObj.user_settings.name}}</div>
+                    <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
                     <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost()">Create New Post</button>
                 </div>
 
@@ -87,7 +88,7 @@
                 </div>
             </div>
 
-            <div ui-view class="col-lg-10 col-lg-offset-2 col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-12"></div>
+            <div ui-view></div>
         </div>
     </div>
 
@@ -113,6 +114,10 @@
     <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
     <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
     <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.min.js"></script>
+    <script type="text/javascript" src="/angular-ivh-treeview/dist/ivh-treeview.min.js"></script>
+    <script type="text/javascript" src="/slick.js/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/angular-vs-repeat/src/angular-vs-repeat.min.js"></script>
+
 
     <!--ANGULAR-->
     <script type="text/javascript" src="htsApp.js"></script>
