@@ -3,7 +3,7 @@
  */
 htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', function ($scope, $sce, $state, $modal, splashFactory) {
 
-    var splashInstanceCtrl = ['$scope', '$q', function ($scope, $q) {
+    var splashInstanceCtrl = ['$scope', function ($scope) {
 
         console.log(splashFactory.result);
 
@@ -32,7 +32,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                 zoomControl : false,
                 mapTypeControl : false
             },
-            zoom: 17
+            zoom: 14
         };
 
 
@@ -81,59 +81,10 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             show: true
         };
 
-        console.log($scope.marker);
-
-
-        var annotationsDictionary = new Hashtable();
-
-        annotationsDictionary.put("source_neighborhood","Neighborhood");
-        annotationsDictionary.put("year","Year");
-        annotationsDictionary.put("make","Make");
-        annotationsDictionary.put("title_status","Title");
-        annotationsDictionary.put("model","Model");
-        annotationsDictionary.put("mileage","Mileage");
-        annotationsDictionary.put("transmission","Transmission");
-        annotationsDictionary.put("drive","Drive");
-        annotationsDictionary.put("paint_color","Paint");
-        annotationsDictionary.put("type","Type");
-        annotationsDictionary.put("fuel","Fuel");
-        annotationsDictionary.put("size","Size");
-        annotationsDictionary.put("bathrooms","Bath");
-        annotationsDictionary.put("available","Available");
-        annotationsDictionary.put("no_smoking","Smoking");
-        annotationsDictionary.put("bedrooms","Rooms");
-        annotationsDictionary.put("dogs","Dogs");
-        annotationsDictionary.put("cats","Cats");
-        annotationsDictionary.put("attached_garage","Garage");
-        annotationsDictionary.put("laundry_on_site","Laundry");
-        annotationsDictionary.put("sqft","Sq Ft");
-        annotationsDictionary.put("size_dimensions","Dimensions");
-
-
-
-        $scope.sanitizeAnnotations = function (annoationsObj) {
-
-            $scope.sanitizedAnnotationsObj = {};
-
-            angular.forEach(annoationsObj, function(value, key) {
-                console.log(key + ': ' + value);
-
-                var validatedKey = annotationsDictionary.get(key);
-
-                if (validatedKey) {
-                    $scope.sanitizedAnnotationsObj[validatedKey] = value;
-                }
-
-
-            });
-
-            return $scope.sanitizedAnnotationsObj;
-        };
-
 
         if(splashFactory.result.annotations) {
 
-            $scope.annotations = $scope.sanitizeAnnotations(splashFactory.result.annotations);
+            $scope.annotations = splashFactory.sanitizeAnnotations(splashFactory.result.annotations);
 
             console.log('here are sanatized annotations', $scope.annotations);
         }
