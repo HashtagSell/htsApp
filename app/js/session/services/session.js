@@ -6,7 +6,21 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
             loggedIn: false,
             profile_photo: '/images/userMenu/user-placeholder.png',
             banner_photo: '/images/userMenu/header-placeholder.gif',
-            favorites: []
+            favorites: [],
+            feed_categories:[
+                {
+                    "name" : "Real Estate",
+                    "code" : "RRRR"
+                },
+                {
+                    "name" : "For Sale",
+                    "code" : "SSSS"
+                },
+                {
+                    "name" : "Vehicles",
+                    "code" : "VVVV"
+                }
+            ]
         }
     };
 
@@ -25,7 +39,7 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
 
                     deferred.resolve();
                     if (callback) {
-                        callback();
+                        callback(response);
                     }
 
                 } else {
