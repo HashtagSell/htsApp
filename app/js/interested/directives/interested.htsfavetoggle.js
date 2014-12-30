@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/10/14.
  */
-htsApp.directive('htsFaveToggle', function(){
+htsApp.directive('htsFaveToggle', function () {
     return {
         restrict: 'E',
         template: '<button type="button" ng-click="toggleFave(result); $event.stopPropagation();" class="btn btn-default" ng-class="{starHighlighted: favorited, star: !favorited}"><i class="fa fa-star"></i></button>',
@@ -12,8 +12,6 @@ htsApp.directive('htsFaveToggle', function(){
             if(Session.userObj.user_settings.loggedIn) {
                 favesFactory.checkFave($scope.result, function (response) {
                     $scope.favorited = response;
-                    console.log($scope.favorited);
-                    console.log("done checking");
                 });
             }
 

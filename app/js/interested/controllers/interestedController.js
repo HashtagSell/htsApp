@@ -120,7 +120,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 }]);
 
 
-htsApp.directive('dropdownMultiselect', ['favesFactory', function(favesFactory){
+htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory){
     return {
         restrict: 'E',
         scope:{
