@@ -1,9 +1,9 @@
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel']);
+var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat']);
 
 
 
 //Forcing XHR requests via Angular $http (AJAX)
-htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function ($httpProvider, $stateProvider, $urlRouterProvider) {
+htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider) {
 
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
@@ -38,7 +38,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('profile', {
             url: "/profile",
-            template: "My Profile",
+            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">My Profile</div></div>',
             resolve: { loginRequired: loginRequired }
         }).
         state('feed', {
@@ -48,8 +48,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         }).
         state('feed.splash', {
             url: "/:id",
-            controller: 'splashController',
-            resolve: { loginRequired: loginRequired }
+            controller: 'splashController'
         }).
         state('selling', {
             url: "/selling",
@@ -113,6 +112,17 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', function
         state('otherwise', {
             url: '/feed'
         });
+
+
+
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '',
+        defaultSelectedState: false
+    });
+
+
 
 }]);
 
