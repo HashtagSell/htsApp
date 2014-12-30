@@ -3,11 +3,11 @@
 <div ui-view></div>
 
 
-<div class="row affix" style="z-index: 4;">
-    <div class="col-lg-12 col-md-12 well well-sm">
+<div class="outer-container col-lg-10 col-lg-offset-2 col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-12 results-list">
+    <div class="filter-bar">
         <span slider ng-model="rangeSlider.rangeValue" min="{{rangeSlider.min}}" max="{{rangeSlider.max}}" range="true" slider-id="rangeSlider" formater="myFormater"></span>
-        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ priceFiltered ? '' : '.hasPrice' }}" type='button' class='btn btn-default' ng-class="priceFiltered ? '' : 'active'" ng-model="priceFiltered" btn-checkbox ng-click="priceFiltered = !priceFiltered">Must have price</button>
-        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ imageFiltered ? '' : '.hasImage' }}" type='button' class='btn btn-default' ng-class="imageFiltered ? '' : 'active'" ng-model="imageFiltered" btn-checkbox ng-click="imageFiltered = !imageFiltered">Must have image</button>
+        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ priceFiltered ? '' : '.hasPrice' }}{{ imageFiltered ? '.hasImage' : '' }}" class='btn btn-default' ng-class="priceFiltered ? 'active' : ''" ng-model="priceFiltered" ng-click="togglePriceFilter()">Must have price</button>
+        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ imageFiltered ? '' : '.hasImage' }}{{ priceFiltered ? '.hasPrice' : '' }}" class='btn btn-default' ng-class="imageFiltered ? 'active' : ''" ng-model="imageFiltered" ng-click="toggleImageFilter()">Must have image</button>
 
         <span class="btn-group" opt-kind ok-key="sortBy">
             <button type="button" class="btn btn-default active" ok-sel="[data-distance]" ok-type="integer">Distance</button>
@@ -15,37 +15,34 @@
             <button type="button" class="btn btn-default" ok-sel="[data-postDate]" ok-type="integer">Date Posted</button>
         </span>
 
-        <button type="button" class="btn btn-default" ng-model="showMap" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">
-            <i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show Map
-        </button>
+        <!--<button type="button" class="btn btn-default" ng-model="showMap" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">-->
+        <!--<i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show Map-->
+        <!--</button>-->
 
         <span class="btn-group">
             <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="true"><i class="fa fa-th"></i></label>
             <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="false"><i class="fa fa-list"></i></label>
         </span>
     </div>
-</div>
-<!--isotope-item ng-click="openSplash(this)"-->
-<!-- ISOTOPECONTAINER -->
-<div class="row">
-    <div class="affix col-lg-10 col-md-9 col-sm-9 col-xs-12 infiniteScrollContainer">
-        <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent >
+
+    <div class="inner-container col-lg-12 col-md-12 col-sm-12 col-xs-12 results-list">
+        <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent>
             <div id="isotopeContainer" isotope-container ng-class="{'no-transition':loading}">
                 <div ng-repeat="result in results"
-                    isotope-item
-                    ng-click="openSplash(this)"
-                    ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
-                    data-category="{{::result.category}}"
-                    data-email="{{::result.annotations.source_account}}"
-                    data-source="{{::result.source}}"
-                    data-lat="{{::result.location.lat}}"
-                    data-long="{{::result.location.long}}"
-                    data-sourceUrl="{{::result.external_url}}"
-                    data-postDate="{{::result.annotations.original_posting_date}}"
+                     isotope-item
+                     ng-click="openSplash(this)"
+                     ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
+                     data-category="{{::result.category}}"
+                     data-email="{{::result.annotations.source_account}}"
+                     data-source="{{::result.source}}"
+                     data-lat="{{::result.location.lat}}"
+                     data-long="{{::result.location.long}}"
+                     data-sourceUrl="{{::result.external_url}}"
+                     data-postDate="{{::result.annotations.original_posting_date}}"
                         >
                     <div class="thumbnail" style="cursor: pointer">
                         <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
-                        <ribbon data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
+                        <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
                         <hts-fave-toggle></hts-fave-toggle>
                         <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
                         <div ng-if="!result.images.length">No image found</div>
@@ -67,4 +64,6 @@
             </div>
         </div>
     </div>
+
 </div>
+
