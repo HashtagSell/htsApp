@@ -13,11 +13,38 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
         var polling_api = '';
 
-        if(Session.userObj.user_settings.safe_search) {
-            polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?categories=SSSS|RRRR|~PPPP|~MMMM";
-        } else {
-            polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?categories=SSSS|RRRR";
+        var category_groups = '';
+
+        var categories = '';
+
+        for(i=0; i < Session.userObj.user_settings.feed_categories.length; i++){
+            if((Session.userObj.user_settings.feed_categories[i].code == 'AAAA') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'CCCC') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'DISP') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'SSSS') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'JJJJ') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'MMMM') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'PPPP') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'RRRR') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'SVCS') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'ZZZZ') ||
+                (Session.userObj.user_settings.feed_categories[i].code == 'VVVV'))
+            {
+                category_groups += Session.userObj.user_settings.feed_categories[i].code + '|';
+            } else {
+                categories += Session.userObj.user_settings.feed_categories[i].code + '|';
+            }
         }
+
+        if(Session.userObj.user_settings.safe_search) {
+            category_groups += '~PPPP|~MMMM';
+        }
+
+        //if(Session.userObj.user_settings.safe_search) {
+        //    polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=~PPPP|~MMMM&category=" + categories;
+        //} else {
+            polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=" + category_groups + "&category=" + categories;
+        //}
 
         if(factory.queryParams.anchor) {
             polling_api += "&anchor=" + factory.queryParams.anchor;

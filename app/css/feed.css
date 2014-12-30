@@ -24,7 +24,7 @@ ribbon:before{
     display:block;
     width:10px;
     height:10px;
-    position:absolute;
+    /*position:absolute;*/
     bottom:0;
     left:0;
     margin-bottom:-10px;
@@ -72,4 +72,158 @@ ribbon:before{
     max-width: 100%;
     max-height: 320px;
     height: auto;
+}
+
+/*Category checklist tree*/
+ul.ivh-treeview {
+    list-style-type: none;
+    padding-left: 10px;
+}
+ul.ivh-treeview ul.ivh-treeview {
+    padding-left: 40px;
+}
+ul.ivh-treeview .ivh-treeview-toggle {
+    cursor: pointer;
+}
+
+
+.feed-category-selector {
+    margin-top: 10px;
+}
+
+.feed-list {
+    padding-bottom: 81px;
+}
+
+feed-item {
+    width: 100%;
+}
+
+
+
+/*Feed Item Styling with Carousel*/
+.slick-slide {
+    height:250px;
+}
+
+.slick-slide img {
+    height:250px;
+    margin: 1px;
+}
+
+.slick-prev {
+    left: 5px;
+}
+
+.slick-next {
+    right: 5px;
+}
+
+.carousel-heading {
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+}
+
+.carousel-body {
+    height: 40px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.carousel-timestamp {
+    margin-left: 30px;
+}
+
+.carousel-distance {
+    margin-right: 30px;
+}
+
+
+
+/*Feed item with one image*/
+.singleImage-Image {
+    height: 250px;
+    margin: 0 auto;
+}
+
+.singleImage-TextContainer {
+    height: 250px;
+}
+
+
+.singleImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.singleImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.singleImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.singleImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+
+/*Feed item has NO images*/
+.noImage-Placeholder {
+    height: 250px;
+    margin: 0 auto;
+}
+
+.noImage-TextContainer {
+    height: 250px;
+}
+
+
+.noImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.noImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.noImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }

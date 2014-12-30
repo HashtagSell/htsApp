@@ -1,11 +1,32 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr) {
 
     feedFactory.queryParams = {};
 
-    var updateFeed = function(){
+
+    $scope.slickConfig = {
+        dots: true,
+        lazyLoad: 'progressive',
+        infinite: true,
+        speed: 100,
+        slidesToScroll: 2,
+        //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
+        variableWidth: true,
+        onInit: function () {
+            jQuery(window).resize();
+            console.log('slickcaroseal locded');
+        },
+        centerMode: true
+
+    };
+
+
+    //updateFeed is triggered on interval and performs polling call to server for more items
+    var updateFeed = function () {
+
+        console.log(Session.userObj.user_settings.feed_categories);
 
         $scope.currentDate = Math.floor(Date.now() / 1000);
 
@@ -20,12 +41,34 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                 if(response.data.external.postings.length > 0) { //If we have at least one result
                     if (!$scope.results) { //If there are not results on the page yet, put them on page
+
+
+                        //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
+                        for(i = 0; i < response.data.external.postings.length; i++) {
+                            if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                                response.data.external.postings[i].feedItemHeight = 300;
+                            } else if (response.data.external.postings[i].images.length > 1) {
+                                response.data.external.postings[i].feedItemHeight = 485;
+                            }
+                        }
+
+
                         $scope.results = response.data.external.postings;
                     } else { //If there are already results on the page the add them to the top of the array
 
                         console.log('our new items', response.data.external.postings);
 
+                        //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                         for(i = 0; i < response.data.external.postings.length; i++){
+
+
+                            if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                                response.data.external.postings[i].feedItemHeight = 300;
+                            } else if (response.data.external.postings[i].images.length > 1) {
+                                response.data.external.postings[i].feedItemHeight = 485;
+                            }
+
+                            //Push each new result to top of feed
                             $scope.results.unshift(response.data.external.postings[i]);
                         }
 
@@ -46,17 +89,14 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
     var intervalUpdate = $interval(updateFeed, 30000, 0, true);
+
+    //This is called when user changes route. It stops javascript from interval polling in background.
     $scope.$on('$destroy', function () {
         $interval.cancel(intervalUpdate);
     });
 
-
-
-    $scope.scrollRefresh = function () {
-      updateFeed();
-    };
-
-
+    //TODO: When user pulls down from top of screen perform poll and reset interval
+    //openSplash called when suer clicks on item in feed for more details.
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
         console.log(splashFactory.result);
@@ -64,8 +104,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     };
 
 
+    //This obj binded to view to create category tree checklist
+    $scope.feedCategoryObj= {};
 
-    $scope.getCategories = function () {
+    //Get the users categories they have chosen to watch in their feed.
+    $scope.feedCategoryObj.userDefaultCategories = Session.userObj.user_settings.feed_categories;
+
+
+    //Fetch all the possible categories from the server and pass them function that creates nested list the tree checklist UI can understand
+    $scope.getAllCategoriesFromServer = function () {
         feedFactory.lookupCategories().then(function (response) {
 
             console.log(response);
@@ -76,7 +123,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             } else if (response.status === 200) {
 
-                $scope.categories = response.data.categories;
+                //$scope.categories = response.data.categories;
+                formatCategories(response.data.categories);
 
             }
         }, function (response) {
@@ -88,20 +136,216 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
         });
     };
-    $scope.getCategories();
+    $scope.getAllCategoriesFromServer();
 
 
-    $scope.categorySelected = function ($item, $model, $label) {
-        console.log('item', $item);
-        console.log('model', $model);
-        console.log('label', $label);
+
+    var formatCategories = function (serverCategories) {
+
+        var nestedCategories = [];
+
+        nestedCategories.push({
+            'name': serverCategories[0].group_name,
+            'code': serverCategories[0].group_code,
+            'selected' : isCategoryDefaultSelected(serverCategories[0].group_code),
+            'children': [{
+                'name': serverCategories[0].name,
+                'code': serverCategories[0].code,
+                'selected' : isCategoryDefaultSelected(serverCategories[0].code)
+            }]
+        });
+
+        //3Taps returns flat category structure.  We need nested structure.
+        //Loop though all the categories and nest child categories under group categories.
+        for (i = 1; i < serverCategories.length; i++) {
+
+            //console.log(serverCategories[i].group_code);
+            //console.log(serverCategories[i]);
+
+            for (j = 0; j < nestedCategories.length; j++) {
+
+                if (nestedCategories[j].code === serverCategories[i].group_code) { //If category group code is already found in our nestedCategories then add the child category to the group
+
+                    nestedCategories[j].children.push({
+                        'name': serverCategories[i].name,
+                        'code': serverCategories[i].code,
+                        'selected' : isCategoryDefaultSelected(serverCategories[i].code)
+                    });
+                    break;
+
+                } else if (j == nestedCategories.length - 1) {
+
+                    nestedCategories.push({
+                        'name': serverCategories[i].group_name,
+                        'code': serverCategories[i].group_code,
+                        'selected' : isCategoryDefaultSelected(serverCategories[i].group_code),
+                        'children': [{
+                            'name': serverCategories[i].name,
+                            'code': serverCategories[i].code,
+                            'selected' : isCategoryDefaultSelected(serverCategories[i].code)
+                        }]
+                    });
+
+                }
+
+            }
+
+        }
+
+        ivhTreeviewMgr.validate(nestedCategories);
+
+        $scope.feedCategoryObj.nestedCategories = nestedCategories;
     };
 
 
 
+
+    //This function used while converting 3Taps flat category list into nested list.
+    //If this function returns true the checkbox will be pre-checked in the UI when the page is loaded cause user set this preference previously.
+    var isCategoryDefaultSelected = function (categoryCode) {
+        for(k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
+            if($scope.feedCategoryObj.userDefaultCategories[k].code == categoryCode) {
+                return true;
+            } else if (k == $scope.feedCategoryObj.userDefaultCategories.length -1) {
+                return false;
+            }
+        }
+    };
+
+
+    //This function called when user checks or unchecks any item on the category tree.
+    $scope.categoryOnChange = function(node, isSelected, tree) {
+        console.log(node, isSelected, tree);
+
+        var newSelectedCategories = [];
+
+        for(t = 0; t < tree.length; t++){
+            if(!tree[t].selected){
+                for(u = 0; u < tree[t].children.length; u++) {
+                    if(tree[t].children[u].selected) {
+                        newSelectedCategories.push(
+                            {
+                                'name': tree[t].children[u].name,
+                                'code': tree[t].children[u].code
+                            }
+                        );
+                    }
+                }
+            } else {
+                newSelectedCategories.push(
+                    {
+                        'name': tree[t].name,
+                        'code': tree[t].code
+                    }
+                );
+            }
+        }
+
+        console.log(newSelectedCategories);
+
+        //Update the server
+        Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
+            if(response.status !== 200){
+                alert('could not remove category from user feed.  please notify support.');
+            }
+        });
+    };
 }]);
 
 
+
+//Custom implementation of https://github.com/kbdaitch/angular-slick-carousel
+//Var needed for slick carousel directives below.
+__indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+
+htsApp.directive('onFinishRender', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attr) {
+            if (scope.$last === true) {
+                return scope.$evalAsync(attr.onFinishRender);
+            }
+        }
+    };
+});
+
+htsApp.directive('slickCarousel', [
+    '$timeout', '$templateCache', function($timeout, $templateCache) {
+        var SLICK_FUNCTION_WHITELIST, SLICK_OPTION_WHITELIST, isEmpty;
+        $templateCache.put('angular-slick-carousel/template.html', "<div class=\"multiple\" ng-repeat=\"m in media\" on-finish-render=\"init()\">\n  <img ng-if=\"isImage({media: m})\" data-lazy=\"{{m.full || m.thumb || m.images}}\"/>\n  <video ng-if=\"isVideo({media: m})\" ng-src=\"{{m.src}}\" type=\"{{m.mimeType}}\" ></video>\n</div>");
+        SLICK_OPTION_WHITELIST = ['accessiblity', 'autoplay', 'autoplaySpeed', 'arrows', 'cssEase', 'dots', 'draggable', 'fade', 'easing', 'infinite', 'lazyLoad', 'onBeforeChange', 'onAfterChange', 'pauseOnHover', 'responsive', 'slide', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe', 'touchMove', 'touchThreshold', 'vertical'];
+        SLICK_FUNCTION_WHITELIST = ['slickGoTo', 'slickNext', 'slickPrev', 'slickPause', 'slickPlay', 'slickAdd', 'slickRemove', 'slickFilter', 'slickUnfilter', 'unslick'];
+        isEmpty = function(value) {
+            var key;
+            if (angular.isArray(value)) {
+                return value.length === 0;
+            } else if (angular.isObject(value)) {
+                for (key in value) {
+                    if (value.hasOwnProperty(key)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+        return {
+            scope: {
+                settings: '=',
+                control: '=',
+                media: '=',
+                onDirectiveInit: '&',
+                isImage: '&',
+                isVideo: '&'
+            },
+            templateUrl: function(tElement, tAttrs) {
+                if (tAttrs.src) {
+                    return tAttrs.src;
+                }
+                return 'angular-slick-carousel/template.html';
+            },
+            restrict: 'AE',
+            terminal: true,
+            link: function(scope, element, attr) {
+                var options;
+                if (typeof attr.isImage !== 'function') {
+                    scope.isImage = function(params) {
+                        //TODO: Should evaluate mimetype of image.. grrrr
+                        //Here is original code
+                        //return params.media.mimeType === 'image/png' || params.media.mimeType === 'image/jpeg';
+                        return true;
+                    };
+                }
+                if (typeof attr.isVideo !== 'function') {
+                    scope.isVideo = function(params) {
+                        return params.media.mimeType === 'video/mp4';
+                    };
+                }
+                options = scope.settings || {};
+                angular.forEach(attr, function(value, key) {
+                    if (__indexOf.call(SLICK_OPTION_WHITELIST, key) >= 0) {
+                        return options[key] === scope.$eval(value);
+                    }
+                });
+                scope.init = function() {
+                    var slick;
+                    slick = element.slick(options);
+                    scope.internalControl = scope.control || {};
+                    SLICK_FUNCTION_WHITELIST.forEach(function(value) {
+                        scope.internalControl[value] = function() {
+                            slick[value].apply(slick, arguments);
+                        };
+                    });
+                    scope.onDirectiveInit();
+                };
+            }
+        };
+    }
+]);
+
+
+
+//Filter used to calculate and format how long ago each item in the feed was posted.
 htsApp.filter('secondsToTimeString', function() {
     return function(seconds) {
         var days = Math.floor(seconds / 86400);
