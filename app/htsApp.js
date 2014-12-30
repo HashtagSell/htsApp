@@ -38,7 +38,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('profile', {
             url: "/profile",
-            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">My Profile</div></div>',
+            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">User Profile, Messages, & Ratings (Coming soon)</div></div>',
             resolve: { loginRequired: loginRequired }
         }).
         state('feed', {
@@ -69,7 +69,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('notifications', {
             url: "/notifications",
-            template: "My Notifications",
+            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">User Notifications!  Tell us what you want to buy and we\'ll notify you when it shows up online! (Coming soon)</div></div>',
             resolve: { loginRequired: loginRequired }
         }).
         state('settings', {

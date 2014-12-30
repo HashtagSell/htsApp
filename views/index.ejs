@@ -28,10 +28,10 @@
 <body>
     <div class="navbar navbar-default nav-links navbar-fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" ui-sref="feed">
+            <a class="navbar-brand hidden-xs" ui-sref="feed">
                 <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
             </a>
-            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-5 col-xs-offset-0 awesomeBar" ng-controller="awesomeBarController">
+            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
                 <form role="search" ng-submit="awesomeBarSubmit()">
                     <div class="input-group">
                         <input type="text" class="form-control" ng-model="query" placeholder="I'm looking to buy...">
@@ -46,7 +46,7 @@
             </div>
             <ul class="nav navbar-nav pull-right">
                 <li ng-controller="newPostController">
-                    <button type="button" class="btn btn-danger" ng-click="newPost()">Create New Post</button>
+                    <button type="button" class="btn btn-danger" ng-click="newPost()">#Sell It</button>
                 </li>
                 <li class="dropdown" ng-controller="userMenu">
                     <a href class="dropdown-toggle" on-toggle="toggled(open)">
@@ -76,7 +76,7 @@
                 </div>
                 <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
                     <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost()">Create New Post</button>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost()">#Sell It</button>
                 </div>
 
                 <!--SideNav-->
