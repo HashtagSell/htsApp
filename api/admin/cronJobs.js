@@ -71,7 +71,7 @@ exports.updateLocations = function(req, res){
 
 exports.updateCategories = function(req, res){
 
-    var categoryModel = require("../../models/3tapsCategory.js");
+    var categoryModel = require("../../config/database/models/3tapsCategory.js");
 
     var three_taps_api = "http://reference.3taps.com/categories";
 
