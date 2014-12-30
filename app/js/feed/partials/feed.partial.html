@@ -5,7 +5,7 @@
 
 
 <div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 feed-list">
-    <div vs-repeat class="inner-container row" vs-excess="6" vs-size-property="feedItemHeight">
+    <div vs-repeat class="inner-container row" vs-excess="12" vs-size-property="feedItemHeight">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
              ng-class="{hasPrice: result.price, hasImage: result.images.length}"
@@ -28,7 +28,7 @@
                 <div ng-if="!result.images.length">
                     <div class="row">
                         <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
-                            <div class="noImage-Placeholder postit"> No Image Found </div>
+                            <div class="noImage-Placeholder postit"> No Image </div>
                         </div>
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
                             <div class="row">
@@ -131,9 +131,12 @@
 
 <!--Category Tree-->
 <div class="outer-container col-lg-3 col-lg-offset-9 col-md-3 col-md-offset-9 col-sm-3 col-sm-offset-9 hidden-xs">
-    <div class="inner-container">
-        <input type="text" ng-model="filterCategories" class="form-control" placeholder="Quick-Search Categories" />
 
+    <!--TODO: When user is filtering expand all nodes in checklist tree  https://github.com/iVantage/angular-ivh-treeview/issues/23-->
+    <input type="text" ng-model="filterCategories" class="form-control" placeholder="Quick-Search Categories" style="width: 95%"/>
+
+    <div class="inner-container">
+        <!--Category tree selector-->
         <div ivh-treeview="feedCategoryObj.nestedCategories"
              ivh-treeview-label-attribute="'name'"
              ivh-treeview-id-attribute="'code'"
@@ -143,5 +146,6 @@
              ivh-treeview-filter="filterCategories"
              class="panel panel-default feed-category-selector">
         </div>
+
     </div>
 </div>
