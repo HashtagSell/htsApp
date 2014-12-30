@@ -102,7 +102,20 @@ exports.poll = function(result, promise){
                 result.anchor = data.anchor;
 
                 //Get categories from param in GET request
-                result.vendorFormattedCategories = result.query.categories;
+
+
+                if(result.query.category_group){
+                    result.category_group = result.query.category_group;
+                } else {
+                    result.category_group = null;
+                }
+
+
+                if(result.query.category){
+                    result.category = result.query.category;
+                } else {
+                    result.category = null;
+                }
 
                 //Use our default 3Taps parameters
                 result.source = config.THREE_TAPS_DEFAULT_SOURCES;
@@ -110,7 +123,8 @@ exports.poll = function(result, promise){
 
                 var options = {
                     anchor: result.anchor,
-                    category_group: result.vendorFormattedCategories,
+                    category_group: result.category_group,
+                    category      : result.category,
                     'location.city': result.location.cityCode,
                     retvals: result.retvals,
                     source: result.source
@@ -139,13 +153,27 @@ exports.poll = function(result, promise){
         result.anchor = result.query.anchor;
         result.location = {};
         result.location.cityCode = result.query.cityCode;
-        result.vendorFormattedCategories = result.query.categories;
+
+        if(result.query.category_group){
+            result.category_group = result.query.category_group;
+        } else {
+            result.category_group = null;
+        }
+
+
+        if(result.query.category){
+            result.category = result.query.category;
+        } else {
+            result.category = null;
+        }
+
         result.source = config.THREE_TAPS_DEFAULT_SOURCES;
         result.retvals = config.THREE_TAPS_DEFAULT_RETVALS;
 
         var options = {
             anchor          : result.anchor,
-            category_group  : result.vendorFormattedCategories,
+            category_group  : result.category_group,
+            category        : result.category,
             'location.city' : result.location.cityCode,
             retvals         : result.retvals,
             source          : result.source
@@ -156,7 +184,7 @@ exports.poll = function(result, promise){
 
         threeTapsClient.poll(options, function (err, data) {
             if(!err){
-                console.log(data);
+                //console.log(data);
                 promise(null, data);
 
             } else {

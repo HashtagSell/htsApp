@@ -52,20 +52,4 @@ exports.dedupe = function(result, promise){
 
     promise(null, originals);
 
-//    request(concatURL, promise, function (error, response, body) {
-//        if (!error && response.statusCode == 200) {
-//
-//            var results = JSON.parse(body);
-//
-//            promise(null, results);
-//
-//        } else if (error) {
-//
-//            console.log(error);
-//
-//            promise(error, null);
-//
-//        }
-//    });
-
 };
