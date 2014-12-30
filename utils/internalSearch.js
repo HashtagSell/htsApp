@@ -11,7 +11,6 @@ exports.query = function(req, result, promise){
     var mongoCategories = result.popularCategories;
 
 
-
     var userLat = result.location.latitude;
     var userLong = result.location.longitude;
 

@@ -1,9 +1,6 @@
 /* Start: Recommended Isotope styles */
 
 /**** Isotope Filtering ****/
-
-
-
 .isotope-item {
     z-index: 2;
     left: 10px !important;
@@ -67,6 +64,15 @@
 }
 
 
+/*.filter-bar{*/
+    /*overflow: hidden;*/
+/*}*/
+
+/*.filter-bar::-webkit-scrollbar {*/
+    /*display: none;*/
+/*}*/
+
+
 .grid-item {
     width: 259px;
     padding-right: 18px;
@@ -94,12 +100,6 @@
     width:100%;
 }
 
-
-
-
-
-
-
 .list-item {
     width: 100%;
 }
@@ -116,14 +116,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.list-item .thumbnail {
-    /*padding:0px !important;*/
-}
-
-.list-item .thumbnail .fitImage {
-    /*width:100%;*/
 }
 
 ribbon{
@@ -185,16 +177,19 @@ ribbon:before{
 }
 
 
+.results-list {
+    padding-bottom: 114px;
+    padding-left: 0px;
+}
 
 
 .infiniteScrollContainer {
     overflow-y: scroll;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    height:100%;
-    right:7px;
-    padding-top:63px;
+    padding: 0px 0px 0px 0px;
+    max-height:100%;
 }
-
 
 
 .gradient {
