@@ -1,0 +1,221 @@
+.sell-item-list{
+    padding: 0px 0px 81px 0px;
+}
+
+
+ribbon{
+    clear:both;
+    position:absolute;
+    color:#fff;
+    background:#149bdf;
+    text-shadow:0 -1px #149bdf, 0 1px #149bdf;
+    font-size:1.1em;
+    float:left;
+    padding:4px 10px 4px 10px;
+    margin-left:-14px;
+    margin-top:4px;
+    margin-bottom:20px;
+
+    -moz-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -webkit-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    -o-box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    box-shadow:2px 2px 0 rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+ribbon:before{
+    content:" ";
+    background:url(/images/priceRibbon/ribbon.png);
+    display:block;
+    width:10px;
+    height:10px;
+    /*position:absolute;*/
+    bottom:0;
+    left:0;
+    margin-bottom:-10px;
+    z-index:-1;
+}
+
+
+.thumbnail {
+    -moz-column-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    column-break-inside: avoid;
+    margin: 0 0px 15px;
+    border: 0px solid #FAFAFA;
+    -webkit-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    -moz-box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+    box-shadow: rgba(0,0,0,0.3) 0 1px 4px;
+}
+
+
+
+
+/*Feed Item Styling with Carousel*/
+.slick-slide {
+    height:250px;
+}
+
+.slick-slide img {
+    height:250px;
+    margin: 1px;
+}
+
+.slick-prev {
+    left: 5px;
+}
+
+.slick-next {
+    right: 5px;
+}
+
+.carousel-heading {
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+}
+
+.carousel-body {
+    height: 40px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.carousel-timestamp {
+    margin-left: 30px;
+}
+
+.carousel-distance {
+    margin-right: 30px;
+}
+
+
+
+/*Feed item with one image*/
+.singleImage-Image {
+    height: 250px;
+    margin: 0 auto;
+}
+
+.singleImage-TextContainer {
+    height: 250px;
+}
+
+
+.singleImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.singleImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.singleImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.singleImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+
+/*Feed item has NO images*/
+.noImage-Placeholder {
+    height: 250px;
+    margin: 0 auto;
+}
+
+.noImage-TextContainer {
+    height: 250px;
+}
+
+
+.noImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.noImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.noImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+.postit {
+    text-align:center;
+    width: 192px;
+    margin: 17px 30px 12px 30px;
+    min-height:114px;
+    max-height:175px;
+    padding-top:20px;
+    position:relative;
+    border:1px solid #E8E8E8;
+    border-top:0px solid #fdfd86;
+    font-family:'Reenie Beanie';
+    font-size:1.8em;
+    color:#4B4B4B;
+    border-bottom-right-radius: 60px 5px;
+    display:inline-block;
+    background: rgb(255,255,136); /* Old browsers */
+    background: -moz-linear-gradient(-45deg, rgba(255,255,136,1) 77%, rgba(255,255,214,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(77%,rgba(255,255,136,1)), color-stop(100%,rgba(255,255,214,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(-45deg, rgba(255,255,136,1) 77%,rgba(255,255,214,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(-45deg, rgba(255,255,136,1) 77%,rgba(255,255,214,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(-45deg, rgba(255,255,136,1) 77%,rgba(255,255,214,1) 100%); /* IE10+ */
+    background: linear-gradient(-45deg, rgba(255,255,136,1) 77%,rgba(255,255,214,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffff88',GradientType=0 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.postit:after {
+    content: "";
+    position:absolute;
+    z-index:-1;
+    right:-0px; bottom:20px;
+    width:178px;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow:2px 15px 5px rgba(0, 0, 0, 0.40);
+    -moz-transform: matrix(-1, -0.1, 0, 1, 0, 0);
+    -webkit-transform: matrix(-1, -0.1, 0, 1, 0, 0);
+    -o-transform: matrix(-1, -0.1, 0, 1, 0, 0);
+    -ms-transform: matrix(-1, -0.1, 0, 1, 0, 0);
+    transform: matrix(-1, -0.1, 0, 1, 0, 0);
+}

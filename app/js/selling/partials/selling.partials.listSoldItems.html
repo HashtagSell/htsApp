@@ -2,37 +2,94 @@
 
 <div ui-view></div>
 
-<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12">
+<div class="outer-container col-lg-9 col-lg-offset-2 col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-12 sell-item-list">
     <div class="inner-container">
-        <div class="row" ng-repeat="result in results"
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
+             ng-class="{hasPrice: result.price, hasImage: result.images.length}"
              data-category="{{::result.category}}"
              data-email="{{::result.annotations.source_account}}"
-             data-source="{{::result.source}}"
              data-lat="{{::result.location.lat}}"
              data-long="{{::result.location.long}}"
              data-sourceUrl="{{::result.external_url}}"
              data-postDate="{{::result.annotations.original_posting_date}}"
                 >
-            <div class="thumbnail" style="cursor: pointer">
-                <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
-                <ribbon data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
-                <hts-fave-toggle></hts-fave-toggle>
-                <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
-                <div ng-if="!result.images.length">No image found</div>
-                <div class="caption">
-                    <h4 class="heading">{{::result.heading}}</h4>
-                    <p class="body">{{::result.body}}</p>
-                    <p class="distance" data-distance="{{::result.distanceFromUser}}">
-                        <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
-                    </p>
-                    <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
-                    <p class="text-center">
-                        <a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>
-                        <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
-                    </p>
-                    <!--<span ng-click="">favorite</span>-->
+            <div class="thumbnail">
+                <ribbon ng-if="!!result.price" data-price="{{::result.price}}">{{::result.price | currency}}</ribbon>
+
+                <!--Has NO image-->
+                <div ng-if="!result.images.length">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
+                            <div class="noImage-Placeholder"> No Image Found </div>
+                        </div>
+                        <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
+                            <div class="row">
+                                <div class="caption">
+                                    <h4 class="noImage-heading">{{::result.heading}}</h4>
+                                    <p class="noImage-body">{{::result.body}}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="text-center">
+                                    <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+
+                <!--Has ONE image-->
+                <div ng-if="result.images.length == 1">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
+                            <img ng-src="{{::result.images[0].thumb || result.images[0].full }}" class="img-responsive singleImage-Image">
+                        </div>
+                        <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
+                            <div class="row">
+                                <div class="caption">
+                                    <h4 class="singleImage-heading">{{::result.heading}}</h4>
+                                    <p class="singleImage-body">{{::result.body}}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="text-center">
+                                    <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--Has MULTIPLE images-->
+                <div ng-if="result.images.length > 1">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <slick-carousel
+                                    settings="slickConfig"
+                                    media="result.images">
+                            </slick-carousel>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="caption">
+                            <h4 class="carousel-heading">{{::result.heading}}</h4>
+                            <p class="carousel-body">{{::result.body}}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="text-center">
+                            <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

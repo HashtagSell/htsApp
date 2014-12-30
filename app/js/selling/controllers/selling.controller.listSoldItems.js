@@ -1,7 +1,32 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.controller('selling.controller.listSoldItems', ['$scope', 'lookupItemsForSale', function ($scope, lookupItemsForSale) {
+htsApp.controller('selling.controller.listSoldItems', ['$scope', 'lookupItemsForSale', 'splashFactory', '$state', function ($scope, lookupItemsForSale, splashFactory, $state) {
+
+
+    //openSplash called when suer clicks on item in feed for more details.
+    $scope.openSplash = function(elems){
+        splashFactory.result = elems.result;
+        console.log(splashFactory.result);
+        $state.go('feed.splash', { id: elems.result.external_id });
+    };
+
+
+    $scope.slickConfig = {
+        dots: true,
+        lazyLoad: 'progressive',
+        infinite: true,
+        speed: 100,
+        slidesToScroll: 2,
+        //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
+        variableWidth: true,
+        onInit: function () {
+            jQuery(window).resize();
+            console.log('slickcaroseal locded');
+        },
+        centerMode: true
+
+    };
 
 
     lookupItemsForSale.init().then(function (response) {
