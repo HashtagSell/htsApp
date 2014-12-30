@@ -19,10 +19,12 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
 
         }, function (reason) {
             console.log(reason);
-            if(reason == "signUp"){
+            if(reason == "signUp") {
                 factory.signUpModal();
-            } else if (reason == "forgot"){
+            } else if (reason == "forgot") {
                 factory.forgotPasswordModal();
+            } else if (reason == "signIn") {
+                factory.signInModal();
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -47,6 +49,10 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
         }, function (reason) {
             if(reason == "success"){
                 $scope.checkEmail();
+            } else if (reason == "forgot") {
+                factory.forgotPasswordModal();
+            } else if (reason == "signIn") {
+                factory.signInModal();
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
