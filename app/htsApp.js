@@ -1,3 +1,14 @@
+// _    _           _     _               _____      _ _
+//| |  | |         | |   | |             / ____|    | | |
+//| |__| | __ _ ___| |__ | |_ __ _  __ _| (___   ___| | |  ___ ___  _ __ ___
+//|  __  |/ _` / __| '_ \| __/ _` |/ _` |\___ \ / _ \ | | / __/ _ \| '_ ` _ \
+//| |  | | (_| \__ \ | | | || (_| | (_| |____) |  __/ | || (_| (_) | | | | | |
+//|_|  |_|\__,_|___/_| |_|\__\__,_|\__, |_____/ \___|_|_(_)___\___/|_| |_| |_|
+//                                  __/ |
+//                                 |___/
+//
+//           This is where it all begins...
+
 var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat']);
 
 
@@ -38,7 +49,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('profile', {
             url: "/profile",
-            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">User Profile, Messages, & Ratings (Coming soon)</div></div>',
+            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12" style="margin-top:20px;"><div class="inner-container">User Profile, Messages, & Ratings (Coming soon)</div></div>',
             resolve: { loginRequired: loginRequired }
         }).
         state('feed', {
@@ -69,7 +80,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('notifications', {
             url: "/notifications",
-            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12"><div class="inner-container">User Notifications!  Tell us what you want to buy and we\'ll notify you when it shows up online! (Coming soon)</div></div>',
+            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12" style="margin-top:20px;"><div class="inner-container">User Notifications!  Tell us what you want to buy and we\'ll notify you when it shows up online! (Coming soon)</div></div>',
             resolve: { loginRequired: loginRequired }
         }).
         state('settings', {
@@ -151,5 +162,52 @@ htsApp.directive('matchinput', function () {
                 ctrl.$setValidity('match', currentValue);
             });
         }
+    };
+});
+
+
+//Convert phone numbers 1234567891 -> (123) 456-7891
+htsApp.filter('tel', function () {
+    return function (tel) {
+        if (!tel) { return ''; }
+
+        var value = tel.toString().trim().replace(/^\+/, '');
+
+        if (value.match(/[^0-9]/)) {
+            return tel;
+        }
+
+        var country, city, number;
+
+        switch (value.length) {
+            case 10: // +1PPP####### -> C (PPP) ###-####
+                country = 1;
+                city = value.slice(0, 3);
+                number = value.slice(3);
+                break;
+
+            case 11: // +CPPP####### -> CCC (PP) ###-####
+                country = value[0];
+                city = value.slice(1, 4);
+                number = value.slice(4);
+                break;
+
+            case 12: // +CCCPP####### -> CCC (PP) ###-####
+                country = value.slice(0, 3);
+                city = value.slice(3, 5);
+                number = value.slice(5);
+                break;
+
+            default:
+                return tel;
+        }
+
+        if (country == 1) {
+            country = "";
+        }
+
+        number = number.slice(0, 3) + '-' + number.slice(3);
+
+        return (country + " (" + city + ") " + number).trim();
     };
 });
