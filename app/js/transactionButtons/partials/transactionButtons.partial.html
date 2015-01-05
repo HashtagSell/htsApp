@@ -6,10 +6,22 @@
 <button ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(); $event.stopPropagation();" class="btn btn-default" role="button">Call Seller</button>
 
 <!--CL has no phone or email-->
-<button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Detailed View</button>
+<button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</button>
 
 <!--E_Bay Item-->
 <a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button">Place Bid</a>
+
+<!--E_Bay Motors-->
+<a ng-if="result.source == 'EBAYM'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+
+<!--Apartments.com-->
+<a ng-if="result.source == 'APTSD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+
+<!--Backpage -->
+<a ng-if="result.source == 'BKPGE'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+
+<!--Autotrader -->
+<a ng-if="result.source == 'AUTOD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
 
 <!--HashtagSell Item-->
 <a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="proposeDateTime(); $event.stopPropagation();" class="btn btn-primary" role="button">Place Offer</a>
