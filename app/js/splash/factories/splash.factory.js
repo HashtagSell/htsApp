@@ -33,6 +33,32 @@ htsApp.factory('splashFactory', function () {
     //ebay annotations
     annotationsDictionary.put("listingtype","Listing Type");
 
+    //ebay motors annotations
+    annotationsDictionary.put("body_type","Body Type");
+    annotationsDictionary.put("drive_type","Drive Type");
+    annotationsDictionary.put("engine","Engine");
+    annotationsDictionary.put("exterior_color","Exterior Color");
+    annotationsDictionary.put("for_sale_by","Seller Type");
+    annotationsDictionary.put("interior_color","Interior Color");
+    annotationsDictionary.put("fuel_type","Fuel Type");
+    annotationsDictionary.put("listing_type","Listing Type");
+    annotationsDictionary.put("number_of_cylinders","Cylinders");
+    annotationsDictionary.put("options","Options");
+    annotationsDictionary.put("power_options","Power Options");
+    annotationsDictionary.put("safety_features","Safety");
+    annotationsDictionary.put("ship_to_location","Ship To");
+    annotationsDictionary.put("trim","Trim");
+    annotationsDictionary.put("vehicle_title","Title");
+    annotationsDictionary.put("vin","Vin");
+    annotationsDictionary.put("warranty","Warranty");
+
+    //autotrader annotations
+    annotationsDictionary.put("bodyStyle","Body Type");
+    annotationsDictionary.put("drivetrain","Drive Train");
+    annotationsDictionary.put("exteriorColor","Exterior Color");
+    annotationsDictionary.put("interiorColor","Interior Color");
+    annotationsDictionary.put("seller","Seller Type");
+
     var factory = {};
 
     factory.sanitizeAnnotations = function (annoationsObj) {
