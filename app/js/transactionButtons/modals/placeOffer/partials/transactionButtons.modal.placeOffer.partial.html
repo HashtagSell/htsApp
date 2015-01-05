@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HashtagSell Place an Offer</title>
+</head>
+<body>
+
+    <form class="form-horizontal">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Suggest a Meeting Time</h3>
+        </div>
+        <div class="modal-body">
+            Please propose the date & times(s) you can meet at:
+            <br>
+            <br>
+            <b>{{result.location.formatted_address}}</b>
+            <br>
+            <br>
+            <div class="row">
+                <div class="dropdown col-lg-6 col-md-6 col-sm-6 col-xs-8">
+                    <a class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#" href="#">
+                        <div class="input-group">
+                            <input type="text" class="form-control" data-ng-model="data.dateDropDownInput">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-calendar"></i>
+                            </span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <datetimepicker data-ng-model="data.dateDropDownInput" data-datetimepicker-config="{}" data-on-set-time="onTimeSet(newDate, oldDate)"/>
+                    </ul>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <span ng-show="!userObj.user_settings.loggedIn" class="pull-left">
+                <small><a ng-click="dismiss('signUp')" style="cursor: pointer;">Create your free HashtagSell account.</a></small>
+            </span>
+            <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+        </div>
+    </form>
+
+</body>
+</html>

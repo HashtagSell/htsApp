@@ -85,8 +85,34 @@ htsApp.directive('transactionButtons', function () {
 
 
             //HTS item.  Gathers date and time to propose for pickup.
-            $scope.proposeDateTime = function () {
-                alert('Propose date and time to exchange item');
+            $scope.placeOffer = function () {
+                if(Session.userObj.user_settings.loggedIn) {  //If user logged In
+
+                    var modalInstance = $modal.open({
+                        templateUrl: 'js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
+                        controller: 'placeOfferController',
+                        resolve: {
+                            result: function () {
+                                return $scope.result;
+                            }
+                        }
+                    });
+
+                    modalInstance.result.then(function (reason) {
+
+                    }, function (reason) {
+                        console.log(reason);
+                        if (reason === "signUp") {
+                            authModalFactory.signUpModal();
+                        }
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+
+                } else {  //User is not logged in.
+
+                    authModalFactory.signUpModal();
+
+                }
             };
 
         }]
