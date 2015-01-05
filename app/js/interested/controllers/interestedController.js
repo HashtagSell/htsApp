@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 10/29/14.
  */
-htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', function($scope, $window, favesFactory, splashFactory, $state, ngTableParams, $filter, Session) {
+htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $window, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
 
@@ -98,7 +98,53 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     //Takes a list of all the selected items and creates and email with address in BCC field
     $scope.batchEmail = function(checkedItems) {
-        favesFactory.batchEmail(checkedItems);
+
+
+        var currentFavorites = $scope.currentFaves;
+
+        var results = [];
+
+        angular.forEach(checkedItems.items, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
+            if(selectedStatus) {  //Make sure the favorite is checked
+                console.log('this item selected', selectedStatus, id);
+                for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
+                    if(currentFavorites[i].external_id == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                        results.push(currentFavorites[i]);
+                    }
+                }
+            }
+        });
+
+        console.log(results);
+
+
+        if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                controller: 'quickComposeController',
+                resolve: {
+                    result: function () {
+                        return results;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if (reason === "signUp") {
+                    authModalFactory.signUpModal();
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+
+        } else {  //User already set their default email provider
+
+            quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, results);
+
+        }
     };
 
     $scope.UserLabels = favesFactory.getUserLabels(); //Gets all the users custom labels for the labels dropdown
@@ -107,7 +153,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     $scope.removeIndividualLabel = function($event){
         event.stopPropagation();
-        alert("remove label feature soon");
+        alert("Quick remove label feature soon.  Please check the item and remove the label for now.");
     };
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view

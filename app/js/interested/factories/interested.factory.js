@@ -122,35 +122,6 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
         });
     };
 
-    //Get the email addresses associated with the IDs of the selected favorites.  This is a dumb way to do it.  Fix this Brad.
-    favesFactory.batchEmail = function(checkedItems){
-        var currentFavorites = Session.userObj.user_settings.favorites;
-
-        var bccList = [];
-
-        angular.forEach(checkedItems.items, function(checked, id) {
-            if(checked) {  //Make sure the item is checked
-                for(i=0; i<currentFavorites.length; i++){
-                    if(currentFavorites[i].external_id == id){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
-                        if(currentFavorites[i].annotations.source_account !== "undefined") { //Make sure the matching item in local storage has an email
-                            bccList.push({email: currentFavorites[i].annotations.source_account, heading: currentFavorites[i].heading, url: "HashtagSell.com - Re-thinking Online Classifieds"});
-                        }
-                    }
-                }
-            }
-        });
-
-        console.log(bccList);
-
-        if(bccList.length === 0){ //Inform the user none of the selected favorites have email address we can email
-            alert("These favorited items have no emails.");
-        } else if (bccList.length == 1){ //Don't send to batchEmail function if we only have one email
-            //quickComposeFactory.init(bccList[0]);
-        } else {
-            //quickComposeFactory.batchEmail(bccList); //Send batch email
-        }
-    };
-
 
     favesFactory.addFavoriteLabel = function(newLabel){
         var sessionObj = Session.userObj;
