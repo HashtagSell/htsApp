@@ -40,11 +40,9 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             category_groups += '~PPPP|~MMMM';
         }
 
-        //if(Session.userObj.user_settings.safe_search) {
-        //    polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=~PPPP|~MMMM&category=" + categories;
-        //} else {
-            polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=" + category_groups + "&category=" + categories;
-        //}
+
+        polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=" + category_groups + "&category=" + categories;
+
 
         if(factory.queryParams.anchor) {
             polling_api += "&anchor=" + factory.queryParams.anchor;
