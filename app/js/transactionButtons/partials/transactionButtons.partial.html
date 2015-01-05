@@ -1,0 +1,12 @@
+
+<!--CL item and has email-->
+<button ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="quickCompose(); $event.stopPropagation();" class="btn btn-default" role="button">Email Seller</button>
+
+<!--CL item and only has phone-->
+<button ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(); $event.stopPropagation();" class="btn btn-default" role="button">Call Seller</button>
+
+<!--E_Bay Item-->
+<a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button">Place Bid</a>
+
+<!--HashtagSell Item-->
+<a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="proposeDateTime(); $event.stopPropagation();" class="btn btn-primary" role="button">Place Offer</a>

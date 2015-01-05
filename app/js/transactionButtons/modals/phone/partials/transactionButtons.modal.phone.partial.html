@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HashtagSell Quick Call</title>
+</head>
+<body>
+
+    <form class="form-horizontal">
+        <div class="modal-header">
+            <h3 id="myModalLabel">Call or Text</h3>
+        </div>
+        <div class="modal-body">
+            <div ng-bind="result.annotations.phone | tel"></div>
+        </div>
+
+        <div class="modal-footer">
+            <span ng-show="!userObj.user_settings.loggedIn" class="pull-left">
+                <small><a ng-click="dismiss('signUp')" style="cursor: pointer;">Create your free HashtagSell account.</a></small>
+            </span>
+            <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+        </div>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HashtagSell Quick Compose</title>
+</head>
+<body>
+
+    <!--<form name="loginForm" id="loginForm" class="form-horizontal" ng-submit="loginPassport(loginForm.$valid)" novalidate>-->
+        <!--<div class="modal-header">-->
+            <!--<h3 id="myModalLabel">Private Beta Login!</h3>-->
+        <!--</div>-->
+        <!--<div class="modal-body">-->
+            <!--<label class="control-label" for="email">Email Address:</label>-->
+            <!--<div class="controls">-->
+                <!--<input type="email" id="email" ng-model="email" required>-->
+            <!--</div>-->
+            <!--<br>-->
+            <!--<label class="control-label" for="password">Password:</label>-->
+            <!--<div class="controls">-->
+                <!--<input type="password" id="password" ng-model="password" required>-->
+                <!--<br>-->
+                <!--<small style="color:red;">-->
+                    <!--{{message}}-->
+                <!--</small>-->
+                <!--<br>-->
+                <!--<a href ng-click="dismiss('signUp')">-->
+                    <!--<small>Need an account?</small>-->
+                <!--</a>-->
+                <!--<small> | </small>-->
+                <!--<a href ng-click="dismiss('forgot')">-->
+                    <!--<small>Forgot your password?</small>-->
+                <!--</a>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="modal-footer">-->
+            <!--<input class="btn btn-success" type="submit" value="Log In" id="submit" ng-disabled="loginForm.$invalid">-->
+            <!--<button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>-->
+        <!--</div>-->
+    <!--</form>-->
+
+
+
+
+    <!--<div ng-controller="quickComposeController">-->
+        <!--<div id="QuickComposeEmail" class="modal hide fade" data-backdrop="false">-->
+            <form class="form-horizontal">
+                <div class="modal-header">
+                    <h3 id="myModalLabel">Select Email</h3>
+                </div>
+                <div class="modal-body">
+                    <select class="form-control" ng-model="selected" ng-options="o.value as o.name for o in emailOptionsObject">
+
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <span ng-show="userObj.user_settings.loggedIn" class="pull-left">
+
+                            <input type="checkbox" ng-model="setDefaultEmailProvider"> Save as default email.
+
+                    </span>
+                    <span ng-show="!userObj.user_settings.loggedIn" class="pull-left">
+                        <small><a ng-click="dismiss('signUp')" style="cursor: pointer;">Create a free account to setup default mail settings</a></small>
+                    </span>
+                    <button class="btn btn-success" ng-click="qcEmail()">Compose Email</button>
+                    <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+                </div>
+            </form>
+        <!--</div>-->
+
+
+        <!--<div id="QuickComposePhone" class="modal hide fade" data-backdrop="false">-->
+            <!--<div class="modal-header">-->
+                <!--<h3 id="myModalLabel">Call or Text</h3>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--<div>Seller did not include an email.  Please contact:</div>-->
+                <!--<h4>{{dynamicContent.phone}}</h4>-->
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+                <!--<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>-->
+            <!--</div>-->
+        <!--</div>-->
+
+
+        <!--<div id="QuickComposeFail" class="modal hide fade" data-backdrop="false">-->
+            <!--<form id="quickComposeForm" style="margin: 0px;" class="form-horizontal">-->
+                <!--<div class="modal-header">-->
+                    <!--<h3 id="myModalLabel">No phone or email found :(</h3>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+                    <!--The seller did not provide their contact info.  Please read the ad carefully.-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+    <!--</div>-->
+
+</body>
+</html>
