@@ -35,7 +35,15 @@ var userSchema = mongoose.Schema({
         biography    : { type: String, default: "Add a profile description" },
         location_type: { type: String, default: "Approximate" },
         safe_search  : { type: Boolean, default: true },
-        email_provider : { type: String, default: "Ask" },
+        email_provider : {
+            type: Array,
+            default: [
+                {
+                    name : "Always Ask",
+                    value: "ask"
+                }
+            ]
+        },
         profile_photo : { type: String, default: "/images/userMenu/user-placeholder.png" },
         banner_photo : { type: String, default: "/images/userMenu/header-placeholder.gif" },
         user_labels  : [],
