@@ -22,7 +22,7 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'lookupItemsFor
         variableWidth: true,
         onInit: function () {
             jQuery(window).resize();
-            console.log('slickcaroseal locded');
+            console.log('slick caroseal loaded');
         },
         centerMode: true
 
