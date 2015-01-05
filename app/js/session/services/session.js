@@ -6,6 +6,12 @@ htsApp.service('Session', ['$window', '$http', '$q', function ($window, $http, $
             loggedIn: false,
             profile_photo: '/images/userMenu/user-placeholder.png',
             banner_photo: '/images/userMenu/header-placeholder.gif',
+            email_provider: [
+                {
+                    name : "Always Ask",
+                    value: "ask"
+                }
+            ],
             favorites: [],
             feed_categories:[
                 {
