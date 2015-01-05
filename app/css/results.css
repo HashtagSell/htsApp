@@ -64,9 +64,9 @@
 }
 
 
-/*.filter-bar{*/
-    /*overflow: hidden;*/
-/*}*/
+.filter-bar{
+    margin-left: 10px;
+}
 
 /*.filter-bar::-webkit-scrollbar {*/
     /*display: none;*/
@@ -178,8 +178,9 @@ ribbon:before{
 
 
 .results-list {
-    padding-bottom: 114px;
+    padding-bottom: 130px;
     padding-left: 0px;
+    margin-top: 20px;
 }
 
 
