@@ -5,6 +5,9 @@
 <!--CL item and only has phone-->
 <button ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(); $event.stopPropagation();" class="btn btn-default" role="button">Call Seller</button>
 
+<!--CL has no phone or email-->
+<button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Detailed View</button>
+
 <!--E_Bay Item-->
 <a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button">Place Bid</a>
 

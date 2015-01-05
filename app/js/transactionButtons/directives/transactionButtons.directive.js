@@ -8,10 +8,9 @@ htsApp.directive('transactionButtons', function () {
             result: '='
         },
         templateUrl: 'js/transactionButtons/partials/transactionButtons.partial.html',
-        controller: ['$scope', '$element', '$modal', '$log', 'Session', 'quickComposeFactory', 'authModalFactory', '$window', function ($scope, $element, $modal, $log, Session, quickComposeFactory, authModalFactory, $window) {
+        controller: ['$scope', '$element', '$modal', '$log', 'Session', 'quickComposeFactory', 'authModalFactory', '$window', 'splashFactory', '$state', function ($scope, $element, $modal, $log, Session, quickComposeFactory, authModalFactory, $window, splashFactory, $state) {
 
             $scope.quickCompose = function () {
-
                 console.log('item we clicked on', $scope.result);
 
                 if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
@@ -41,7 +40,6 @@ htsApp.directive('transactionButtons', function () {
                     quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, $scope.result);
 
                 }
-
             };
 
 
@@ -68,6 +66,17 @@ htsApp.directive('transactionButtons', function () {
                 });
 
             };
+
+            //CL item does not have phone and email so we open splash detailed view.
+            $scope.openSplash = function () {
+                splashFactory.result = $scope.result;
+                if($state.is("feed")) {
+                    $state.go('feed.splash', {id: $scope.result.external_id});
+                } else if ($state.is("results")) {
+                    $state.go('results.splash', {id: $scope.result.external_id});
+                }
+            };
+
 
             //Ebay item.  Button links to item on ebay
             $scope.placeBid = function () {
