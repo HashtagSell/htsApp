@@ -15,6 +15,7 @@ htsApp.factory('splashFactory', function () {
     annotationsDictionary.put("transmission","Transmission");
     annotationsDictionary.put("drive","Drive");
     annotationsDictionary.put("paint_color","Paint");
+    annotationsDictionary.put("phone","Phone");
     annotationsDictionary.put("type","Type");
     annotationsDictionary.put("fuel","Fuel");
     annotationsDictionary.put("size","Size");
