@@ -6,11 +6,18 @@ htsApp.controller('settings.general.controller', ['$scope', '$timeout', 'Session
 
     $scope.options = {
         safeSearch: ['On', 'Off'],
-        defaultEmail: ['Ask', 'Gmail', 'Yahoo', 'Hotmail', 'AOL'],
+        defaultEmail: [
+            {name : "Always Ask", value: "ask"},
+            {name : "Gmail", value : "gmail"},
+            {name : "Yahoo", value : "yahoo"},
+            {name : "Hotmail", value : "hotmail"},
+            {name : "AOL", value : "aol"},
+            {name : "Use Default Mail Client", value : "mailto"}
+        ],
         location: ['Approximate', 'Exact']
     };
 
-
+    $scope.defaultEmail = Session.userObj.user_settings.email_provider[0].value;
 
     $scope.getSafeSearch = function(){
         //var value = Session.getSessionValue('safe_search');
@@ -46,33 +53,36 @@ htsApp.controller('settings.general.controller', ['$scope', '$timeout', 'Session
     };
 
 
-    $scope.getDefaultEmail = function(){
+    var buildDefaultEmail = function (selection) {
         //var value = Session.getSessionValue('email_provider');
-        switch (Session.userObj.user_settings.email_provider) {
-            case 'Ask':
-                return $scope.options.defaultEmail[0];
-            case 'Gmail':
-                return $scope.options.defaultEmail[1];
-            case 'Yahoo':
-                return $scope.options.defaultEmail[2];
-            case 'Hotmail':
-                return $scope.options.defaultEmail[3];
-            case 'AOL':
-                return $scope.options.defaultEmail[4];
+        switch (selection) {
+            case 'ask':
+                return [{name : "Always Ask", value: "ask"}];
+            case 'gmail':
+                return [{name : "Gmail", value : "gmail"}];
+            case 'yahoo':
+                return [{name : "Yahoo", value : "yahoo"}];
+            case 'hotmail':
+                return [{name : "Hotmail", value : "hotmail"}];
+            case 'aol':
+                return [{name : "AOL", value : "aol"}];
+            case 'mailto':
+                return [{name : "Use Default Mail Client", value : "mailto"}];
         }
     };
-    $scope.defaultEmail = $scope.getDefaultEmail();
+
 
     $scope.setDefaultEmail = function(selection){
 
-      Session.setSessionValue('email_provider', selection, function () {
-          $scope.defaultEmailUpdated = true;
+        selection = buildDefaultEmail(selection);
 
-          $timeout(function () {
+        Session.setSessionValue('email_provider', selection, function () {
+            $scope.defaultEmailUpdated = true;
 
-              $scope.defaultEmailUpdated = false;
-          }, 3000);
-      });
+            $timeout(function () {
+                $scope.defaultEmailUpdated = false;
+            }, 3000);
+        });
 
     };
 
