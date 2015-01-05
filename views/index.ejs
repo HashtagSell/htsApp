@@ -31,7 +31,7 @@
             <a class="navbar-brand hidden-xs" ui-sref="feed">
                 <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
             </a>
-            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
+            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-7 awesomeBar" ng-controller="awesomeBarController">
                 <form role="search" ng-submit="awesomeBarSubmit()">
                     <div class="input-group">
                         <input type="text" class="form-control" ng-model="query" placeholder="I'm looking to buy...">
@@ -151,6 +151,10 @@
     <script type="text/javascript" src="/js/selling/factories/selling.factories.listSoldItems.js"></script>
     <script type="text/javascript" src="/js/feed/controllers/feed.controller.js"></script>
     <script type="text/javascript" src="/js/feed/factories/feed.factory.js"></script>
+    <script type="text/javascript" src="/js/slickCarousel/directives/slickCarousel.directive.js"></script>
+    <script type="text/javascript" src="/js/transactionButtons/directives/transactionButtons.directive.js"></script>
+    <script type="text/javascript" src="/js/transactionButtons/modals/email/controllers/transactionButtons.modal.email.controller.js"></script>
+    <script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>
 
     <!--ONLY LOADED IN PRODUCTION-->
     <!--<script type="text/javascript" src="/dist/HashtagSell.min.js"></script>-->
