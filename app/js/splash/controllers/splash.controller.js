@@ -95,16 +95,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         backdrop: false,
         templateUrl: "js/splash/partials/splash_content.html",
         windowTemplateUrl: "js/splash/partials/splash_window.html",
-        controller: splashInstanceCtrl,
-        resolve: {
-            //mentionsFactory: ['$q', '$http', function ($q, $http) {
-            //
-            //    var factory = {}; //init the factory
-            //
-            //
-            //    return factory;
-            //}]
-        }
+        controller: splashInstanceCtrl
     });
 
 

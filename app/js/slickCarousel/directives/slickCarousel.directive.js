@@ -17,12 +17,16 @@ htsApp.directive('onFinishRender', function() {
     };
 });
 
-htsApp.directive('slickCarousel', [
-    '$timeout', '$templateCache', function($timeout, $templateCache) {
+htsApp.directive('slickCarousel', ['$timeout', '$templateCache', function($timeout, $templateCache) {
+
         var SLICK_FUNCTION_WHITELIST, SLICK_OPTION_WHITELIST, isEmpty;
+
         $templateCache.put('angular-slick-carousel/template.html', "<div class=\"multiple\" ng-repeat=\"m in media\" on-finish-render=\"init()\">\n  <img ng-if=\"isImage({media: m})\" data-lazy=\"{{m.thumb || m.thumbnail || m.images || m.full}}\"/>\n  <video ng-if=\"isVideo({media: m})\" ng-src=\"{{m.src}}\" type=\"{{m.mimeType}}\" ></video>\n</div>");
-        SLICK_OPTION_WHITELIST = ['accessiblity', 'autoplay', 'autoplaySpeed', 'arrows', 'cssEase', 'dots', 'draggable', 'fade', 'easing', 'infinite', 'lazyLoad', 'onBeforeChange', 'onAfterChange', 'pauseOnHover', 'responsive', 'slide', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe', 'touchMove', 'touchThreshold', 'vertical'];
+
+        SLICK_OPTION_WHITELIST = ['accessiblity', 'autoplay', 'autoplaySpeed', 'arrows', 'cssEase', 'dots', 'draggable', 'fade', 'easing', 'infinite', 'lazyLoad', 'onBeforeChange', 'onAfterChange', 'pauseOnHover', 'responsive', 'slide', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe', 'touchMove', 'touchThreshold', 'variableWidth', 'vertical'];
+
         SLICK_FUNCTION_WHITELIST = ['slickGoTo', 'slickNext', 'slickPrev', 'slickPause', 'slickPlay', 'slickAdd', 'slickRemove', 'slickFilter', 'slickUnfilter', 'unslick'];
+
         isEmpty = function(value) {
             var key;
             if (angular.isArray(value)) {
@@ -36,6 +40,7 @@ htsApp.directive('slickCarousel', [
             }
             return true;
         };
+
         return {
             scope: {
                 settings: '=',
@@ -76,6 +81,7 @@ htsApp.directive('slickCarousel', [
                 });
                 scope.init = function() {
                     var slick;
+                    console.log(element);
                     slick = element.slick(options);
                     scope.internalControl = scope.control || {};
                     SLICK_FUNCTION_WHITELIST.forEach(function(value) {

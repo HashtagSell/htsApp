@@ -5,6 +5,10 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
 
+    if($scope.currentFaves.length === 0) {
+        $scope.noItems = true;
+    }
+
     favesFactory.tableParams = new ngTableParams({
         page: 1,            // show first page
         count: 2000, // include all favorites on page one

@@ -1,14 +1,14 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.controller('selling.controller.listSoldItems', ['$scope', 'lookupItemsForSale', 'splashFactory', '$state', function ($scope, lookupItemsForSale, splashFactory, $state) {
+htsApp.controller('selling.controller.listSoldItems', ['$scope', 'forSaleFactory', 'splashFactory', '$state', function ($scope, forSaleFactory, splashFactory, $state) {
 
 
     //openSplash called when suer clicks on item in feed for more details.
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
         console.log(splashFactory.result);
-        $state.go('feed.splash', { id: elems.result.external_id });
+        $state.go('selling.splash', { id: elems.result.external_id });
     };
 
 
@@ -29,7 +29,7 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'lookupItemsFor
     };
 
 
-    lookupItemsForSale.init().then(function (response) {
+    forSaleFactory.init().then(function (response) {
 
         if(response.status !== 200) {
 

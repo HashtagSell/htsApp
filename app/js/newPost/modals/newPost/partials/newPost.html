@@ -1,54 +1,64 @@
-<!DOCTYPE html>
-<html>
 
-<!--<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--<!--[if gt IE 8]><!-->
-
-<head lang="en">
     <!-- Styles -->
     <link rel="stylesheet" href="/css/newpost.css">
-    <link rel="stylesheet" href="/dropzone/downloads/css/basic.css">
-
     <link rel="stylesheet" href="/medium-editor/dist/css/medium-editor.min.css">
     <link rel="stylesheet" href="/medium-editor/dist/css/themes/bootstrap.css">
 
-</head>
-<body>
 
     <div class="modal-header hts-post-title">
-            <span class="pull-left hover-pointer" ng-click="">
+            <span class="pull-left hover-pointer" ng-click="alert('fullscreen zen editor soon.')">
                 <i class="fa fa-arrows-alt"></i>
             </span>
         Create New Post
-            <span class="pull-right hover-pointer" ng-click="closePostCompose()">
+            <span class="pull-right hover-pointer" ng-click="dismiss('cancel post')">
                 <i class="fa fa-close"></i>
             </span>
     </div>
     <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
-        <div id="htsPost" mentio contenteditable data-disable-double-return ng-focus="clearExample()" data-placeholder=""
-             class="editor form-control editable hts-input"
-             mentio-require-leading-space="true"
-             mentio-macros="macros"
-             mentio-id="'hashtag'"
-             mentio-typed-term="typedTerm"
-             ng-model="jsonObj.html_body">
+
+        <div class="row remove-row-margins">
+            <div id="htsPost"
+                 ng-class="jsonObj.annotations.length > 0 ? 'col-lg-10' : 'col-lg-12' "
+                 mentio
+                 contenteditable
+                 data-disable-double-return
+                 ng-focus="clearExample()"
+                 data-placeholder="I'm selling"
+                 class="editor hts-input"
+                 mentio-require-leading-space="true"
+                 mentio-macros="macros"
+                 mentio-id="'hashtag'"
+                 mentio-typed-term="typedTerm"
+                 ng-model="jsonObj.html_body">
+            </div>
+            <div ng-class="jsonObj.annotations.length > 0 ? 'col-lg-2' : 'hidden-lg' " class="hts-annotations-container">
+                <div ng-repeat="annotation in jsonObj.annotations">
+                    <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
+                </div>
+            </div>
+
         </div>
+
         <div class="inset-toolbar">
-            <button id="imageUpload" class="btn btn-default btn-sm float-button-left btn-danger">
-                <i class="fa fa-camera"></i>
-                <b>Add photo</b>
-            </button>
-            {{jsonObj.hints}}
-            <button class="btn btn-default btn-sm float-button-right btn-danger" ng-click="processPost()"><i class="fa fa-slack" ng-cloak><b>Sell it</b></i></button>
+            <div>
+                <button id="imageUpload" class="btn btn-primary" style="height: 60px;">
+                    <i class="fa fa-camera"> Add photo</i>
+                </button>
+            </div>
+
+            <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container">{{uploadMessage}}</progressbar>
+
+            <div>
+                <button class="btn btn-primary" ng-click="processPost()" style="height: 60px;">
+                    <i class="fa fa-slack">Sell It</i>
+                </button>
+            </div>
         </div>
-        <div id="imgPreviewsContainer"></div>
+
     </div>
 
-    <!--<div style="overflow: scroll;">-->
-    <!--<pre style="word-wrap: break-word; white-space: pre-wrap;">{{formatted_jsonObj()}}</pre>-->
-    <!--</div>-->
+
+    <!--ng-TEMPLATES-->
 
     <mentio-menu style="z-index: 1100 !important;"
             mentio-for="'hashtag'"
@@ -108,5 +118,13 @@
         </ul>
     </script>
 
-</body>
-</html>
+
+    <script type="text/ng-template" id="dropzone-thumbnail.html">
+            <div class="dz-preview">
+                <img data-dz-thumbnail />
+                <i data-dz-remove class="fa fa-times dz-remove"></i>
+            </div>
+            <div>
+                <strong class="error text-danger" data-dz-errormessage></strong>
+            </div>
+    </script>

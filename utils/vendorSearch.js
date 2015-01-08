@@ -1,6 +1,6 @@
 var common   = require('../config/common.js');
 var config   = common.config();
-var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false });
+var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 10 });
 
 exports.query = function(result, promise){
 

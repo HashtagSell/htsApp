@@ -56,6 +56,14 @@ ribbon:before{
 
 
 /*Feed Item Styling with Carousel*/
+.slick-track {
+    min-width: 100%;
+}
+
+.slick-list {
+    height: 250px;
+}
+
 .slick-slide {
     height:250px;
 }

@@ -4,7 +4,7 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.factory('lookupItemsForSale', ['$http', '$stateParams', '$location', '$q', function($http, $stateParams, $location, $q){
+htsApp.factory('forSaleFactory', ['$http', '$stateParams', '$location', '$q', function($http, $stateParams, $location, $q){
 
     var factory = {};
 
@@ -18,6 +18,10 @@ htsApp.factory('lookupItemsForSale', ['$http', '$stateParams', '$location', '$q'
             then(function (response, status, headers, config) {
 
                 console.log('here it is', response);
+
+                //factory.cache = response.data;
+                //
+                //console.log('inside forsalefacory', factory.cache);
 
                 deferred.resolve(response);
 

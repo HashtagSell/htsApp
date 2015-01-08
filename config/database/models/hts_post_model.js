@@ -2,9 +2,7 @@
 var mongoose = require('mongoose');
 
 var newPostSchema = mongoose.Schema({
-    "annotations": {
-        stuff : { type: String, default: null }
-    },
+    "annotations": [],
     "body" : { type: String, default: null },
     "coordinates": {type: [Number], index: '2dsphere'},
     "category": { type: String, default: null },

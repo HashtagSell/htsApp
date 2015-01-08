@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker']);
+var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor']);
 
 
 
@@ -65,6 +65,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             url: "/selling",
             templateUrl: "js/selling/partials/selling.partials.listSoldItems.html",
             controller: 'selling.controller.listSoldItems',
+            resolve: { loginRequired: loginRequired }
+        }).
+        state('selling.splash', {
+            url: "/:id",
+            controller: 'splashController',
             resolve: { loginRequired: loginRequired }
         }).
         state('interested', {
