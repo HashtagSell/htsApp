@@ -3,6 +3,9 @@
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr) {
 
+    //While true the hashtagspinner will appear
+    $scope.pleaseWait = true;
+
     feedFactory.queryParams = {};
 
 
@@ -52,7 +55,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                             }
                         }
 
-
+                        $scope.pleaseWait = false;
 
                         $scope.results = response.data.external.postings;
 

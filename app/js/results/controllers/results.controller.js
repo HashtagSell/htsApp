@@ -1,5 +1,8 @@
 htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory){
 
+    //While true the hashtagspinner will appear
+    $scope.pleaseWait = true;
+
     $scope.priceFiltered = false;
     $scope.imageFiltered = false;
 
@@ -100,12 +103,14 @@ htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout',
 
             } else if(response.status == 200) {
 
+                $scope.pleaseWait = false;
+
                 $scope.results = $scope.results.concat(response.data.merged.postings);
 
                 if(response.data.merged.next_page === 0){ //If next_page equal to zero then we have no more results to display
 
                     //TODO: Use modal service to notify users
-                    alert("no more results...modal service soon");
+                    //alert("no more results...modal service soon");
 
                     $scope.noMoreResults = true;
 
