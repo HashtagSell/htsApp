@@ -82,7 +82,7 @@
 
                 <!--SideNav-->
                 <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
-                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
                         {{item.name}}
                         <span class="badge">{{item.alerts}}</span>
                     </a>
@@ -111,6 +111,8 @@
     <script type="text/javascript" src="/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-slider/slider.js"></script>
     <script type='text/javascript' src='/nginfiniteScroll/build/ng-infinite-scroll.min.js'></script>
+    <script type='text/javascript' src='/medium-editor/dist/js/medium-editor.min.js'></script>
+    <script type='text/javascript' src='/angular-medium-editor/dist/angular-medium-editor.min.js'></script>
     <script type='text/javascript' src='/imagesloaded/imagesloaded.pkgd.min.js'></script>
     <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
     <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
@@ -126,6 +128,10 @@
     <script type="text/javascript" src="htsApp.js"></script>
     <script type="text/javascript" src="/js/userMenu/controllers/userMenu.controller.userMenu.js"></script>
     <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/newPost/controllers/newPost.modals.newPost.controller.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/newPost/factories/newPost.modals.newPost.factory.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.dropzone.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.contenteditable.js"></script>
     <script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>
     <script type="text/javascript" src="/js/session/services/session.js"></script>
     <script type="text/javascript" src="/js/authModals/factories/authModal.factory.js"></script>
@@ -165,3 +171,5 @@
 
 </body>
 </html>
+
+
