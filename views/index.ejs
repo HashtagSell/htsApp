@@ -82,8 +82,8 @@
 
                 <!--SideNav-->
                 <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
-                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
-                        {{item.name}}
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
+                        {{::item.name}}
                         <span class="badge">{{item.alerts}}</span>
                     </a>
                 </div>
@@ -161,6 +161,7 @@
     <script type="text/javascript" src="/js/feed/controllers/feed.controller.js"></script>
     <script type="text/javascript" src="/js/feed/factories/feed.factory.js"></script>
     <script type="text/javascript" src="/js/slickCarousel/directives/slickCarousel.directive.js"></script>
+    <script type="text/javascript" src="/js/transactionButtons/factories/transactionButtons.factories.transactionFactory.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/directives/transactionButtons.directive.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/email/controllers/transactionButtons.modal.email.controller.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>
