@@ -143,15 +143,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 }]);
 
 
-
-//Updates sideNav when user clicks to navigate around application.
-htsApp.run(['$rootScope', 'sideNavFactory', function ($rootScope, sideNavFactory) {
-    $rootScope.$on('$stateChangeSuccess', function (event, toState) {
-            sideNavFactory.updateSideNav(toState);
-    });
-}]);
-
-
 //Verifies is password field match
 htsApp.directive('matchinput', function () {
     return {
