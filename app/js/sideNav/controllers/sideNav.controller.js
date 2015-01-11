@@ -1,11 +1,17 @@
-htsApp.controller('sideNav.controller', ['$scope', '$rootScope', 'sideNavFactory', function ($scope, $rootScope, sideNavFactory) {
+htsApp.controller('sideNav.controller', ['$scope', '$rootScope', 'sideNavFactory', 'splashFactory', function ($scope, $rootScope, sideNavFactory, splashFactory) {
 
     $scope.sideNav = sideNavFactory;
 
-    //TODO: SideNav does not correctly highlight menu item on page load.
+    $scope.result = splashFactory.result;
+
+    //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
 
+        sideNavFactory.updateSideNav(toState);
+
+        //Captures the previous state and appends it to the 'back' button in the settings and splash sideNav
         sideNavFactory.settingsMenu[0].link = fromState.name;
+        sideNavFactory.splashMenu[0].link = fromState.name;
     });
 
 }]);

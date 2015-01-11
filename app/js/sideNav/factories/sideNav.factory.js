@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.factory('sideNavFactory', ['Session', 'forSaleFactory', function (Session, forSaleFactory) {
+htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Session, transactionFactory) {
 
     var factory = {};
 
@@ -29,25 +29,47 @@ htsApp.factory('sideNavFactory', ['Session', 'forSaleFactory', function (Session
     }];
 
 
-
-
-
     //SPLASH SCREEN MENU
     factory.splashMenu = [{
-        name: "Make an Offer",
+        name: "Back",
         alerts: null,
-        link: "selling",
-        active: false
+        link: null,
+        active: false,
+        action: function () {
+            console.log('dismiss splash and go back state');
+        }
     }, {
-        name: "I'm Interested",
+        name: "Email Seller",
         alerts: null,
-        link: "interested",
-        active: false
+        link: null,
+        active: false,
+        action: function (result) {
+            transactionFactory.quickCompose(result);
+        }
     }, {
-        name: "Mark as Spam",
+        name: "Call Seller",
         alerts: null,
-        link: "notifications",
-        active: false
+        link: null,
+        active: false,
+        action: function (result) {
+            transactionFactory.displayPhone(result);
+        }
+    }, {
+        name: "Place Offer",
+        alerts: null,
+        link: null,
+        active: false,
+        action: function (result) {
+            transactionFactory.placeOffer(result);
+        }
+    }, {
+        name: "Show Original Post",
+        alerts: null,
+        link: null,
+        active: false,
+        action: function (result) {
+            transactionFactory.placeBid(result);
+        }
     }];
 
 
@@ -79,10 +101,6 @@ htsApp.factory('sideNavFactory', ['Session', 'forSaleFactory', function (Session
 
     //This function called by ui-router as moves through application.  Updates choice in side nav dynamically.
     factory.updateSideNav = function (toState) {
-        //
-        //alert(toState.name);
-        //
-        //console.log('here is watch me', factory.watchme);
 
         switch (toState.name) {
             //Settings Menu
@@ -117,24 +135,41 @@ htsApp.factory('sideNavFactory', ['Session', 'forSaleFactory', function (Session
 
 
 
-            //Splash Menu
+            //Splash Menu results
             case 'results.splash':
                 factory.splashMenu[0].active = false;
                 factory.splashMenu[1].active = false;
                 factory.splashMenu[2].active = false;
-                factory.items = factory.splashMenu;
+                factory.splashItems = factory.splashMenu;
                 break;
+
+
+
+            //Splash Menu Interested
             case 'interested.splash':
                 factory.splashMenu[0].active = false;
                 factory.splashMenu[1].active = false;
                 factory.splashMenu[2].active = false;
-                factory.items = factory.splashMenu;
+                factory.splashItems = factory.splashMenu;
                 break;
+
+
+
+            //Splash Menu Selling
             case 'selling.splash':
                 factory.splashMenu[0].active = false;
                 factory.splashMenu[1].active = false;
                 factory.splashMenu[2].active = false;
-                factory.items = factory.splashMenu;
+                factory.splashItems = factory.splashMenu;
+                break;
+
+
+            //Splash Menu Feed
+            case 'feed.splash':
+                factory.splashMenu[0].active = false;
+                factory.splashMenu[1].active = false;
+                factory.splashMenu[2].active = false;
+                factory.splashItems = factory.splashMenu;
                 break;
 
 
