@@ -1,4 +1,6 @@
-htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', function ($scope, $modal, newPostFactory) {
+htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'Session', function ($scope, $modal, newPostFactory, Session) {
+
+    $scope.userObj = Session.userObj;
 
     $scope.newPost = function () {
 
