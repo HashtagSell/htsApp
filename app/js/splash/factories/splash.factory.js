@@ -15,7 +15,6 @@ htsApp.factory('splashFactory', function () {
     annotationsDictionary.put("transmission","Transmission");
     annotationsDictionary.put("drive","Drive");
     annotationsDictionary.put("paint_color","Paint");
-    annotationsDictionary.put("phone","Phone");
     annotationsDictionary.put("type","Type");
     annotationsDictionary.put("fuel","Fuel");
     annotationsDictionary.put("size","Size");
@@ -31,7 +30,7 @@ htsApp.factory('splashFactory', function () {
     annotationsDictionary.put("size_dimensions","Dimensions");
 
     //ebay annotations
-    annotationsDictionary.put("listingtype","Listing Type");
+    //annotationsDictionary.put("listingtype","Listing Type");
 
     //ebay motors annotations
     annotationsDictionary.put("body_type","Body Type");
@@ -66,7 +65,7 @@ htsApp.factory('splashFactory', function () {
         var sanitizedAnnotationsObj = {};
 
         angular.forEach(annoationsObj, function(value, key) {
-            console.log(key + ': ' + value);
+            //console.log(key + ': ' + value);
 
             var validatedKey = annotationsDictionary.get(key);
 

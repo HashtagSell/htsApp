@@ -5,47 +5,41 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
     var splashInstanceCtrl = ['$scope', function ($scope) {
 
-        console.log(splashFactory.result);
-
-        $scope.body = $sce.trustAsHtml(splashFactory.result.body);
-        $scope.category = splashFactory.result.category;
-        $scope.category_group = splashFactory.category_group;
-        $scope.distanceFromUser = splashFactory.result.distanceFromUser;
-        $scope.external_id = splashFactory.result.external_id;
-        $scope.external_url = splashFactory.result.external_url;
-        $scope.heading = $sce.trustAsHtml(splashFactory.result.heading);
-        if (splashFactory.result.images.length) {
-            //console.log(splashFactory.result.images);
-            $scope.images = splashFactory.result.images;
-        }
-        $scope.location = splashFactory.result.location;
-        $scope.price = splashFactory.result.price;
-        $scope.source = splashFactory.result.source;
-
+        $scope.result = splashFactory.result;
+        $scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
+        $scope.result.heading_clean = $sce.trustAsHtml(splashFactory.result.heading);
 
         $scope.map = {
-            center: {
-                latitude: splashFactory.result.location.lat,
-                longitude: splashFactory.result.location.long
+            settings: {
+                center: {
+                    latitude: $scope.result.location.lat,
+                    longitude: $scope.result.location.long
+                },
+                options: {
+                    zoomControl: false,
+                    mapTypeControl: false
+                },
+                zoom: 14
             },
-            options: {
-                zoomControl : false,
-                mapTypeControl : false
+            marker: {
+                id: 0,
+                coords: {
+                    latitude: $scope.result.location.lat,
+                    longitude: $scope.result.location.long
+                }
             },
-            zoom: 14
+            infoWindow: {
+                show: true
+            }
         };
 
 
-        //Infowindow above map marker displays address or cross streets.  If data not supplied by 3Taps we use google to reverse geocode lat lon
-        $scope.reverseGeocode = function (locationObj) {
-            if (locationObj.formatted_address) {
-
-                $scope.formatted_address = locationObj.formatted_address;
-
-            } else {
+        //If we do not know the formatted address of the item we use the lat and lon to reverse geocode the closest address or cross-street.
+        if (!$scope.result.location.formatted_address) {
+            (function () {
 
                 var geocoder = new google.maps.Geocoder();
-                var latlng = new google.maps.LatLng(locationObj.lat, locationObj.long);
+                var latlng = new google.maps.LatLng($scope.result.location.lat, $scope.result.location.long);
 
                 geocoder.geocode({'latLng': latlng}, function (results, status) {
 
@@ -53,42 +47,27 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                         if (results[1]) {
                             console.log('reverse geocoded info', results[1].formatted_address);
 
-                            $scope.formatted_address = results[1].formatted_address;
+                            $scope.result.location.geocoded_address = results[1].formatted_address;
                         } else {
-                            $scope.infoWindow.show = false;
+                            $scope.map.infoWindow.show = false;
                         }
                     } else {
-                        $scope.infoWindow.show = false;
+                        $scope.map.infoWindow.show = false;
                         console.log('geocoder failed???');
                     }
                 });
 
-
-            }
-        };
-
-        $scope.reverseGeocode(splashFactory.result.location);
-
-        $scope.marker = {
-            id: 0,
-            coords: {
-                latitude: splashFactory.result.location.lat,
-                longitude: splashFactory.result.location.long
-            }
-        };
-
-        $scope.infoWindow = {
-            show: true
-        };
-
-
-        if(splashFactory.result.annotations) {
-
-            $scope.annotations = splashFactory.sanitizeAnnotations(splashFactory.result.annotations);
-
-            console.log('here are sanatized annotations', $scope.annotations);
+            })();
         }
 
+
+        if ($scope.result.annotations) {
+
+            $scope.result.sanitized_annotations = splashFactory.sanitizeAnnotations($scope.result.annotations);
+
+        }
+
+        console.log($scope.result);
     }];
 
     var splashInstance = $modal.open({
