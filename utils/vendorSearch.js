@@ -1,6 +1,6 @@
 var common   = require('../config/common.js');
 var config   = common.config();
-var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 10 });
+var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 30 });
 
 exports.query = function(result, promise){
 
@@ -85,9 +85,10 @@ exports.poll = function(result, promise){
 
     if(!result.query.anchor) {  //If we do not have an anchor then this is first query
 
-        //Generate anchor from 5 min ago
         var anchorDate = new Date();
-        anchorDate.setMinutes(anchorDate.getMinutes() - 10);
+
+        var numMinutes = 25;
+        anchorDate.setMinutes(anchorDate.getMinutes() - numMinutes);
 
 
         threeTapsClient.anchor({
@@ -101,9 +102,7 @@ exports.poll = function(result, promise){
                 //Store our starting anchor that 3Taps handed back
                 result.anchor = data.anchor;
 
-                //Get categories from param in GET request
-
-
+                //Get group categories from param in GET request
                 if(result.query.category_group){
                     result.category_group = result.query.category_group;
                 } else {
@@ -111,6 +110,7 @@ exports.poll = function(result, promise){
                 }
 
 
+                //Get child categories from get request
                 if(result.query.category){
                     result.category = result.query.category;
                 } else {
@@ -136,7 +136,7 @@ exports.poll = function(result, promise){
                 //Search 3Taps polling API
                 threeTapsClient.poll(options, function (err, data) {
                     if (!err) {
-                        console.log(data);
+
                         promise(null, data);
 
                     } else {
