@@ -1,27 +1,27 @@
 
 <!--CL item and has email-->
-<button ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="quickCompose(); $event.stopPropagation();" class="btn btn-default" role="button">Email Seller</button>
+<button ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="quickCompose(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-envelope-o fa-lg"></i>&nbsp; Email</button>
 
 <!--CL item and only has phone-->
-<button ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(); $event.stopPropagation();" class="btn btn-default" role="button">Call Seller</button>
+<button ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-phone fa-lg"></i>&nbsp; Phone</button>
 
 <!--CL has no phone or email-->
-<button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</button>
+<button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</button>
 
 <!--E_Bay Item-->
-<a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button">Place Bid</a>
+<a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-credit-card fa-lg"></i>&nbsp; Place bid</a>
 
 <!--E_Bay Motors-->
-<a ng-if="result.source == 'EBAYM'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+<a ng-if="result.source == 'EBAYM'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
 
 <!--Apartments.com-->
-<a ng-if="result.source == 'APTSD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+<a ng-if="result.source == 'APTSD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
 
 <!--Backpage -->
-<a ng-if="result.source == 'BKPGE'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+<a ng-if="result.source == 'BKPGE'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
 
 <!--Autotrader -->
-<a ng-if="result.source == 'AUTOD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button">Details</a>
+<a ng-if="result.source == 'AUTOD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
 
 <!--HashtagSell Item-->
-<a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="placeOffer(); $event.stopPropagation();" class="btn btn-primary" role="button">Place Offer</a>
+<a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="placeOffer(); $event.stopPropagation();" class="btn btn-danger" role="button"><i class="fa fa-credit-card fa-lg"></i>&nbsp; Place offer</a>

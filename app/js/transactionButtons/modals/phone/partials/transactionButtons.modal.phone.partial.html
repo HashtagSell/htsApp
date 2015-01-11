@@ -11,7 +11,7 @@
             <h3 id="myModalLabel">Call or Text</h3>
         </div>
         <div class="modal-body">
-            <div ng-bind="result.annotations.phone | tel"></div>
+            <a href="tel:{{result.annotations.phone}}" ng-bind="result.annotations.phone | tel"></a>
         </div>
 
         <div class="modal-footer">

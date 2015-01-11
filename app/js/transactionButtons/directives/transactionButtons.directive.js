@@ -8,111 +8,32 @@ htsApp.directive('transactionButtons', function () {
             result: '='
         },
         templateUrl: 'js/transactionButtons/partials/transactionButtons.partial.html',
-        controller: ['$scope', '$element', '$modal', '$log', 'Session', 'quickComposeFactory', 'authModalFactory', '$window', 'splashFactory', '$state', function ($scope, $element, $modal, $log, Session, quickComposeFactory, authModalFactory, $window, splashFactory, $state) {
+        controller: ['$scope', 'transactionFactory', function ($scope, transactionFactory) {
 
             $scope.quickCompose = function () {
-                console.log('item we clicked on', $scope.result);
-
-                if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
-
-                    var modalInstance = $modal.open({
-                        templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
-                        controller: 'quickComposeController',
-                        resolve: {
-                            result: function () {
-                                return $scope.result;
-                            }
-                        }
-                    });
-
-                    modalInstance.result.then(function (reason) {
-
-                    }, function (reason) {
-                        console.log(reason);
-                        if (reason === "signUp") {
-                            authModalFactory.signUpModal();
-                        }
-                        $log.info('Modal dismissed at: ' + new Date());
-                    });
-
-                } else {  //User already set their default email provider
-
-                    quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, $scope.result);
-
-                }
+                transactionFactory.quickCompose($scope.result);
             };
 
 
             $scope.displayPhone = function () {
-
-                var modalInstance = $modal.open({
-                    templateUrl: 'js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
-                    controller: 'phoneModalController',
-                    resolve: {
-                        result: function () {
-                            return $scope.result;
-                        }
-                    }
-                });
-
-                modalInstance.result.then(function (reason) {
-
-                }, function (reason) {
-                    console.log(reason);
-                    if (reason === "signUp") {
-                        authModalFactory.signUpModal();
-                    }
-                    $log.info('Modal dismissed at: ' + new Date());
-                });
-
+                transactionFactory.displayPhone($scope.result);
             };
 
             //CL item does not have phone and email so we open splash detailed view.
             $scope.openSplash = function () {
-                splashFactory.result = $scope.result;
-                if($state.is("feed")) {
-                    $state.go('feed.splash', {id: $scope.result.external_id});
-                } else if ($state.is("results")) {
-                    $state.go('results.splash', {id: $scope.result.external_id});
-                }
+                transactionFactory.openSplash($scope.result);
             };
 
 
             //Ebay item.  Button links to item on ebay
             $scope.placeBid = function () {
-                $window.open($scope.result.external_url);
+                transactionFactory.placeBid($scope.result);
             };
 
 
             //HTS item.  Gathers date and time to propose for pickup.
             $scope.placeOffer = function () {
-                if(Session.userObj.user_settings.loggedIn) {  //If user logged In
-
-                    var modalInstance = $modal.open({
-                        templateUrl: 'js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
-                        controller: 'placeOfferController',
-                        resolve: {
-                            result: function () {
-                                return $scope.result;
-                            }
-                        }
-                    });
-
-                    modalInstance.result.then(function (reason) {
-
-                    }, function (reason) {
-                        console.log(reason);
-                        if (reason === "signUp") {
-                            authModalFactory.signUpModal();
-                        }
-                        $log.info('Modal dismissed at: ' + new Date());
-                    });
-
-                } else {  //User is not logged in.
-
-                    authModalFactory.signUpModal();
-
-                }
+                transactionFactory.placeOffer($scope.result);
             };
 
         }]
