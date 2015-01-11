@@ -1,5 +1,3 @@
-
-
 <div class="container-fluid splash-content">
 
     <div class="row">
@@ -10,11 +8,11 @@
 
     <!--Google Map-->
     <div class="row">
-        <ui-gmap-google-map center='map.center' zoom='map.zoom'  options='map.options'>
+        <ui-gmap-google-map center='map.settings.center' zoom='map.settings.zoom'  options='map.settings.options'>
 
-            <ui-gmap-marker coords="marker.coords" idkey="marker.id" options="marker.options">
-                <ui-gmap-window show="infoWindow.show">
-                    {{::formatted_address}}
+            <ui-gmap-marker coords="map.marker.coords" idkey="map.marker.id" options="map.marker.options">
+                <ui-gmap-window show="map.infoWindow.show">
+                    {{::result.location.formatted_address || result.location.geocoded_address}}
                 </ui-gmap-window>
             </ui-gmap-marker>
 
@@ -29,43 +27,61 @@
         <div class="col-lg-2 col-md-3 col-sm-3 col-xs-3">
             <div class="row">
                 <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
-                    <div ng-controller="sideProfile" class="profile">
-                        <a ui-sref="profile" class="profileCircle">
-                            <img class='img-circle' ng-src={{img.profilePhoto}} width="70px;"/>
-                            <span ng-show="user.name"> @{{user.name}}</span>
-                        </a>
+                    <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" ui-sref="profile" style="cursor: pointer">
+                        <div class="profileCircle">
+                            <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
+                        </div>
                     </div>
-                    <div ng-controller="newPostController" class="sellButton">
-                        <button type="submit" class="btn btn-danger btn-sm custom-button" ng-click="newPost()">#Sell it!</button>
-                    </div>
+                    <!--<div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">-->
+                        <!--<div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>-->
+                        <!--<button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>-->
+                    <!--</div>-->
+                    <!--<div class="sellButton">-->
+                        <!--<transaction-buttons result="result"></transaction-buttons>-->
+                    <!--</div>-->
 
                     <!--SideNav-->
-                    <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
-                        <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" ng-click="$parent.selected = item" class="list-group-item" ng-class="{active:selected==item}">
-                            {{item.name}}
-                            <span class="badge">{{item.alerts}}</span>
+                    <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
+                        <!--<a ng-repeat="item in sideNav.splashItems" ui-sref="{{item.link}}" ng-click="item.action(result)" class="list-group-item" ng-class="item.active ? 'active' : 'null'" style="cursor: pointer">-->
+                            <!--{{::item.name}}-->
+                        <!--</a>-->
+                        <!--<a class="list-group-item" href="#"><i class="fa fa-home fa-fw"></i>&nbsp; Home</a>-->
+                        <a class="list-group-item" ui-sref="{{sideNav.splashItems[0].link}}">
+                            <i class="fa fa-chevron-circle-left fa-fw fa-lg"></i>&nbsp; Back
+                        </a>
+                        <a class="list-group-item" ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="sideNav.splashItems[1].action(result)" style="cursor: pointer">
+                            <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller
+                        </a>
+                        <a class="list-group-item" ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="sideNav.splashItems[2].action(result)" style="cursor: pointer">
+                            <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller
+                        </a>
+                        <a  class="list-group-item" ng-if="result.source === 'HSHTG'" ng-click="sideNav.splashItems[3].action(result)" style="cursor: pointer">
+                            <i class="fa fa-credit-card fa-fw fa-lg">&nbsp; Place offer</i>
+                        </a>
+                        <a class="list-group-item"  ng-if="result.source === 'E_BAY'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
+                            <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place bid
+                        </a>
+                        <a class="list-group-item" ng-if="result.source" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
+                            <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Link to original
                         </a>
                     </div>
                 </div>
             </div>
-                <!--<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 img-row-spacer" ng-if="images.length > 1" ng-repeat="image in images" >-->
-                    <!--<img src="{{image.full || image.thumb}}" class="img-responsive" ng-mouseenter="$parent.$parent.imageHover = image.full || image.thumb">-->
 
-                <!--</div>-->
         </div>
 
-        <div class="col-lg-10 col-md-9 col-sm-9 col-xs-9">
+        <div class="col-lg-10 col-md-9 col-sm-9 col-xs-12">
 
             <div class="row">
                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-8">
                     <h1 class="heading">
-                        {{::heading}}
+                        {{::result.heading_clean}}
                     </h1>
                 </div>
 
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
                     <h1 class="price">
-                        {{::price | currency}}
+                        {{::result.price | currency}}
                     </h1>
                 </div>
             </div>
@@ -73,84 +89,62 @@
 
             <div class="row">
 
-                <!--Annotation: {{annotations}}-->
+                <div ng-if="result.images.length">
+                    <ul rn-carousel rn-carousel-buffered rn-carousel-controls class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <li ng-repeat="image in result.images">
+                            <div class="layer" ng-if="image.full" ng-style="{'background-image': 'url(' + image.full + ')'}">
 
 
-                <ul rn-carousel rn-carousel-buffered rn-carousel-controls class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                    <li ng-repeat="image in images">
-                        <div class="layer" ng-if="image.full" ng-style="{'background-image': 'url(' + image.full + ')'}">
+                            </div>
+                            <div class="layer" ng-if="!image.full && image.thumb" ng-style="{'background-image': 'url(' + image.thumb + ')'}">
 
 
-                        </div>
-                        <div class="layer" ng-if="!image.full && image.thumb" ng-style="{'background-image': 'url(' + image.thumb + ')'}">
+                            </div>
+                            <div class="layer" ng-if="!image.full && !image.thumb && image.images" ng-style="{'background-image': 'url(' + image.images + ')'}">
 
 
-                        </div>
-                        <div class="layer" ng-if="!image.full && !image.thumb && image.images" ng-style="{'background-image': 'url(' + image.images + ')'}">
+                            </div>
+                        </li>
+                    </ul>
 
+                    <!--Far right column contains body, annotations, and commenting system.-->
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 description-block">
 
-                        </div>
-                    </li>
-                </ul>
-
-                <!--Far right column contains body, annotations, and commenting system.-->
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 description-block">
-
-                    <!--Annotations-->
-                    <div class="row">
-                        <div ng-repeat="(key, value) in annotations">
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                                <h4 class="row annotationKey">
-                                    {{::key}}
-                                </h4>
-                                <div class="row annotationValue">
-                                    {{::value}}
+                        <!--Annotations-->
+                        <div ng-if="result.sanitized_annotations" class="row">
+                            <div ng-repeat="(key, value) in result.sanitized_annotations">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                    <h4 class="row annotationKey">
+                                        {{::key}}
+                                    </h4>
+                                    <div class="row annotationValue">
+                                        {{::value}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
 
-                    <!--Body-->
-                    <div class="row item-body">
-                        <div ng-bind-html="body">
-                            <!--{{::body}}-->
+                        <!--Body-->
+                        <div class="row item-body">
+                            <div ng-bind-html="result.body_clean">
+                                <!--{{::body}}-->
+                            </div>
+                        </div>
+
+
+                        <!--Commenting System-->
+                        <div class="row">
+                            Q/A MODULE HERE
                         </div>
                     </div>
-
-
-                    <!--Commenting System-->
-                    <div class="row">
-                        Q/A MODULE HERE
-                    </div>
-
-
-
-
                 </div>
 
+                <div ng-if="!result.images.length">
+                    no images
+                </div>
 
-
-
-
-
-
-
-
-
-                <!--Category: {{category}}-->
-
-                <!--Category Group: {{category_group}}-->
-
-                <!--Distance From User: {{distanceFromUser}}-->
-
-                <!--Exernal URL: {{external_url}}-->
-
-                <!--Images: {{images}}-->
-
-                <!--Source: {{source}}-->
             </div>
-
         </div>
     </div>
 </div>
