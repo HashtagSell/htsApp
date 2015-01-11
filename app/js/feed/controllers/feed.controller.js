@@ -44,7 +44,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     if (!$scope.results) { //If there are not results on the page yet, put them on page
 
 
-                        //TODO: Seems items do NOT really from 3Taps sorted by in newest to oldest.  May need Josh to sort these when we hit his posting API
+                        //TODO: Seems 3Taps items are not really sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
 
                         //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                         for(i = 0; i < response.data.external.postings.length; i++) {
@@ -58,6 +58,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         $scope.pleaseWait = false;
 
                         $scope.results = response.data.external.postings;
+
 
                     } else { //If there are already results on the page the add them to the top of the array
 
@@ -86,6 +87,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         jQuery(".inner-container").scrollTop(scrollTopOffset);
 
                     }
+                } else {
+                    //updateFeed();
                 }
 
             }
@@ -94,7 +97,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
             console.log(response);
 
             //TODO: Use modal service to notify users
-            alert("polling error");
+            //alert("polling error");
 
         });
     };
@@ -107,6 +110,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     $scope.$on('$destroy', function () {
         $interval.cancel(intervalUpdate);
     });
+
 
     //TODO: When user pulls down from top of screen perform poll and reset interval
     //openSplash called when suer clicks on item in feed for more details.

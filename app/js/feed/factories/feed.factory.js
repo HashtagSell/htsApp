@@ -9,8 +9,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
         var deferred = $q.defer();
 
-        //TODO: Lookup users selected categories we should poll for them
-
         var polling_api = '';
 
         var category_groups = '';
