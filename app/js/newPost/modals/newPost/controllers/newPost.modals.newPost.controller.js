@@ -179,7 +179,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         return '<span class="mention-highlighter" contentEditable="false">@' + selectedPlace.description + '</span>';
     };
 
-    //========= @ Prices =========
+    //========= $ Prices =========
     $scope.searchPrice = function (term) {
         if (term) {
             $scope.prices = mentionsFactory.predictPrice(term);
