@@ -33,62 +33,62 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
         feedFactory.poll().then(function (response) {
 
-            if(response.status !== 200) {
+            if (response.status !== 200) {
 
                 $scope.results = response.data.error;
 
             } else if (response.status === 200) {
 
-                //TODO: If response has no results increase poll to 15 min.  Perhaps josh can add this on MaxRetry functionality
-                if(response.data.external.postings.length > 0) { //If we have at least one result
-                    if (!$scope.results) { //If there are not results on the page yet, put them on page
+                if (!$scope.results) { //If there are not results on the page yet, this is our first query
 
-
-                        //TODO: Seems 3Taps items are not really sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
-
-                        //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                        for(i = 0; i < response.data.external.postings.length; i++) {
-                            if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                                response.data.external.postings[i].feedItemHeight = 300;
-                            } else if (response.data.external.postings[i].images.length > 1) {
-                                response.data.external.postings[i].feedItemHeight = 485;
-                            }
+                    //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
+                    //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
+                    for (i = 0; i < response.data.external.postings.length; i++) {
+                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                            response.data.external.postings[i].feedItemHeight = 300;
+                        } else if (response.data.external.postings[i].images.length > 1) {
+                            response.data.external.postings[i].feedItemHeight = 485;
                         }
-
-                        $scope.pleaseWait = false;
-
-                        $scope.results = response.data.external.postings;
-
-
-                    } else { //If there are already results on the page the add them to the top of the array
-
-                        console.log('our new items', response.data.external.postings);
-
-                        //Capture how far user has scroll down.
-                        var scrollTopOffset = jQuery(".inner-container").scrollTop();
-
-                        //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                        for(i = 0; i < response.data.external.postings.length; i++){
-
-
-                            if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                                response.data.external.postings[i].feedItemHeight = 300;
-                                scrollTopOffset = scrollTopOffset + 300;
-                            } else if (response.data.external.postings[i].images.length > 1) {
-                                response.data.external.postings[i].feedItemHeight = 485;
-                                scrollTopOffset = scrollTopOffset + 485;
-                            }
-
-                            //Push each new result to top of feed
-                            $scope.results.unshift(response.data.external.postings[i]);
-                        }
-
-                        //Offset scroll bar location to page does not move after inserting new items.
-                        jQuery(".inner-container").scrollTop(scrollTopOffset);
-
                     }
-                } else {
-                    //updateFeed();
+
+                    $scope.pleaseWait = false;
+                    $scope.results = response.data.external.postings;
+
+                    //UI will query polling API every 30 seconds
+                    var intervalUpdate = $interval(updateFeed, 30000, 0, true);
+
+                    //This is called when user changes route. It stops javascript from interval polling in background.
+                    //TODO: We need to cache items already in feed so when user navigates back to feed we don't start this process over
+                    $scope.$on('$destroy', function () {
+                        $interval.cancel(intervalUpdate);
+                    });
+
+                } else { //If there are already results on the page the add them to the top of the array
+
+                    console.log('our new items', response.data.external.postings);
+
+                    //Capture how far user has scroll down.
+                    var scrollTopOffset = jQuery(".inner-container").scrollTop();
+
+                    //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
+                    for(i = 0; i < response.data.external.postings.length; i++){
+
+
+                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                            response.data.external.postings[i].feedItemHeight = 300;
+                            scrollTopOffset = scrollTopOffset + 300;
+                        } else if (response.data.external.postings[i].images.length > 1) {
+                            response.data.external.postings[i].feedItemHeight = 485;
+                            scrollTopOffset = scrollTopOffset + 485;
+                        }
+
+                        //Push each new result to top of feed
+                        $scope.results.unshift(response.data.external.postings[i]);
+                    }
+
+                    //Offset scroll bar location to page does not move after inserting new items.
+                    jQuery(".inner-container").scrollTop(scrollTopOffset);
+
                 }
 
             }
@@ -103,13 +103,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     };
     updateFeed();
 
-
-    var intervalUpdate = $interval(updateFeed, 30000, 0, true);
-
-    //This is called when user changes route. It stops javascript from interval polling in background.
-    $scope.$on('$destroy', function () {
-        $interval.cancel(intervalUpdate);
-    });
 
 
     //TODO: When user pulls down from top of screen perform poll and reset interval

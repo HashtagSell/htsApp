@@ -1,6 +1,6 @@
 var common   = require('../config/common.js');
 var config   = common.config();
-var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 30 });
+var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 50 });
 
 exports.query = function(result, promise){
 
@@ -81,15 +81,17 @@ function prepareCategories(categories) {
 
 
 
-exports.poll = function(result, promise){
+exports.poll = function(result, promise, timeFrame){
 
-    if(!result.query.anchor) {  //If we do not have an anchor then this is first query
+    if(!result.query.anchor) {  //If anchor was not passed in then this is first query
 
         var anchorDate = new Date();
 
-        var numMinutes = 25;
-        anchorDate.setMinutes(anchorDate.getMinutes() - numMinutes);
+        //If timeFrame is not supplied then poll 45 min into the past (default).
+        var numMinutes = timeFrame || 150;
 
+        console.log('Polling time-frame set at: '+numMinutes+' minutes.');
+        anchorDate.setMinutes(anchorDate.getMinutes() - numMinutes);
 
         threeTapsClient.anchor({
             timestamp : anchorDate
@@ -130,14 +132,22 @@ exports.poll = function(result, promise){
                     source: result.source
                 };
 
-                console.log('Options passed into polling API call');
+                //console.log('Options passed into polling API call');
                 console.log(options);
 
                 //Search 3Taps polling API
                 threeTapsClient.poll(options, function (err, data) {
                     if (!err) {
 
-                        promise(null, data);
+                        //If we have three or more results then resolve our promise
+                        if(data.postings.length >= 3){
+                            promise(null, data);
+                        } else { // If we have less than three results then increase our timeFrame and retrieve a new anchor.  Try again.
+
+                            console.log(data.postings.length+' polling items discovered.  Decrementing time-frame.');
+
+                            exports.poll(result, promise, numMinutes + 45);
+                        }
 
                     } else {
                         promise(err, null);
