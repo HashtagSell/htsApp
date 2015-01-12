@@ -129,7 +129,7 @@ exports.forgotPassword = function(req, res){
             }
         });
     });
-}
+};
 
 
 
@@ -474,4 +474,31 @@ exports.subscribe = function(req, res) {
 
         }
     });
+};
+
+
+
+
+exports.getProfile = function(req, res){
+
+    var userId = req.param('id');
+
+    User.findOne({ '_id' : userId }, function (err, user) {
+
+        // if there are any errors, return the error before anything else
+        if (err)
+            return res.json({error: err});
+
+        // if no user is found, return the message
+        if (!user)
+            return res.json({error: "No user found with that id."});
+
+        if(user)
+            return res.json({user: {
+                'profile_photo': user.user_settings.profile_photo,
+                'banner_photo': user.user_settings.banner_photo
+                }
+            });
+    });
+
 };
