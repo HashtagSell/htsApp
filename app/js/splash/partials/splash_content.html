@@ -27,11 +27,11 @@
         <div class="col-lg-2 col-md-3 col-sm-3 col-xs-3">
             <div class="row">
                 <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
-                    <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" ui-sref="profile" style="cursor: pointer">
+                    <side-profile class="profile" result="result" style="cursor: pointer">
                         <div class="profileCircle">
-                            <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
+                            <img class='bs-profile-image' width="70px;" height="70px;"/>
                         </div>
-                    </div>
+                    </side-profile>
                     <!--<div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">-->
                         <!--<div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>-->
                         <!--<button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>-->
@@ -56,7 +56,7 @@
                             <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller
                         </a>
                         <a  class="list-group-item" ng-if="result.source === 'HSHTG'" ng-click="sideNav.splashItems[3].action(result)" style="cursor: pointer">
-                            <i class="fa fa-credit-card fa-fw fa-lg">&nbsp; Place offer</i>
+                            <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place offer
                         </a>
                         <a class="list-group-item"  ng-if="result.source === 'E_BAY'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
                             <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place bid
