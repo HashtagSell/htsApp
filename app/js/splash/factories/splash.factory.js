@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.factory('splashFactory', function () {
+htsApp.factory('splashFactory', ['$http', '$location', '$q', function ($http, $location, $q) {
 
     var annotationsDictionary = new Hashtable();
 
@@ -79,5 +79,26 @@ htsApp.factory('splashFactory', function () {
         return sanitizedAnnotationsObj;
     };
 
+
+    factory.getUserProfile = function (sellerID) {
+
+        var deferred = $q.defer();
+
+        var url = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/getprofile?id=" + sellerID;
+
+        $http({method: 'GET', url: url}).
+            then(function (response, status, headers, config) {
+
+                deferred.resolve(response);
+
+            }, function (response, status, headers, config) {
+
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
+
+    };
+
     return factory;
-});
+}]);
