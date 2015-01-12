@@ -173,6 +173,12 @@ module.exports = function(app, passport) {
     app.post('/subscribe', activate.subscribe);
 
 
+    // =====================================
+    // Get User Profile ====================
+    // =====================================
+    app.get('/getprofile', activate.getProfile);
+
+
 
     // =====================================
     // Keep user_settings in sync with server
