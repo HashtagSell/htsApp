@@ -14,7 +14,9 @@ exports.query = function(req, result, promise){
     var userLat = result.location.latitude;
     var userLong = result.location.longitude;
 
-    console.log(term, mongoCategories, userLat, userLong);
+    console.log('search term is: ' + term);
+    console.log('userlat: ' + userLat);
+    console.log('userlong: ' + userLong);
 
     if(vendorPosts.length > 0) {
 
@@ -144,9 +146,9 @@ function deg2rad(deg) {
 
 
 function logQuery(req, vendorResponse, result, maxDistance, callback){
-    console.log("in log query");
-
-    console.log(req.user);
+    //console.log("in log query");
+    //
+    //console.log(req.user);
 
     if(!req.user    ) {
         var email = "";
@@ -154,53 +156,53 @@ function logQuery(req, vendorResponse, result, maxDistance, callback){
         var email = req.user.local.email;
     }
 
-    console.log(email);
+    //console.log(email);
 
     var heading = result.query.q;
 
-    console.log(heading);
+    //console.log(heading);
 
     var source = result.query.source;
 
-    console.log(source);
+    //console.log(source);
 
     var rpp = result.query.rpp;
 
-    console.log(rpp);
+    //console.log(rpp);
 
     var lat = result.location.latitude;
 
-    console.log(lat);
+    //console.log(lat);
 
     var lon = result.location.longitude;
 
-    console.log(lon);
+    //console.log(lon);
 
     var category = result.popularCategories;
 
-    console.log(category);
+    //console.log(category);
 
     var sort = result.query.sort;
 
-    console.log(sort);
+    //console.log(sort);
 
     var retvals = result.query.retvals;
 
-    console.log(retvals);
+    //console.log(retvals);
 
     var anchor = vendorResponse.anchor;
 
-    console.log(anchor);
+    //console.log(anchor);
 
     var next_page = vendorResponse.next_page;
 
-    console.log(next_page);
+    //console.log(next_page);
 
     var next_tier = vendorResponse.next_tier;
 
-    console.log(next_tier);
-
-    console.log("got all vars");
+    //console.log(next_tier);
+    //
+    //console.log("got all vars");
 
 
     Analytics.findOneAndUpdate(

@@ -217,3 +217,11 @@ ribbon:before{
 .btn:focus {
     outline: none; ! important; outline-style: none;
 }
+
+.noImage-Placeholder {
+    height: 165px;
+    background-image: url('/images/app/img_placeholder.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}

@@ -202,6 +202,10 @@ feed-item {
 .noImage-Placeholder {
     height: 250px;
     margin: 0 auto;
+    background-image: url('/images/app/img_placeholder.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
 }
 
 .noImage-TextContainer {
@@ -265,7 +269,7 @@ feed-item {
     /*background: linear-gradient(-45deg, rgba(255,255,136,1) 77%,rgba(255,255,214,1) 100%); *//* W3C */
     /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffff88',GradientType=0 ); *//* IE6-9 fallback on horizontal gradient */
     /*background-color: lightgrey;*/
-    background-image: url('http://ir.ebaystatic.com/pictures/aw/pics/nextGenVit/imgNoImg.gif');
+    background-image: url('/images/app/img_placeholder.gif');
     background-size: contain;
     background-repeat: no-repeat;
     opacity: 0.8;

@@ -48,7 +48,7 @@
                         <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
                         <hts-fave-toggle></hts-fave-toggle>
                         <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
-                        <div ng-if="!result.images.length">No image found</div>
+                        <div ng-if="!result.images.length" class="noImage-Placeholder"></div>
                         <div class="caption">
                             <h4 class="heading">{{::result.heading}}</h4>
                             <p class="body">{{::result.body}}</p>
