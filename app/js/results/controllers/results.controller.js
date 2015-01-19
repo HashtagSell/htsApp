@@ -1,44 +1,10 @@
-htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout', 'searchFactory', 'splashFactory', function($scope, $sce, $state, $timeout, searchFactory, splashFactory){
+htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', function($scope, $state, searchFactory, splashFactory) {
 
     //While true the hashtagspinner will appear
     $scope.pleaseWait = true;
 
-    $scope.priceFiltered = false;
-    $scope.imageFiltered = false;
-
-
-    $scope.togglePriceFilter = function () {
-        $scope.priceFiltered = !$scope.priceFiltered;
-    };
-
-    $scope.toggleImageFilter = function () {
-        $scope.imageFiltered = !$scope.imageFiltered;
-    };
-
-    $scope.test = function () {
-        return 'blah';
-    };
-
-
-    $scope.imgLoadedEvents = {
-
-        always: function(instance) {
-
-        },
-
-        done: function(instance) {
-            $scope.$emit('iso-method', {name:'reLayout', params:null});
-
-            //TODO: don't relayout all items on page.  Only do each item. https://github.com/mankindsoftware/angular-isotope/issues/27
-            //$scope.$emit('iso-method', {name:'layout', params:instance.elements[0]});
-
-        },
-
-        fail: function(instance) {
-            console.log("Img didn't load?");
-        }
-
-    };
+    //Tracks state of grid visible or not
+    $scope.view = searchFactory.views;
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(elems){
@@ -47,99 +13,121 @@ htsApp.controller('results.controller', ['$scope', '$sce', '$state', '$timeout',
         $state.go('results.splash', { id: elems.result.external_id });
     };
 
-    $scope.rangeSlider = {
-        min: 0,
-        max: 100,
-        step: 1,
-        rangeValue : [2,20]
-    };
-
-    //Unbind and destroy isotope if user is leaving results or results splash page.  Speeds up route change by 10000%
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        if(toState.name !== 'results' && toState.name !== 'results.splash') {
-            $scope.$emit('iso-method', {name: 'destroy'});
-        }
-    });
 
 
-    //Adds $ before the price slider values
-    $scope.myFormater = function(value) {
-        return "$"+value;
-    };
 
-    //Tracks state of map visible or not
-    $scope.showMap = 0;
-
-    $scope.reLayout = function(){
-        $timeout(function(){
-            $scope.$emit('iso-method', {name:'reLayout', params:null});
-        }, 1);
-
-    };
-
-    //Tracks state of grid visible or not
-    $scope.gridView = true;
-
-    //Tracks state of page if items are currently being loaded into view
-    $scope.loading = false;
-
-    $scope.results = [];
-
-    $scope.count = 0;
-
-    $scope.paginate = function(){
-
-        console.log($scope.count++);
-
-        if ($scope.loading) return;
-
-        $scope.loading = true;
+    //updateFeed is triggered on interval and performs polling call to server for more items
+    var paginate = function () {
 
         searchFactory.query().then(function (response) {
 
-            if(response.status !== 200) {
+            if (response.status !== 200) {
 
                 $scope.results = response.data.error;
 
-            } else if(response.status == 200) {
+            } else if (response.status === 200) {
+
+                if (!$scope.results) { //If there are not results on the page yet, this is our first query
+
+                    //searchFactory.generateRows(response.data.external.postings, false);
+
+                    searchFactory.filterArray();
+
+                    //Function passed into onVsIndexChange Directive
+                    $scope.infiniteScroll = function (startIndex, endIndex) {
+                        console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.results.gridRows.length);
+                        if (!$scope.loadingMoreResults && endIndex >= $scope.results.gridRows.length - 3) {
+                            console.log("paginating");
+                            $scope.loadingMoreResults = true;
+                            paginate();
+                        }
+                    };
+
+                } else { //If there are already results on the page the add them to the top of the array
+
+                    //searchFactory.generateRows(response.data.external.postings, false);
+
+                    searchFactory.filterArray();
+
+                }
+
+                $scope.results = searchFactory.results;
 
                 $scope.pleaseWait = false;
 
-                $scope.results = $scope.results.concat(response.data.merged.postings);
-
-                if(response.data.merged.next_page === 0){ //If next_page equal to zero then we have no more results to display
-
-                    //TODO: Use modal service to notify users
-                    //alert("no more results...modal service soon");
-
-                    $scope.noMoreResults = true;
-
-                }
+                $scope.loadingMoreResults = false;
 
             }
-
-            $timeout(function(){
-                if(!$scope.noMoreResults) {
-                    $scope.loading = false;
-                }
-            }, 1000);
-
-
-        }, function () {
+        }, function (response) {
 
             console.log(response);
 
             //TODO: Use modal service to notify users
-            alert("search error");
+            //alert("search error");
 
         });
-
     };
 
-    $scope.initQuery = function() {
-        searchFactory.queryParams = {}; //Clear params from previous search if any
-        $scope.paginate();
-    };
-    $scope.initQuery(); //Kick off first query
+    paginate();
 
+
+
+
+
+    //Clears view is user conducts a second search.
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        if(toState.name !== 'results.splash' && toParams.q !== fromParams.q) {
+            searchFactory.clearView();
+        }
+    });
+
+
+}]);
+
+
+htsApp.directive('onVsIndexChange', ['$parse', function ($parse) {
+    return function ($scope, $element, $attrs) {
+        var expr = $parse($attrs.onVsIndexChange);
+        var fn = function () {
+            expr($scope);
+        };
+        $scope.$watch('startIndex', fn);
+        $scope.$watch('endIndex', fn);
+    };
+}]);
+
+
+
+htsApp.directive('resizeGrid', ['$rootScope', '$window', 'searchFactory', function ($rootScope, $window, searchFactory) {
+    return {
+        restrict: 'A',
+        link: function postLink($scope, element) {
+
+            searchFactory.getInnerContainerDimensions = function () {
+                return {
+                    w: element.width(),
+                    h: element.height()
+                };
+            };
+
+            angular.element($window).bind('resize', function () {
+                //searchFactory.generateRows(searchFactory.results.unfiltered, true);
+
+                searchFactory.filterArray();
+
+                //var containerWidth = element.width();
+                ////Should match the CSS width of grid-item
+                //var itemWidth = 280;
+                //var allColumns = Math.floor(containerWidth / itemWidth) * 280;
+                //var padding = (containerWidth - allColumns) / 2;
+                //
+                //element.css(
+                //    {
+                //        padding: '0px 0px 0px ' + padding + 'px'
+                //    }
+                //);
+                $scope.$apply();
+            });
+        }
+    };
 }]);
