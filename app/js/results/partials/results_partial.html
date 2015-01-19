@@ -6,68 +6,45 @@
     <img src="/images/logo/hashtag_spinner.gif" class="img-center"/>
 </div>
 
+
 <div class="outer-container col-lg-10 col-lg-offset-2 col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-12 results-list">
-    <div class="filter-bar">
-        <span slider ng-model="rangeSlider.rangeValue" min="{{rangeSlider.min}}" max="{{rangeSlider.max}}" range="true" slider-id="rangeSlider" formater="myFormater"></span>
-        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ priceFiltered ? '' : '.hasPrice' }}{{ imageFiltered ? '.hasImage' : '' }}" class='btn btn-default' ng-class="priceFiltered ? 'active' : ''" ng-model="priceFiltered" ng-click="togglePriceFilter()">Must have price</button>
-        <button opt-kind ok-key="filter" ng-attr-ok-sel="{{ imageFiltered ? '' : '.hasImage' }}{{ priceFiltered ? '.hasPrice' : '' }}" class='btn btn-default' ng-class="imageFiltered ? 'active' : ''" ng-model="imageFiltered" ng-click="toggleImageFilter()">Must have image</button>
-
-        <span class="btn-group" opt-kind ok-key="sortBy">
-            <button type="button" class="btn btn-default active" ok-sel="[data-distance]" ok-type="integer">Distance</button>
-            <button type="button" class="btn btn-default" ok-sel="[data-price]" ok-type="integer">Price</button>
-            <button type="button" class="btn btn-default" ok-sel="[data-postDate]" ok-type="integer">Date Posted</button>
-        </span>
-
-        <!--<button type="button" class="btn btn-default" ng-model="showMap" btn-checkbox btn-checkbox-true="1" btn-checkbox-false="0">-->
-        <!--<i class="fa fa-map-marker"></i>&nbsp;&nbsp;Show Map-->
-        <!--</button>-->
-
-        <span class="btn-group">
-            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="true"><i class="fa fa-th"></i></label>
-            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="false"><i class="fa fa-list"></i></label>
-        </span>
-    </div>
-
-    <div class="inner-container col-lg-12 col-md-12 col-sm-12 col-xs-12 results-list">
-        <div infinite-scroll="paginate()" infinite-scroll-distance="3" infinite-scroll-disabled="loading" infinite-scroll-immediate-check="false" infinite-scroll-parent>
-            <div id="isotopeContainer" isotope-container ng-class="{'no-transition':loading}">
-                <div ng-repeat="result in results"
-                     isotope-item
-                     ng-click="openSplash(this)"
-                     ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': gridView, 'list-item': !gridView}"
-                     data-category="{{::result.category}}"
-                     data-email="{{::result.annotations.source_account}}"
-                     data-source="{{::result.source}}"
-                     data-lat="{{::result.location.lat}}"
-                     data-long="{{::result.location.long}}"
-                     data-sourceUrl="{{::result.external_url}}"
-                     data-postDate="{{::result.annotations.original_posting_date}}"
-                        >
-                    <div class="thumbnail" style="cursor: pointer">
-                        <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
-                        <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
-                        <hts-fave-toggle></hts-fave-toggle>
-                        <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
-                        <div ng-if="!result.images.length" class="noImage-Placeholder"></div>
-                        <div class="caption">
-                            <h4 class="heading">{{::result.heading}}</h4>
-                            <p class="body">{{::result.body}}</p>
-                            <p class="distance" data-distance="{{::result.distanceFromUser}}">
-                                <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
-                            </p>
-                            <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
-                            <p class="text-center">
-                                <!--<a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>-->
-                                <transaction-buttons result="result"></transaction-buttons>
-                                <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
-                            </p>
-                            <!--<span ng-click="">favorite</span>-->
-                        </div>
+    <div resize-grid vs-repeat class="inner-container" vs-excess="5" vs-size-property="rowHeight" vs-offset-before="20" on-vs-index-change="infiniteScroll(startIndex, endIndex)">
+        <div ng-repeat="row in results.gridRows" class="row">
+            <div ng-repeat="result in row.rowContents"
+                 ng-click="openSplash(this)"
+                 ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': view.gridView, 'list-item': !view.gridView}"
+                 class="col-lg-2 col-md-2 col-sm-2 col-xs-2"
+                 data-category="{{::result.category}}"
+                 data-email="{{::result.annotations.source_account}}"
+                 data-source="{{::result.source}}"
+                 data-lat="{{::result.location.lat}}"
+                 data-long="{{::result.location.long}}"
+                 data-sourceUrl="{{::result.external_url}}"
+                 data-postDate="{{::result.annotations.original_posting_date}}"
+                    >
+                <div class="thumbnail" style="cursor: pointer">
+                    <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
+                    <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
+                    <hts-fave-toggle></hts-fave-toggle>
+                    <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
+                    <div ng-if="!result.images.length" class="noImage-Placeholder"></div>
+                    <div class="caption">
+                        <h4 class="heading">{{::result.heading}}</h4>
+                        <p class="body">{{::result.body}}</p>
+                        <p class="distance" data-distance="{{::result.distanceFromUser}}">
+                            <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                        </p>
+                        <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
+                        <p class="text-center">
+                            <!--<a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>-->
+                            <transaction-buttons result="result"></transaction-buttons>
+                            <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
+                        </p>
+                        <!--<span ng-click="">favorite</span>-->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
