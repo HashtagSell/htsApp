@@ -18,11 +18,13 @@
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/splash.css">
     <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css">
+    <!--<link rel="stylesheet" href="/ng-slider/dist/css/ng-slider.min.css">-->
     <link rel="stylesheet" href="/ng-table/ng-table.min.css">
     <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css">
     <link rel="stylesheet" href="/slick.js/slick/slick.css">
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css">
+    <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
 
 </head>
 
@@ -39,13 +41,13 @@
                                 type="text"
                                 class="form-control"
                                 ng-model="query"
-                                placeholder="I'm looking to buy..."
-                                mentio
-                                mentio-require-leading-space="true"
-                                mentio-macros="macros"
-                                mentio-id="'hashtag'"
-                                mentio-typed-term="typedTerm"
-                                >
+                                placeholder="I'm looking to buy...">
+                                <!--mentio-->
+                                <!--mentio-require-leading-space="true"-->
+                                <!--mentio-macros="macros"-->
+                                <!--mentio-id="'hashtag'"-->
+                                <!--mentio-typed-term="typedTerm"-->
+
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-danger" type="button">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -56,63 +58,63 @@
                 </form>
 
 
-                <mentio-menu style="z-index: 1100 !important;"
-                             mentio-for="'hashtag'"
-                             mentio-trigger-char="'#'"
-                             mentio-items="products"
-                             mentio-template-url="/product-mentions.tpl"
-                             mentio-search="searchProducts(term)"
-                             mentio-select="getProductTextRaw(item)">
-                </mentio-menu>
+                <!--<mentio-menu style="z-index: 1100 !important;"-->
+                             <!--mentio-for="'hashtag'"-->
+                             <!--mentio-trigger-char="'#'"-->
+                             <!--mentio-items="products"-->
+                             <!--mentio-template-url="/product-mentions.tpl"-->
+                             <!--mentio-search="searchProducts(term)"-->
+                             <!--mentio-select="getProductTextRaw(item)">-->
+                <!--</mentio-menu>-->
 
-                <mentio-menu style="z-index: 1100 !important;"
-                             mentio-for="'hashtag'"
-                             mentio-trigger-char="'@'"
-                             mentio-items="places"
-                             mentio-template-url="/place-mentions.tpl"
-                             mentio-search="searchPlaces(term)"
-                             mentio-select="getPlacesTextRaw(item)">
-                </mentio-menu>
+                <!--<mentio-menu style="z-index: 1100 !important;"-->
+                             <!--mentio-for="'hashtag'"-->
+                             <!--mentio-trigger-char="'@'"-->
+                             <!--mentio-items="places"-->
+                             <!--mentio-template-url="/place-mentions.tpl"-->
+                             <!--mentio-search="searchPlaces(term)"-->
+                             <!--mentio-select="getPlacesTextRaw(item)">-->
+                <!--</mentio-menu>-->
 
-                <mentio-menu style="z-index: 1100 !important;"
-                             mentio-for="'hashtag'"
-                             mentio-trigger-char="'$'"
-                             mentio-items="prices"
-                             mentio-template-url="/price-mentions.tpl"
-                             mentio-search="searchPrice(term)"
-                             mentio-select="getPricesTextRaw(item)">
-                </mentio-menu>
+                <!--<mentio-menu style="z-index: 1100 !important;"-->
+                             <!--mentio-for="'hashtag'"-->
+                             <!--mentio-trigger-char="'$'"-->
+                             <!--mentio-items="prices"-->
+                             <!--mentio-template-url="/price-mentions.tpl"-->
+                             <!--mentio-search="searchPrice(term)"-->
+                             <!--mentio-select="getPricesTextRaw(item)">-->
+                <!--</mentio-menu>-->
 
-                <script type="text/ng-template" id="/product-mentions.tpl">
-                    <ul class="list-group user-search demo-scrollable-menu">
-                        <li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">
+                <!--<script type="text/ng-template" id="/product-mentions.tpl">-->
+                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
+                        <!--<li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">-->
 
-                            <span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+                            <!--<span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
 
-                        </li>
-                    </ul>
-                </script>
+                        <!--</li>-->
+                    <!--</ul>-->
+                <!--</script>-->
 
-                <script type="text/ng-template" id="/place-mentions.tpl">
-                    <ul class="list-group user-search demo-scrollable-menu">
-                        <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
+                <!--<script type="text/ng-template" id="/place-mentions.tpl">-->
+                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
+                        <!--<li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">-->
 
-                            <span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+                            <!--<span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
 
-                        </li>
-                    </ul>
-                </script>
+                        <!--</li>-->
+                    <!--</ul>-->
+                <!--</script>-->
 
 
-                <script type="text/ng-template" id="/price-mentions.tpl">
-                    <ul class="list-group user-search demo-scrollable-menu">
-                        <li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">
+                <!--<script type="text/ng-template" id="/price-mentions.tpl">-->
+                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
+                        <!--<li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">-->
 
-                            <span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+                            <!--<span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
 
-                        </li>
-                    </ul>
-                </script>
+                        <!--</li>-->
+                    <!--</ul>-->
+                <!--</script>-->
 
 
 
@@ -159,6 +161,38 @@
                         <span class="badge">{{item.alerts}}</span>
                     </a>
                 </div>
+
+
+                <div ng-controller="filterBar" class="list-group" ng-show="showFilterBar">
+                    <a class="list-group-item">
+                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" range="true" slider-id="rangeSlider" formater="myFormater" on-stop-slide="slideDelegate(value)"></span>
+                    </a>
+                    <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
+                    <a class="list-group-item">
+                        Must have price
+                        <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox">
+                    </a>
+
+                    <a class="list-group-item">
+                        Must have image
+                        <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox">
+                    </a>
+
+                    <a class="list-group-item">
+                        <span class="btn-group" opt-kind ok-key="sortBy">
+                            <button type="button" class="btn btn-default active" ok-sel="[data-distance]" ok-type="integer">Distance</button>
+                            <button type="button" class="btn btn-default" ok-sel="[data-price]" ok-type="integer">Price</button>
+                            <button type="button" class="btn btn-default" ok-sel="[data-postDate]" ok-type="integer">Date Posted</button>
+                        </span>
+                    </a>
+
+                    <a class="list-group-item">
+                        <span class="btn-group">
+                            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="true"><i class="fa fa-th"></i></label>
+                            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="false"><i class="fa fa-list"></i></label>
+                        </span>
+                    </a>
+                </div>
             </div>
 
             <div ui-view></div>
@@ -172,9 +206,7 @@
     <script type="text/javascript" src="/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
     <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
-    <script type="text/javascript" src='/isotope/jquery.isotope.js'></script>
     <script type="text/javascript" src='/underscore/underscore-min.js'></script>
-    <script type="text/javascript" src='/angular-isotope/dist/angular-isotope.js'></script>
     <script type="text/javascript" src='/angular-touch/angular-touch.min.js'></script>
     <script type="text/javascript" src="/angular-carousel/dist/angular-carousel.min.js"></script>
     <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
@@ -182,11 +214,8 @@
     <script type="text/javascript" src="/jshashtable-3.0/hashtable.js"></script>
     <script type="text/javascript" src="/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-slider/slider.js"></script>
-    <script type='text/javascript' src='/nginfiniteScroll/build/ng-infinite-scroll.min.js'></script>
     <script type='text/javascript' src='/medium-editor/dist/js/medium-editor.min.js'></script>
     <script type='text/javascript' src='/angular-medium-editor/dist/angular-medium-editor.min.js'></script>
-    <script type='text/javascript' src='/imagesloaded/imagesloaded.pkgd.min.js'></script>
-    <script type='text/javascript' src='/angular-images-loaded/angular-images-loaded.js'></script>
     <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
     <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.min.js"></script>
     <script type="text/javascript" src="/angular-ivh-treeview/dist/ivh-treeview.min.js"></script>
@@ -194,7 +223,8 @@
     <script type="text/javascript" src="/angular-vs-repeat/src/angular-vs-repeat.min.js"></script>
     <script type="text/javascript" src="/moment/moment.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
-
+    <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
 
     <!--ANGULAR-->
     <script type="text/javascript" src="htsApp.js"></script>
