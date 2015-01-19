@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'iso.directives', 'ui.bootstrap-slider', 'infinite-scroll', 'angular-images-loaded', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor']);
+var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor']);
 
 
 
