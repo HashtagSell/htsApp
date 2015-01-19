@@ -5,61 +5,61 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'ne
         $location.path("/results/"+$scope.query+"/");
     };
 
-    //========= # Products =========
-    $scope.searchProducts = function (term) {
-        if (term) {
-            mentionsFactory.predictProduct(term).then(function (results) {
-                $scope.products = results;
-                console.log("Here is scope.products", $scope.products);
-            });
-        }
-    };
+    ////========= # Products =========
+    //$scope.searchProducts = function (term) {
+    //    if (term) {
+    //        mentionsFactory.predictProduct(term).then(function (results) {
+    //            $scope.products = results;
+    //            console.log("Here is scope.products", $scope.products);
+    //        });
+    //    }
+    //};
+    //
+    //$scope.getProductTextRaw = function (product) {
+    //    mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
+    //        console.log(jsonTemplate);
+    //        console.log("done");
+    //    });
+    //    //return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+    //    return product.value;
+    //};
 
-    $scope.getProductTextRaw = function (product) {
-        mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
-            console.log(jsonTemplate);
-            console.log("done");
-        });
-        //return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
-        return product.value;
-    };
 
-
-    //========= @ Places =========
-    $scope.map = mentionsFactory.googleMap;
-
-    $scope.searchPlaces = function (term) {
-        if (term) {
-            mentionsFactory.predictPlace(term).then(function (results) {
-                $scope.places = results;
-                console.log("Here is scope.places", $scope.places);
-            });
-        }
-    };
-
-    $scope.getPlacesTextRaw = function (selectedPlace) {
-        mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
-            console.log(jsonTemplate);
-            console.log("done");
-        });
-        console.log("updated ui");
-        //return '<span class="mention-highlighter" contentEditable="false">@' + selectedPlace.description + '</span>';
-        return '@' + selectedPlace.description;
-    };
-
-    //========= $ Prices =========
-    $scope.searchPrice = function (term) {
-        if (term) {
-            $scope.prices = mentionsFactory.predictPrice(term);
-            console.log("here is scope.prices", $scope.prices);
-        }
-    };
-
-    $scope.getPricesTextRaw = function (selectedPrice) {
-        mentionsFactory.getPriceMetaData(selectedPrice);
-        //return '<span class="mention-highlighter-price" contentEditable="false">$' + selectedPrice.suggestion + '</span>';
-        return '$' + selectedPrice.suggestion;
-    };
+    ////========= @ Places =========
+    //$scope.map = mentionsFactory.googleMap;
+    //
+    //$scope.searchPlaces = function (term) {
+    //    if (term) {
+    //        mentionsFactory.predictPlace(term).then(function (results) {
+    //            $scope.places = results;
+    //            console.log("Here is scope.places", $scope.places);
+    //        });
+    //    }
+    //};
+    //
+    //$scope.getPlacesTextRaw = function (selectedPlace) {
+    //    mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
+    //        console.log(jsonTemplate);
+    //        console.log("done");
+    //    });
+    //    console.log("updated ui");
+    //    //return '<span class="mention-highlighter" contentEditable="false">@' + selectedPlace.description + '</span>';
+    //    return '@' + selectedPlace.description;
+    //};
+    //
+    ////========= $ Prices =========
+    //$scope.searchPrice = function (term) {
+    //    if (term) {
+    //        $scope.prices = mentionsFactory.predictPrice(term);
+    //        console.log("here is scope.prices", $scope.prices);
+    //    }
+    //};
+    //
+    //$scope.getPricesTextRaw = function (selectedPrice) {
+    //    mentionsFactory.getPriceMetaData(selectedPrice);
+    //    //return '<span class="mention-highlighter-price" contentEditable="false">$' + selectedPrice.suggestion + '</span>';
+    //    return '$' + selectedPrice.suggestion;
+    //};
 
 }]);
 

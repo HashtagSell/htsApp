@@ -15,6 +15,7 @@ exports.query = function(req, result, promise){
     var userLong = result.location.longitude;
 
     console.log('search term is: ' + term);
+    console.log('mongo Cats are: ' + mongoCategories);
     console.log('userlat: ' + userLat);
     console.log('userlong: ' + userLong);
 
@@ -36,11 +37,15 @@ exports.query = function(req, result, promise){
             //TODO Complex regex full text search logic to be added.  Consider elasticsearch mongo connnector or track mongo ticket https://jira.mongodb.org/browse/DOCS-1719
             //TODO We want to use geospacial indexing and full text indexing in one query but this can't be done today with mongo: http://stackoverflow.com/questions/25922965/mongodb-text-with-near
             PostModel.find({
-                coordinates: { $near: {
-                    $geometry: { type: "Point", coordinates: [ userLong , userLat ] },
-                    $maxDistance: maxDistance,
-                    $minDistance: minDistance
-                }
+                coordinates: {
+                    $near: {
+                        $geometry: {
+                            type: "Point",
+                            coordinates: [ userLong , userLat ]
+                        },
+                        $maxDistance: maxDistance,
+                        $minDistance: minDistance
+                    }
                 },
                 $or: mongoCategories,
                 heading: { "$regex": term, "$options": 'i' }
@@ -141,7 +146,7 @@ function getDistanceFromLatLonInMeters(lat1,lon1,lat2,lon2) {
 
 
 function deg2rad(deg) {
-    return deg * (Math.PI/180)
+    return deg * (Math.PI/180);
 }
 
 
