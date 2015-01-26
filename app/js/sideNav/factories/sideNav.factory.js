@@ -220,6 +220,12 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         }
     };
 
+
+    factory.sideNavOffCanvas = {
+        hidden: true
+    };
+
+
     return factory;
 
 }]);
