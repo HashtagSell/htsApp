@@ -1,19 +1,32 @@
-htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', function($scope, $state, searchFactory, splashFactory) {
+htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
 
     //While true the hashtagspinner will appear
     $scope.pleaseWait = true;
 
     //Tracks state of grid visible or not
-    $scope.view = searchFactory.views;
+    $scope.views = searchFactory.views;
+
+
+
+    $scope.slickConfig = {
+        dots: true,
+        lazyLoad: 'progressive',
+        infinite: true,
+        speed: 100,
+        slidesToScroll: 2,
+        //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
+        variableWidth: true,
+        centerMode: true
+
+    };
+
+
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
-        console.log(splashFactory.result);
         $state.go('results.splash', { id: elems.result.external_id });
     };
-
-
 
 
     //updateFeed is triggered on interval and performs polling call to server for more items
@@ -31,7 +44,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
                     //searchFactory.generateRows(response.data.external.postings, false);
 
-                    searchFactory.filterArray();
+                    searchFactory.filterArray($scope.views, 'pagination');
 
                     //Function passed into onVsIndexChange Directive
                     $scope.infiniteScroll = function (startIndex, endIndex) {
@@ -47,7 +60,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
                     //searchFactory.generateRows(response.data.external.postings, false);
 
-                    searchFactory.filterArray();
+                    searchFactory.filterArray($scope.views, 'pagination');
 
                 }
 
@@ -67,22 +80,30 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
         });
     };
-
     paginate();
 
 
+    uiGmapGoogleMapApi.then(function(maps) {
+        $scope.map = searchFactory.map;
+        $scope.markers = searchFactory.markers;
+    });
 
 
 
-    //Clears view is user conducts a second search.
+    //Clears view if user conducts a second search.
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
         if(toState.name !== 'results.splash' && toParams.q !== fromParams.q) {
-            searchFactory.clearView();
+            searchFactory.resetResultsView();
         }
     });
 
 
 }]);
+
+
+
+
+
 
 
 htsApp.directive('onVsIndexChange', ['$parse', function ($parse) {
@@ -95,6 +116,11 @@ htsApp.directive('onVsIndexChange', ['$parse', function ($parse) {
         $scope.$watch('endIndex', fn);
     };
 }]);
+
+
+
+
+
 
 
 
@@ -113,19 +139,26 @@ htsApp.directive('resizeGrid', ['$rootScope', '$window', 'searchFactory', functi
             angular.element($window).bind('resize', function () {
                 //searchFactory.generateRows(searchFactory.results.unfiltered, true);
 
-                searchFactory.filterArray();
+                if($scope.views.gridView) {
+                    searchFactory.filterArray($scope.views, 'resize');
+                }
 
                 //var containerWidth = element.width();
                 ////Should match the CSS width of grid-item
-                //var itemWidth = 280;
-                //var allColumns = Math.floor(containerWidth / itemWidth) * 280;
+                //var itemWidth = 259;
+                //var allColumns = Math.floor(containerWidth / itemWidth) * 259;
+                //console.log('container width: ', containerWidth);
+                //console.log('added columns: ', allColumns);
                 //var padding = (containerWidth - allColumns) / 2;
+                //console.log('padding: ', padding);
                 //
                 //element.css(
                 //    {
                 //        padding: '0px 0px 0px ' + padding + 'px'
                 //    }
                 //);
+
+
                 $scope.$apply();
             });
         }
