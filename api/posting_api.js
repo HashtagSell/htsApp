@@ -2,12 +2,11 @@ var fs = require('fs');
 var AWS = require('aws-sdk');
 var common   = require('../config/common.js');
 var config   = common.config();
+var mongoose = require("mongoose");
 
 var easyimg = require('easyimage');
 var HashTable = require('hashtable');
-
-// load up the analytics model
-var PostModel = require('../config/database/models/hts_post_model.js');
+var HTSpost = mongoose.model("hts_posts");
 
 AWS.config.region = 'us-west-2';
 
@@ -20,29 +19,29 @@ AWS.config.update({
 
 exports.savePost = function(req, res){
 
-    var userPost = req.body;
+    var newPost = req.body;
 
     //Strip html from post
     var sanitizeHtml = require('sanitize-html');
-    var body_plain_text = sanitizeHtml(userPost.html_body, {
+    var body_plain_text = sanitizeHtml(newPost.html_body, {
         allowedTags: [],
         allowedAttributes: {}
     });
 
-    userPost.seller_id = req.user._id;
-    userPost.seller_username = req.user.user_settings.name;
+    newPost.seller_id = req.user._id;
+    newPost.seller_username = req.user.user_settings.name;
 
     //Add long, lat to location obj and typecast as 2d plane with mongo so we can search later by location
-    userPost.coordinates = [userPost.location.long, userPost.location.lat];
+    newPost.coordinates = [req.body.location.long, req.body.location.lat];
 
     //Removed &nbsp; from string I don't know why sanatize-html doesn't do this. poo
     body_plain_text = body_plain_text.replace(/&nbsp;/g, " ");
 
-    userPost.body = body_plain_text;
+    newPost.body = body_plain_text;
 
+    var htsPost = new HTSpost(newPost);
     //Write post to hts_posts collection
-    var newPost = PostModel(userPost);
-    newPost.save(function (err) {
+    htsPost.save(function (err) {
 
         if (err) {
 
@@ -52,7 +51,6 @@ exports.savePost = function(req, res){
         } else {
             console.log("success!");
             res.send({success: true});
-
         }
     });
 };
@@ -63,7 +61,8 @@ exports.savePost = function(req, res){
 
 
 exports.getPosts = function (req, res) {
-    PostModel.find({ 'seller_id' : req.user._id }, function (err, posts) {
+    var postModel = require('../config/database/models/hts_post_model.js');
+    postModel.find({ 'seller_id' : req.user._id }, function (err, posts) {
 
         if (err) {
             console.log(err);
@@ -127,11 +126,9 @@ exports.upload = function(req, res) {
                 ContentType: imgObj.mimetype
             };
 
-
             callback(count, params, imgObj, deleteImg);
 
         });
-
     };
 
 
