@@ -14,10 +14,16 @@ var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'u
 
 
 //Forcing XHR requests via Angular $http (AJAX)
-htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider) {
+htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', 'uiGmapGoogleMapApiProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider, uiGmapGoogleMapApiProvider) {
 
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+    uiGmapGoogleMapApiProvider.configure({
+        //    key: 'your api key',
+        v: '3.17',
+        libraries: 'weather,geometry,visualization'
+    });
 
     //function assigned to routes that can only be accessed when user logged in
     var loginRequired = ['$q', '$location', 'Session', 'authModalFactory', function ($q, $location, Session, authModalFactory) {
@@ -39,6 +45,20 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 
     }];
 
+
+    var joinRoom = ['socketio', 'Session', '$stateParams', function (socketio, Session, $stateParams) {
+       if (Session.userObj.user_settings.loggedIn) {
+           socketio.joinRoom($stateParams.id);
+       }
+    }];
+
+    var leaveRoom = ['socketio', 'Session', '$stateParams', function (socketio, Session, $stateParams) {
+        if (Session.userObj.user_settings.loggedIn) {
+            socketio.leaveRoom($stateParams.id);
+        }
+    }];
+
+
     $urlRouterProvider.otherwise('/feed');
 
 
@@ -59,7 +79,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('feed.splash', {
             url: "/:id",
-            controller: 'splashController'
+            controller: 'splashController',
+            onEnter: joinRoom,
+            onExit: leaveRoom
         }).
         state('selling', {
             url: "/selling",
@@ -81,11 +103,14 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         state('interested.splash', {
             url: "/:id",
             controller: 'splashController',
-            resolve: { loginRequired: loginRequired }
+            resolve: { loginRequired: loginRequired },
+            onEnter: joinRoom,
+            onExit: leaveRoom
         }).
         state('notifications', {
             url: "/notifications",
-            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12" style="margin-top:20px;"><div class="inner-container">User Notifications!  Tell us what you want to buy and we\'ll notify you when it shows up online! (Coming soon)</div></div>',
+            templateUrl: "js/notifications/partials/notifications.html",
+            controller: 'notifications.controller',
             resolve: { loginRequired: loginRequired }
         }).
         state('settings', {
@@ -118,7 +143,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('results.splash', {
             url: ":id",
-            controller: 'splashController'
+            controller: 'splashController',
+            onEnter: joinRoom,
+            onExit: leaveRoom
         }).
         state('reset', {
             url: '/reset/:uid/',
