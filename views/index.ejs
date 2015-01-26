@@ -15,38 +15,44 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="stylesheet" href="/css/splash.css">
-    <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css">
-    <!--<link rel="stylesheet" href="/ng-slider/dist/css/ng-slider.min.css">-->
-    <link rel="stylesheet" href="/ng-table/ng-table.min.css">
-    <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css">
-    <link rel="stylesheet" href="/slick.js/slick/slick.css">
-    <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css">
-    <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/splash.css" />
+    <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" />
+    <link rel="stylesheet" href="/ng-table/ng-table.min.css" />
+    <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css" />
+    <link rel="stylesheet" href="/slick.js/slick/slick.css" />
+    <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
+    <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
 
 </head>
 
-<body>
+<body ng-controller="mainController">
     <div class="navbar navbar-default nav-links navbar-fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand hidden-xs" ui-sref="feed">
+            <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
                 <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
+            </a>
+            <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer">
+                <i class="fa fa-bars fa-2x"></i>
             </a>
             <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-7 awesomeBar" ng-controller="awesomeBarController">
                 <form role="search" ng-submit="awesomeBarSubmit()">
                     <div class="input-group">
                         <input
-                                type="text"
-                                class="form-control"
-                                ng-model="query"
-                                placeholder="I'm looking to buy...">
-                                <!--mentio-->
-                                <!--mentio-require-leading-space="true"-->
-                                <!--mentio-macros="macros"-->
-                                <!--mentio-id="'hashtag'"-->
-                                <!--mentio-typed-term="typedTerm"-->
+                            type="text"
+                            class="form-control"
+                            ng-model="query"
+                            placeholder="I'm looking to buy...">
+                            <!--mentio-->
+                            <!--mentio-require-leading-space="true"-->
+                            <!--mentio-macros="macros"-->
+                            <!--mentio-id="'hashtag'"-->
+                            <!--mentio-typed-term="typedTerm"-->
+
+                            <!--popover='*Hint: We search in your area by default.  If you want to search in another city use the @ symbol.'-->
+                            <!--popover-placement="bottom"-->
+                            <!--popover-trigger="focus"-->
 
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-danger" type="button">
@@ -60,15 +66,6 @@
 
                 <!--<mentio-menu style="z-index: 1100 !important;"-->
                              <!--mentio-for="'hashtag'"-->
-                             <!--mentio-trigger-char="'#'"-->
-                             <!--mentio-items="products"-->
-                             <!--mentio-template-url="/product-mentions.tpl"-->
-                             <!--mentio-search="searchProducts(term)"-->
-                             <!--mentio-select="getProductTextRaw(item)">-->
-                <!--</mentio-menu>-->
-
-                <!--<mentio-menu style="z-index: 1100 !important;"-->
-                             <!--mentio-for="'hashtag'"-->
                              <!--mentio-trigger-char="'@'"-->
                              <!--mentio-items="places"-->
                              <!--mentio-template-url="/place-mentions.tpl"-->
@@ -76,54 +73,13 @@
                              <!--mentio-select="getPlacesTextRaw(item)">-->
                 <!--</mentio-menu>-->
 
-                <!--<mentio-menu style="z-index: 1100 !important;"-->
-                             <!--mentio-for="'hashtag'"-->
-                             <!--mentio-trigger-char="'$'"-->
-                             <!--mentio-items="prices"-->
-                             <!--mentio-template-url="/price-mentions.tpl"-->
-                             <!--mentio-search="searchPrice(term)"-->
-                             <!--mentio-select="getPricesTextRaw(item)">-->
-                <!--</mentio-menu>-->
-
-                <!--<script type="text/ng-template" id="/product-mentions.tpl">-->
-                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
-                        <!--<li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">-->
-
-                            <!--<span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
-
-                        <!--</li>-->
-                    <!--</ul>-->
-                <!--</script>-->
-
-                <!--<script type="text/ng-template" id="/place-mentions.tpl">-->
-                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
-                        <!--<li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">-->
-
-                            <!--<span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
-
-                        <!--</li>-->
-                    <!--</ul>-->
-                <!--</script>-->
-
-
-                <!--<script type="text/ng-template" id="/price-mentions.tpl">-->
-                    <!--<ul class="list-group user-search demo-scrollable-menu">-->
-                        <!--<li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">-->
-
-                            <!--<span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
-
-                        <!--</li>-->
-                    <!--</ul>-->
-                <!--</script>-->
-
-
 
             </div>
             <ul class="nav navbar-nav pull-right">
                 <li ng-controller="newPostController">
                     <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>
                 </li>
-                <li class="dropdown" ng-controller="userMenu">
+                <li class="dropdown hidden-xs" ng-controller="userMenu">
                     <a href class="dropdown-toggle" on-toggle="toggled(open)">
                         <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
                     </a>
@@ -141,9 +97,11 @@
         </div>
     </div>
 
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
+
+    <div class="master-container">
+        <div class="overlay" ng-class="{ 'active' : !sideNavOffCanvas.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
+        <div class="sidebar-container" ng-class="{ 'active' : !sideNavOffCanvas.hidden}">
+            <div class="bs-profile-nav sidebar-offcanvas">
                 <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" ui-sref="profile" style="cursor: pointer">
                     <div class="profileCircle">
                         <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
@@ -163,43 +121,49 @@
                 </div>
 
 
-                <div ng-controller="filterBar" class="list-group" ng-show="showFilterBar">
-                    <a class="list-group-item">
-                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" range="true" slider-id="rangeSlider" formater="myFormater" on-stop-slide="slideDelegate(value)"></span>
+                <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
+                <div ng-controller="filterBar" class="list-group ng-cloak" ng-show="showFilterBar">
+                    <a class="list-group-item ng-cloak">
+                        {{rangeSlider.rangeValue[0] | currency : $ : 0}}
+                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                        {{rangeSlider.rangeValue[1] | currency : $ : 0}}
                     </a>
                     <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
-                    <a class="list-group-item">
+                    <a class="list-group-item ng-cloak">
                         Must have price
                         <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox">
                     </a>
 
-                    <a class="list-group-item">
+                    <a class="list-group-item ng-cloak">
                         Must have image
                         <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox">
                     </a>
 
-                    <a class="list-group-item">
-                        <span class="btn-group" opt-kind ok-key="sortBy">
-                            <button type="button" class="btn btn-default active" ok-sel="[data-distance]" ok-type="integer">Distance</button>
-                            <button type="button" class="btn btn-default" ok-sel="[data-price]" ok-type="integer">Price</button>
-                            <button type="button" class="btn btn-default" ok-sel="[data-postDate]" ok-type="integer">Date Posted</button>
-                        </span>
+                    <a class="list-group-item ng-cloak">
+                        Toggle Map
+                        <input bs-switch ng-model="views.showMap" type="checkbox">
                     </a>
 
                     <a class="list-group-item">
                         <span class="btn-group">
-                            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="true"><i class="fa fa-th"></i></label>
-                            <label class="btn btn-default" ng-model="gridView" ng-click="reLayout()" btn-radio="false"><i class="fa fa-list"></i></label>
+                            <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i></label>
+                            <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i></label>
                         </span>
                     </a>
                 </div>
             </div>
+        </div>
 
-            <div ui-view></div>
+
+        <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNavOffCanvas.hidden}">
+            <div class="container">
+                <div ui-view></div>
+            </div>
         </div>
     </div>
 
-    <!--IMPORT LIBRARIES-->
+
+        <!--IMPORT LIBRARIES-->
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
     <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -225,9 +189,11 @@
     <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="https://stage-realtime.hashtagsell.com/socket.io/socket.io.js"></script>
 
     <!--ANGULAR-->
     <script type="text/javascript" src="htsApp.js"></script>
+    <script type="text/javascript" src="/js/main/controllers/main.controller.js"></script>
     <script type="text/javascript" src="/js/userMenu/controllers/userMenu.controller.userMenu.js"></script>
     <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/newPost/controllers/newPost.modals.newPost.controller.js"></script>
@@ -268,7 +234,21 @@
     <script type="text/javascript" src="/js/transactionButtons/modals/email/controllers/transactionButtons.modal.email.controller.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/placeOffer/controllers/transactionButtons.modal.placeOffer.controller.js"></script>
+    <script type="text/javascript" src="/js/notifications/controllers/notifications.controller.js"></script>
+    <script type="text/javascript" src="/js/socketio/factories/socketio.factory.js"></script>
 
+
+
+
+    <!--<script type="text/ng-template" id="/place-mentions.tpl">-->
+        <!--<ul class="list-group user-search demo-scrollable-menu">-->
+            <!--<li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">-->
+
+                <!--<span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
+
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</script>-->
 
     <!--ONLY LOADED IN PRODUCTION-->
     <!--<script type="text/javascript" src="/dist/HashtagSell.min.js"></script>-->

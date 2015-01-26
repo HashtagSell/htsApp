@@ -2,49 +2,192 @@
 
 <div ui-view></div>
 
-<div ng-if="pleaseWait" class="col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 container-fixed-height">
+<div ng-if="pleaseWait" class="container-fixed-height">
     <img src="/images/logo/hashtag_spinner.gif" class="img-center"/>
 </div>
 
 
-<div class="outer-container col-lg-10 col-lg-offset-2 col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-12 results-list">
-    <div resize-grid vs-repeat class="inner-container" vs-excess="5" vs-size-property="rowHeight" vs-offset-before="20" on-vs-index-change="infiniteScroll(startIndex, endIndex)">
-        <div ng-repeat="row in results.gridRows" class="row">
-            <div ng-repeat="result in row.rowContents"
-                 ng-click="openSplash(this)"
-                 ng-class="{hasPrice: result.price, hasImage: result.images.length, 'grid-item': view.gridView, 'list-item': !view.gridView}"
-                 class="col-lg-2 col-md-2 col-sm-2 col-xs-2"
-                 data-category="{{::result.category}}"
-                 data-email="{{::result.annotations.source_account}}"
-                 data-source="{{::result.source}}"
-                 data-lat="{{::result.location.lat}}"
-                 data-long="{{::result.location.long}}"
-                 data-sourceUrl="{{::result.external_url}}"
-                 data-postDate="{{::result.annotations.original_posting_date}}"
-                    >
-                <div class="thumbnail" style="cursor: pointer">
-                    <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
-                    <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency}}</ribbon>
-                    <hts-fave-toggle></hts-fave-toggle>
-                    <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
-                    <div ng-if="!result.images.length" class="noImage-Placeholder"></div>
-                    <div class="caption">
-                        <h4 class="heading">{{::result.heading}}</h4>
-                        <p class="body">{{::result.body}}</p>
-                        <p class="distance" data-distance="{{::result.distanceFromUser}}">
-                            <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
-                        </p>
-                        <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
-                        <p class="text-center">
-                            <!--<a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>-->
-                            <transaction-buttons result="result"></transaction-buttons>
-                            <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
-                        </p>
-                        <!--<span ng-click="">favorite</span>-->
+<div class="outer-container">
+
+    <div class="results-container" resize-grid ng-class="{ 'split-results-container' : views.showMap }">
+
+        <!--GRID VIEW-->
+        <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="20" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
+            <div ng-repeat="row in results.gridRows">
+                <div ng-repeat="result in row.rowContents"
+                     ng-click="openSplash(this)"
+                     ng-class="{hasPrice: result.price, hasImage: result.images.length}"
+                     class="col-lg-2 col-md-2 col-sm-2 col-xs-2 grid-item"
+                     data-category="{{::result.category}}"
+                     data-email="{{::result.annotations.source_account}}"
+                     data-source="{{::result.source}}"
+                     data-lat="{{::result.location.lat}}"
+                     data-long="{{::result.location.long}}"
+                     data-sourceUrl="{{::result.external_url}}"
+                     data-postDate="{{::result.annotations.original_posting_date}}"
+                        >
+                    <div class="thumbnail" style="cursor: pointer">
+                        <!--<img ng-if="!!result.images.length" ng-repeat="image in result.images" src="{{image.full || image.thumb}}">-->
+                        <ribbon ng-if="result.price" data-price="{{::result.price}}">{{result.price | currency : $ : 0}}</ribbon>
+                        <hts-fave-toggle></hts-fave-toggle>
+                        <img ng-if="!!result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage" images-loaded="imgLoadedEvents">
+                        <div ng-if="!result.images.length" class="grid-noImage-Placeholder"></div>
+                        <div class="caption">
+                            <h4 class="heading">{{::result.heading}}</h4>
+                            <p class="body">{{::result.body}}</p>
+                            <p class="distance" data-distance="{{::result.distanceFromUser}}">
+                                <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                            </p>
+                            <p data-postDate="{{::result.annotations.original_posting_date}}"></p>
+                            <p class="text-center">
+                                <!--<a href="#" class="btn btn-default btn-lg" role="button">Place Offer</a>-->
+                                <transaction-buttons result="result"></transaction-buttons>
+                                <!--<a href="#" class="btn btn-default" role="button">I'm Interested</a>-->
+                            </p>
+                            <!--<span ng-click="">favorite</span>-->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+
+
+        <!--LIST VIEW-->
+        <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="20" ng-show="!views.gridView">
+            <div ng-repeat="row in results.gridRows" class="result-list-item">
+                <div style="cursor: pointer;" ng-repeat="result in row.rowContents"
+                     ng-click="openSplash(this)"
+                     ng-class="{hasPrice: result.price, hasImage: result.images.length}"
+                     data-category="{{::result.category}}"
+                     data-email="{{::result.annotations.source_account}}"
+                     data-lat="{{::result.location.lat}}"
+                     data-long="{{::result.location.long}}"
+                     data-sourceUrl="{{::result.external_url}}"
+                     data-postDate="{{::result.annotations.original_posting_date}}"
+                        >
+                    <div class="thumbnail">
+                        <ribbon ng-if="!!result.price" data-price="{{::result.price}}">{{::result.price | currency : $ : 0}}</ribbon>
+                        <div class="row">
+                            <div class="col-sm-3 col-sm-push-9" style="z-index: 999">
+                                <hts-fave-toggle></hts-fave-toggle>
+                            </div>
+                        </div>
+
+                        <!--Has NO image-->
+                        <div ng-if="!result.images.length">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
+                                    <div class="noImage-Placeholder"></div>
+                                </div>
+                                <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
+                                    <div class="row">
+                                        <div class="caption">
+                                            <h4 class="noImage-heading">{{::result.heading}}</h4>
+                                            <p class="noImage-body">{{::result.body}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="text-center">
+                                            <transaction-buttons result="result"></transaction-buttons>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="pull-left noImage-timestamp" data-postDate="{{::result.timestamp}}">
+                                            Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
+                                        </div>
+                                        <div class="pull-right noImage-distance" data-distance="{{::result.distanceFromUser}}">
+                                            <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--Has ONE image-->
+                        <div ng-if="result.images.length == 1">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
+                                    <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive singleImage-Image">
+                                </div>
+                                <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
+                                    <div class="row">
+                                        <div class="caption">
+                                            <h4 class="singleImage-heading">{{::result.heading}}</h4>
+                                            <p class="singleImage-body">{{::result.body}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="text-center">
+                                            <transaction-buttons result="result"></transaction-buttons>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="pull-left singleImage-timestamp" data-postDate="{{::result.timestamp}}">
+                                            Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
+                                        </div>
+                                        <div class="pull-right singleImage-distance" data-distance="{{::result.distanceFromUser}}">
+                                            <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--Has MULTIPLE images-->
+                        <div ng-if="result.images.length > 1">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <slick-carousel
+                                            settings="slickConfig"
+                                            media="result.images">
+                                    </slick-carousel>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="caption">
+                                    <h4 class="carousel-heading">{{::result.heading}}</h4>
+                                    <p class="carousel-body">{{::result.body}}</p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="text-center">
+                                    <transaction-buttons result="result"></transaction-buttons>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="pull-left carousel-timestamp" data-postDate="{{::result.timestamp}}">
+                                    Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
+                                </div>
+                                <div class="pull-right carousel-distance" data-distance="{{::result.distanceFromUser}}">
+                                    <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
+    <div class="map-container" ng-class="{ 'show-map' : views.showMap }">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true">
+            <ui-gmap-markers models="map.markers" coords="'self'" icon="'icon'" fit="true" doCluster="true" clusterOptions="map.clusterOptions">
+            </ui-gmap-markers>
+        </ui-gmap-google-map>
+    </div>
+
+
 </div>
 

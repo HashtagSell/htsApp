@@ -2,7 +2,7 @@
 
 <div ui-view></div>
 
-<div class="outer-container col-lg-9 col-lg-offset-2 col-md-8 col-md-offset-3 col-sm-8 col-sm-offset-3 col-xs-11 interested-well">
+<div class="outer-container interested-well">
     <!--TODO: Need this table header to be fixed.-->
     <div ng-show="$data.length == 0">
         Click the star icon within your search results to add items to this list.
@@ -46,7 +46,7 @@
             </thead>
         </table>
     </div>
-    <div class="inner-container">
+    <div class="inner-container-interested">
         <table ng-table="tableParams" class="table table-striped table-hover table-padding" ng-class="checkboxes.checked ? 'table-big-nudge' : 'table-nudge'">
             <thead>
 

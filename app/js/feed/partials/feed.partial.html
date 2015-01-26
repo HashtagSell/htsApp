@@ -3,13 +3,13 @@
 
 <div ui-view></div>
 
-<div ng-if="pleaseWait" class="col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 container-fixed-height">
+<div ng-if="pleaseWait" class="container-fixed-height">
     <img src="/images/logo/hashtag_spinner.gif" class="img-center"/>
 </div>
 
-<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12 feed-list">
-    <div vs-repeat class="inner-container row" vs-excess="6" vs-size-property="feedItemHeight" vs-offset-before="20">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="cursor: pointer;" ng-repeat="result in results"
+<div class="outer-container col-xs-12">
+    <div vs-repeat class="inner-container row" vs-excess="50" vs-size-property="feedItemHeight" vs-offset-before="20">
+        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
              ng-class="{hasPrice: result.price, hasImage: result.images.length}"
              data-category="{{::result.category}}"
@@ -20,7 +20,7 @@
              data-postDate="{{::result.annotations.original_posting_date}}"
                 >
             <div class="thumbnail">
-                <ribbon ng-if="!!result.price" data-price="{{::result.price}}">{{::result.price | currency}}</ribbon>
+                <ribbon ng-if="!!result.price" data-price="{{::result.price}}">{{::result.price | currency : $ : 0}}</ribbon>
                 <div class="row">
                     <div class="col-sm-3 col-sm-push-9" style="z-index: 999">
                         <hts-fave-toggle></hts-fave-toggle>
@@ -133,12 +133,12 @@
 </div>
 
 <!--Category Tree-->
-<div class="outer-container col-lg-3 col-lg-offset-9 col-md-3 col-md-offset-9 col-sm-3 col-sm-offset-9 hidden-xs">
+<div class="feed-category-container hidden-sm hidden-xs">
 
     <!--TODO: When user is filtering expand all nodes in checklist tree  https://github.com/iVantage/angular-ivh-treeview/issues/23-->
     <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 95%; margin-top: 20px;"/>
 
-    <div class="inner-container">
+    <div class="feed-inner-container">
         <!--Category tree selector-->
         <div ivh-treeview="feedCategoryObj.nestedCategories"
              ivh-treeview-label-attribute="'name'"
