@@ -23,7 +23,7 @@ require('./config/passport/passport.js')(passport); // passport for configuratio
 app.use(function(req, res, next) {
     var host = req.get('host');
 
-    if(host == "hashtagsell.com" || host == "www.hashtagsell.com") {
+    if(host === "hashtagsell.com" || host == "www.hashtagsell.com") {
 
         host = "www.hashtagsell.com";  //Force url to always contain www
 
