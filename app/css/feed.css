@@ -86,18 +86,39 @@ ul.ivh-treeview .ivh-treeview-toggle {
     cursor: pointer;
 }
 
+.feed-category-container{
+    position: fixed;
+    margin-top: 57px;
+    right: 0px;
+    margin-right: 30px;
+    width: 200px;
+}
+
+
+.feed-inner-container {
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
 
 .feed-category-selector {
     margin-top: 10px;
     margin-bottom: 120px;
 }
 
-.feed-list {
-    padding-bottom: 57px;
+
+.feed-item {
+    left: 10px;
+    right: 250px;
 }
 
-feed-item {
-    width: 100%;
+
+@media screen and (max-width: 992px) {
+    .feed-item {
+        left: 10px;
+        right:0px;
+    }
 }
 
 

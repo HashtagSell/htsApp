@@ -38,11 +38,22 @@ li.label-list:hover span.delete-label{
 
 .interested-well {
     min-height: 20px;
-    padding: 0px 0px 125px 0px;
+    padding: 0px 0px 45px 0px;
     background-color: #f5f5f5;
     border: 1px solid #e3e3e3;
     border-radius: 4px;
     margin-top: 20px;
+    /*margin-right: 15px;*/
+    /*margin-left: 15px;*/
     -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+
+
+.inner-container-interested {
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }

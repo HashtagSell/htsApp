@@ -1,11 +1,4 @@
-/*.animate {*/
-    /*-webkit-transition-duration: 0.4s;*/
-    /*-moz-transition-duration: 0.4s;*/
-    /*-ms-transition-duration: 0.4s;*/
-    /*-o-transition-duration: 0.4s;*/
-    /*transition-duration: 0.4;*/
-/*}*/
-
+/*results show in grid*/
 .grid-item {
     width: 259px;
 }
@@ -32,6 +25,8 @@
     width:100%;
 }
 
+
+/*results show in list*/
 .list-item {
     width: 100%;
 }
@@ -50,6 +45,8 @@
     text-overflow: ellipsis;
 }
 
+
+/*Price ribbon*/
 ribbon{
     clear:both;
     position:absolute;
@@ -114,19 +111,213 @@ ribbon:before{
 }
 
 
-/*Remove blue glow from around bootstrap 3 buttons.*/
-.btn:focus, .btn:active:focus, .btn.active:focus {
-    outline: none; ! important; outline-style: none;
-}
-
-.btn:focus {
-    outline: none; ! important; outline-style: none;
-}
-
-.noImage-Placeholder {
+.grid-noImage-Placeholder {
     height: 165px;
     background-image: url('/images/app/img_placeholder.gif');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+
+
+.result-list-item {
+    left: 10px;
+    right: 250px;
+}
+
+
+@media screen and (max-width: 992px) {
+    .result-list-item {
+        left: 10px;
+        right:0px;
+    }
+}
+
+
+/*Feed Item Styling with Carousel*/
+.slick-track {
+    min-width: 100%;
+}
+
+.slick-list {
+    height: 250px;
+}
+
+
+.slick-slide {
+    height:250px;
+}
+
+.slick-slide img {
+    height:250px;
+    margin: 1px;
+}
+
+.slick-prev {
+    left: 5px;
+}
+
+.slick-next {
+    right: 5px;
+}
+
+.carousel-heading {
+    width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+}
+
+.carousel-body {
+    height: 40px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.carousel-timestamp {
+    margin-left: 30px;
+}
+
+.carousel-distance {
+    margin-right: 30px;
+}
+
+
+
+/*Feed item with one image*/
+.singleImage-Image {
+    height: 250px;
+    margin: 0 auto;
+}
+
+.singleImage-TextContainer {
+    height: 250px;
+}
+
+
+.singleImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.singleImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.singleImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.singleImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+
+/*Feed item has NO images*/
+.noImage-Placeholder {
+    height: 250px;
+    margin: 0 auto;
+    background-image: url('/images/app/img_placeholder.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.8;
+}
+
+.noImage-TextContainer {
+    height: 250px;
+}
+
+
+.noImage-heading {
+    width: 80%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.noImage-body {
+    height: 100px;
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+}
+
+.noImage-timestamp {
+    margin-left: 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.noImage-distance {
+    margin-right: 30px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+
+/*OFF CANVAS MAP*/
+.angular-google-map-container {
+    height: 100vh;
+}
+
+
+.results-container{
+    position: absolute;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    top: 0px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+.results-container.split-results-container{
+    width: 50%;
+}
+
+
+.map-container{
+    transition:all .25s;
+    -webkit-transition:all .25s;
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    transform: translateX(200%) translate3d(0,0,0);
+    -webkit-transform:translateX(200%) translate3d(0,0,0);
+
+    /*background-color: pink;*/
+    /*border: 1px solid red;*/
+}
+
+.map-container.show-map{
+    transform: translateX(100%) translate3d(0,0,0);
+    -webkit-transform:translateX(100%) translate3d(0,0,0);
 }
