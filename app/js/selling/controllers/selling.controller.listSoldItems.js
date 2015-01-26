@@ -35,7 +35,7 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'forSaleFactory
 
             $scope.results = response.data.error;
 
-        } else if(response.status == 200) {
+        } else if (response.status === 200) {
 
             $scope.results = response.data;
 
