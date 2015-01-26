@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', function ($scope, $sce, $state, $modal, splashFactory, Session) {
+htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'uiGmapGoogleMapApi', 'socketio', function ($scope, $sce, $state, $modal, splashFactory, Session, uiGmapGoogleMapApi, socketio) {
 
     var splashInstanceCtrl = ['$scope', function ($scope) {
 
@@ -10,29 +10,31 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         $scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
         $scope.result.heading_clean = $sce.trustAsHtml(splashFactory.result.heading);
 
-        $scope.map = {
-            settings: {
-                center: {
-                    latitude: $scope.result.location.lat,
-                    longitude: $scope.result.location.long
+        uiGmapGoogleMapApi.then(function(maps) {
+            $scope.map = {
+                settings: {
+                    center: {
+                        latitude: $scope.result.location.lat,
+                        longitude: $scope.result.location.long
+                    },
+                    options: {
+                        zoomControl: false,
+                        mapTypeControl: false
+                    },
+                    zoom: 14
                 },
-                options: {
-                    zoomControl: false,
-                    mapTypeControl: false
+                marker: {
+                    id: 0,
+                    coords: {
+                        latitude: $scope.result.location.lat,
+                        longitude: $scope.result.location.long
+                    }
                 },
-                zoom: 14
-            },
-            marker: {
-                id: 0,
-                coords: {
-                    latitude: $scope.result.location.lat,
-                    longitude: $scope.result.location.long
+                infoWindow: {
+                    show: true
                 }
-            },
-            infoWindow: {
-                show: true
-            }
-        };
+            };
+        });
 
 
         //If we do not know the formatted address of the item we use the lat and lon to reverse geocode the closest address or cross-street.
@@ -61,12 +63,21 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             })();
         }
 
-
+        //If the item has annotations then display only ones that match our whitelist.
         if ($scope.result.annotations) {
-
             $scope.result.sanitized_annotations = splashFactory.sanitizeAnnotations($scope.result.annotations);
-
         }
+
+        $scope.updates = socketio.updates;
+
+        socketio.socket.on('message', function () {
+            $scope.$apply($scope.updates);
+            console.log('controller sees', $scope.updates);
+        });
+
+        $scope.askSellerQuestion = function (question) {
+            socketio.sendMessage($scope.result.external_id, question);
+        };
 
         console.log($scope.result);
     }];

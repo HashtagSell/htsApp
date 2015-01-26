@@ -8,7 +8,7 @@
 
     <!--Google Map-->
     <div class="row">
-        <ui-gmap-google-map center='map.settings.center' zoom='map.settings.zoom'  options='map.settings.options'>
+        <ui-gmap-google-map class="splash-map" center='map.settings.center' zoom='map.settings.zoom'  options='map.settings.options'>
 
             <ui-gmap-marker coords="map.marker.coords" idkey="map.marker.id" options="map.marker.options">
                 <ui-gmap-window show="map.infoWindow.show">
@@ -24,9 +24,9 @@
     </div>
 
     <div class="row overlay-details">
-        <div class="col-lg-2 col-md-3 col-sm-3 col-xs-3">
-            <div class="row">
-                <div class="col-lg-2 col-md-3 col-sm-3 hidden-xs bs-profile-nav">
+        <!--<div class="col-lg-3 col-md-5 col-sm-3 col-xs-3">-->
+            <!--<div class="row">-->
+                <div class="bs-profile-nav" style="position: absolute;">
                     <side-profile class="profile" result="result" style="cursor: pointer">
                         <div class="profileCircle">
                             <img class='bs-profile-image' width="70px;" height="70px;"/>
@@ -66,11 +66,11 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            <!--</div>-->
 
-        </div>
+        <!--</div>-->
 
-        <div class="col-lg-10 col-md-9 col-sm-9 col-xs-12">
+        <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11" style="top: -50px; left: 280px; padding-right: 280px;">
 
             <div class="row">
                 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-8">
@@ -135,7 +135,13 @@
 
                         <!--Commenting System-->
                         <div class="row">
-                            Q/A MODULE HERE
+                            <input ng-model="newQuestion" placeholder="ask a question">
+                            <button class="btn btn-primary" ng-click="askSellerQuestion(newQuestion)">submit</button>
+                        </div>
+                        <div class="row">
+                            <div ng-repeat="message in updates.messages">
+                                {{message.message}} -{{message.username}}
+                            </div>
                         </div>
                     </div>
                 </div>
