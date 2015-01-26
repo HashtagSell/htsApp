@@ -137,6 +137,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $modalInstance.dismiss("post successful");
                 $scope.jsonObj = mentionsFactory.jsonTemplate;
             });
+
+        //TODO: return the successfully saved hts post JSON and join the socket.io room.
     };
 
     //========= # Products =========
