@@ -14,7 +14,7 @@ var mailer = require('../config/mailer/ses.js');
 var fs = require("fs");
 
 // used to compile the email templates
-var ejs = require('ejs')
+var ejs = require('ejs');
 
 exports.id = function(req, res) {
 

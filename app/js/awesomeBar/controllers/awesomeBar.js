@@ -46,7 +46,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'ne
     //    //return '<span class="mention-highlighter" contentEditable="false">@' + selectedPlace.description + '</span>';
     //    return '@' + selectedPlace.description;
     //};
-    //
+
     ////========= $ Prices =========
     //$scope.searchPrice = function (term) {
     //    if (term) {

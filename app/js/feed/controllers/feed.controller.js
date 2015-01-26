@@ -65,7 +65,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                 } else { //If there are already results on the page the add them to the top of the array
 
-                    console.log('our new items', response.data.external.postings);
+                    //console.log('our new items', response.data.external.postings);
 
                     //Capture how far user has scroll down.
                     var scrollTopOffset = jQuery(".inner-container").scrollTop();
@@ -142,7 +142,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
             console.log(response);
 
             //TODO: Use modal service to notify users
-            alert("category lookup error");
+            console.log("category lookup error");
 
         });
     };
