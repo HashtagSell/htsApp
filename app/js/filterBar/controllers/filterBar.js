@@ -1,4 +1,4 @@
-htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', function ($scope, $rootScope, searchFactory) {
+htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', function ($scope, $rootScope, searchFactory, $timeout) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -17,30 +17,42 @@ htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', functio
 
         console.log($scope.filterToggles);
 
-        searchFactory.filterArray();
+        searchFactory.filterArray($scope.views, 'filter');
 
     });
 
 
-    $scope.rangeSlider = {
-        min: 0,
-        max: 100,
-        step: 1,
-        rangeValue : [2,20]
-    };
+    //View
+    $scope.views = searchFactory.views;
+
+    $scope.$watchGroup(['views.gridView', 'views.showMap'], function () {
+        $timeout(function () {
+            searchFactory.filterArray($scope.views, 'resize');
+        }, 1);
+    });
+
+
+
+
+
+    $scope.rangeSlider = searchFactory.priceSlider;
+    console.log($scope.rangeSlider);
 
     $scope.slideDelegate = function (value) {
         console.log(value);
+        searchFactory.priceSlider.userSetValue = true;
+        console.log(searchFactory.priceSlider);
+
+        searchFactory.filterArray($scope.views, 'filter');
+        //searchFactory.priceSlider.rangeValue = value;
     };
 
+
     //Adds $ before the price slider values
-    $scope.myFormater = function(value) {
+    $scope.myFormatter = function(value) {
         return "$"+value;
     };
 
-    //View
-    $scope.view = searchFactory.view;
 
-    //Tracks state of map visible or not
-    $scope.showMap = 0;
+
 }]);
