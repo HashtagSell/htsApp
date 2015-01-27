@@ -124,9 +124,9 @@
                 <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
                 <div ng-controller="filterBar" class="list-group ng-cloak" ng-show="showFilterBar">
                     <a class="list-group-item ng-cloak">
-                        {{rangeSlider.rangeValue[0] | currency : $ : 0}}
+                        <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                        <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
                         <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
-                        {{rangeSlider.rangeValue[1] | currency : $ : 0}}
                     </a>
                     <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
                     <a class="list-group-item ng-cloak">

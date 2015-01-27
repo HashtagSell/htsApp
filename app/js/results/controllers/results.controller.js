@@ -6,8 +6,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
     //Tracks state of grid visible or not
     $scope.views = searchFactory.views;
 
-
-
+    
     $scope.slickConfig = {
         dots: true,
         lazyLoad: 'progressive',

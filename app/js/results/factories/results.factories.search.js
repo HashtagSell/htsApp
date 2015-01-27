@@ -168,6 +168,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
             //        longitude: results[0].location.long
             //    }
             //};
+
             factory.map.center = {
                 latitude: 0,
                 longitude: 0
@@ -307,6 +308,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         return element.images.length;
     };
 
+
     factory.mustHavePrice = function(element){
         return element.price;
     };
@@ -316,25 +318,21 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         return !element.price || element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
     };
 
-
     //Image filter possibilities
     factory.mustHaveImageAndPrice = function(element){
         return element.images.length && element.price;
     };
+
 
     factory.mustHaveImageAndMustFitPriceRange = function(element){
         return element.images.length && element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
     };
 
 
-
-
     //Price filter possibilites
     factory.mustHavePriceAndMustFitPriceRange = function(element){
         return element.price && element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
     };
-
-
 
 
     //All filters combined
@@ -358,7 +356,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         if(factory.results.unfiltered.length) {
             //Must have price and must have image and must fit price range
             if (filterToggles.mustHavePrice && filterToggles.mustHaveImage && priceSliderRange.userSetValue) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange, filterToggles);
+                filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange);
                 factory.generateRows(filteredResults, reason, views);
 
                 //Must have image and price RANGE
@@ -416,14 +414,6 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         factory.views.gridView = true;
         factory.views.showMap = false;
-
-        //factory.priceSlider = {
-        //    min: 0,
-        //    max: 0,
-        //    step: 1,
-        //    rangeValue : [0,0],
-        //    userSetValue: false
-        //};
 
         factory.queryParams = {};
     };
