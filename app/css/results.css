@@ -22,7 +22,9 @@
 }
 
 .grid-item .thumbnail .fitImage {
-    width:100%;
+    width: 100%;
+    height: 172px;
+    object-fit: cover;
 }
 
 
@@ -112,7 +114,7 @@ ribbon:before{
 
 
 .grid-noImage-Placeholder {
-    height: 165px;
+    height: 172px;
     background-image: url('/images/app/img_placeholder.gif');
     background-size: contain;
     background-repeat: no-repeat;
@@ -306,18 +308,17 @@ ribbon:before{
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 0;
-    right: 0;
+    right: -50%;
     width: 50%;
     height: 100%;
-    transform: translateX(200%) translate3d(0,0,0);
-    -webkit-transform:translateX(200%) translate3d(0,0,0);
+    transform: translateX(0%) translate3d(0,0,0);
+    -webkit-transform:translateX(0%) translate3d(0,0,0);
 
     /*background-color: pink;*/
     /*border: 1px solid red;*/
 }
 
 .map-container.show-map{
-    transform: translateX(100%) translate3d(0,0,0);
-    -webkit-transform:translateX(100%) translate3d(0,0,0);
+    transform: translateX(-100%) translate3d(0,0,0);
+    -webkit-transform:translateX(-100%) translate3d(0,0,0);
 }
