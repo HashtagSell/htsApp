@@ -101,7 +101,7 @@
         <div class="overlay" ng-class="{ 'active' : !sideNavOffCanvas.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
         <div class="sidebar-container" ng-class="{ 'active' : !sideNavOffCanvas.hidden}">
             <div class="bs-profile-nav sidebar-offcanvas">
-                <div ng-controller="sideProfile" class="profile" back-img="{{userObj.user_settings.banner_photo}}" style="background-image : url({{userObj.user_settings.banner_photo}}); background-size : cover; cursor: pointer;" ui-sref="profile">
+                <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}}); background-size : cover; cursor: pointer;" ui-sref="profile">
                     <div class="profileCircle">
                         <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
                     </div>
