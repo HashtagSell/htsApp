@@ -19,11 +19,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
 
         }, function (reason) {
             console.log(reason);
-            if(reason == "signUp") {
+            if(reason === "signUp") {
                 factory.signUpModal();
-            } else if (reason == "forgot") {
+            } else if (reason === "forgot") {
                 factory.forgotPasswordModal();
-            } else if (reason == "signIn") {
+            } else if (reason === "signIn") {
                 factory.signInModal();
             }
             $log.info('Modal dismissed at: ' + new Date());
@@ -47,11 +47,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
-            if(reason == "success"){
-                $scope.checkEmail();
-            } else if (reason == "forgot") {
+            if(reason === "success"){
+                factory.checkEmailModal();
+            } else if (reason === "forgot") {
                 factory.forgotPasswordModal();
-            } else if (reason == "signIn") {
+            } else if (reason === "signIn") {
                 factory.signInModal();
             }
             $log.info('Modal dismissed at: ' + new Date());
@@ -93,7 +93,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
-            if(reason == "success"){
+            if(reason === "success"){
                 factory.checkEmailModal();
             }
             $log.info('Modal dismissed at: ' + new Date());
