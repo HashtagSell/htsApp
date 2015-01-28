@@ -23,9 +23,9 @@
                 <label class="control-label" for="username">Username:</label>
                 <div class="controls">
                     <input type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9._@&-]*$/" required/>
-                    <p ng-show="RegisterFormV2.username.$error.minlength" class="help-block"><small>Username is too short.</small></p>
-                    <p ng-show="RegisterFormV2.username.$error.maxlength" class="help-block"><small>Username is too long.</small></p>
-                    <p ng-show="RegisterFormV2.username.$error.pattern" class="help-block"><small>No whitespaces and special characters are limited.</small></p>
+                    <p ng-show="RegisterFormV2.username.$error.minlength" class="help-block"><small class="text-danger">Username is too short.</small></p>
+                    <p ng-show="RegisterFormV2.username.$error.maxlength" class="help-block"><small class="text-danger">Username is too long.</small></p>
+                    <p ng-show="RegisterFormV2.username.$error.pattern" class="help-block"><small class="text-danger">No whitespaces and special characters are limited.</small></p>
                 </div>
 
 
@@ -34,8 +34,8 @@
                 <label class="control-label" for="password">Password:</label>
                 <div class="controls">
                     <input type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[A-Za-z][A-Za-z0-9]*$/" required/>
-                    <p ng-show="RegisterFormV2.password.$error.minlength" class="help-block"><small>Password is too short.</small></p>
-                    <p ng-show="RegisterFormV2.password.$error.pattern" class="help-block"><small>No spaces allowed.</small></p>
+                    <p ng-show="RegisterFormV2.password.$error.minlength" class="help-block" ><small class="text-danger">Password is too short.</small></p>
+                    <p ng-show="RegisterFormV2.password.$error.pattern" class="help-block"><small class="text-danger">No spaces allowed.</small></p>
                 </div>
 
                 <br>
@@ -43,7 +43,7 @@
                 <label class="control-label" for="password_verify">Confirm Password:</label>
                 <div class="controls">
                     <input type="password" id="password_verify" name="password_verify" ng-model="password_verify" matchinput="password" required/>
-                    <p ng-show="RegisterFormV2.password_verify.$error.match" class="help-block"><small>Passwords do not match</small></p>
+                    <p ng-show="RegisterFormV2.password_verify.$error.match" class="help-block"><small class="text-danger">Passwords do not match</small></p>
                 </div>
 
                 <br>

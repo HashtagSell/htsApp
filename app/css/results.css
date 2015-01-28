@@ -295,6 +295,14 @@ ribbon:before{
     right: 0;
 }
 
+.bootstrap-switch{
+    min-width: 220px !important;
+}
+
+.bootstrap-switch-label{
+    font-weight: normal;
+}
+
 
 .results-container.split-results-container{
     width: 50%;
