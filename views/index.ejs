@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="/slick.js/slick/slick.css" />
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
     <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
-
 </head>
 
 <body ng-controller="mainController">
@@ -122,34 +121,33 @@
 
 
                 <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
-                <div ng-controller="filterBar" class="list-group ng-cloak" ng-show="showFilterBar">
-                    <a class="list-group-item ng-cloak">
-                        <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
-                        <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
-                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
-                    </a>
-                    <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
-                    <a class="list-group-item ng-cloak">
-                        Must have price
-                        <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox">
-                    </a>
+                <div ng-controller="filterBar">
+                    <div class="list-group ng-cloak" ng-show="showFilterBar">
+                        <a class="list-group-item ng-cloak">
+                            <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                            <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
+                            <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                        </a>
+                        <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
+                        <a class="list-group-item ng-cloak">
+                            <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
+                        </a>
 
-                    <a class="list-group-item ng-cloak">
-                        Must have image
-                        <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox">
-                    </a>
+                        <a class="list-group-item ng-cloak">
+                            <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
+                        </a>
 
-                    <a class="list-group-item ng-cloak">
-                        Toggle Map
-                        <input bs-switch ng-model="views.showMap" type="checkbox">
-                    </a>
+                        <a class="list-group-item ng-cloak">
+                            <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Show" switch-off-color="primary"  switch-off-text="Hide" switch-label="Map" style="min-width: 220px;">
+                        </a>
 
-                    <a class="list-group-item">
-                        <span class="btn-group">
-                            <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i></label>
-                            <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i></label>
-                        </span>
-                    </a>
+                        <a class="list-group-item">
+                            <span class="btn-group">
+                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i></label>
+                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i></label>
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -188,6 +186,8 @@
     <script type="text/javascript" src="/moment/moment.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <!--<script src="https://rawgit.com/frapontillo/angular-bootstrap-switch/develop/common/module.js"></script>-->
+    <!--<script src="https://rawgit.com/frapontillo/angular-bootstrap-switch/develop/src/directives/bsSwitch.js"></script>-->
     <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="https://stage-realtime.hashtagsell.com/socket.io/socket.io.js"></script>
 
