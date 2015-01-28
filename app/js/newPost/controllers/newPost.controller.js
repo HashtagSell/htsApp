@@ -1,4 +1,4 @@
-htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'Session', function ($scope, $modal, newPostFactory, Session) {
+htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, newPostFactory, Session, authModalFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -20,6 +20,16 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
         }, function () {
             console.log('Modal dismissed at: ' + new Date());
         });
+    };
+
+    $scope.signIn = function (size) {
+        authModalFactory.signInModal();
+
+    };
+
+
+    $scope.signUp = function (size) {
+        authModalFactory.signUpModal();
     };
 
 }]);

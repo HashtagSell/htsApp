@@ -84,7 +84,7 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn" ng-cloak>
                         <li><a href ng-click="signIn()">Sign In</a></li>
-                        <li><a href ng-click="signUp()">New Account</a></li>
+                        <li><a href ng-click="signUp()">Create Account</a></li>
                     </ul>
                     <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn" ng-cloak>
                         <li><a ui-sref="settings.general">User Settings</a></li>
@@ -108,6 +108,10 @@
                 </div>
                 <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
                     <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
+                    <div class="bs-username ng-cloak" ng-show="!userObj.user_settings.name">
+                        <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
+                        <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
+                    </div>
                     <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>
                 </div>
 
