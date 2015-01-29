@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor']);
+var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ui.unique']);
 
 
 
@@ -26,16 +26,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
     });
 
     //function assigned to routes that can only be accessed when user logged in
-    var loginRequired = ['$q', '$location', 'Session', 'authModalFactory', function ($q, $location, Session, authModalFactory) {
+    var loginRequired = ['$q', 'Session', 'authModalFactory', 'sideNavFactory', function ($q, Session, authModalFactory, sideNavFactory) {
         var deferred = $q.defer();
 
         if (!Session.userObj.user_settings.loggedIn) {
             deferred.reject();
-            $location.path('/');
-
-
-            authModalFactory.signInModal();
-
+            //$location.path('/');
+            authModalFactory.signInModal(sideNavFactory.redirect.name);
 
         } else {
             deferred.resolve();
