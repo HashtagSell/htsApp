@@ -90,7 +90,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
 
     //Clears view if user conducts a second search.
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+    $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
         if(toState.name !== 'results.splash' && toParams.q !== fromParams.q) {
             searchFactory.resetResultsView();
         }
