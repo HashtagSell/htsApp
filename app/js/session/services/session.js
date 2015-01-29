@@ -5,6 +5,7 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', 'socketio', funct
         loggedIn: false,
         profile_photo: '/images/userMenu/user-placeholder.png',
         banner_photo: '/images/userMenu/header-placeholder.png',
+        safe_search: true,
         email_provider: [
             {
                 name : "Always Ask",

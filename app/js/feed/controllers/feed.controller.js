@@ -177,34 +177,38 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         //Loop though all the categories and nest child categories under group categories.
         for (i = 1; i < serverCategories.length; i++) {
 
-            //console.log(serverCategories[i].group_code);
-            //console.log(serverCategories[i]);
-
             for (j = 0; j < nestedCategories.length; j++) {
+
+                if(Session.userObj.user_settings.safe_search  && serverCategories[i].group_code === 'PPPP' ||  Session.userObj.user_settings.safe_search  && serverCategories[i].group_code === 'MMMM') { //If safe search is turned on
+                    break;
+                }
 
                 if (nestedCategories[j].code === serverCategories[i].group_code) { //If category group code is already found in our nestedCategories then add the child category to the group
 
                     nestedCategories[j].children.push({
                         'name': serverCategories[i].name,
                         'code': serverCategories[i].code,
-                        'selected' : isCategoryDefaultSelected(serverCategories[i].code)
+                        'selected': isCategoryDefaultSelected(serverCategories[i].code)
                     });
                     break;
 
                 } else if (j == nestedCategories.length - 1) {
 
+
                     nestedCategories.push({
                         'name': serverCategories[i].group_name,
                         'code': serverCategories[i].group_code,
-                        'selected' : isCategoryDefaultSelected(serverCategories[i].group_code),
+                        'selected': isCategoryDefaultSelected(serverCategories[i].group_code),
                         'children': [{
                             'name': serverCategories[i].name,
                             'code': serverCategories[i].code,
-                            'selected' : isCategoryDefaultSelected(serverCategories[i].code)
+                            'selected': isCategoryDefaultSelected(serverCategories[i].code)
                         }]
                     });
 
+
                 }
+
 
             }
 
