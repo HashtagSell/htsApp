@@ -5,6 +5,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
     var factory = {};
 
+    factory.queryParams = {};
+
     factory.poll = function () {
 
         var deferred = $q.defer();

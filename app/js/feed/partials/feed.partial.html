@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="css/feed.css"/>
+
 <link rel="stylesheet" href="/angular-ivh-treeview/dist/ivh-treeview.css"/>
 
 <div ui-view></div>
@@ -8,8 +8,8 @@
 </div>
 
 <div class="outer-container col-xs-12">
-    <div vs-repeat class="inner-container row" vs-excess="50" vs-size-property="feedItemHeight" vs-offset-before="20">
-        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results"
+    <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="20">
+        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results | unique: 'external_id'"
              ng-click="openSplash(this)"
              ng-class="{hasPrice: result.price, hasImage: result.images.length}"
              data-category="{{::result.category}}"
@@ -135,8 +135,7 @@
 <!--Category Tree-->
 <div class="feed-category-container hidden-sm hidden-xs">
 
-    <!--TODO: When user is filtering expand all nodes in checklist tree  https://github.com/iVantage/angular-ivh-treeview/issues/23-->
-    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 95%; margin-top: 20px;"/>
+    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 200px; margin-top: 20px;"/>
 
     <div class="feed-inner-container">
         <!--Category tree selector-->
@@ -150,5 +149,8 @@
              class="panel panel-default feed-category-selector">
         </div>
 
+    </div>
+    <div>
+        Select the category of items you want to see in your feed.
     </div>
 </div>

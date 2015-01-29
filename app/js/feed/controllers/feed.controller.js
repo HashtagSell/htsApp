@@ -6,8 +6,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     //While true the hashtagspinner will appear
     $scope.pleaseWait = true;
 
-    feedFactory.queryParams = {};
-
 
     $scope.slickConfig = {
         dots: true,
@@ -31,6 +29,13 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
         $scope.currentDate = Math.floor(Date.now() / 1000);
 
+        //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
+        if (!$scope.results && feedFactory.persistedResults){
+            $scope.results = feedFactory.persistedResults;
+            var resumePersisted = true;
+        }
+
+
         feedFactory.poll().then(function (response) {
 
             if (response.status !== 200) {
@@ -39,7 +44,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             } else if (response.status === 200) {
 
-                if (!$scope.results) { //If there are not results on the page yet, this is our first query
+                if (!$scope.results || resumePersisted) { //If there are not results on the page yet, this is our first query
 
                     //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
@@ -52,7 +57,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     }
 
                     $scope.pleaseWait = false;
-                    $scope.results = response.data.external.postings;
+                    feedFactory.persistedResults = response.data.external.postings;
+                    $scope.results = feedFactory.persistedResults;
+                    resumePersisted = false;
 
                     //UI will query polling API every 30 seconds
                     var intervalUpdate = $interval(updateFeed, 30000, 0, true);
@@ -71,7 +78,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     var scrollTopOffset = jQuery(".inner-container").scrollTop();
 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                    for(i = 0; i < response.data.external.postings.length; i++){
+                    for(i = 0; i < response.data.external.postings.length; i++) {
 
 
                         if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
@@ -83,6 +90,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         }
 
                         //Push each new result to top of feed
+                        feedFactory.persistedResults.unshift(response.data.external.postings[i]);
                         $scope.results.unshift(response.data.external.postings[i]);
                     }
 
