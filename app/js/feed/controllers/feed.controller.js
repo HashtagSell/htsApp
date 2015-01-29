@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', 'authModalFactory', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr, authModalFactory) {
 
     //While true the hashtagspinner will appear
     $scope.pleaseWait = true;
@@ -123,7 +123,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
     //This obj binded to view to create category tree checklist
-    $scope.feedCategoryObj= {};
+    $scope.feedCategoryObj = {};
 
     //Get the users categories they have chosen to watch in their feed.
     $scope.feedCategoryObj.userDefaultCategories = Session.userObj.user_settings.feed_categories;
@@ -217,6 +217,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         ivhTreeviewMgr.validate(nestedCategories);
 
         $scope.feedCategoryObj.nestedCategories = nestedCategories;
+        console.log(nestedCategories);
     };
 
 
@@ -237,40 +238,48 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     $scope.categoryOnChange = function(node, isSelected, tree) {
         console.log(node, isSelected, tree);
 
-        var newSelectedCategories = [];
+        if(Session.userObj.user_settings.loggedIn) { //If the user is logged in
 
-        for(t = 0; t < tree.length; t++){
-            if(!tree[t].selected){
-                for(u = 0; u < tree[t].children.length; u++) {
-                    if(tree[t].children[u].selected) {
-                        newSelectedCategories.push(
-                            {
-                                'name': tree[t].children[u].name,
-                                'code': tree[t].children[u].code
-                            }
-                        );
+            var newSelectedCategories = [];
+
+            for (t = 0; t < tree.length; t++) {
+                if (!tree[t].selected) {
+                    for (u = 0; u < tree[t].children.length; u++) {
+                        if (tree[t].children[u].selected) {
+                            newSelectedCategories.push(
+                                {
+                                    'name': tree[t].children[u].name,
+                                    'code': tree[t].children[u].code
+                                }
+                            );
+                        }
                     }
+                } else {
+                    newSelectedCategories.push(
+                        {
+                            'name': tree[t].name,
+                            'code': tree[t].code
+                        }
+                    );
                 }
-            } else {
-                newSelectedCategories.push(
-                    {
-                        'name': tree[t].name,
-                        'code': tree[t].code
-                    }
-                );
+
+
             }
 
+            console.log(newSelectedCategories);
 
+            //Update the server
+            Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
+                if (response.status !== 200) {
+                    alert('could not remove category from user feed.  please notify support.');
+                }
+            });
+
+        } else {
+            //TODO: Deselect the checked item cause user is not logged in.
+            ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
+            authModalFactory.signInModal();
         }
-
-        console.log(newSelectedCategories);
-
-        //Update the server
-        Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
-            if(response.status !== 200){
-                alert('could not remove category from user feed.  please notify support.');
-            }
-        });
     };
 
     //If the categoryFilter input experiences a change then expand that entire category tree as user types to filter

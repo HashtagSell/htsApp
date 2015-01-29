@@ -14,4 +14,8 @@ htsApp.controller('sideNav.controller', ['$scope', '$rootScope', 'sideNavFactory
         sideNavFactory.splashMenu[0].link = fromState.name;
     });
 
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        sideNavFactory.redirect = toState;
+    });
 }]);

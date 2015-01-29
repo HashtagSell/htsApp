@@ -1,14 +1,14 @@
 /**
  * Created by braddavis on 12/10/14.
  */
-htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Session, $modal, $log) {
+htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', function (Session, $modal, $log, $state) {
 
     var factory = {};
 
     // =====================================
     // Spawns Sign In Modal ================
     // =====================================
-    factory.signInModal = function () {
+    factory.signInModal = function (redirect) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
@@ -25,6 +25,8 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', function (Sessi
                 factory.forgotPasswordModal();
             } else if (reason === "signIn") {
                 factory.signInModal();
+            } else if (reason === "successful login" && redirect) {
+                $state.go(redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
