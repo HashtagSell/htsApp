@@ -182,8 +182,8 @@ html, body {
     right: 0px;
 }
 
-.img-center{
-    position: relative;
+.spinner-abs-center{
+    position: absolute;
     top: 33%;
     display: block;
     margin: 0 40%;
@@ -416,4 +416,41 @@ html, body {
 
 .hover-pointer {
     cursor: pointer;
+}
+
+
+.container-fixed-height {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+.background-instructions {
+    position: absolute;
+    height: 100%;
+    left: 0px;
+    right: 0px;
+    width: 100%;
+    top: 0px;
+    bottom: 0px;
+    display: table;
+    text-align: center;
+}
+
+
+.vertical-align {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+}
+
+
+.inset-background-text {
+    color: rgb(174, 174, 174);
+    font-size: 23px;
+    background-color: rgb(244, 244, 244);
+    text-shadow: rgb(255, 255, 255) 1px 1px 0px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
 }

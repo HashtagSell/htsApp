@@ -2,12 +2,15 @@
 
 <div ui-view></div>
 
-<div class="outer-container interested-well">
-    <!--TODO: Need this table header to be fixed.-->
-    <div ng-show="$data.length == 0">
-        Click the star icon within your search results to add items to this list.
+<div ng-show="!currentFaves.length" class="background-instructions">
+    <div class="inset-background-text">
+        :( Awww, you have nothing in your favorites.
     </div>
-    <div ng-show="$data.length > 0">
+</div>
+
+<div ng-show="currentFaves.length" class="outer-container interested-well">
+    <!--TODO: Need this table header to be fixed.-->
+    <div>
         <table ng-table="tableParams" class="table">
             <thead>
             <tr ng-show="checkboxes.checked">
@@ -40,7 +43,7 @@
                                         'sort-desc': tableParams.isSortBy('price', 'desc')
                                     }"
                     ng-click="tableParams.sorting({'price' : tableParams.isSortBy('price', 'asc') ? 'desc' : 'asc'})">
-                    <div>Price</div>
+                    <div>Sort by price</div>
                 </th>
             </tr>
             </thead>
