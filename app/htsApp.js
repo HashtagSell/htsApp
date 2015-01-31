@@ -32,6 +32,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         if (!Session.userObj.user_settings.loggedIn) {
             deferred.reject();
             //$location.path('/');
+
             authModalFactory.signInModal(sideNavFactory.redirect.name);
 
         } else {
