@@ -88,7 +88,7 @@ exports.poll = function(result, promise, timeFrame){
         var anchorDate = new Date();
 
         //If timeFrame is not supplied then poll 45 min into the past (default).
-        var numMinutes = timeFrame || 150;
+        var numMinutes = timeFrame || 30;
 
         console.log('Polling time-frame set at: '+numMinutes+' minutes.');
         anchorDate.setMinutes(anchorDate.getMinutes() - numMinutes);
