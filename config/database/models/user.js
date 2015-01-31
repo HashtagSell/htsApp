@@ -45,7 +45,7 @@ var userSchema = mongoose.Schema({
             ]
         },
         profile_photo : { type: String, default: "/images/userMenu/user-placeholder.png" },
-        banner_photo : { type: String, default: "/images/userMenu/header-placeholder.gif" },
+        banner_photo : { type: String, default: "/images/userMenu/header-placeholder.png" },
         user_labels  : [],
         favorites    : [],
         feed_categories : {
