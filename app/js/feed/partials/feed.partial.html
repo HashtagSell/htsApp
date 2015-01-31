@@ -3,11 +3,8 @@
 
 <div ui-view></div>
 
-<div ng-if="pleaseWait" class="container-fixed-height">
-    <img src="/images/logo/hashtag_spinner.gif" class="img-center"/>
-</div>
-
 <div class="outer-container col-xs-12">
+    <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="20">
         <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results | unique: 'external_id'"
              ng-click="openSplash(this)"

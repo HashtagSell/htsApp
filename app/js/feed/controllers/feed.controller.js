@@ -12,14 +12,10 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         lazyLoad: 'progressive',
         infinite: true,
         speed: 100,
-        slidesToScroll: 2,
+        slidesToScroll: 1,
         //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
-        onInit: function () {
-            jQuery(window).resize();
-            console.log('photo carousel loaded');
-        },
-        centerMode: true
+        centerMode: false
 
     };
 
@@ -31,6 +27,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
         //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
         if (!$scope.results && feedFactory.persistedResults){
+            console.log('recovering from persisted results', feedFactory.persistedResults);
             $scope.results = feedFactory.persistedResults;
             var resumePersisted = true;
         }
@@ -54,18 +51,27 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         } else if (response.data.external.postings[i].images.length > 1) {
                             response.data.external.postings[i].feedItemHeight = 485;
                         }
+
+                        if(resumePersisted) {
+                            $scope.results.unshift(response.data.external.postings[i]);
+                        }
                     }
 
                     $scope.pleaseWait = false;
-                    feedFactory.persistedResults = response.data.external.postings;
-                    $scope.results = feedFactory.persistedResults;
+
+                    if(!resumePersisted) {
+                        $scope.results = response.data.external.postings;
+                    }
+
+
+
+                    feedFactory.persistedResults = $scope.results.slice(0, 300);
                     resumePersisted = false;
 
                     //UI will query polling API every 30 seconds
                     var intervalUpdate = $interval(updateFeed, 30000, 0, true);
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
-                    //TODO: We need to cache items already in feed so when user navigates back to feed we don't start this process over
                     $scope.$on('$destroy', function () {
                         $interval.cancel(intervalUpdate);
                     });
@@ -90,12 +96,16 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         }
 
                         //Push each new result to top of feed
-                        feedFactory.persistedResults.unshift(response.data.external.postings[i]);
                         $scope.results.unshift(response.data.external.postings[i]);
                     }
 
                     //Offset scroll bar location to page does not move after inserting new items.
                     jQuery(".inner-container").scrollTop(scrollTopOffset);
+
+                    //Persist our most recent 300 items
+                    feedFactory.persistedResults = $scope.results.slice(0, 300);
+
+                    console.log('persisted results are: ', feedFactory.persistedResults);
 
                 }
 
