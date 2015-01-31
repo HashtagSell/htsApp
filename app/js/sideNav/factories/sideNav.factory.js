@@ -17,12 +17,12 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         link: "selling",
         active: false
     }, {
-        name: "I'm Interested",
+        name: "Favorites",
         alerts: Session.userObj.user_settings.favorites.length,
         link: "interested",
         active: false
     }, {
-        name: "Notifications",
+        name: "Item Alerts",
         alerts: null,
         link: "notifications",
         active: false
