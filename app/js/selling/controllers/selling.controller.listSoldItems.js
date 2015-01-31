@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.controller('selling.controller.listSoldItems', ['$scope', 'forSaleFactory', 'splashFactory', '$state', function ($scope, forSaleFactory, splashFactory, $state) {
+htsApp.controller('selling.controller.listSoldItems', ['$scope', 'sellingFactory', 'splashFactory', '$state', function ($scope, sellingFactory, splashFactory, $state) {
 
 
     //openSplash called when suer clicks on item in feed for more details.
@@ -17,19 +17,48 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'forSaleFactory
         lazyLoad: 'progressive',
         infinite: true,
         speed: 100,
-        slidesToScroll: 2,
+        slidesToScroll: 1,
         //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
-        onInit: function () {
-            jQuery(window).resize();
-            console.log('slick caroseal loaded');
-        },
-        centerMode: true
+        centerMode: false
 
     };
 
+    $scope.noItemsForSale = false;
 
-    forSaleFactory.init().then(function (response) {
+
+
+    //Remove user's item from search results.  Apply deleted label.
+    $scope.deletePost = function (result, index) {
+        sellingFactory.deletePost(result).then(function (response) {
+
+            if(response.status !== 200) {
+
+                console.log(response.data.error);
+
+            } else if (response.status === 200) {
+
+                $scope.results.splice(index, 1);
+
+            }
+        }, function (response) {
+
+            console.log(response);
+
+            //TODO: Use modal service to notify users
+            alert("lookup error");
+
+        });
+    };
+
+
+
+
+    $scope.pleaseWait = true;
+
+
+    //self-executing function to lookup users items for sale.
+    sellingFactory.init().then(function (response) {
 
         if(response.status !== 200) {
 
@@ -37,7 +66,12 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'forSaleFactory
 
         } else if (response.status === 200) {
 
-            $scope.results = response.data;
+            //if (response.data.length) {
+                $scope.results = response.data;
+            $scope.pleaseWait = false;
+            //} else {
+            //    $scope.noItemsForSale = true;
+            //}
 
         }
     }, function (response) {

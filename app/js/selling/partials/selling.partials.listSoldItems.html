@@ -2,8 +2,15 @@
 
 <div ui-view></div>
 
+<div ng-show="!results.length" class="background-instructions">
+    <div class="inset-background-text">
+        :( Awww, you're not selling anything with us.
+    </div>
+</div>
+
 
 <div class="outer-container">
+    <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div class="inner-container">
         <div class="selling-item" ng-class="{'first': $first}" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
@@ -22,7 +29,7 @@
                 <div ng-if="!result.images.length">
                     <div class="row">
                         <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
-                            <div class="noImage-Placeholder"> No Image Found </div>
+                            <div class="noImage-Placeholder"></div>
                         </div>
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
                             <div class="row">
@@ -34,7 +41,8 @@
 
                             <div class="row">
                                 <div class="text-center">
-                                    <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
+                                    <button class="btn btn-default btn-lg" role="button">Edit Post</button>
+                                    <button class="btn btn-danger btn-lg" role="button" ng-click="deletePost(result, $index); $event.stopPropagation();">Delete Post</button>
                                 </div>
                             </div>
                         </div>
@@ -58,7 +66,8 @@
 
                             <div class="row">
                                 <div class="text-center">
-                                    <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
+                                    <button class="btn btn-default btn-lg" role="button">Edit Post</button>
+                                    <button class="btn btn-danger btn-lg" role="button" ng-click="deletePost(result, $index); $event.stopPropagation();">Delete Post</button>
                                 </div>
                             </div>
                         </div>
@@ -86,8 +95,8 @@
 
                     <div class="row">
                         <div class="text-center">
-                            <a href="#" class="btn btn-default btn-lg" role="button">Edit Post</a>
-                            <a href="#" class="btn btn-danger btn-lg" role="button">Delete Post</a>
+                            <button class="btn btn-default btn-lg" role="button">Edit Post</button>
+                            <button class="btn btn-danger btn-lg" role="button" ng-click="deletePost(result, $index); $event.stopPropagation();">Delete Post</button>
                         </div>
                     </div>
                 </div>

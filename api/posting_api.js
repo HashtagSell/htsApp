@@ -61,8 +61,8 @@ exports.savePost = function(req, res){
 
 
 exports.getPosts = function (req, res) {
-    var postModel = require('../config/database/models/hts_post_model.js');
-    postModel.find({ 'seller_id' : req.user._id }, function (err, posts) {
+    console.log(req.user._id);
+    HTSpost.find({ 'seller_id' : req.user._id }, function (err, posts) {
 
         if (err) {
             console.log(err);
@@ -70,14 +70,43 @@ exports.getPosts = function (req, res) {
 
             // if no user is found, return the message
         } else if (!posts) {
+            console.log('no posts found');
             return res.send({error: "No user found with that email/token."});
 
 
         } else if (posts) {
-
+            console.log('here are the posts');
             console.log(posts);
 
             res.send(posts);
+        }
+    });
+
+};
+
+
+
+
+exports.deletePost = function (req, res) {
+    HTSpost.remove({
+        'seller_id' : req.user._id,
+        '_id' : req.query.id
+    }, function (err, numberRemoved) {
+
+        if (err) {
+            console.log(err);
+            return res.send({error: err});
+
+            // if no user is found, return the message
+        } else if (numberRemoved === 0) {
+            console.log('no posts found');
+            return res.send({error: "No post found to delete"});
+
+
+        } else if (numberRemoved >= 1) {
+            console.log('here is the posts');
+
+            res.send({success: "post deleted"});
         }
     });
 

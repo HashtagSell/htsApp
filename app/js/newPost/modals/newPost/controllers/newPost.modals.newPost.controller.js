@@ -130,7 +130,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
         }
 
-        $http.post('/newpost', newPost).
+        $http.post('/posts', newPost).
             success(function (status) {
                 console.log("-----Post Complete----");
                 console.log(status);

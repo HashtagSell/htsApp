@@ -76,7 +76,7 @@ module.exports = function(app, passport) {
     //  Save New Post ======================
     // =====================================
     var posting_api = require('./api/posting_api'); //Write hts post to db
-    app.post('/newpost', isLoggedIn, function(req, res) {
+    app.post('/posts', isLoggedIn, function(req, res) {
         posting_api.savePost(req, res);
     });
 
@@ -86,8 +86,16 @@ module.exports = function(app, passport) {
     // =====================================
     //  Get all users posts ================
     // =====================================
-    app.get('/getposts', isLoggedIn, function(req, res) {
+    app.get('/posts', isLoggedIn, function(req, res) {
         posting_api.getPosts(req, res);
+    });
+
+
+    // =====================================
+    //  Delete a users post ================
+    // =====================================
+    app.delete('/posts', isLoggedIn, function(req, res) {
+        posting_api.deletePost(req, res);
     });
 
 
