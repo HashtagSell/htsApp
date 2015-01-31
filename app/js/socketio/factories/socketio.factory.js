@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/25/15.
  */
-htsApp.factory('socketio', ['forSaleFactory', function (forSaleFactory) {
+htsApp.factory('socketio', ['sellingFactory', function (sellingFactory) {
 
     var socketio = {
         socket: io('https://stage-realtime.hashtagsell.com/postings'),
@@ -14,7 +14,7 @@ htsApp.factory('socketio', ['forSaleFactory', function (forSaleFactory) {
 
 
     socketio.init = function () {
-        forSaleFactory.init().then(function (response) {
+        sellingFactory.init().then(function (response) {
             if (response.status === 200) {
 
                 response.data.forEach(function (posting) {
@@ -52,7 +52,7 @@ htsApp.factory('socketio', ['forSaleFactory', function (forSaleFactory) {
 
     //Leave all rooms when user logs out.
     socketio.closeAllConnections = function () {
-        forSaleFactory.init().then(function (response) {
+        sellingFactory.init().then(function (response) {
             if (response.status === 200) {
 
                 response.data.forEach(function (posting) {
