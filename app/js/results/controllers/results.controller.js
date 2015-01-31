@@ -12,11 +12,10 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
         lazyLoad: 'progressive',
         infinite: true,
         speed: 100,
-        slidesToScroll: 2,
+        slidesToScroll: 1,
         //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
-        centerMode: true
-
+        centerMode: false
     };
 
 

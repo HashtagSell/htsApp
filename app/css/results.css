@@ -139,7 +139,7 @@ ribbon:before{
 
 /*Feed Item Styling with Carousel*/
 .slick-track {
-    min-width: 100%;
+    /* min-width: 100%; */
 }
 
 .slick-list {
