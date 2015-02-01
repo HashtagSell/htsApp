@@ -10,7 +10,7 @@
         <!--GRID VIEW-->
         <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="20" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
             <div ng-repeat="row in results.gridRows">
-                <div ng-repeat="result in row.rowContents | unique: 'external_id'"
+                <div ng-repeat="result in row.rowContents"
                      ng-click="openSplash(this)"
                      ng-class="{hasPrice: result.price, hasImage: result.images.length}"
                      class="col-lg-2 col-md-2 col-sm-2 col-xs-2 grid-item"

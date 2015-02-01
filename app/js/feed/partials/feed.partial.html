@@ -6,7 +6,7 @@
 <div class="outer-container col-xs-12">
     <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="20">
-        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results | unique: 'external_id'"
+        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
              ng-class="{hasPrice: result.price, hasImage: result.images.length}"
              data-category="{{::result.category}}"
