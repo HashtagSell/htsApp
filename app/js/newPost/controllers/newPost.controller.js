@@ -17,7 +17,10 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
 
         modalInstance.result.then(function (selectedItem) {
             $scope.modalContent.selected = selectedItem;
-        }, function () {
+        }, function (reason) {
+            if(reason === "success"){
+
+            }
             console.log('Modal dismissed at: ' + new Date());
         });
     };

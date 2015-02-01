@@ -27,6 +27,29 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
     };
 
 
+    factory.resetJsonTemplate = function () {
+        factory.jsonTemplate = {
+            "annotations": [],
+            "category": null,
+            "category_name": null,
+            "category_group": null,
+            "category_group_name": null,
+            "heading": null,
+            "html_body": null,
+            "images": [],
+            "location": {},
+            "mentions": {
+                "hashtags": [],
+                "atTags": [],
+                "priceTag": []
+            },
+            "price": null,
+            "price_avg": null,
+            "price_type": null,
+            "source": "HSHTG"
+        };
+    };
+
     factory.predictProduct = function (term) {
 
         var products = [];

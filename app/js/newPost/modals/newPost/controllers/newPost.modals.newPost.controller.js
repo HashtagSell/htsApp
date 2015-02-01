@@ -26,6 +26,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     $scope.dismiss = function (reason) {
+        mentionsFactory.resetJsonTemplate();
         $modalInstance.dismiss(reason);
     };
 
@@ -134,8 +135,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             success(function (status) {
                 console.log("-----Post Complete----");
                 console.log(status);
-                $modalInstance.dismiss("post successful");
-                $scope.jsonObj = mentionsFactory.jsonTemplate;
+                $modalInstance.dismiss("success");
+                mentionsFactory.resetJsonTemplate();
             });
 
         //TODO: return the successfully saved hts post JSON and join the socket.io room.
