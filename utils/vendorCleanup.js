@@ -12,7 +12,7 @@ exports.dedupe = function(result, promise){
 
     var originals = [];
 
-    deDupeExternalID.put(response.postings[0].external_id, 0);
+    deDupeExternalID.put(response.postings[0].external_url, 0);
     //console.log("ID is unique: " + response.postings[0].external_id);
     deDupeHeading.put(response.postings[0].heading, 0);
     //console.log("Heading is unique: " + response.postings[0].heading);
@@ -21,9 +21,9 @@ exports.dedupe = function(result, promise){
 
         result = response.postings[i];
 
-        if(typeof deDupeExternalID.get(result.external_id) === 'undefined'){
-            //console.log("ID is unique: " + result.external_id);
-            deDupeExternalID.put(result.external_id, i);
+        if(typeof deDupeExternalID.get(result.external_url) === 'undefined'){
+            //console.log("URL is unique: " + result.external_url);
+            deDupeExternalID.put(result.external_url, i);
 
             if(typeof deDupeHeading.get(result.heading) === 'undefined'){
                 //console.log("Heading is unique: "+ result.heading);
@@ -40,7 +40,7 @@ exports.dedupe = function(result, promise){
             }
         } else {
             duplicates.push(result);
-            console.log("Duplicate ID: "+result.external_id);
+            console.log("Duplicate URL: "+result.external_url);
         }
 
 //        console.log("------------------------------------------------------")

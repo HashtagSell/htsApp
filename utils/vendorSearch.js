@@ -140,13 +140,13 @@ exports.poll = function(result, promise, timeFrame){
                     if (!err) {
 
                         //If we have three or more results then resolve our promise
-                        if(data.postings.length >= 3){
+                        if(data.postings.length >= 10){
                             promise(null, data);
                         } else { // If we have less than three results then increase our timeFrame and retrieve a new anchor.  Try again.
 
                             console.log(data.postings.length+' polling items discovered.  Decrementing time-frame.');
 
-                            exports.poll(result, promise, numMinutes + 45);
+                            exports.poll(result, promise, numMinutes + 30);
                         }
 
                     } else {

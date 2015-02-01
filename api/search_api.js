@@ -125,7 +125,16 @@ exports.vendor = function(req, res){
 
                     result.external = externalResults;
 
-                    callback(null, res, req, result);
+                    console.log('Number of items in results: ', result.external.postings.length);
+
+                    if (result.external.postings.length) {
+                        callback(null, res, req, result);
+
+                    } else {
+
+                        res.send(result);
+
+                    }
                 });
             },
             function (res, req, result, callback) { //Removes duplicate ads from 3Taps results
@@ -203,7 +212,7 @@ exports.vendor = function(req, res){
         async.waterfall([
             function (callback) { //Step 1: Get the user's search term
                 console.log("***************************");
-                console.log("Get Parameters From URL");
+                console.log("Get Paginated Parameters From URL");
                 console.log("***************************");
                 console.log(req.query);
 
@@ -216,7 +225,7 @@ exports.vendor = function(req, res){
             },
             function (res, req, result, callback) { //Lookup Anchor Details
                 console.log("***************************");
-                console.log("Lookup Anchor Details Info");
+                console.log("Lookup Paginated Anchor Details Info");
                 console.log("***************************");
 
                 var promise = new Promise(function (resolve, reject) {
@@ -231,7 +240,7 @@ exports.vendor = function(req, res){
 
                         } else {
 
-                            console.log(anchorDetails)
+                            console.log(anchorDetails);
 
                             resolve(anchorDetails);  //Found anchor
                         }
@@ -248,7 +257,7 @@ exports.vendor = function(req, res){
             },
             function (res, req, result, callback) { //Conduct search to 3Taps
                 console.log("***************************");
-                console.log("Get Results From 3Taps");
+                console.log("Get Paginated Results From 3Taps");
                 console.log("***************************");
 
                 var promise = new Promise(function (resolve, reject) {
@@ -271,12 +280,22 @@ exports.vendor = function(req, res){
 
                     result.external = externalResults;
 
-                    callback(null, res, req, result);
+                    console.log('Number of items in results: ', result.external.postings.length);
+
+                    if (result.external.postings.length) {
+
+                        callback(null, res, req, result);
+
+                    } else {
+
+                        res.send(result);
+
+                    }
                 });
             },
             function (res, req, result, callback) { //Removes duplicate ads from 3Taps results
                 console.log("****************************");
-                console.log("Clean Up Vendor Results UGH!");
+                console.log("Clean Up Paginated Vendor Results UGH!");
                 console.log("****************************");
 
                 var promise = new Promise(function (resolve, reject) {
