@@ -4,14 +4,14 @@
 }
 
 .grid-item .heading {
-    width: 230px;
+    width: 220px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .grid-item .body {
-    width: 230px;
+    width: 220px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

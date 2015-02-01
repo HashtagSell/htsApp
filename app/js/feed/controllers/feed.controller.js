@@ -3,9 +3,6 @@
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', 'authModalFactory', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr, authModalFactory) {
 
-    //While true the hashtagspinner will appear
-    $scope.pleaseWait = true;
-
 
     $scope.slickConfig = {
         dots: true,
@@ -30,6 +27,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
             console.log('recovering from persisted results', feedFactory.persistedResults);
             $scope.results = feedFactory.persistedResults;
             var resumePersisted = true;
+        } else if (!$scope.results) {
+            //While true the hashtagspinner will appear
+            $scope.pleaseWait = true;
         }
 
 
@@ -69,7 +69,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     resumePersisted = false;
 
                     //UI will query polling API every 30 seconds
-                    var intervalUpdate = $interval(updateFeed, 30000, 0, true);
+                    var intervalUpdate = $interval(updateFeed, 60000, 0, true);
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
                     $scope.$on('$destroy', function () {
