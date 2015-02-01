@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.controller('selling.controller.listSoldItems', ['$scope', 'sellingFactory', 'splashFactory', '$state', function ($scope, sellingFactory, splashFactory, $state) {
+htsApp.controller('selling.controller.listSoldItems', ['$scope', 'sellingFactory', 'splashFactory', '$state', '$modal', 'newPostFactory', function ($scope, sellingFactory, splashFactory, $state, $modal, newPostFactory) {
 
 
     //openSplash called when suer clicks on item in feed for more details.
@@ -82,5 +82,32 @@ htsApp.controller('selling.controller.listSoldItems', ['$scope', 'sellingFactory
         alert("lookup error");
 
     });
+
+
+
+
+    $scope.newPost = function () {
+
+        var modalInstance = $modal.open({
+            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            controller: 'newPostModal',
+            size: 'lg',
+            resolve: {
+                mentionsFactory: function () {
+                    return newPostFactory;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (selectedItem) {
+            $scope.modalContent.selected = selectedItem;
+        }, function () {
+            console.log('Modal dismissed at: ' + new Date());
+        });
+    };
+
+    $scope.blah = function () {
+        alert('meh');
+    };
 
 }]);

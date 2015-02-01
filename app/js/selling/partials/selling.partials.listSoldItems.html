@@ -2,14 +2,14 @@
 
 <div ui-view></div>
 
-<div ng-show="!results.length" class="background-instructions">
+<div ng-show="!results.length && !pleaseWait" class="background-instructions">
     <div class="inset-background-text">
-        :( Awww, you're not selling anything with us.
+        :( Awww... You're not selling anything.  <span ng-click="newPost();" style="cursor: pointer; color: rgb(66, 139, 202);">Try it out?</span>
     </div>
 </div>
 
 
-<div class="outer-container">
+<div class="outer-container" ng-show="results.length">
     <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div class="inner-container">
         <div class="selling-item" ng-class="{'first': $first}" style="cursor: pointer;" ng-repeat="result in results"
