@@ -12,18 +12,21 @@ exports.dedupe = function(result, promise){
 
     var originals = [];
 
-    for (var i = 0; i < response.postings.length; i++) {
+    deDupeExternalID.put(response.postings[0].external_id, 0);
+    //console.log("ID is unique: " + response.postings[0].external_id);
+    deDupeHeading.put(response.postings[0].heading, 0);
+    //console.log("Heading is unique: " + response.postings[0].heading);
+
+    for (var i = 1; i < response.postings.length; i++) {
 
         result = response.postings[i];
 
-        /* console.log(result); */
-
-        if(!deDupeExternalID.get(result.external_id)){
-//            console.log("ID is unique: " + result.external_id);
+        if(typeof deDupeExternalID.get(result.external_id) === 'undefined'){
+            //console.log("ID is unique: " + result.external_id);
             deDupeExternalID.put(result.external_id, i);
 
-            if(!deDupeHeading.get(result.heading)){
-//                console.log("Heading is unique: "+ result.heading);
+            if(typeof deDupeHeading.get(result.heading) === 'undefined'){
+                //console.log("Heading is unique: "+ result.heading);
                 deDupeHeading.put(result.heading, i);
 
 //                TODO: Clean up HTML
@@ -33,11 +36,11 @@ exports.dedupe = function(result, promise){
             } else {
 
                 duplicates.push(result);
-//                console.log("Duplicate Heading: "+ result.heading);
+                console.log("Duplicate Heading: "+ result.heading);
             }
         } else {
             duplicates.push(result);
-//            console.log("Duplicate ID: "+result.external_id);
+            console.log("Duplicate ID: "+result.external_id);
         }
 
 //        console.log("------------------------------------------------------")
