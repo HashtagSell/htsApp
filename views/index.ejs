@@ -25,10 +25,9 @@
 
     <link rel="stylesheet" href="/css/index.css" />
     <link rel="stylesheet" href="/css/splash.css" />
-    <link rel="stylesheet" href="/css/feed.css"/>
 </head>
 
-<body ng-controller="mainController">
+<body ng-controller="mainController" ng-cloak>
     <div class="navbar navbar-default nav-links navbar-fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
@@ -84,11 +83,11 @@
                     <a href class="dropdown-toggle" on-toggle="toggled(open)">
                         <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn" ng-cloak>
+                    <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
                         <li><a href ng-click="signIn()">Sign In</a></li>
                         <li><a href ng-click="signUp()">Create Account</a></li>
                     </ul>
-                    <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn" ng-cloak>
+                    <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
                         <li><a ui-sref="settings.general">User Settings</a></li>
                         <li class="divider"></li>
                         <li><a href="#" ng-click="logout()">Logout</a></li>
@@ -109,8 +108,8 @@
                     </div>
                 </div>
                 <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
-                    <div class="bs-username ng-cloak" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
-                    <div class="bs-username ng-cloak" ng-show="!userObj.user_settings.name">
+                    <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
+                    <div class="bs-username" ng-show="!userObj.user_settings.name">
                         <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
                         <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
                     </div>
@@ -118,7 +117,7 @@
                 </div>
 
                 <!--SideNav-->
-                <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
+                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
                     <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
                         {{::item.name}}
                         <span class="badge">{{item.alerts}}</span>
@@ -128,22 +127,22 @@
 
                 <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
                 <div ng-controller="filterBar">
-                    <div class="list-group ng-cloak" ng-show="showFilterBar">
-                        <a class="list-group-item ng-cloak">
+                    <div class="list-group" ng-show="showFilterBar">
+                        <a class="list-group-item">
                             <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
                             <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
                             <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
                         </a>
                         <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
-                        <a class="list-group-item ng-cloak">
+                        <a class="list-group-item">
                             <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
                         </a>
 
-                        <a class="list-group-item ng-cloak">
+                        <a class="list-group-item">
                             <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
                         </a>
 
-                        <a class="list-group-item ng-cloak">
+                        <a class="list-group-item">
                             <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Show" switch-off-color="primary"  switch-off-text="Hide" switch-label="Map" style="min-width: 220px;">
                         </a>
 

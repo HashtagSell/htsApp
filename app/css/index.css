@@ -31,7 +31,15 @@ html, body {
     /*border:1px solid blue;*/
 }
 
-
+.splash-inner-container {
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /*Webkit touch scrolling causes bug where virtual scroll doesn't update on mobile devices due to intertia scroll*/
+    /*-webkit-overflow-scrolling: touch;*/
+    /*border:1px solid red;*/
+    padding-right:0px;
+}
 
 
 .inner-container {
@@ -146,7 +154,7 @@ html, body {
 
 
 .navbar {
-    min-height: 56px;
+    height: 56px;
 }
 
 .navbar .awesomeBar {
@@ -199,8 +207,16 @@ html, body {
 }
 
 .content-container {
+     position: absolute;
+     left: 280px;
+ }
+
+.splash-content-container {
     position: absolute;
-    left: 280px;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }
 
 
@@ -245,6 +261,29 @@ html, body {
     }
 
     .content-container.offcanvas-open {
+        transform:translateX(280px);
+        -webkit-transform:translateX(280px);
+    }
+
+
+
+    .splash-content-container {
+        transition:all .25s;
+        -webkit-transition:all .25s;
+
+        transform:translate3d(0,0,0);
+        -webkit-transform:translate3d(0,0,0);
+
+        top:57px;
+        bottom:0;
+        left:0;
+        right:0;
+        width:100%;
+        overflow-x:hidden;
+
+    }
+
+    .splash-content-container.offcanvas-open {
         transform:translateX(280px);
         -webkit-transform:translateX(280px);
     }
@@ -314,6 +353,28 @@ html, body {
     .content-container.offcanvas-open {
         transform:translateX(50%);
         -webkit-transform:translateX(50%);
+    }
+
+
+    .splash-content-container {
+        transition:all .25s;
+        -webkit-transition:all .25s;
+
+        transform:translate3d(0,0,0);
+        -webkit-transform:translate3d(0,0,0);
+
+        top:57px;
+        bottom:0;
+        left:0;
+        right:0;
+        width:100%;
+        overflow-x:hidden;
+
+    }
+
+    .splash-content-container.offcanvas-open {
+        transform:translateX(280px);
+        -webkit-transform:translateX(280px);
     }
 
 
