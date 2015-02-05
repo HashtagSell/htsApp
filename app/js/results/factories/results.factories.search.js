@@ -58,6 +58,13 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.map = {
         zoom: 8,
         markers: [],
+        settings: {
+            options : {
+                zoomControl: false,
+                panControl: false,
+                mapTypeControl: false
+            }
+        },
         clusterOptions: {
             gridSize: 35,
             maxZoom: 17,
