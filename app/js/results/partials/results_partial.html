@@ -178,7 +178,7 @@
 
 
     <div class="map-container" ng-class="{ 'show-map' : views.showMap }">
-        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options='map.settings.options'>
             <ui-gmap-markers models="map.markers" coords="'self'" icon="'icon'" fit="true" doCluster="true" clusterOptions="map.clusterOptions">
             </ui-gmap-markers>
         </ui-gmap-google-map>
