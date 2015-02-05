@@ -1,14 +1,40 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'uiGmapGoogleMapApi', 'socketio', function ($scope, $sce, $state, $modal, splashFactory, Session, uiGmapGoogleMapApi, socketio) {
+htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $sce, $state, $modal, splashFactory, Session, socketio) {
 
-    var splashInstanceCtrl = ['$scope', function ($scope) {
+    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', function ($scope, sideNavFactory, uiGmapGoogleMapApi) {
+
+        function toTitleCase(str) {
+            console.log(str);
+            return str.replace(/\w\S*/g, function(txt){
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        }
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
         $scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
-        $scope.result.heading_clean = $sce.trustAsHtml(splashFactory.result.heading);
+        $scope.result.heading_clean = toTitleCase($sce.trustAsHtml(splashFactory.result.heading).toString());
+
+
+
+
+        $scope.slickConfig = {
+            dots: true,
+            lazyLoad: 'progressive',
+            infinite: true,
+            speed: 100,
+            slidesToScroll: 1,
+            //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
+            variableWidth: true,
+            centerMode: false
+        };
+
+
+        $scope.toggles = {
+            showCarousel: true
+        };
 
         uiGmapGoogleMapApi.then(function(maps) {
             $scope.map = {
@@ -19,6 +45,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                     },
                     options: {
                         zoomControl: false,
+                        panControl: false,
                         mapTypeControl: false
                     },
                     zoom: 14
@@ -29,13 +56,29 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                         latitude: $scope.result.location.lat,
                         longitude: $scope.result.location.long
                     }
-                },
-                infoWindow: {
-                    show: true
                 }
             };
         });
 
+        $scope.windowOptions = {
+            content: 'please wait',
+            disableAutoPan: false
+        };
+
+        //Google maps InfoWindow on marker click
+        $scope.infoWindow = {
+            show: false
+        };
+
+        $scope.onClick = function () {
+            $scope.$apply(function () {
+                $scope.infoWindow.show = !$scope.infoWindow.show;
+            });
+        };
+
+        $scope.closeClick = function () {
+            $scope.infoWindow.show = false;
+        };
 
         //If we do not know the formatted address of the item we use the lat and lon to reverse geocode the closest address or cross-street.
         if (!$scope.result.location.formatted_address) {
@@ -46,21 +89,22 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
                 geocoder.geocode({'latLng': latlng}, function (results, status) {
 
-                    if (status == google.maps.GeocoderStatus.OK) {
+                    if (status === google.maps.GeocoderStatus.OK) {
                         if (results[1]) {
                             console.log('reverse geocoded info', results[1].formatted_address);
 
-                            $scope.result.location.geocoded_address = results[1].formatted_address;
-                        } else {
-                            $scope.map.infoWindow.show = false;
+                            $scope.windowOptions.content = results[1].formatted_address;
                         }
                     } else {
-                        $scope.map.infoWindow.show = false;
-                        console.log('geocoder failed???');
+                        $scope.windowOptions.content = 'no address discovered';
                     }
                 });
 
             })();
+        } else {
+
+            $scope.windowOptions.content = $scope.result.location.formatted_address;
+            console.log('already have address: ', $scope.windowOptions.content);
         }
 
         //If the item has annotations then display only ones that match our whitelist.
@@ -68,6 +112,10 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             $scope.result.sanitized_annotations = splashFactory.sanitizeAnnotations($scope.result.annotations);
         }
 
+
+
+
+        //Socket.io RTC integration
         $scope.updates = socketio.updates;
 
         socketio.socket.on('message', function () {
@@ -79,12 +127,31 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             socketio.sendMessage($scope.result.external_id, question);
         };
 
-        console.log($scope.result);
+
+
+
+        //Responsive Navigation
+        $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
+
+        console.log($scope.sideNavOffCanvas);
+
+        $scope.toggleOffCanvasSideNav = function () {
+            $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
+        };
+
     }];
+
+
+
+
+
+
+
+
 
     var splashInstance = $modal.open({
         backdrop: false,
-        templateUrl: "js/splash/partials/splash_content.html",
+        templateUrl: "js/splash/partials/splash_content_new.html",
         windowTemplateUrl: "js/splash/partials/splash_window.html",
         controller: splashInstanceCtrl
     });
@@ -92,10 +159,15 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
     splashInstance.result.then(function (selectedItem) {
         console.log(selectedItem);
-    }, function () {
+    }, function (reason) {
         console.log('Splash dismissed at: ' + new Date());
-        splashInstance.dismiss();
-        $state.go('^');
+        if(reason === 'feed' || reason === 'results' || reason === 'selling' || reason === 'notifications' || reason === 'interested') {
+            splashInstance.dismiss();
+            $state.go(reason);
+        } else {
+            splashInstance.dismiss();
+            $state.go('^');
+        }
     });
 
 
@@ -103,8 +175,6 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
     $scope.$on('$stateChangeStart', function () {
         splashInstance.dismiss();
     });
-
-
 }]);
 
 
