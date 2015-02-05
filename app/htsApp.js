@@ -14,16 +14,16 @@ var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'u
 
 
 //Forcing XHR requests via Angular $http (AJAX)
-htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', 'uiGmapGoogleMapApiProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider, uiGmapGoogleMapApiProvider) {
+htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider) {
 
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
-    uiGmapGoogleMapApiProvider.configure({
-        //    key: 'your api key',
-        v: '3.17',
-        libraries: 'weather,geometry,visualization'
-    });
+    //uiGmapGoogleMapApiProvider.configure({
+    //    //    key: 'your api key',
+    //    v: '3.17',
+    //    libraries: 'geometry'
+    //});
 
     //function assigned to routes that can only be accessed when user logged in
     var loginRequired = ['$q', 'Session', 'authModalFactory', 'sideNavFactory', function ($q, Session, authModalFactory, sideNavFactory) {
@@ -31,6 +31,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 
         if (!Session.userObj.user_settings.loggedIn) {
             deferred.reject();
+            //$location.path('/');
             //$location.path('/');
 
             authModalFactory.signInModal(sideNavFactory.redirect.name);
