@@ -42,6 +42,25 @@
     transform: translate3d(0,0,0);
 }
 
+.splash-bs-username {
+    margin-top: -15px;
+    margin-left: 54px;
+    position: absolute;
+}
+
+.splash-username-container {
+    position: relative;
+    display: block;
+    padding: 15px 28px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.splash-bs-side-nav {
+    margin-top: -1px;
+    text-align: left;
+}
+
 /*.splash-content .overlay-details {*/
     /*margin-top: -40px;*/
 /*}*/
@@ -181,4 +200,10 @@ a:hover {
     -moz-box-shadow: inset -1px 1px 6px #888;
     -webkit-box-shadow: inset -1px 1px 6px #888;
     box-shadow: inset -1px 1px 6px #888;
+}
+
+
+.singleImage-splash-Image {
+    min-height: 300px;
+    margin: 0 auto;
 }

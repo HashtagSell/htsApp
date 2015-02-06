@@ -43,7 +43,7 @@
                                         'sort-desc': tableParams.isSortBy('price', 'desc')
                                     }"
                     ng-click="tableParams.sorting({'price' : tableParams.isSortBy('price', 'asc') ? 'desc' : 'asc'})">
-                    <div>Sort by price</div>
+                    <div>Price</div>
                 </th>
             </tr>
             </thead>
@@ -62,8 +62,7 @@
                     <td style="width:70px; cursor: pointer;" ng-click='openSplash(favorite)'>
                         <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
                     </td>
-                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)'>
-                        {{::favorite.heading}}
+                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)' ng-bind-html="favorite.heading | cleanHeading">
                         <br>
                         <small>
                             <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
@@ -74,8 +73,11 @@
                             </table>
                         </small>
                     </td>
-                    <td style="vertical-align: middle;">
-                        {{::favorite.price | currency : symbol}}
+                    <td ng-if="favorite.price" style="vertical-align: middle;">
+                        {{::favorite.price | currency : $ : 0}}
+                    </td>
+                    <td ng-if="!favorite.price" style="vertical-align: middle;">
+                        No price
                     </td>
                     <td style="width:20px; vertical-align: middle;">
                         <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite);" style="color:red; cursor: pointer;"></i>

@@ -10,11 +10,6 @@
             </a>
             <ul class="nav navbar-nav pull-right">
                 <li class="hidden-sm hidden-xs">
-                    <a ng-click="$dismiss('results')">
-                        Search
-                    </a>
-                </li>
-                <li class="hidden-sm hidden-xs">
                     <a ng-click="$dismiss('feed')">
                         My Feed
                     </a>
@@ -58,7 +53,7 @@
     <div class="master-container">
         <div class="splash-content-container" ng-class="{ 'offcanvas-open' : !sideNavOffCanvas.hidden}">
             <div class="container">
-                <div class="outer-container">
+                <div class="splash-outer-container">
                     <div class="splash-inner-container">
                         <div style="background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; margin-bottom: 20px;">
                             <div class="container-fluid">
@@ -69,7 +64,7 @@
                                         </a>
                                     </li>
                                     <li style="display: table; margin: 6px auto 0px auto;">
-                                        <h3 style="margin: 0px;">{{::result.heading_clean}}</h3>
+                                        <h3 style="margin: 0px;" ng-bind-html="result.heading | cleanHeading"></h3>
                                     </li>
                                 </ul>
                             </div>
@@ -80,7 +75,7 @@
                                     <div class="row">
                                         <div class="col-xs-12 splashCarousel">
                                             <div ng-if="result.images.length === 1 && toggles.showCarousel">
-                                                <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive singleImage-Image"/>
+                                                <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive singleImage-splash-Image"/>
                                             </div>
                                             <div ng-if="result.images.length > 1">
                                                 <slick-carousel
@@ -106,8 +101,6 @@
                                                     <i class="fa fa-map-marker fa-lg" style="margin-top: 16px;">&nbsp; Map</i>
                                                 </div>
                                             </div>
-                                            <!--{{showCarousel}}-->
-                                            <!--{{toggles}}-->
                                         </div>
                                     </div>
                                 </div>
@@ -144,20 +137,27 @@
                             </div>
                             <div style="margin-left: 20%;">
                                 <h4>Description:</h4>
-                                <div ng-bind-html="result.body_clean">
-                                    <!--{{::body}}-->
+                                <div ng-bind-html="result.body | cleanBody | linky:'_blank'">
+
                                 </div>
                             </div>
                         </div>
                         <div class="bs-profile-nav" style="position: absolute; left: 60%; top: 38px;">
-                            <side-profile class="profile" result="result" style="cursor: pointer">
-                                <div class="profileCircle">
-                                    <img class='bs-profile-image' width="70px;" height="70px;"/>
+                            <splash-side-profile result="result" style="cursor: pointer">
+                                <div class="profile">
+                                    <div class="profileCircle">
+                                        <img class='bs-profile-image' width="70px;" height="70px;"/>
+                                    </div>
                                 </div>
-                            </side-profile>
+                                <div class="splash-username-container">
+                                    <div class="splash-bs-username"></div>
+                                    <h2 style="color: #216C2A; margin-bottom: 2px;">{{::result.price | currency : $ : 0}}</h2>
+                                    <!--<button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">New post</button>-->
+                                </div>
+                            </splash-side-profile>
 
                             <!--SideNav-->
-                            <div class="list-group bs-side-nav ng-cloak" ng-controller="sideNav.controller">
+                            <div class="list-group splash-bs-side-nav ng-cloak" ng-controller="sideNav.controller">
                                 <a class="list-group-item" ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="sideNav.splashItems[1].action(result)" style="cursor: pointer">
                                     <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller
                                 </a>

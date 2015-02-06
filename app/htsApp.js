@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ui.unique']);
+var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ngSanitize']);
 
 
 
@@ -233,3 +233,51 @@ htsApp.filter('tel', function () {
         return (country + " (" + city + ") " + number).trim();
     };
 });
+
+
+
+htsApp.filter('cleanHeading', ['$sce', function ($sce) {
+    return function (dirtyHeading) {
+        //Capitalize the first letter of every word
+        return dirtyHeading.replace(/\w\S*/g, function (dirtyHeading) {
+
+            //Test against regex expression to find items like integers followed by simicolon.  i.e. 5556;
+            var integersAndSimicolon = new RegExp("\\S+([0-9];)");
+            if(!integersAndSimicolon.test(dirtyHeading)) {
+
+                var cleanedHeading = dirtyHeading.charAt(0).toUpperCase() + dirtyHeading.substr(1).toLowerCase();
+                return $sce.trustAsHtml(cleanedHeading);
+
+            } else {
+                return '';
+            }
+        });
+    };
+}]);
+
+
+htsApp.filter('cleanBody', ['$sce', function ($sce) {
+    return function (dirtyBody) {
+        //Find any word that is in ALL CAPS and only capitalize the first letter
+        return dirtyBody.replace(/\b([A-Z]{2,})\b/g, function (dirtyBody) {
+
+            //Test against regex expression to find items like integers followed by simicolon.  i.e. 5556;
+            var integersAndSimicolon = new RegExp("\\S+([0-9];)");
+            if (!integersAndSimicolon.test(dirtyBody)) {
+
+                //console.log(dirtyBody);
+                //
+                //var catchNewLineChar = new RegExp("↵");
+                //if (catchNewLineChar.test);
+
+                //TODO: Catch ↵ character and insert new line in html
+
+                var cleanedBody = dirtyBody.charAt(0).toUpperCase() + dirtyBody.substr(1).toLowerCase();
+                return $sce.trustAsHtml(cleanedBody);
+
+            } else {
+                return '';
+            }
+        });
+    };
+}]);

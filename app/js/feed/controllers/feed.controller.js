@@ -13,7 +13,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
         centerMode: false
-
     };
 
 

@@ -8,6 +8,7 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', function ($http, $l
     //CL annotations
     annotationsDictionary.put("source_neighborhood","Neighborhood");
     annotationsDictionary.put("year","Year");
+    annotationsDictionary.put("condition","Condition");
     annotationsDictionary.put("make","Make");
     annotationsDictionary.put("title_status","Title");
     annotationsDictionary.put("model","Model");

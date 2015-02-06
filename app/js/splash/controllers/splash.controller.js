@@ -14,8 +14,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
-        $scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
-        $scope.result.heading_clean = toTitleCase($sce.trustAsHtml(splashFactory.result.heading).toString());
+        //$scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
+        //$scope.result.heading_clean = toTitleCase($sce.trustAsHtml(splashFactory.result.heading).toString());
 
 
 
@@ -133,7 +133,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         //Responsive Navigation
         $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
 
-        console.log($scope.sideNavOffCanvas);
+        console.log($scope);
 
         $scope.toggleOffCanvasSideNav = function () {
             $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
@@ -161,7 +161,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         console.log(selectedItem);
     }, function (reason) {
         console.log('Splash dismissed at: ' + new Date());
-        if(reason === 'feed' || reason === 'results' || reason === 'selling' || reason === 'notifications' || reason === 'interested') {
+        if(reason === 'feed' || reason === 'selling' || reason === 'notifications' || reason === 'interested') {
             splashInstance.dismiss();
             $state.go(reason);
         } else {
@@ -178,7 +178,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 }]);
 
 
-htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
+htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory) {
     return {
         restrict: 'E',
         scope: {
@@ -203,7 +203,10 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
 
                         var sellerProfileDetails = response.data.user;
 
-                        element.css({
+                        console.log(sellerProfileDetails);
+
+                        var bannerElement = angular.element(element[0].querySelector('.profile'));
+                        bannerElement.css({
                             'background-image': "url(" + sellerProfileDetails.banner_photo + ")",
                             'background-size': "cover"
                         });
@@ -214,6 +217,8 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                             'background-size': "cover"
                         });
 
+                        var username = angular.element(element[0].querySelector('.splash-bs-username'));
+                        username.html('@' + sellerProfileDetails.name);
                     }
                 }, function (response) {
 
@@ -229,13 +234,14 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                     var photoIndex = scope.result.images.length - 1;
                     var lastImage = scope.result.images[photoIndex].thumb || scope.result.images[photoIndex].images || scope.result.images[photoIndex].full;
 
-                    element.css({
+                    var bannerElement = angular.element(element[0].querySelector('.profile'));
+                    bannerElement.css({
                         'background-image': "url(" + lastImage + ")",
                         'background-size': "cover"
                     });
                 }
 
-
+                var username = angular.element(element[0].querySelector('.splash-bs-username'));
                 var sourceIcon = angular.element(element[0].querySelector('.bs-profile-image'));
                 if (scope.result.source === "APSTD") {
 
@@ -244,12 +250,16 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                         'background-size': "cover"
                     });
 
+                    username.html('@apartments.com');
+
                 } else if (scope.result.source === "AUTOD") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/autotrader_splash.png)",
                         'background-size': "cover"
                     });
+
+                    username.html('@autotrader.com');
 
                 } else if (scope.result.source === "BKPGE") {
 
@@ -258,12 +268,16 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                         'background-size': "cover"
                     });
 
+                    username.html('@backpage.com');
+
                 } else if (scope.result.source === "CRAIG") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/craigslist_splash.png)",
                         'background-size': "cover"
                     });
+
+                    username.html('@craigslist.com');
 
                 } else if (scope.result.source === "EBAYM") {
 
@@ -272,6 +286,8 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                         'background-size': "cover"
                     });
 
+                    username.html('@ebaymotors.com');
+
                 } else if (scope.result.source === "E_BAY") {
 
                     sourceIcon.css({
@@ -279,6 +295,7 @@ htsApp.directive('sideProfile', ['splashFactory', function (splashFactory) {
                         'background-size': "cover"
                     });
 
+                    username.html('@ebay.com');
                 }
 
             }

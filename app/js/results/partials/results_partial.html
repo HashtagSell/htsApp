@@ -29,8 +29,8 @@
                         <img ng-if="result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage">
                         <div ng-if="!result.images.length" class="grid-noImage-Placeholder"></div>
                         <div class="caption">
-                            <h4 class="heading">{{::result.heading}}</h4>
-                            <p class="body">{{::result.body}}</p>
+                            <h4 class="heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                            <p class="body" ng-bind-html="result.body |cleanBody"></p>
                             <p class="distance" data-distance="{{::result.distanceFromUser}}">
                                 <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
                             </p>
@@ -79,8 +79,8 @@
                                 <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
                                     <div class="row">
                                         <div class="caption">
-                                            <h4 class="noImage-heading">{{::result.heading}}</h4>
-                                            <p class="noImage-body">{{::result.body}}</p>
+                                            <h4 class="noImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                                            <p class="noImage-body" ng-bind-html="result.body |cleanBody"></p>
                                         </div>
                                     </div>
 
@@ -112,8 +112,8 @@
                                 <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
                                     <div class="row">
                                         <div class="caption">
-                                            <h4 class="singleImage-heading">{{::result.heading}}</h4>
-                                            <p class="singleImage-body">{{::result.body}}</p>
+                                            <h4 class="singleImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                                            <p class="singleImage-body" ng-bind-html="result.body |cleanBody"></p>
                                         </div>
                                     </div>
 
@@ -149,8 +149,8 @@
 
                             <div class="row">
                                 <div class="caption">
-                                    <h4 class="carousel-heading">{{::result.heading}}</h4>
-                                    <p class="carousel-body">{{::result.body}}</p>
+                                    <h4 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                                    <p class="carousel-body" ng-bind-html="result.body |cleanBody"></p>
                                 </div>
                             </div>
 

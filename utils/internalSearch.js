@@ -108,7 +108,7 @@ function sortByDistance(postings, userLat, userLong) {
 
 
     var sortedPostings = postings.sort(function (a, b) {
-        return a.distanceFromUser - b.distanceFromUser
+        return a.distanceFromUser - b.distanceFromUser;
     });
 
     return sortedPostings

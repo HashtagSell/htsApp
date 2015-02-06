@@ -34,8 +34,8 @@
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
                             <div class="row">
                                 <div class="caption">
-                                    <h4 class="noImage-heading">{{::result.heading}}</h4>
-                                    <p class="noImage-body">{{::result.body}}</p>
+                                    <h4 class="noImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                                    <p class="noImage-body" ng-bind-html="result.body |cleanBody"></p>
                                 </div>
                             </div>
 
@@ -67,8 +67,8 @@
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
                             <div class="row">
                                 <div class="caption">
-                                    <h4 class="singleImage-heading">{{::result.heading}}</h4>
-                                    <p class="singleImage-body">{{::result.body}}</p>
+                                    <h4 class="singleImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                                    <p class="singleImage-body" ng-bind-html="result.body |cleanBody"></p>
                                 </div>
                             </div>
 
@@ -104,8 +104,8 @@
 
                     <div class="row">
                         <div class="caption">
-                            <h4 class="carousel-heading">{{::result.heading}}</h4>
-                            <p class="carousel-body">{{::result.body}}</p>
+                            <h4 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h4>
+                            <p class="carousel-body" ng-bind-html="result.body |cleanBody"></p>
                         </div>
                     </div>
 
@@ -131,7 +131,7 @@
 </div>
 
 <!--Category Tree-->
-<div class="feed-category-container hidden-sm hidden-xs">
+<div ng-if="results.length" class="feed-category-container hidden-sm hidden-xs">
 
     <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 200px; margin-top: 20px;"/>
 

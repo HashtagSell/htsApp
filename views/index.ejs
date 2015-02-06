@@ -33,10 +33,10 @@
             <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
                 <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
             </a>
-            <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer">
+            <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
                 <i class="fa fa-bars fa-2x"></i>
             </a>
-            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-5 col-sm-offset-1 col-xs-7 awesomeBar" ng-controller="awesomeBarController">
+            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
                 <form role="search" ng-submit="awesomeBarSubmit()">
                     <div class="input-group">
                         <input
@@ -77,9 +77,9 @@
             </div>
             <ul class="nav navbar-nav pull-right">
                 <li ng-controller="newPostController">
-                    <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>
+                    <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">New post</button>
                 </li>
-                <li class="dropdown hidden-xs" ng-controller="userMenu">
+                <li class="dropdown" ng-controller="userMenu">
                     <a href class="dropdown-toggle" on-toggle="toggled(open)">
                         <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
                     </a>
@@ -113,7 +113,7 @@
                         <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
                         <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell It</button>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">New post</button>
                 </div>
 
                 <!--SideNav-->
@@ -193,7 +193,7 @@
     <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="https://stage-realtime.hashtagsell.com/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="/angular-ui-utils/unique.min.js"></script>
+    <script type="text/javascript" src="/angular-sanitize/angular-sanitize.min.js"></script>
 
     <!--ANGULAR-->
     <script type="text/javascript" src="htsApp.js"></script>
