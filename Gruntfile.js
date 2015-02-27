@@ -1,6 +1,119 @@
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        ngconstant: {
+            // Options for all targets
+            options: {
+                space: '  ',
+                name: 'globalVars'
+            },
+            // Environment targets
+            development: {
+                options: {
+                    dest: './app/htsApp.config'
+                },
+                constants: {
+                    ENV: {
+                        name: 'development',
+                        postingAPI: 'http://localhost:4043/v1/postings/',
+                        realtimePostingAPI: 'http://localhost:4044/postings',
+                        realtimeUserAPI: 'http://localhost:4044/users',
+                        syncAgentAPI: 'http://localhost:8881'
+                    }
+                }
+            },
+            production: {
+                options: {
+                    dest: './app/config.js'
+                },
+                constants: {
+                    ENV: {
+                        name: 'production',
+                        postingAPI: 'url',
+                        RealtimeCommAPI: 'url',
+                        syncAgentAPI: 'url'
+                    }
+                }
+            }
+        },
+        //start mongo
+        shell: {
+            mongodb: {
+                command: './startMongoIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            redis: {
+                command: './startRedisIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            freeGeoIp: {
+                command: './startFreeGeoIpIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            postingAPI: {
+                command: './startPostingApiIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            realTimeCommAPI: {
+                command: './startRealTimeApiIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            startSync: {
+                command: './startSyncAgentIfNotRunning.sh',
+                options: {
+                    async: false,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            quitAll: {
+                command: './quitAll.sh',
+                options: {
+                    async: false,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            options: {
+                stdout: true,
+                stderr: true,
+                failOnError: true
+            }
+        },
+        //runs when grunt is exited
+        exit: {
+            normal: {
+
+            }
+        },
+        //Concat combines all js files in js directory to one file.
         concat: {
             options: {
                 separator: ';'
@@ -10,6 +123,7 @@ module.exports = function(grunt) {
                 dest: './app/dist/<%= pkg.name %>.js'
             }
         },
+        //Validate all js
         jshint: {
             // define the files to lint
             files: ['./gruntfile.js', './app/js/**/*.js'],
@@ -23,6 +137,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //Minify all the Javascript
         uglify: {
             options: {
                 // the banner is inserted at the top of the output
@@ -36,22 +151,9 @@ module.exports = function(grunt) {
         },
         concurrent: {
             dev: {
-                tasks: ['nodemon', 'node-inspector', 'watch'],
+                tasks: ['nodemon', 'watch'],
                 options: {
                     logConcurrentOutput: true
-                }
-            }
-        },
-        'node-inspector': {
-            dev: {
-                options: {
-                    'web-port': 1337,
-                    'web-host': 'localhost',
-                    'debug-port': 5858,
-                    'save-live-edit': true,
-                    'no-preload': true,
-                    'stack-trace-limit': 4,
-                    'hidden': ['node_modules']
                 }
             }
         },
@@ -96,7 +198,7 @@ module.exports = function(grunt) {
                 files: ['<%= jshint.files %>'],
                 tasks: ['jshint'],
                 options: {
-                    livereload: true,
+                    livereload: true
                 }
             },
             server: {
@@ -116,8 +218,24 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-node-inspector');
+    grunt.loadNpmTasks('grunt-ng-constant');
+    grunt.loadNpmTasks('grunt-shell-spawn');
+    grunt.loadNpmTasks('grunt-services');
+    grunt.loadNpmTasks('grunt-exit');
 
-    grunt.registerTask('default', ['jshint', 'concurrent']);
+    grunt.registerTask('dev', function (target) {
+        return grunt.task.run(['shell:mongodb', 'shell:redis', 'shell:freeGeoIp', 'shell:postingAPI', 'shell:realTimeCommAPI', 'ngconstant:development', 'jshint', 'concurrent']);
+    });
+
+
+    grunt.registerTask('sync', function (target) {
+        return grunt.task.run(['shell:startSync']);
+    });
+
+
+    grunt.registerTask('quit', function (target) {
+        return grunt.task.run(['shell:quitAll']);
+    });
 
     //TODO: Included minifed CSS and JS, save to build dev folder
     //grunt.registerTask('build-dev', ['jshint', 'concat', 'uglify']);
