@@ -166,12 +166,13 @@ exports.vendor = function(req, res){
                 });
             },
             function (res, req, result, callback) { //Conduct search to internal HashtagSell Database
+
                 console.log("***************************");
-                console.log("Search HashtagSell Mongo DB");
+                console.log("Search HashtagSell Posting API");
                 console.log("***************************");
 
-                var promise = new Promise(function (resolve, reject) {
-                    internalSearch.query(req, result, function (error, response) { //Use our popular category service
+                var promiseNew = new Promise(function (resolve, reject) {
+                    internalSearch.newQuery(req, result, function (error, response) {
                         if (error) {
 
                             reject(error);
@@ -186,9 +187,9 @@ exports.vendor = function(req, res){
                 });
 
 
-                promise.then(function (internalResults) {
+                promiseNew.then(function (mergedResults) {
 
-                    result.merged = internalResults;
+                    result.external.postings = mergedResults;
 
                     callback(null, res, req, result);
                 });
@@ -322,12 +323,13 @@ exports.vendor = function(req, res){
                 });
             },
             function (res, req, result, callback) { //Conduct search to internal HashtagSell Database
+
                 console.log("***************************");
-                console.log("Search HashtagSell Mongo DB");
+                console.log("Search HashtagSell Posting API");
                 console.log("***************************");
 
-                var promise = new Promise(function (resolve, reject) {
-                    internalSearch.query(req, result, function (error, response) { //Use our popular category service
+                var promiseNew = new Promise(function (resolve, reject) {
+                    internalSearch.newQuery(req, result, function (error, response) {
                         if (error) {
 
                             reject(error);
@@ -342,9 +344,9 @@ exports.vendor = function(req, res){
                 });
 
 
-                promise.then(function (internalResults) {
+                promiseNew.then(function (mergedResults) {
 
-                    result.merged = internalResults;
+                    result.external.postings = mergedResults;
 
                     callback(null, res, req, result);
                 });
