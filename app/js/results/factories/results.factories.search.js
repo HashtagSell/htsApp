@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', function ($http, $stateParams, $location, $q, $log) {
+htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', '$timeout', 'utilsFactory', function ($http, $stateParams, $location, $q, $log, $timeout, utilsFactory) {
 
     var factory = {};
 
@@ -10,7 +10,37 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         unfiltered: []
     };
 
+    factory.filter = {
+        mustHaveImage : false,
+        mustHavePrice: false
+    };
+
+    factory.sort = {
+        distance: true,
+        price: false,
+        datePosted: false
+    };
+
+    factory.priceSlider = {
+        min: 0,
+        max: 0,
+        step: 1,
+        rangeValue : [0,0],
+        userSetValue: false
+    };
+
+    factory.views = {
+        gridView: true,
+        showMap: false
+    };
+
+    factory.status = {
+        pleaseWait: true,
+        error: {}
+    };
+
     factory.queryParams = {};
+
 
     factory.query = function () {
 
@@ -29,14 +59,23 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         $http({method: 'GET', url: search_api}).
             then(function (response, status, headers, config) {
 
-                //console.log(response);
+                if (response.data.external.postings.length) {
 
-                factory.queryParams.anchor = response.data.merged.anchor;
-                factory.queryParams.next_page = response.data.merged.next_page;
-                factory.queryParams.next_tier = response.data.merged.next_tier;
-                factory.results.unfiltered = factory.results.unfiltered.concat(response.data.external.postings);
-                deferred.resolve(response);
+                    factory.queryParams.anchor = response.data.external.anchor;
+                    factory.queryParams.next_page = response.data.external.next_page;
+                    factory.queryParams.next_tier = response.data.external.next_tier;
 
+                    //response = utilsFactory.convertToHTSObjStructure(response);
+
+                    factory.results.unfiltered = factory.results.unfiltered.concat(response.data.external.postings);
+                    deferred.resolve(response);
+
+                } else {
+
+                    factory.status.pleaseWait = false;
+                    factory.status.error.message = "¯\\_(ツ)_/¯  Keep your searches simple.  And don't worry, we're fixing this... ";
+
+                }
             },
             function (response, status, headers, config) {
 
@@ -47,7 +86,6 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     };
 
 
-
     factory.getInnerContainerDimensions = function () {
         return 'function re-defined via resizeGrid directive';
     };
@@ -56,20 +94,32 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     factory.map = {
+        bounds: {},
+        center: {
+            latitude: 0,
+            longitude: 0
+        },
         zoom: 8,
         markers: [],
-        settings: {
-            options : {
-                zoomControl: false,
-                panControl: false,
-                mapTypeControl: false
+        options : {
+            zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.SMALL,
+                position: google.maps.ControlPosition.RIGHT_TOP
+            },
+            panControl: false,
+            mapTypeControl: false,
+            maxZoom: 22,
+            minZoom: 0,
+            streetViewControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT
             }
         },
         clusterOptions: {
             gridSize: 35,
-            maxZoom: 17,
+            maxZoom: 22,
+            minZoom: 0,
             zoomOnClick: true,
-            averageCenter: false,
+            averageCenter: true,
             minimumClusterSize: 1,
             styles: [
                 {
@@ -94,7 +144,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                     width: 35
                 }
             ]
-        }
+        },
+        refresh : false
     };
 
     factory.cachedColumnCalculation = null;
@@ -104,59 +155,22 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     //Evaluates the width of the browser and builds array with array of rows.
     factory.generateRows = function (results, reason, views) {
 
-        //Gets dimensions of innerContainer
-
-
-        //Should match the CSS width of grid-item
-        //console.log(dimensions);
-
-
-        //var itemWidth;
-        //
-        //if (dimensions.w >= 1200) {
-        //    itemWidth = 300;
-        //} else if (dimensions.w < 1200 && dimensions.w >= 992) {
-        //    itemWidth = 248;
-        //} else if (dimensions.w < 992 && dimensions.w >= 768) {
-        //    itemWidth = 420;
-        //} else if (dimensions.w < 768 && dimensions.w >= 480) {
-        //    itemWidth = 240;
-        //} else if (dimensions.w < 480 && dimensions.w >= 320) {
-        //    itemWidth = 320;
-        //} else if (dimensions.w < 320) {
-        //    itemWidth = 120;
-        //}
-
-        //console.log(results);
         var numColumns;
 
         //If user has gridView enabled calculate columns, else build list view.
         if (views.gridView) {
             var dimensions = factory.getInnerContainerDimensions();
-            var itemWidth = 259;
+            var itemWidth = 290;
+            console.log('width: ' + dimensions.w + '/' + itemWidth + ' equals...');
             numColumns = Math.floor(dimensions.w / itemWidth);
-            console.log("Calculated " + numColumns + " columns.");
+            factory.results.gridPercentageWidth = 100 / numColumns;
+            console.log("Calculated " + numColumns + " columns at " + factory.results.gridPercentageWidth + "% width.");
         } else {
             numColumns = 1;
             console.log("List View: " + numColumns + " columns!");
         }
 
 
-        //var rowHeight;
-        //
-        //if (numColumns >= 6) {
-        //    rowHeight = 270;
-        //} else if (numColumns === 5) {
-        //    rowHeight = 400;
-        //} else if (numColumns === 4) {
-        //    rowHeight = 375;
-        //} else if (numColumns === 3) {
-        //    rowHeight = 500;
-        //} else if (numColumns === 2) {
-        //    rowHeight = 550;
-        //} else if (numColumns === 1) {
-        //    rowHeight = 600;
-        //}
 
         if (numColumns !== factory.cachedColumnCalculation || reason === 'filter' || reason === 'pagination') {
 
@@ -164,45 +178,20 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
             //TODO: Don't clear all items just clear necessary ones??
             factory.results.gridRows = [];
-            factory.map.markers = [];
-
-            //factory.map.bounds = {
-            //    southwest: {
-            //        latitude: results[results.length - 1].location.lat,
-            //        longitude: results[results.length - 1].location.long
-            //    }, northeast: {
-            //        latitude: results[0].location.lat,
-            //        longitude: results[0].location.long
-            //    }
-            //};
-
-            factory.map.center = {
-                latitude: 0,
-                longitude: 0
-            };
 
             //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
             for (var i = 0; i < results.length; i++) {
-
-                var marker = {
-                    id: results[i].external_id,
-                    latitude: results[i].location.lat,
-                    longitude: results[i].location.long,
-                    title: results[i].heading
-                };
-
-                factory.map.markers.push(marker);
 
                 var rowHeight;
 
                 //If gridview is turned on they height is always 350
                 if (views.gridView) {
-                    rowHeight = 350;
+                    rowHeight = 390;
                 } else { //else the user is in list view.  Height depends on whether result contains 2 or more images.
                     if (results[i].images.length === 0 || results[i].images.length === 1) {
-                        rowHeight = 300;
+                        rowHeight = 290;
                     } else {
-                        rowHeight = 485;
+                        rowHeight = 455;
                     }
                 }
 
@@ -219,8 +208,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                             //console.log(i + j);
                             //console.log(results[i + j]);
 
-                            if (results[i + j].price) {
-                                factory.updatePriceSlider(results[i + j].price);
+                            if (results[i + j].askingPrice.value) {
+                                factory.updatePriceSlider(results[i + j].askingPrice.value);
                             }
 
 
@@ -231,7 +220,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                     factory.results.gridRows.push(row);
 
                     i = i + j - 1;
-                    console.log('Finshed row! New index is: ' + i);
+                    //console.log('Finshed row! New index is: ' + i);
                 }
             }
 
@@ -250,8 +239,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
             }
 
 
-            console.log(factory.results.gridRows);
-            console.log(factory.markers);
+            console.log('Grid Rows: ', factory.results.gridRows);
 
         } else {
             console.log('column calculation did not change');
@@ -280,79 +268,111 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
 
+    factory.markerMaker = function (result, index, visibleStatus) {
+
+        var marker = {
+            id: result.postingId,
+            coords: {
+                latitude: result.geo.coordinates[0],
+                longitude: result.geo.coordinates[1]
+            },
+            title: result.heading,
+            options: {
+                visible: visibleStatus
+            }
+        };
 
 
-    factory.filter = {
-        mustHaveImage : false,
-        mustHavePrice: false
+        if(factory.views.showMap) {
+            if (factory.map.markers[index]) {
+                factory.map.markers[index].options.visible = visibleStatus;
+            } else {
+                factory.map.markers[index] = marker;
+            }
+        }
     };
 
-    factory.sort = {
-        distance: true,
-        price: false,
-        datePosted: false
-    };
-
-    factory.priceSlider = {
-        min: 0,
-        max: 0,
-        step: 1,
-        rangeValue : [0,0],
-        userSetValue: false
-    };
-
-    factory.views = {
-        gridView: true,
-        showMap: false
-    };
 
 
 
 
 
     //simplest filters
-    factory.mustHaveImage = function(element){
-        return element.images.length;
+    factory.mustHaveImage = function(element, index){
+
+        var visibleStatus = Boolean(element.images.length);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
 
-    factory.mustHavePrice = function(element){
-        return element.price;
+    factory.mustHavePrice = function(element, index){
+
+        var visibleStatus = Boolean(element.askingPrice.value);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
     //Does not filter out free items!!!
-    factory.mustFitPriceRange = function(element){
-        return !element.price || element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
+    factory.mustFitPriceRange = function(element, index){
+
+        var visibleStatus = Boolean(!element.askingPrice.value || element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
     //Image filter possibilities
-    factory.mustHaveImageAndPrice = function(element){
-        return element.images.length && element.price;
+    factory.mustHaveImageAndPrice = function(element, index){
+
+        var visibleStatus = Boolean(element.images.length && element.askingPrice.value);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
 
-    factory.mustHaveImageAndMustFitPriceRange = function(element){
-        return element.images.length && element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
+    factory.mustHaveImageAndMustFitPriceRange = function(element, index){
+
+        var visibleStatus = Boolean(element.images.length && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
 
     //Price filter possibilites
-    factory.mustHavePriceAndMustFitPriceRange = function(element){
-        return element.price && element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
+    factory.mustHavePriceAndMustFitPriceRange = function(element, index){
+
+        var visibleStatus = Boolean(element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
 
     //All filters combined
-    factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange = function(element){
-        console.log('toggles %o', this);
-        return element.images.length && element.price && element.price >= factory.priceSlider.rangeValue[0] && element.price <= factory.priceSlider.rangeValue[1];
+    factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange = function(element, index){
+
+        var visibleStatus = Boolean(element.images.length && element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.markerMaker(element, index, visibleStatus);
+
+        return visibleStatus;
     };
 
 
 
     factory.filterArray = function (views, reason) {
-        console.log(factory.filter);
-        console.log('filterArray view view type: ', views);
+        console.log('filterArray view view type: ', views, factory.filter);
         console.log('filterArray view reason: ', reason);
 
         var filterToggles = factory.filter;
@@ -360,48 +380,72 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var filteredResults;
 
-        if(factory.results.unfiltered.length) {
-            //Must have price and must have image and must fit price range
-            if (filterToggles.mustHavePrice && filterToggles.mustHaveImage && priceSliderRange.userSetValue) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange);
-                factory.generateRows(filteredResults, reason, views);
+        //Must have price and must have image and must fit price range
+        if (filterToggles.mustHavePrice && filterToggles.mustHaveImage && priceSliderRange.userSetValue) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange);
 
-                //Must have image and price RANGE
-            } else if (filterToggles.mustHaveImage && priceSliderRange.userSetValue) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHaveImageAndMustFitPriceRange);
-                factory.generateRows(filteredResults, reason, views);
+            factory.generateRows(filteredResults, reason, views);
 
-                //Must have price and must fit price range
-            } else if (filterToggles.mustHavePrice && priceSliderRange.userSetValue) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustFitPriceRange);
-                factory.generateRows(filteredResults, reason, views);
+            //Must have image and price RANGE
+        } else if (filterToggles.mustHaveImage && priceSliderRange.userSetValue) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustHaveImageAndMustFitPriceRange);
 
-                //Must Have Image and Must have Price
-            } else if (filterToggles.mustHaveImage && filterToggles.mustHavePrice) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHaveImageAndPrice);
-                factory.generateRows(filteredResults, reason, views);
+            factory.generateRows(filteredResults, reason, views);
 
-                //Must have image
-            } else if (filterToggles.mustHaveImage) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHaveImage);
-                factory.generateRows(filteredResults, reason, views);
+            //Must have price and must fit price range
+        } else if (filterToggles.mustHavePrice && priceSliderRange.userSetValue) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustHavePriceAndMustFitPriceRange);
 
-                //Must have price
-            } else if (filterToggles.mustHavePrice) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustHavePrice);
-                factory.generateRows(filteredResults, reason, views);
+            factory.generateRows(filteredResults, reason, views);
 
-                //Must fit in price RANGE
-            } else if (priceSliderRange.userSetValue) {
-                filteredResults = factory.results.unfiltered.filter(factory.mustFitPriceRange);
-                factory.generateRows(filteredResults, reason, views);
+            //Must Have Image and Must have Price
+        } else if (filterToggles.mustHaveImage && filterToggles.mustHavePrice) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustHaveImageAndPrice);
 
-                //All filters turned off, just generate rows
-            } else {
-                factory.generateRows(factory.results.unfiltered, reason, views);
+            factory.generateRows(filteredResults, reason, views);
+
+            //Must have image
+        } else if (filterToggles.mustHaveImage) {
+
+            filteredResults = factory.results.unfiltered.filter(factory.mustHaveImage);
+
+            factory.generateRows(filteredResults, reason, views);
+
+            //Must have price
+        } else if (filterToggles.mustHavePrice) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustHavePrice);
+
+            factory.generateRows(filteredResults, reason, views);
+
+            //Must fit in price RANGE
+        } else if (priceSliderRange.userSetValue) {
+            filteredResults = factory.results.unfiltered.filter(factory.mustFitPriceRange);
+
+            factory.generateRows(filteredResults, reason, views);
+
+            //All filters turned off, just generate rows
+        } else {
+
+            for (i = 0; i < factory.results.unfiltered.length; i++ ) {
+                factory.markerMaker(factory.results.unfiltered[i], i, true);
             }
+
+            factory.generateRows(factory.results.unfiltered, reason, views);
         }
 
+        //TODO: This is a hack because clustered markers are not properly binded in angular-google-maps.  see here: https://github.com/angular-ui/angular-google-maps/issues/813
+
+        if(factory.views.showMap) {
+            refreshMap();
+        }
+    };
+
+
+    var refreshMap = function () {
+        factory.map.refresh = true;
+        $timeout(function () {
+            factory.map.refresh = false;
+        }, 100);
     };
 
 
@@ -422,7 +466,13 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         factory.views.gridView = true;
         factory.views.showMap = false;
 
+        factory.map.markers = [];
+
         factory.queryParams = {};
+
+
+        factory.status.pleaseWait = true;
+        factory.status.error = {};
     };
 
 
