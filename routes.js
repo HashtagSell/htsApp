@@ -72,39 +72,11 @@ module.exports = function(app, passport) {
 
 
 
-    // =====================================
-    //  Save New Post ======================
-    // =====================================
-    var posting_api = require('./api/posting_api'); //Write hts post to db
-    app.post('/posts', isLoggedIn, function(req, res) {
-        posting_api.savePost(req, res);
-    });
-
-
-
-
-    // =====================================
-    //  Get all users posts ================
-    // =====================================
-    app.get('/posts', isLoggedIn, function(req, res) {
-        posting_api.getPosts(req, res);
-    });
-
-
-    // =====================================
-    //  Delete a users post ================
-    // =====================================
-    app.delete('/posts', isLoggedIn, function(req, res) {
-        posting_api.deletePost(req, res);
-    });
-
-
-
-
 
     // =====================================
     // Photo Upload ======================
     // =====================================
+    var posting_api = require('./api/posting_api');
     app.post('/upload', isLoggedIn, function(req, res) {
 
         if (req.files.profilePhoto || req.files.bannerPhoto) { // based on param the user is updating profile photo
@@ -179,6 +151,25 @@ module.exports = function(app, passport) {
     // Early Access Subscribe ==============
     // =====================================
     app.post('/subscribe', activate.subscribe);
+
+
+
+
+    // =====================================
+    // FACEBOOK AUTH ROUTES ================
+    // =====================================
+    // route for facebook authentication and login
+    app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+
+    // handle the callback after facebook has authenticated the user
+    app.get('/auth/facebook/callback',
+        passport.authenticate('facebook', {
+            successRedirect : '/',
+            failureRedirect : '/'
+        })
+    );
+
+
 
 
     // =====================================
