@@ -325,8 +325,8 @@ exports.signup = function(req, res) {
 
                                     var new_access_key = new Early_Access_Keys();
                                     new_access_key.secret.key = keyToShare;
-                                    new_access_key.secret.type_of_key = "individual",
-                                        new_access_key.secret.generated_by = newUser.local.email;
+                                    new_access_key.secret.type_of_key = "individual";
+                                    new_access_key.secret.generated_by = newUser.local.email;
                                     new_access_key.secret.expired = false;
                                     new_access_key.save();
 
@@ -481,9 +481,9 @@ exports.subscribe = function(req, res) {
 
 exports.getProfile = function(req, res){
 
-    var userId = req.param('id');
+    var username = req.param('username');
 
-    User.findOne({ '_id' : userId }, function (err, user) {
+    User.findOne({ 'user_settings.name' : username }, function (err, user) {
 
         // if there are any errors, return the error before anything else
         if (err)
@@ -491,10 +491,10 @@ exports.getProfile = function(req, res){
 
         // if no user is found, return the message
         if (!user)
-            return res.json({error: "No user found with that id."});
+            return res.json({error: "No user found with that username."});
 
         if(user)
-            console.log(user);
+            //console.log(user);
             return res.json({user: {
                 'profile_photo': user.user_settings.profile_photo,
                 'banner_photo': user.user_settings.banner_photo,
