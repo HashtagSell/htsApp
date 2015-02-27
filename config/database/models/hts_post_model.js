@@ -39,18 +39,13 @@ var newPostSchema = mongoose.Schema({
     "price_type": {type: String, default: null},
     "seller_id": {type: String, default: null},
     "seller_username": {type: String, default: null},
-    "source": {type: String, default: "HSHTG"},
-    "timestamp": {type: Date, default: Date.now}
-}, {
-    "toJSON": {
-        virtuals: true
-    }
+    "source": {type: String, default: "HSHTG"}
 });
 
 
-newPostSchema.virtual("external_id").get(function () {
-    return this._id;
-});
+//newPostSchema.virtual("external_id").get(function () {
+//    return this._id;
+//});
 
 
 // create the model for new posts and expose it to our app
