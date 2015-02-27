@@ -1,29 +1,27 @@
 htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
 
     //While true the hashtagspinner will appear
-    $scope.pleaseWait = true;
+    $scope.status = searchFactory.status;
 
     //Tracks state of grid visible or not
     $scope.views = searchFactory.views;
 
-    
+
     $scope.slickConfig = {
         dots: true,
         lazyLoad: 'progressive',
         infinite: true,
         speed: 100,
         slidesToScroll: 1,
-        //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
-        centerMode: false
+        centerMode: true
     };
-
 
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
-        $state.go('results.splash', { id: elems.result.external_id });
+        $state.go('results.splash', { id: elems.result.postingId });
     };
 
 
@@ -34,29 +32,27 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
             if (response.status !== 200) {
 
-                $scope.results = response.data.error;
+                $scope.status.pleaseWait = false;
+                $scope.status.error.message = ":( Oops.. Something went wrong.";
+                $scope.status.error.trace = response.data.error;
 
             } else if (response.status === 200) {
 
                 if (!$scope.results) { //If there are not results on the page yet, this is our first query
-
-                    //searchFactory.generateRows(response.data.external.postings, false);
 
                     searchFactory.filterArray($scope.views, 'pagination');
 
                     //Function passed into onVsIndexChange Directive
                     $scope.infiniteScroll = function (startIndex, endIndex) {
                         console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.results.gridRows.length);
-                        if (!$scope.loadingMoreResults && endIndex >= $scope.results.gridRows.length - 3) {
+                        if (!searchFactory.status.loading && endIndex >= $scope.results.gridRows.length - 3) {
                             console.log("paginating");
-                            $scope.loadingMoreResults = true;
+                            searchFactory.status.loading  = true;
                             paginate();
                         }
                     };
 
                 } else { //If there are already results on the page the add them to the top of the array
-
-                    //searchFactory.generateRows(response.data.external.postings, false);
 
                     searchFactory.filterArray($scope.views, 'pagination');
 
@@ -64,17 +60,16 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
                 $scope.results = searchFactory.results;
 
-                $scope.pleaseWait = false;
+                searchFactory.status.pleaseWait = false;
 
-                $scope.loadingMoreResults = false;
+                searchFactory.status.loading = false;
 
             }
         }, function (response) {
 
-            console.log(response);
-
-            //TODO: Use modal service to notify users
-            //alert("search error");
+            searchFactory.status.pleaseWait = false;
+            searchFactory.status.error.message = "(゜_゜) Oops.. Something went wrong.";
+            searchFactory.status.error.trace = response;
 
         });
     };
@@ -83,9 +78,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
     uiGmapGoogleMapApi.then(function(maps) {
         $scope.map = searchFactory.map;
-        $scope.markers = searchFactory.markers;
     });
-
 
 
     //Clears view if user conducts a second search.
@@ -135,27 +128,10 @@ htsApp.directive('resizeGrid', ['$rootScope', '$window', 'searchFactory', functi
             };
 
             angular.element($window).bind('resize', function () {
-                //searchFactory.generateRows(searchFactory.results.unfiltered, true);
 
                 if($scope.views.gridView) {
                     searchFactory.filterArray($scope.views, 'resize');
                 }
-
-                //var containerWidth = element.width();
-                ////Should match the CSS width of grid-item
-                //var itemWidth = 259;
-                //var allColumns = Math.floor(containerWidth / itemWidth) * 259;
-                //console.log('container width: ', containerWidth);
-                //console.log('added columns: ', allColumns);
-                //var padding = (containerWidth - allColumns) / 2;
-                //console.log('padding: ', padding);
-                //
-                //element.css(
-                //    {
-                //        padding: '0px 0px 0px ' + padding + 'px'
-                //    }
-                //);
-
 
                 $scope.$apply();
             });
