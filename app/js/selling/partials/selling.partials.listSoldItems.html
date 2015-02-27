@@ -11,8 +11,8 @@
 
 <div class="outer-container" ng-show="results.length">
     <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
-    <div class="inner-container">
-        <div class="selling-item" ng-class="{'first': $first}" style="cursor: pointer;" ng-repeat="result in results"
+    <div class="inner-container inner-container-padding">
+        <div class="selling-item" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
              ng-class="{hasPrice: result.price, hasImage: result.images.length}"
              data-category="{{::result.category}}"
@@ -35,7 +35,7 @@
                             <div class="row">
                                 <div class="caption">
                                     <h4 class="noImage-heading">{{::result.heading}}</h4>
-                                    <p class="noImage-body">{{::result.body}}</p>
+                                    <p class="noImage-body" ng-bind-html="result.body"></p>
                                 </div>
                             </div>
 
@@ -60,7 +60,7 @@
                             <div class="row">
                                 <div class="caption">
                                     <h4 class="singleImage-heading">{{::result.heading}}</h4>
-                                    <p class="singleImage-body">{{::result.body}}</p>
+                                    <p class="singleImage-body" ng-bind-html="result.body"></p>
                                 </div>
                             </div>
 
@@ -89,7 +89,7 @@
                     <div class="row">
                         <div class="caption">
                             <h4 class="carousel-heading">{{::result.heading}}</h4>
-                            <p class="carousel-body">{{::result.body}}</p>
+                            <p class="carousel-body" ng-bind-html="result.body"></p>
                         </div>
                     </div>
 

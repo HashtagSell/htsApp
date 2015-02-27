@@ -4,33 +4,45 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.factory('sellingFactory', ['$http', '$stateParams', '$location', '$q', function($http, $stateParams, $location, $q){
+htsApp.factory('sellingFactory', ['$http', '$stateParams', '$location', '$q', 'ENV', 'utilsFactory', 'offersFactory', 'qaFactory', function ($http, $stateParams, $location, $q, ENV, utilsFactory, offersFactory, qaFactory){
 
     var factory = {};
 
-
-    var posting_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/posts";
-
-
-    factory.init = function () {
+    factory.getUsersItemsForSale = function (username) {
 
         var deferred = $q.defer();
 
-        $http({method: 'GET', url: posting_api}).
-            then(function (response, status, headers, config) {
+        var params = {
+            filters: {
+                mandatory: {
+                    exact: {
+                        username: username
+                    }
+                }
+            }
+        };
 
-                console.log('here it is', response);
 
-                //factory.cache = response.data;
-                //
-                //console.log('inside forsalefacory', factory.cache);
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + utilsFactory.bracketNotationURL(params)
+        }).then(function (response) {
+            console.log('users items for sale: ', response);
 
-                deferred.resolve(response);
+            factory.itemsForSale = response.data.results;
 
-            }, function (response, status, headers, config) {
 
-                deferred.reject(response);
-            });
+            if(factory.itemsForSale.length) {
+                offersFactory.getAllOffers(factory.itemsForSale); //Lookup all the offers associated with all items for sale.
+                qaFactory.getAllQuestions(factory.itemsForSale); //Lookup all the questions associated with all items for sale.
+            }
+
+            deferred.resolve(response);
+        }, function (err) {
+            deferred.reject(err);
+        });
+
+
 
         return deferred.promise;
     };
@@ -41,12 +53,10 @@ htsApp.factory('sellingFactory', ['$http', '$stateParams', '$location', '$q', fu
 
         var deferred = $q.defer();
 
+
         $http({
             method: 'DELETE',
-            url: posting_api,
-            params: {
-                id: post._id
-            }
+            url: ENV.postingAPI + post.postingId
         }).then(function (response, status, headers, config) {
 
                 console.log('delete response: ', response);
@@ -60,7 +70,6 @@ htsApp.factory('sellingFactory', ['$http', '$stateParams', '$location', '$q', fu
 
         return deferred.promise;
     };
-
 
 
     return factory;
