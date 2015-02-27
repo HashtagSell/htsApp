@@ -1,21 +1,3 @@
-.mention-highlighter {
-    background: #d8dfea;
-    background: -webkit-gradient(linear, center top, center bottom, from(#dce6f8), to(#bdcff1));
-    background: -webkit-linear-gradient(#dce6f8, #bdcff1);
-    -webkit-border-radius: 2px;
-    -webkit-box-shadow: 0 0 0 1px #a3bcea;
-    font-weight: normal;
-}
-
-.mention-highlighter-price {
-    background: #d8dfea;
-    background: -webkit-gradient(linear, center top, center bottom, from(#BEDDC8), to(#95C7A4));
-    background: -webkit-linear-gradient(#BEDDC8, #95C7A4);
-    -webkit-border-radius: 2px;
-    -webkit-box-shadow: 0 0 0 1px #73BB89;
-    font-weight: normal;
-}
-
 .inset-toolbar {
     /*padding-top: 14px;*/
     /*text-align: center;*/

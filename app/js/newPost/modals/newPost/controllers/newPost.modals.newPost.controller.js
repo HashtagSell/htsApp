@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$modal', 'mentionsFactory', '$templateCache', function ($scope, $http, $q, $modalInstance, $modal, mentionsFactory, $templateCache) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', function ($scope, $http, $q, $modalInstance, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory) {
 
     $scope.cleared = false;
 
@@ -31,7 +31,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     //Wait until modalinstance initialized then setup dropzone
-    $modalInstance.opened.then(function() {
+    $modalInstance.opened.then(function () {
 
         console.log($scope);
 
@@ -106,10 +106,17 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.processPost = function () {
 
-        if ($scope.numImages) {
-            $scope.dropzoneConfig.init();
+        if(Session.userObj.user_settings.loggedIn) {
+
+            if ($scope.numImages) {
+                $scope.dropzoneConfig.init();
+            } else {
+                $scope.publishPost();
+            }
         } else {
-            $scope.publishPost();
+
+            authModalFactory.signInModal();
+
         }
     };
 
@@ -119,7 +126,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         //alert("Publishing post.  THis ");
         var newPost = $scope.jsonObj;
 
-        //loop through the hashtags and formulat the heading of post
+        newPost.username = Session.userObj.user_settings.name;
+
+        //loop through the hashtags and formulate the heading of post
         newPost.heading = '';
         for (i = 0; i < newPost.mentions.hashtags.length; i++) {
             if (i !== newPost.mentions.hashtags.length - 1) {
@@ -131,13 +140,22 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
         }
 
-        $http.post('/posts', newPost).
+        //Josh's posting API
+        $http.post(ENV.postingAPI, newPost).
             success(function (status) {
                 console.log("-----Post Complete----");
                 console.log(status);
-                $modalInstance.dismiss("success");
+                $modalInstance.dismiss("stageOneSuccess");
                 mentionsFactory.resetJsonTemplate();
             });
+
+        //$http.post('/post', newPost).
+        //    success(function (status) {
+        //        console.log("-----Post Complete----");
+        //        console.log(status);
+        //        $modalInstance.dismiss("success");
+        //        mentionsFactory.resetJsonTemplate();
+        //    });
 
         //TODO: return the successfully saved hts post JSON and join the socket.io room.
     };

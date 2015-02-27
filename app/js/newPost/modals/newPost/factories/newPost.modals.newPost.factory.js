@@ -12,7 +12,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
         "category_group": null,
         "category_group_name": null,
         "heading": null,
-        "html_body": null,
+        "body": null,
         "images": [],
         "location": {},
         "mentions": {
@@ -23,7 +23,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
         "price": null,
         "price_avg": null,
         "price_type": null,
-        "source": "HSHTG"
+        "source": "HSHTG",
+        "username": null
     };
 
 
@@ -35,7 +36,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
             "category_group": null,
             "category_group_name": null,
             "heading": null,
-            "html_body": null,
+            "body": null,
             "images": [],
             "location": {},
             "mentions": {
@@ -46,7 +47,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
             "price": null,
             "price_avg": null,
             "price_type": null,
-            "source": "HSHTG"
+            "source": "HSHTG",
+            "username": null
         };
     };
 
