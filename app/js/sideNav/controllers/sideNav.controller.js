@@ -11,11 +11,11 @@ htsApp.controller('sideNav.controller', ['$scope', '$rootScope', 'sideNavFactory
 
         //Captures the previous state and appends it to the 'back' button in the settings and splash sideNav
         sideNavFactory.settingsMenu[0].link = fromState.name;
-        sideNavFactory.splashMenu[0].link = fromState.name;
     });
 
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
         sideNavFactory.redirect = toState;
     });
+
 }]);

@@ -17,6 +17,11 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         link: "selling",
         active: false
     }, {
+        name: "My Mailbox",
+        alerts: null,
+        link: "mailbox.inbox.offers",
+        active: false
+    }, {
         name: "My Favorites",
         alerts: Session.userObj.user_settings.favorites.length,
         link: "interested",
@@ -27,6 +32,7 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         link: "notifications",
         active: false
     }];
+
 
 
     //SPLASH SCREEN MENU
@@ -135,6 +141,14 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
 
 
 
+            //Splash results
+            case 'splash':
+                factory.splashMenu[0].active = false;
+                factory.splashMenu[1].active = false;
+                factory.splashMenu[2].active = false;
+                factory.splashItems = factory.splashMenu;
+                break;
+
             //Splash Menu results
             case 'results.splash':
                 factory.splashMenu[0].active = false;
@@ -180,6 +194,7 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'selling':
@@ -187,20 +202,111 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = true;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.inbox':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.outbox':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.inbox.offers':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.inbox.offers.offer':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.outbox.offers':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.outbox.offers.offer':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.inbox.questions':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.inbox.questions.question':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.outbox.questions':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
+                factory.items = factory.defaultMenu;
+                break;
+            case 'mailbox.outbox.questions.question':
+                factory.defaultMenu[0].active = false;
+                factory.defaultMenu[1].active = false;
+                factory.defaultMenu[2].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'interested':
                 factory.defaultMenu[0].active = false;
                 factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[2].active = false;
+                factory.defaultMenu[3].active = true;
+                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'notifications':
                 factory.defaultMenu[0].active = false;
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
-                factory.defaultMenu[3].active = true;
+                factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = true;
                 factory.items = factory.defaultMenu;
                 break;
             case 'results':
@@ -208,6 +314,7 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'profile':
@@ -215,6 +322,7 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
+                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
         }
