@@ -18,13 +18,14 @@
     <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" />
     <link rel="stylesheet" href="/ng-table/ng-table.min.css" />
     <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/angular-carousel/dist/angular-carousel.min.css" />
-    <link rel="stylesheet" href="/slick.js/slick/slick.css" />
+    <link rel="stylesheet" href="/slick-carousel/slick/slick.css" />
+    <link rel="stylesheet" href="/slick-carousel/slick/slick-theme.css" />
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
     <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
 
     <link rel="stylesheet" href="/css/index.css" />
     <link rel="stylesheet" href="/css/splash.css" />
+    <link rel="stylesheet" href="/css/result_item_styles.css" />
 </head>
 
 <body ng-controller="mainController" ng-cloak>
@@ -43,7 +44,8 @@
                             type="text"
                             class="form-control"
                             ng-model="query"
-                            placeholder="I'm looking to buy...">
+                            placeholder="I'm looking to buy..."
+                            style="background-color: #EAEAEA">
                             <!--mentio-->
                             <!--mentio-require-leading-space="true"-->
                             <!--mentio-macros="macros"-->
@@ -79,8 +81,8 @@
                 <li ng-controller="newPostController">
                     <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">New post</button>
                 </li>
-                <li class="dropdown" ng-controller="userMenu">
-                    <a href class="dropdown-toggle" on-toggle="toggled(open)">
+                <li class="dropdown" dropdown ng-controller="userMenu">
+                    <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
                         <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
@@ -118,9 +120,9 @@
 
                 <!--SideNav-->
                 <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
-                    <a ng-repeat="item in sideNav.items" ui-sref="{{::item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
-                        {{::item.name}}
-                        <span class="badge">{{item.alerts}}</span>
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
+                        {{item.name}}
+                        <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
                     </a>
                 </div>
 
@@ -143,13 +145,13 @@
                         </a>
 
                         <a class="list-group-item">
-                            <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Show" switch-off-color="primary"  switch-off-text="Hide" switch-label="Map" style="min-width: 220px;">
+                            <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
                         </a>
 
                         <a class="list-group-item">
-                            <span class="btn-group">
-                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i></label>
-                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i></label>
+                            <span class="btn-group btn-group-justified">
+                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
+                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
                             </span>
                         </a>
                     </div>
@@ -165,17 +167,14 @@
         </div>
     </div>
 
-
-        <!--IMPORT LIBRARIES-->
+    <!--IMPORT LIBRARIES-->
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
     <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
     <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
     <script type="text/javascript" src='/underscore/underscore-min.js'></script>
-    <script type="text/javascript" src='/angular-touch/angular-touch.min.js'></script>
-    <script type="text/javascript" src="/angular-carousel/dist/angular-carousel.min.js"></script>
     <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
     <script type="text/javascript" src='/dropzone/downloads/dropzone.min.js'></script>
     <script type="text/javascript" src="/jshashtable-3.0/hashtable.js"></script>
@@ -184,16 +183,19 @@
     <script type='text/javascript' src='/medium-editor/dist/js/medium-editor.min.js'></script>
     <script type='text/javascript' src='/angular-medium-editor/dist/angular-medium-editor.min.js'></script>
     <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
-    <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.min.js"></script>
+    <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.js"></script>
     <script type="text/javascript" src="/angular-ivh-treeview/dist/ivh-treeview.min.js"></script>
-    <script type="text/javascript" src="/slick-carousel/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/slick-carousel/slick/slick.js"></script>
     <script type="text/javascript" src="/angular-vs-repeat/src/angular-vs-repeat.min.js"></script>
     <script type="text/javascript" src="/moment/moment.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
-    <script type="text/javascript" src="https://stage-realtime.hashtagsell.com/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="//localhost:4044/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="/angular-sanitize/angular-sanitize.min.js"></script>
+
+    <!--ANGULAR GLOBAL CONST CONFIG-->
+    <script type="text/javascript" src="htsApp.config"></script>
 
     <!--ANGULAR-->
     <script type="text/javascript" src="htsApp.js"></script>
@@ -204,6 +206,8 @@
     <script type="text/javascript" src="/js/newPost/modals/newPost/factories/newPost.modals.newPost.factory.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.dropzone.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.contenteditable.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/congrats/controllers/newPost.congrats.js"></script>
+    <script type="text/javascript" src="/js/newPost/modals/pushToExternalSources/controllers/newPost.pushToExternalSources.js"></script>
     <script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>
     <script type="text/javascript" src="/js/session/services/session.js"></script>
     <script type="text/javascript" src="/js/authModals/factories/authModal.factory.js"></script>
@@ -239,7 +243,19 @@
     <script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/placeOffer/controllers/transactionButtons.modal.placeOffer.controller.js"></script>
     <script type="text/javascript" src="/js/notifications/controllers/notifications.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/controllers/mailbox.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/inbox/offers/controllers/inbox.offers.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/inbox/offers/offer/controllers/offers.offer.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/inbox/questions/controllers/inbox.questions.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/inbox/questions/question/controllers/questions.question.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/outbox/offers/controllers/outbox.offers.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/outbox/questions/controllers/outbox.questions.controller.js"></script>
+    <script type="text/javascript" src="/js/mailbox/factories/mailbox.factory.js"></script>
+    <script type="text/javascript" src="/js/offers/factories/offers.factory.js"></script>
+    <script type="text/javascript" src="/js/messages/factories/messages.factory.js"></script>
+    <script type="text/javascript" src="/js/qamodule/factories/qamodule.factory.js"></script>
     <script type="text/javascript" src="/js/socketio/factories/socketio.factory.js"></script>
+    <script type="text/javascript" src="/js/utils/factories/utils.factory.js"></script>
 
 
 
