@@ -1,0 +1,25 @@
+<div ui-view></div>
+
+<div ng-if="!mail.offers.sent.data.length" class="background-instructions">
+    <div class="inset-text">
+        Submit an offer to buy an item.  The seller's answer will appear here.
+    </div>
+</div>
+
+<table class="table table-striped table-hover" ng-if="mail.offers.sent.data.length">
+    <tbody>
+    <tr ng-repeat="message in mail.offers.sent.data">
+        <!--<td ng-class="{'active':checkIfUnread(message)}"><b>From:</b> {{message.username}}</td>-->
+        <td><b>To:</b> @Need this data</td>
+
+        <td>
+            <ul>
+                <li ng-repeat="proposedTime in message.proposedTimes">
+                    When: {{proposedTime.when | date}}
+                </li>
+            </ul>
+        </td>
+
+    </tr>
+    </tbody>
+</table>

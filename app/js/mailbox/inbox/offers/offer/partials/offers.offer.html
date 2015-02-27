@@ -1,0 +1,30 @@
+<div ui-view>
+    <div class="col-xs-12">
+        <b>From:</b> @{{offer.username}}
+
+        <br>
+        <br>
+        <b>Meeting location:</b> <span class="mention-highlighter">{{offer.proposedTimes[0].where}}</span></b>
+
+        <br>
+        <br>
+        <p>
+            Select a proposed time to meet:
+            <div class="form-group">
+                <div ng-repeat="proposedTime in offer.proposedTimes">
+                    <input type="checkbox" name="proposedTime" ng-model="proposedTime.selected" ng-click="validateForm($index)">
+                    {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}
+                </div>
+            </div>
+
+            <textarea rows="5" cols="50" type="text" ng-model="offer.message" placeholder="Include message.  (Optional)"></textarea>
+            <br>
+            <br>
+            <div>
+                <button class="btn btn-danger" ng-click="submitOfferResponse(false)">Decline offer</button>
+                <button class="btn btn-success" ng-disabled="disableAcceptSubmit" ng-click="submitOfferResponse(true)">Accept offer</button>
+            </div>
+        </p>
+    </div>
+
+</div>
