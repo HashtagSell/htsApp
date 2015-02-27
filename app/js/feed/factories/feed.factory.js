@@ -1,9 +1,14 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function($http, $stateParams, $location, $q, Session) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', 'utilsFactory', function( $http, $stateParams, $location, $q, Session, utilsFactory) {
 
     var factory = {};
+
+    factory.status = {
+        pleaseWait: true,
+        error: {}
+    };
 
     factory.queryParams = {};
 
@@ -54,10 +59,24 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
                 console.log('polling response', response);
 
-                factory.queryParams.anchor = response.data.external.anchor;
-                factory.queryParams.cityCode = response.data.location.cityCode;
+                if(!response.data.error) {
 
-                deferred.resolve(response);
+                    factory.queryParams.anchor = response.data.external.anchor;
+                    factory.queryParams.cityCode = response.data.location.cityCode;
+
+                    deferred.resolve(response);
+
+                } else {
+
+                    factory.status.pleaseWait = false;
+                    factory.status.error.message = ":( Oops.. Something went wrong.";
+                    factory.status.error.trace = response.data.error.response.error;
+
+
+                    deferred.reject(response);
+                }
+
+
 
             }, function (response, status, headers, config) {
 
@@ -94,6 +113,15 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             });
 
         return deferred.promise;
+    };
+
+
+
+
+
+    factory.resetFeedView = function () {
+
+        factory.status.error = {};
     };
 
 

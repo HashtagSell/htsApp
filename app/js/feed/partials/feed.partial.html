@@ -4,26 +4,23 @@
 
 <div ui-view></div>
 
+<div ng-show="status.error.message" class="background-instructions">
+    <div class="inset-background-text" ng-bind-html="status.error.message">
+
+    </div>
+    {{status.error.trace}}
+</div>
+
 <div class="outer-container col-xs-12">
-    <img ng-if="pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
-    <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="20">
+    <img ng-if="status.pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
+
+    <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="77" vs-excess="30">
         <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results"
              ng-click="openSplash(this)"
-             ng-class="{hasPrice: result.price, hasImage: result.images.length}"
-             data-category="{{::result.category}}"
-             data-email="{{::result.annotations.source_account}}"
-             data-lat="{{::result.location.lat}}"
-             data-long="{{::result.location.long}}"
-             data-sourceUrl="{{::result.external_url}}"
-             data-postDate="{{::result.annotations.original_posting_date}}"
                 >
             <div class="thumbnail">
-                <ribbon ng-if="!!result.price" data-price="{{::result.price}}">{{::result.price | currency : $ : 0}}</ribbon>
-                <div class="row">
-                    <div class="col-sm-3 col-sm-push-9" style="z-index: 999">
-                        <hts-fave-toggle></hts-fave-toggle>
-                    </div>
-                </div>
+                <ribbon ng-if="!!result.askingPrice.value">{{::result.askingPrice.value | currency : $ : 0}}</ribbon>
+
 
                 <!--Has NO image-->
                 <div ng-if="!result.images.length">
@@ -33,24 +30,11 @@
                         </div>
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
                             <div class="row">
-                                <div class="caption">
-                                    <h4 class="noImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
-                                    <p class="noImage-body" ng-bind-html="result.body |cleanBody"></p>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="text-center">
-                                    <transaction-buttons result="result"></transaction-buttons>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="pull-left noImage-timestamp" data-postDate="{{::result.timestamp}}">
-                                    Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
-                                </div>
-                                <div class="pull-right noImage-distance" data-distance="{{::result.distanceFromUser}}">
-                                    <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                                <h3 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h3>
+                                <hts-fave-toggle class="noImage-starPositioning"></hts-fave-toggle>
+                                <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                                <div class="pull-left noImage-timestamp">
+                                    Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.
                                 </div>
                             </div>
                         </div>
@@ -67,23 +51,12 @@
                         <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
                             <div class="row">
                                 <div class="caption">
-                                    <h4 class="singleImage-heading" ng-bind-html="result.heading | cleanHeading"></h4>
-                                    <p class="singleImage-body" ng-bind-html="result.body |cleanBody"></p>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="text-center">
-                                    <transaction-buttons result="result"></transaction-buttons>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="pull-left singleImage-timestamp" data-postDate="{{::result.timestamp}}">
-                                    Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
-                                </div>
-                                <div class="pull-right singleImage-distance" data-distance="{{::result.distanceFromUser}}">
-                                    <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                                    <h3 class="singleImage-heading" ng-bind-html="result.heading | cleanHeading"></h3>
+                                    <hts-fave-toggle class="singleImage-starPositioning"></hts-fave-toggle>
+                                    <p class="singleImage-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                                    <div class="pull-left singleImage-timestamp">
+                                        Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -96,31 +69,20 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <slick-carousel
-                                settings="slickConfig"
-                                media="result.images">
+                                    settings="slickConfig"
+                                    media="result.images">
                             </slick-carousel>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="caption">
-                            <h4 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h4>
-                            <p class="carousel-body" ng-bind-html="result.body |cleanBody"></p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="text-center">
-                            <transaction-buttons result="result"></transaction-buttons>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="pull-left carousel-timestamp" data-postDate="{{::result.timestamp}}">
-                        Posted {{(currentDate - result.timestamp) | secondsToTimeString}} ago.
-                        </div>
-                        <div class="pull-right carousel-distance" data-distance="{{::result.distanceFromUser}}">
-                            <i class="fa fa-location-arrow"></i>&nbsp;{{::result.distanceFromUser | number:0}} mi.
+                            <h3 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h3>
+                            <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
+                            <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                            <div class="pull-left carousel-timestamp">
+                                Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -131,7 +93,7 @@
 </div>
 
 <!--Category Tree-->
-<div ng-if="results.length" class="feed-category-container hidden-sm hidden-xs">
+<div ng-show="results.length" class="feed-category-container hidden-sm hidden-xs">
 
     <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 200px; margin-top: 20px;"/>
 
@@ -149,6 +111,6 @@
 
     </div>
     <div>
-        Select the category of items you want to see in your feed.
+        Select the categories you want to see in your feed.
     </div>
 </div>

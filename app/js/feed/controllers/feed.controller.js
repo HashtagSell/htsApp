@@ -3,6 +3,7 @@
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', 'authModalFactory', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr, authModalFactory) {
 
+    $scope.status = feedFactory.status;
 
     $scope.slickConfig = {
         dots: true,
@@ -10,9 +11,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         infinite: true,
         speed: 100,
         slidesToScroll: 1,
-        //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
         variableWidth: true,
-        centerMode: false
+        centerMode: true
     };
 
 
@@ -28,7 +28,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
             var resumePersisted = true;
         } else if (!$scope.results) {
             //While true the hashtagspinner will appear
-            $scope.pleaseWait = true;
+            feedFactory.status.pleaseWait = true;
         }
 
 
@@ -36,7 +36,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             if (response.status !== 200) {
 
-                $scope.results = response.data.error;
+                $scope.status.pleaseWait = false;
+                $scope.status.error.message = ":( Oops.. Something went wrong.";
+                $scope.status.error.trace = response.data.error;
 
             } else if (response.status === 200) {
 
@@ -46,22 +48,21 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
                         if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 300;
+                            response.data.external.postings[i].feedItemHeight = 290;
                         } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 485;
+                            response.data.external.postings[i].feedItemHeight = 455;
                         }
 
-                        if(resumePersisted) {
+                        if (resumePersisted) {
                             $scope.results.unshift(response.data.external.postings[i]);
                         }
                     }
 
-                    $scope.pleaseWait = false;
+                    feedFactory.status.pleaseWait = false;
 
-                    if(!resumePersisted) {
+                    if (!resumePersisted) {
                         $scope.results = response.data.external.postings;
                     }
-
 
 
                     feedFactory.persistedResults = $scope.results.slice(0, 300);
@@ -83,15 +84,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     var scrollTopOffset = jQuery(".inner-container").scrollTop();
 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                    for(i = 0; i < response.data.external.postings.length; i++) {
+                    for (i = 0; i < response.data.external.postings.length; i++) {
 
 
                         if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 300;
-                            scrollTopOffset = scrollTopOffset + 300;
+                            response.data.external.postings[i].feedItemHeight = 290;
+                            scrollTopOffset = scrollTopOffset + 290;
                         } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 485;
-                            scrollTopOffset = scrollTopOffset + 485;
+                            response.data.external.postings[i].feedItemHeight = 455;
+                            scrollTopOffset = scrollTopOffset + 455;
                         }
 
                         //Push each new result to top of feed
@@ -107,6 +108,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     console.log('persisted results are: ', feedFactory.persistedResults);
 
                 }
+
 
             }
         }, function (response) {
@@ -127,7 +129,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
         console.log(splashFactory.result);
-        $state.go('feed.splash', { id: elems.result.external_id });
+        $state.go('feed.splash', { id: elems.result.postingId });
     };
 
 
@@ -141,6 +143,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     //Fetch all the possible categories from the server and pass them function that creates nested list the tree checklist UI can understand
     $scope.getAllCategoriesFromServer = function () {
         feedFactory.lookupCategories().then(function (response) {
+
+            //TODO: Use josh's API' http://localhost:4043/v1/groupings/
 
             console.log(response);
 
@@ -305,6 +309,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     });
 
 
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        feedFactory.resetFeedView();
+    });
 
 }]);
 
