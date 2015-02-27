@@ -75,8 +75,8 @@ function convertToHTSObjStructure(orgObj, userLat, userLong) {
             "accuracy": orgObj.location.accuracy,
             "status" : orgObj.location.geolocation_status,
             "coordinates": [
-                orgObj.location.lat,
-                orgObj.location.long
+                orgObj.location.long,
+                orgObj.location.lat
             ],
             distance: getDistanceFromLatLonInMeters(userLat, userLong, orgObj.location.lat, orgObj.location.long)
         },

@@ -27,8 +27,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             $scope.map = {
                 settings: {
                     center: {
-                        latitude: $scope.result.geo.coordinates[0],
-                        longitude: $scope.result.geo.coordinates[1]
+                        latitude: $scope.result.geo.coordinates[1],
+                        longitude: $scope.result.geo.coordinates[0]
                     },
                     options: {
                         zoomControl: false,
@@ -40,8 +40,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                 marker: {
                     id: 0,
                     coords: {
-                        latitude: $scope.result.geo.coordinates[0],
-                        longitude: $scope.result.geo.coordinates[1]
+                        latitude: $scope.result.geo.coordinates[1],
+                        longitude: $scope.result.geo.coordinates[0]
                     }
                 }
             };
@@ -204,6 +204,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
     //If the result object is passed in via router
     if (splashFactory.result) {
+
+        console.log(splashFactory.result);
 
         showSplashModal();
 

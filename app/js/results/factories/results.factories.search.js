@@ -273,8 +273,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         var marker = {
             id: result.postingId,
             coords: {
-                latitude: result.geo.coordinates[0],
-                longitude: result.geo.coordinates[1]
+                latitude: result.geo.coordinates[1],
+                longitude: result.geo.coordinates[0]
             },
             title: result.heading,
             options: {
