@@ -46,3 +46,8 @@ angular-modules
 # uploads folder temporarily stores photo uploads
 uploads
 
+# core apis have their own reposoitories
+posting-api
+posting-sync-agent
+realtime-svc
+
