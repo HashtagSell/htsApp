@@ -15,7 +15,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
         Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
 
         //Update the badge on the default side menu
-        sideNavFactory.defaultMenu[2].alerts = Session.userObj.user_settings.favorites.length;
+        sideNavFactory.defaultMenu[3].alerts = Session.userObj.user_settings.favorites.length;
 
     };
 
@@ -28,7 +28,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
 
         //If the new favorite's ID matching an existing favorite then note the index of that item
         _.some(currentFavorites, function(oldFav) {
-            if(oldFav.external_id == item.external_id){
+            if(oldFav.postingId == item.postingId){
                 matchingIndexes.push(currentFavorites.indexOf(oldFav));
             }
         });
@@ -43,7 +43,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
         }
 
         //Update the badge on the default side menu
-        sideNavFactory.defaultMenu[2].alerts = Session.userObj.user_settings.favorites.length;
+        sideNavFactory.defaultMenu[3].alerts = Session.userObj.user_settings.favorites.length;
     };
 
 
@@ -55,7 +55,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
 
         //If the new favorite's ID matching an existing favorite then note the index of that item
         _.some(currentFavorites, function(oldFav) {
-            if(oldFav.external_id == item.external_id){
+            if(oldFav.postingId == item.postingId){
                 matchingIndexes.push(currentFavorites.indexOf(oldFav));
             }
         });
@@ -114,7 +114,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
             console.log("checked: ", checked, "id: ", id);
             if(checked) {
                 var tempObj = {};
-                tempObj.external_id = id;
+                tempObj.postingId = id;
                 favesFactory.removeFave(tempObj, function () {
                     favesFactory.refreshTable();
                 });

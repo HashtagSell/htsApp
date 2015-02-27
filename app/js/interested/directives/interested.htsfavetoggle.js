@@ -4,7 +4,7 @@
 htsApp.directive('htsFaveToggle', function () {
     return {
         restrict: 'E',
-        template: '<button type="button" ng-click="toggleFave(result); $event.stopPropagation();" class="btn btn-default" ng-class="{starHighlighted: favorited, star: !favorited}"><i class="fa fa-star"></i></button>',
+        template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();"></span>',
         controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', function ($scope, $element, favesFactory, Session, authModalFactory) {
 
             //console.log(Session.userObj);
@@ -33,8 +33,8 @@ htsApp.directive('htsFaveToggle', function () {
                     authModalFactory.signInModal();
 
                 }
-                console.log('bluring element', $element);
-                $element[0].childNodes[0].blur();
+                //console.log('bluring element', $element);
+                //$element[0].childNodes[0].blur();
             };
         }]
     };

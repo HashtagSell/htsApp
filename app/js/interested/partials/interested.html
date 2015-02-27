@@ -8,7 +8,7 @@
     </div>
 </div>
 
-<div ng-show="currentFaves.length" class="outer-container interested-well">
+<div ng-show="currentFaves.length" class="outer-container-interested interested-well">
     <!--TODO: Need this table header to be fixed.-->
     <div>
         <table ng-table="tableParams" class="table">
@@ -57,12 +57,13 @@
             <tbody>
                 <tr ng-repeat="favorite in $data">
                     <td width="30" style="text-align: center; vertical-align: middle;">
-                        <input type="checkbox" ng-model="checkboxes.items[favorite.external_id]" />
+                        <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" />
                     </td>
                     <td style="width:70px; cursor: pointer;" ng-click='openSplash(favorite)'>
                         <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
                     </td>
-                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)' ng-bind-html="favorite.heading | cleanHeading">
+                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)'>
+                        {{favorite.heading | cleanHeading}}
                         <br>
                         <small>
                             <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
@@ -73,10 +74,10 @@
                             </table>
                         </small>
                     </td>
-                    <td ng-if="favorite.price" style="vertical-align: middle;">
-                        {{::favorite.price | currency : $ : 0}}
+                    <td ng-if="favorite.askingPrice.value" style="vertical-align: middle;">
+                        {{::favorite.askingPrice.value | currency : $ : 0}}
                     </td>
-                    <td ng-if="!favorite.price" style="vertical-align: middle;">
+                    <td ng-if="!favorite.askingPrice.value" style="vertical-align: middle;">
                         No price
                     </td>
                     <td style="width:20px; vertical-align: middle;">

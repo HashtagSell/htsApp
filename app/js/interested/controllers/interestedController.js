@@ -54,8 +54,8 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
         var checked = 0, unchecked = 0;
         totalFaves = $scope.currentFaves.length;
         angular.forEach($scope.currentFaves, function(favorite) {
-            checked   +=  ($scope.checkboxes.items[favorite.external_id]) || 0;
-            unchecked += (!$scope.checkboxes.items[favorite.external_id]) || 0;
+            checked   +=  ($scope.checkboxes.items[favorite.postingId]) || 0;
+            unchecked += (!$scope.checkboxes.items[favorite.postingId]) || 0;
         });
 
         console.log("checked: ", checked, "unchecked: ", unchecked);
@@ -74,8 +74,8 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
     // watch for master checkbox
     $scope.$watch('checkboxes.masterCheck', function(value) {
         angular.forEach($scope.currentFaves, function(favorite) {
-            if (angular.isDefined(favorite.external_id)) {
-                $scope.checkboxes.items[favorite.external_id] = value;
+            if (angular.isDefined(favorite.postingId)) {
+                $scope.checkboxes.items[favorite.postingId] = value;
             }
         });
     });
@@ -112,7 +112,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
             if(selectedStatus) {  //Make sure the favorite is checked
                 console.log('this item selected', selectedStatus, id);
                 for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
-                    if(currentFavorites[i].external_id == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                    if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
                         results.push(currentFavorites[i]);
                     }
                 }
@@ -164,7 +164,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
     $scope.openSplash = function(favorite){
         splashFactory.result = favorite;
         console.log(splashFactory.result);
-        $state.go('interested.splash', { id: favorite.external_id });
+        $state.go('interested.splash', { id: favorite.postingId });
     };
 
 }]);
@@ -184,8 +184,8 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
                 event.stopPropagation();
             });
         },
-        template: "<span class='dropdown'>"+
-        "<i class='fa fa-tags dropdown-toggle' ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
+        template: "<span class='dropdown' dropdown>"+
+        "<i class='fa fa-tags dropdown-toggle' dropdown-toggle ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
         "<ul class='dropdown-menu'>"+
         "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
         "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
@@ -218,7 +218,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
                 angular.forEach($scope.selectedfaves, function(selected, id) {
                     if(selected) {  //Make sure the item is checked
                         for(i=0; i<currentFavorites.length; i++){
-                            if(currentFavorites[i].external_id == id && currentFavorites[i].labels){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
+                            if(currentFavorites[i].postingId == id && currentFavorites[i].labels){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
 
                                 for(j=0; j<currentFavorites[i].labels.length; j++){ //Loop though all the labels applied to the selected favorite
                                     var discoveredLabel = currentFavorites[i].labels[j];
@@ -283,8 +283,8 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
                     if(selectedStatus) {  //Make sure the favorite is checked
                         console.log('this item selected', selectedStatus, id);
                         for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
-                            if(currentFavorites[i].external_id == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
-                                console.log(currentFavorites[i].external_id, id);
+                            if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                                console.log(currentFavorites[i].postingId, id);
                                 currentFavorites[i].labels = $scope.selectedlabels;  //Applies all the checked user labels to the favorite TODO: We should not overwrite all the labels but instead add or remove them
                             }
                         }
