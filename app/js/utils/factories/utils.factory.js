@@ -5,6 +5,7 @@ htsApp.factory('utilsFactory', ['ENV', function (ENV) {
 
     var factory = {};
 
+    //Converts objects to bracket notation string.
     factory.bracketNotationURL = function (params, bracketURL) {
 
         for (var prop in params) {
