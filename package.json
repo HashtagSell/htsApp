@@ -8,8 +8,13 @@
     "grunt-contrib-qunit": "^0.5.2",
     "grunt-contrib-uglify": "^0.6.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-exit": "^1.0.0",
+    "grunt-ng-constant": "^1.0.0",
     "grunt-node-inspector": "^0.1.5",
     "grunt-nodemon": "^0.3.0",
+    "grunt-services": "0.0.3",
+    "grunt-shell-spawn": "^0.3.1",
+    "gulp": "^3.8.11",
     "open": "0.0.5"
   },
   "name": "HashtagSell",
