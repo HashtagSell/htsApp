@@ -1,6 +1,6 @@
 var common   = require('../config/common.js');
 var config   = common.config();
-var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 50 });
+var threeTapsClient = require('3taps')({ apikey : config.THREE_TAPS_KEY, strictSSL : false, maxRetryCount : 25 });
 
 exports.query = function(result, promise){
 
@@ -142,6 +142,7 @@ exports.poll = function(result, promise, timeFrame){
                         //If we have three or more results then resolve our promise
                         if(data.postings.length >= 10){
                             promise(null, data);
+
                         } else { // If we have less than three results then increase our timeFrame and retrieve a new anchor.  Try again.
 
                             console.log(data.postings.length+' polling items discovered.  Decrementing time-frame.');
