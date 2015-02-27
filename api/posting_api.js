@@ -6,7 +6,6 @@ var mongoose = require("mongoose");
 
 var easyimg = require('easyimage');
 var HashTable = require('hashtable');
-var HTSpost = mongoose.model("hts_posts");
 
 AWS.config.region = 'us-west-2';
 
@@ -14,104 +13,6 @@ AWS.config.update({
     accessKeyId: config.AWS_ACCESS_KEY,
     secretAccessKey: config.AWS_SECRET_KEY
 });
-
-
-
-exports.savePost = function(req, res){
-
-    var newPost = req.body;
-
-    //Strip html from post
-    var sanitizeHtml = require('sanitize-html');
-    var body_plain_text = sanitizeHtml(newPost.html_body, {
-        allowedTags: [],
-        allowedAttributes: {}
-    });
-
-    newPost.seller_id = req.user._id;
-    newPost.seller_username = req.user.user_settings.name;
-
-    //Add long, lat to location obj and typecast as 2d plane with mongo so we can search later by location
-    newPost.coordinates = [req.body.location.long, req.body.location.lat];
-
-    //Removed &nbsp; from string I don't know why sanatize-html doesn't do this. poo
-    body_plain_text = body_plain_text.replace(/&nbsp;/g, " ");
-
-    newPost.body = body_plain_text;
-
-    var htsPost = new HTSpost(newPost);
-    //Write post to hts_posts collection
-    htsPost.save(function (err) {
-
-        if (err) {
-
-            console.log(err);
-            res.send({success: false, error: err});
-
-        } else {
-            console.log("success!");
-            res.send({success: true});
-        }
-    });
-};
-
-
-
-
-
-
-exports.getPosts = function (req, res) {
-    console.log(req.user._id);
-    HTSpost.find({ 'seller_id' : req.user._id }, function (err, posts) {
-
-        if (err) {
-            console.log(err);
-            return res.send({error: err});
-
-            // if no user is found, return the message
-        } else if (!posts) {
-            console.log('no posts found');
-            return res.send({error: "No user found with that email/token."});
-
-
-        } else if (posts) {
-            console.log('here are the posts');
-            console.log(posts);
-
-            res.send(posts);
-        }
-    });
-
-};
-
-
-
-
-exports.deletePost = function (req, res) {
-    HTSpost.remove({
-        'seller_id' : req.user._id,
-        '_id' : req.query.id
-    }, function (err, numberRemoved) {
-
-        if (err) {
-            console.log(err);
-            return res.send({error: err});
-
-            // if no user is found, return the message
-        } else if (numberRemoved === 0) {
-            console.log('no posts found');
-            return res.send({error: "No post found to delete"});
-
-
-        } else if (numberRemoved >= 1) {
-            console.log('here is the posts');
-
-            res.send({success: "post deleted"});
-        }
-    });
-
-};
-
 
 
 
