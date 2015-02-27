@@ -1,88 +1,121 @@
-// load up the Post model
-var PostModel = require('../config/database/models/hts_post_model.js');
 var request = require("request");
 var Analytics = require('../config/database/models/analytics.js');
+var common   = require('../config/common.js');
+var config   = common.config();
 
-exports.query = function(req, result, promise){
 
+exports.newQuery = function (req, result, promise) {
     var vendorResponse = result.external;
     var vendorPosts = vendorResponse.postings;
+
     var term = result.query.q;
-    var mongoCategories = result.popularCategories;
+    var mongoCategories = [];
 
 
     var userLat = result.location.latitude;
     var userLong = result.location.longitude;
 
-    console.log('search term is: ' + term);
-    console.log('mongo Cats are: ' + mongoCategories);
-    console.log('userlat: ' + userLat);
-    console.log('userlong: ' + userLong);
+    console.log('Search term is: ' + term);
+
+    for(var i=-0; i < result.popularCategories.length; i++){
+        mongoCategories.push(result.popularCategories[i].category);
+    }
+    console.log('Mongo Cats are: ' + mongoCategories);
+    console.log('Userlat: ' + userLat);
+    console.log('Userlong: ' + userLong);
 
     if(vendorPosts.length > 0) {
 
         var furthestitem = vendorPosts[vendorPosts.length - 1];
-        var furthestLat = furthestitem.location.lat;
-        var furthestLon = furthestitem.location.long;
+        var furthestLat = furthestitem.geo.coordinates[0];
+        var furthestLon = furthestitem.geo.coordinates[1];
 
         var maxDistance = getDistanceFromLatLonInMeters(userLat, userLong, furthestLat, furthestLon);
 
         var performDistanceQuery = function (minDistance) {
 
-            console.log("user loc: ", userLat, userLong);
-            console.log("max loc: ", furthestLat, furthestLon);
-            console.log("our max distance in meters: ", maxDistance);
-            console.log("our min distance in meters:  ", minDistance);
+            console.log("Item furthese from user: ", furthestLat, furthestLon);
+            console.log("Max distance in meters: ", maxDistance);
+            console.log("Min distance in meters:  ", minDistance);
 
-            //TODO Complex regex full text search logic to be added.  Consider elasticsearch mongo connnector or track mongo ticket https://jira.mongodb.org/browse/DOCS-1719
-            //TODO We want to use geospacial indexing and full text indexing in one query but this can't be done today with mongo: http://stackoverflow.com/questions/25922965/mongodb-text-with-near
-            PostModel.find({
-                coordinates: {
-                    $near: {
-                        $geometry: {
-                            type: "Point",
-                            coordinates: [ userLong , userLat ]
-                        },
-                        $maxDistance: maxDistance,
-                        $minDistance: minDistance
-                    }
+            var queryObject = {
+                "geo": {
+                    "min": minDistance,
+                    "max": maxDistance,
+                    "coords": userLong+','+userLat
                 },
-                $or: mongoCategories,
-                heading: { "$regex": term, "$options": 'i' }
-            }, function (err, hts_results) {
-                //systematic error. Redirect to page so user can report error.
-                if (err) {
-                    console.log(err);
-                    promise(err, null);
-
-                    // if no user is found, then this is a bad activation id
-                } else if (!hts_results.length) {
-
-                    console.log("no internal results found");
-
-                    var sortedVendorPosts = sortByDistance(vendorPosts, userLat, userLong);
-                    vendorResponse.postings = sortedVendorPosts;
-                    promise(null, vendorResponse);
-
-                } else if (hts_results) {
-
-                    console.log(hts_results);
-
-
-                    for (var i in hts_results) {
-                        var hts_result = hts_results[i];
-
-                        vendorPosts.push(hts_result);
+                "filters": {
+                    "mandatory": {
+                        "contains": {
+                            "heading": term
+                        }
+                    },
+                    "optional": {
+                        "exact": {
+                            "categoryCode": mongoCategories
+                        }
                     }
+                }
+            };
 
-                    var sortedVendorPosts = sortByDistance(vendorPosts, userLat, userLong);
 
-                    vendorResponse.postings = sortedVendorPosts;
+            request({
+                method : 'GET',
+                strictSSL : config.hts.posting_api.strictSSL,
+                timeout : config.hts.posting_api.timeout,
+                url : config.hts.posting_api.url,
+                qs: queryObject
+            }, function (err, res, body) {
+
+                //parse the response body
+                var json = tryParseJSON(body);
+                if (!json) {
+                    json = {
+                        response : body
+                    };
+                }
+
+                // check for retry
+                if (res && res.statusCode >= 500) {
+
+                    console.log('status code greater than or equal to 500');
+
+                    //return callback(err || json);
+
+                    promise(null, vendorResponse);
+                }
+
+                if (!res) {
+                    //return callback(
+                    //    new Error('no response from server - possibly a remote server crash'));
+
+                    console.log('no response from server - possibly a remote server crash');
 
                     promise(null, vendorResponse);
 
                 }
+
+                // if there is an error, kick it back
+                if (err) {
+
+                    console.log('we have an error querying posting API');
+
+                    //return callback(err);
+
+                    promise(null, vendorResponse);
+                }
+
+                vendorPosts = vendorPosts.concat(json.results);
+
+                vendorPosts.sort(function(obj1, obj2) {
+                    // Sort nearest to furthest
+                    return obj1.geo.distance - obj2.geo.distance;
+                });
+
+                promise(null, vendorPosts);
             });
+
+
         };
 
         //Logs the users query and returns their previous search (if there is one) that way we know what concentric circle to define for distance query
@@ -96,37 +129,20 @@ exports.query = function(req, result, promise){
 
 
 
-function sortByDistance(postings, userLat, userLong) {
-
-    for (i in postings) {
-        var post = postings[i];
-        var postLong = post.location.long;
-        var postLat = post.location.lat;
-
-        post.distanceFromUser = getDistanceFromLatLonInMiles(userLat, userLong, postLat, postLong);
+function tryParseJSON (body) {
+    if (!body) {
+        return null;
     }
 
+    if (typeof body === 'object') {
+        return body;
+    }
 
-    var sortedPostings = postings.sort(function (a, b) {
-        return a.distanceFromUser - b.distanceFromUser;
-    });
-
-    return sortedPostings
-}
-
-
-function getDistanceFromLatLonInMiles(lat1,lon1,lat2,lon2) {
-    var R = 3963.1676; // Radius of the earth in meters
-    var dLat = deg2rad(lat2-lat1);  // deg2rad below
-    var dLon = deg2rad(lon2-lon1);
-    var a =
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon/2) * Math.sin(dLon/2)
-        ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c; // Distance in km
-    return d;
+    try {
+        return JSON.parse(body);
+    } catch (ex) {
+        return null;
+    }
 }
 
 
@@ -230,7 +246,7 @@ function logQuery(req, vendorResponse, result, maxDistance, callback){
         },
         { upsert: true, new:false },
         function(err, result){
-            console.log("we are here");
+            console.log("Caching query for pagination");
             if(err){
                 console.log(err);
             } else if (!result){
