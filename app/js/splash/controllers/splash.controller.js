@@ -3,22 +3,10 @@
  */
 htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $sce, $state, $modal, splashFactory, Session, socketio) {
 
-    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', function ($scope, sideNavFactory, uiGmapGoogleMapApi) {
-
-        function toTitleCase(str) {
-            console.log(str);
-            return str.replace(/\w\S*/g, function(txt){
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-        }
+    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', 'authModalFactory', 'favesFactory', 'qaFactory', function ($scope, sideNavFactory, uiGmapGoogleMapApi, authModalFactory, favesFactory, qaFactory) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
-        //$scope.result.body_clean = $sce.trustAsHtml(splashFactory.result.body);
-        //$scope.result.heading_clean = toTitleCase($sce.trustAsHtml(splashFactory.result.heading).toString());
-
-
-
 
         $scope.slickConfig = {
             dots: true,
@@ -26,9 +14,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             infinite: true,
             speed: 100,
             slidesToScroll: 1,
-            //TODO: Track this bug to allow for variableWidth on next release: https://github.com/kenwheeler/slick/issues/790
             variableWidth: true,
-            centerMode: false
+            centerMode: true
         };
 
 
@@ -36,12 +23,12 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             showCarousel: true
         };
 
-        uiGmapGoogleMapApi.then(function(maps) {
+        uiGmapGoogleMapApi.then(function (maps) {
             $scope.map = {
                 settings: {
                     center: {
-                        latitude: $scope.result.location.lat,
-                        longitude: $scope.result.location.long
+                        latitude: $scope.result.geo.coordinates[0],
+                        longitude: $scope.result.geo.coordinates[1]
                     },
                     options: {
                         zoomControl: false,
@@ -53,8 +40,8 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
                 marker: {
                     id: 0,
                     coords: {
-                        latitude: $scope.result.location.lat,
-                        longitude: $scope.result.location.long
+                        latitude: $scope.result.geo.coordinates[0],
+                        longitude: $scope.result.geo.coordinates[1]
                     }
                 }
             };
@@ -80,12 +67,43 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             $scope.infoWindow.show = false;
         };
 
+
+        if ($scope.userObj.user_settings.loggedIn) {
+            favesFactory.checkFave($scope.result, function (response) {
+                console.log('favorited response: ' + response);
+                $scope.favorited = response;
+            });
+        }
+
+
+        $scope.toggleFave = function (item) {
+            if ($scope.userObj.user_settings.loggedIn) {
+                console.log('favorited status: ', $scope.favorited);
+                console.log(item);
+                if (!$scope.favorited) { //If not already favorited
+                    favesFactory.addFave(item, function () {  //Add the favorite and flag as done
+                        $scope.favorited = true;
+                    });
+                } else { //toggle off favorite
+                    favesFactory.removeFave(item, function () {
+                        $scope.favorited = false;
+                    });
+                }
+            } else {
+
+                authModalFactory.signInModal();
+
+            }
+        };
+
+
         //If we do not know the formatted address of the item we use the lat and lon to reverse geocode the closest address or cross-street.
-        if (!$scope.result.location.formatted_address) {
+        if (!$scope.result.external.threeTaps.location.formatted) {
+            console.log($scope.result);
             (function () {
 
                 var geocoder = new google.maps.Geocoder();
-                var latlng = new google.maps.LatLng($scope.result.location.lat, $scope.result.location.long);
+                var latlng = new google.maps.LatLng($scope.result.geo.coordinates[0], $scope.result.geo.coordinates[1]);
 
                 geocoder.geocode({'latLng': latlng}, function (results, status) {
 
@@ -103,7 +121,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             })();
         } else {
 
-            $scope.windowOptions.content = $scope.result.location.formatted_address;
+            $scope.windowOptions.content = $scope.result.external.threeTaps.location.formatted;
             console.log('already have address: ', $scope.windowOptions.content);
         }
 
@@ -111,23 +129,6 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         if ($scope.result.annotations) {
             $scope.result.sanitized_annotations = splashFactory.sanitizeAnnotations($scope.result.annotations);
         }
-
-
-
-
-        //Socket.io RTC integration
-        $scope.updates = socketio.updates;
-
-        socketio.socket.on('message', function () {
-            $scope.$apply($scope.updates);
-            console.log('controller sees', $scope.updates);
-        });
-
-        $scope.askSellerQuestion = function (question) {
-            socketio.sendMessage($scope.result.external_id, question);
-        };
-
-
 
 
         //Responsive Navigation
@@ -139,42 +140,90 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
             $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
         };
 
+
+        $scope.questions = qaFactory.questions;
+
+        $scope.getPostingIdQuestions = function() {
+
+            qaFactory.getPostingIdQuestions($scope.result.postingId).then(function (response) {
+                console.log(response);
+            }, function (err) {
+                console.log(err);
+            });
+
+        };
+
+        $scope.submitQuestion = function(question) {
+            if ($scope.userObj.user_settings.loggedIn) {
+                qaFactory.submitQuestion(question, $scope.result.postingId, $scope.userObj.user_settings.name).then(function (response) {
+                    console.log(response);
+                }, function (err) {
+                   console.log(err);
+                });
+            } else {
+                authModalFactory.signInModal();
+            }
+        };
+
+
     }];
 
 
 
 
+    var showSplashModal = function () {
+
+        var splashInstance = $modal.open({
+            backdrop: false,
+            templateUrl: "js/splash/partials/splash_content_new.html",
+            windowTemplateUrl: "js/splash/partials/splash_window.html",
+            controller: splashInstanceCtrl
+        });
 
 
+        splashInstance.result.then(function (selectedItem) {
+            console.log(selectedItem);
+        }, function (reason) {
+            console.log('Splash dismissed at: ' + new Date());
+            if(reason === 'feed' || reason === 'selling' || reason === 'notifications' || reason === 'interested' || reason === 'mailbox') {
+                splashInstance.dismiss();
+                $state.go(reason);
+            } else {
+                splashInstance.dismiss();
+                $state.go('^');
+            }
+        });
 
 
-
-    var splashInstance = $modal.open({
-        backdrop: false,
-        templateUrl: "js/splash/partials/splash_content_new.html",
-        windowTemplateUrl: "js/splash/partials/splash_window.html",
-        controller: splashInstanceCtrl
-    });
-
-
-    splashInstance.result.then(function (selectedItem) {
-        console.log(selectedItem);
-    }, function (reason) {
-        console.log('Splash dismissed at: ' + new Date());
-        if(reason === 'feed' || reason === 'selling' || reason === 'notifications' || reason === 'interested') {
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $scope.$on('$stateChangeStart', function () {
             splashInstance.dismiss();
-            $state.go(reason);
-        } else {
-            splashInstance.dismiss();
-            $state.go('^');
-        }
-    });
+        });
+    };
 
 
-    //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
-    $scope.$on('$stateChangeStart', function () {
-        splashInstance.dismiss();
-    });
+    //If the result object is passed in via router
+    if (splashFactory.result) {
+
+        showSplashModal();
+
+    } else { //The user has been linked to the splash page or refreshed and we must lookup the item in our database.
+
+        var postingId = $state.params.id;
+
+        splashFactory.lookupItemDetails(postingId).then(function (response) {
+
+            splashFactory.result = response.data;
+
+            showSplashModal();
+
+        }, function (err) {
+
+            console.log(err);
+
+        });
+
+    }
 }]);
 
 
@@ -188,11 +237,11 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
             console.log(scope.result.images[0]);
 
-            if(scope.result.source === 'HSHTG') {
+            if(scope.result.external.source.code === 'HSHTG') {
 
-                var sellerID = scope.result.seller_id;
+                var username = scope.result.username;
 
-                splashFactory.getUserProfile(sellerID).then(function (response) {
+                splashFactory.getUserProfile(username).then(function (response) {
 
                     if (response.status !== 200) {
 
@@ -229,73 +278,77 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 });
             } else {
 
+                var bannerElement = angular.element(element[0].querySelector('.profile'));
+
                 if (scope.result.images.length) {
 
                     var photoIndex = scope.result.images.length - 1;
                     var lastImage = scope.result.images[photoIndex].thumb || scope.result.images[photoIndex].images || scope.result.images[photoIndex].full;
 
-                    var bannerElement = angular.element(element[0].querySelector('.profile'));
                     bannerElement.css({
                         'background-image': "url(" + lastImage + ")",
                         'background-size': "cover"
                     });
+                } else {
+
+                    alert('finish banner placeholder');
                 }
 
-                var username = angular.element(element[0].querySelector('.splash-bs-username'));
+                var usernamePlaceholder = angular.element(element[0].querySelector('.splash-bs-username'));
                 var sourceIcon = angular.element(element[0].querySelector('.bs-profile-image'));
-                if (scope.result.source === "APSTD") {
+                if (scope.result.external.source.code === "APSTD") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/apartments_com_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@apartments.com');
+                    usernamePlaceholder.html('@apartments.com');
 
-                } else if (scope.result.source === "AUTOD") {
+                } else if (scope.result.external.source.code === "AUTOD") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/autotrader_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@autotrader.com');
+                    usernamePlaceholder.html('@autotrader.com');
 
-                } else if (scope.result.source === "BKPGE") {
+                } else if (scope.result.external.source.code === "BKPGE") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/backpage_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@backpage.com');
+                    usernamePlaceholder.html('@backpage.com');
 
-                } else if (scope.result.source === "CRAIG") {
+                } else if (scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/craigslist_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@craigslist.com');
+                    usernamePlaceholder.html('@craigslist.com');
 
-                } else if (scope.result.source === "EBAYM") {
+                } else if (scope.result.external.source.code === "EBAYM") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/ebay_motors_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@ebaymotors.com');
+                    usernamePlaceholder.html('@ebaymotors.com');
 
-                } else if (scope.result.source === "E_BAY") {
+                } else if (scope.result.external.source.code === "E_BAY") {
 
                     sourceIcon.css({
                         'background-image': "url(/images/logo/sources/ebay_splash.png)",
                         'background-size': "cover"
                     });
 
-                    username.html('@ebay.com');
+                    usernamePlaceholder.html('@ebay.com');
                 }
 
             }

@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.factory('splashFactory', ['$http', '$location', '$q', function ($http, $location, $q) {
+htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($http, $location, $q, ENV) {
 
     var annotationsDictionary = new Hashtable();
 
@@ -81,11 +81,11 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', function ($http, $l
     };
 
 
-    factory.getUserProfile = function (sellerID) {
+    factory.getUserProfile = function (username) {
 
         var deferred = $q.defer();
 
-        var url = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/getprofile?id=" + sellerID;
+        var url = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/getprofile?username=" + username;
 
         $http({method: 'GET', url: url}).
             then(function (response, status, headers, config) {
@@ -99,6 +99,26 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', function ($http, $l
 
         return deferred.promise;
 
+    };
+
+
+    factory.lookupItemDetails = function (postingId) {
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + postingId
+        }).then(function (response, status, headers, config) {
+
+                deferred.resolve(response);
+
+            }, function (response, status, headers, config) {
+
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
     };
 
     return factory;

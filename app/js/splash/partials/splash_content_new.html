@@ -20,6 +20,11 @@
                     </a>
                 </li>
                 <li class="hidden-sm hidden-xs">
+                    <a ng-click="$dismiss('mailbox')">
+                        My Mailbox
+                    </a>
+                </li>
+                <li class="hidden-sm hidden-xs">
                     <a ng-click="$dismiss('interested')">
                         My Favorites
                     </a>
@@ -137,7 +142,7 @@
                             </div>
                             <div style="margin-left: 20%;">
                                 <h4>Description:</h4>
-                                <div ng-bind-html="result.body | cleanBody | linky:'_blank'">
+                                <div style="line-height: 20px; padding-bottom: 75px;" ng-bind-html="result.body | cleanBody">
 
                                 </div>
                             </div>
@@ -151,35 +156,85 @@
                                 </div>
                                 <div class="splash-username-container">
                                     <div class="splash-bs-username"></div>
-                                    <h2 style="color: #216C2A; margin-bottom: 2px;">{{::result.price | currency : $ : 0}}</h2>
+                                    <h2 style="color: #216C2A; margin-bottom: 2px;">{{::result.askingPrice.value | currency : $ : 0}}</h2>
                                     <!--<button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">New post</button>-->
                                 </div>
                             </splash-side-profile>
 
                             <!--SideNav-->
                             <div class="list-group splash-bs-side-nav ng-cloak" ng-controller="sideNav.controller">
-                                <a class="list-group-item" ng-if="result.source == 'CRAIG' && result.annotations.source_account" ng-click="sideNav.splashItems[1].action(result)" style="cursor: pointer">
+                                <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.source_account" ng-click="sideNav.splashItems[1].action(result)" style="cursor: pointer">
                                     <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller
                                 </a>
-                                <a class="list-group-item" ng-if="result.source == 'CRAIG' && result.annotations.phone" ng-click="sideNav.splashItems[2].action(result)" style="cursor: pointer">
+                                <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.phone" ng-click="sideNav.splashItems[2].action(result)" style="cursor: pointer">
                                     <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller
                                 </a>
-                                <a  class="list-group-item" ng-if="result.source === 'HSHTG'" ng-click="sideNav.splashItems[3].action(result)" style="cursor: pointer">
+                                <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="sideNav.splashItems[3].action(result)" style="cursor: pointer">
                                     <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place offer
                                 </a>
-                                <a class="list-group-item"  ng-if="result.source === 'E_BAY'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
+                                <a class="list-group-item"  ng-if="result.external.source.code === 'E_BAY'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
                                     <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place bid
                                 </a>
-                                <a class="list-group-item" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
-                                    <i class="fa fa-star fa-fw fa-lg"></i>&nbsp; Favorite
+                                <a class="list-group-item" ng-click="toggleFave(result)" style="cursor: pointer">
+                                    <span ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Favorite
                                 </a>
-                                <a class="list-group-item" ng-click="alert('spam reporting feature soon')" style="cursor: pointer">
+                                <a class="list-group-item" onclick="alert('spam reporting feature soon')" style="cursor: pointer">
                                     <i class="fa fa-flag fa-fw fa-lg"></i>&nbsp; Report
                                 </a>
-                                <a class="list-group-item" ng-if="result.source && result.source != 'HSHTG'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
+                                <a class="list-group-item" ng-if="result.external.source.url && result.external.source.code != 'HSHTG'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
                                     <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Link to original
                                 </a>
                             </div>
+
+                            <!--Commenting System-->
+                            <!--<div class="row">-->
+                                <!--<input ng-model="message" placeholder="Send seller a message">-->
+                                <!--<button class="btn btn-primary" ng-click="sendPrivateMessage(message)">submit</button>-->
+                            <!--</div>-->
+                            <!--<div class="row">-->
+                                <!--<div ng-repeat="message in updates.messages">-->
+                                    <!--{{message.message}} -{{message.username}}-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--<div class="well">-->
+                            <div ng-if="result.external.source.code === 'HSHTG'" ng-init="getPostingIdQuestions()">
+                                <p class="input-group">
+                                    <input class="form-control" ng-model="qamodule.question" placeholder="Ask the owner a question" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary" ng-click="submitQuestion(qamodule.question)">Ask</button>
+                                    </span>
+                                </p>
+                                <!--<div class="questions-answer-container">-->
+                                    <!--<div class="question-answer-inner-container">-->
+                                        <div ng-repeat="question in questions.store">
+                                            <div class="question-counter-block">
+                                                <span class="stack-question-counter fa-2x">
+                                                    <i class="fa fa-caret-up"></i>
+                                                    <div>{{question.plus.length}}</div>
+                                                    <i class="fa fa-caret-down"></i>
+                                                </span>
+                                                <div class="questions-and-answers">
+                                                    <div class="question">
+                                                        {{question.value}}
+                                                    </div>
+                                                    <div ng-repeat="answer in question.answers">
+                                                        <div class="answer" ng-if="answer.value">{{answer.value}}</div>
+                                                    </div>
+                                                    <div ng-if="question.username !== userObj.user_settings.name && !question.answers.length || !userObj.user_settings.loggedIn && !question.answers.length">
+                                                        <a class="answer" ui-sref="mailbox.inbox.questions.question({postingId: question.postingId, questionId: question.questionId})">Click here to answer.</a>
+                                                    </div>
+                                                    <div ng-if="question.username === userObj.user_settings.name && !question.answers.length">
+                                                        <a class="answer">The seller has been notified.</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <!--</div>-->
+                                <!--</div>-->
+                            </div>
+                            <!--</div>-->
+
                         </div>
                     </div>
                 </div>
