@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'angular-carousel', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ngSanitize']);
+var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ngSanitize']);
 
 
 
@@ -18,12 +18,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
-
-    //uiGmapGoogleMapApiProvider.configure({
-    //    //    key: 'your api key',
-    //    v: '3.17',
-    //    libraries: 'geometry'
-    //});
 
     //function assigned to routes that can only be accessed when user logged in
     var loginRequired = ['$q', 'Session', 'authModalFactory', 'sideNavFactory', function ($q, Session, authModalFactory, sideNavFactory) {
@@ -45,15 +39,23 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
     }];
 
 
-    var joinRoom = ['socketio', 'Session', '$stateParams', function (socketio, Session, $stateParams) {
+    var joinRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
        if (Session.userObj.user_settings.loggedIn) {
-           socketio.joinRoom($stateParams.id);
+           socketio.joinPostingRoom($stateParams.id);
+
+           //if(splashFactory.result.external.source === 'HSHTG') {
+               socketio.joinUserRoom('brozeph', Session.userObj.user_settings.name);
+           //}
        }
     }];
 
-    var leaveRoom = ['socketio', 'Session', '$stateParams', function (socketio, Session, $stateParams) {
+    var leaveRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
         if (Session.userObj.user_settings.loggedIn) {
-            socketio.leaveRoom($stateParams.id);
+            socketio.leavePostingRoom($stateParams.id);
+
+            //if(splashFactory.result.external.source === 'HSHTG') {
+                socketio.leaveUserRoom(Session.userObj.user_settings.user);
+            //}
         }
     }];
 
@@ -68,7 +70,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         }).
         state('profile', {
             url: "/profile",
-            template: '<div class="outer-container col-lg-7 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-6 col-sm-offset-3 col-xs-12" style="margin-top:20px;"><div class="inner-container">User Profile, Messages, & Ratings (Coming soon)</div></div>',
+            templateUrl: 'js/profile/partials/profile.partial.html',
             resolve: { loginRequired: loginRequired }
         }).
         state('feed', {
@@ -102,7 +104,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         state('interested.splash', {
             url: "/:id",
             controller: 'splashController',
-            resolve: { loginRequired: loginRequired },
             onEnter: joinRoom,
             onExit: leaveRoom
         }).
@@ -112,6 +113,58 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             controller: 'notifications.controller',
             resolve: { loginRequired: loginRequired }
         }).
+        state('mailbox', {
+            url: "/mailbox",
+            templateUrl: "js/mailbox/partials/mailbox.html",
+            controller: 'mailbox.controller',
+            resolve: { loginRequired: loginRequired }
+        }).
+        state('mailbox.inbox', {
+            url: "/inbox",
+            template: "<div ui-view></div>"
+        }).
+        state('mailbox.outbox', {
+            url: "/outbox",
+            template: "<div ui-view></div>"
+        }).
+        state('mailbox.inbox.offers', {
+            url: "/offers",
+            templateUrl: "js/mailbox/inbox/offers/partials/mailbox.inbox.offers.html",
+            controller: 'inbox.offers.controller'
+        }).
+        state('mailbox.outbox.offers', {
+            url: "/offers",
+            templateUrl: "js/mailbox/outbox/offers/partials/mailbox.outbox.offers.html",
+            controller: 'outbox.offers.controller'
+        }).
+        state('mailbox.inbox.offers.offer', {
+            url: "/:postingId/:offerId",
+            templateUrl: "js/mailbox/inbox/offers/offer/partials/offers.offer.html",
+            controller: "offer.offers.controller"
+        }).
+        state('mailbox.outbox.offers.offer', {
+            url: "/:postingId/:offerId"
+        }).
+        state('mailbox.inbox.questions', {
+            url: "/questions",
+            templateUrl: "js/mailbox/inbox/questions/partials/mailbox.inbox.questions.html",
+            controller: 'inbox.questions.controller',
+        }).
+        state('mailbox.outbox.questions', {
+            url: "/questions",
+            templateUrl: "js/mailbox/outbox/questions/partials/mailbox.outbox.questions.html",
+            controller: 'outbox.questions.controller'
+        }).
+        state('mailbox.inbox.questions.question', {
+            url: "/:postingId/:questionId",
+            templateUrl: "js/mailbox/inbox/questions/question/partials/questions.question.html",
+            controller: 'question.questions.controller'
+        }).
+        state('mailbox.outbox.questions.question', {
+            url: "/:postingId/:questionId",
+            templateUrl: "js/mailbox/inbox/questions/question/partials/questions.question.html",
+            controller: 'question.questions.controller'
+        }).
         state('settings', {
             url: "/settings",
             template: "<div ui-view></div>",
@@ -120,20 +173,17 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         state('settings.general', {
             url: "/general",
             templateUrl: "js/settings/general/partials/settings.general_partial.html",
-            controller: "settings.general.controller",
-            resolve: { loginRequired: loginRequired }
+            controller: "settings.general.controller"
         }).
         state('settings.profile', {
             url: "/profile",
             templateUrl: "js/settings/profile/partials/settings.profile_partial.html",
-            controller: "settings.profile.controller",
-            resolve: { loginRequired: loginRequired }
+            controller: "settings.profile.controller"
         }).
         state('settings.payment', {
             url: "/payment",
             templateUrl: "js/settings/payment/partials/settings.payment_partial.html",
-            controller: "settings.payment.controller",
-            resolve: { loginRequired: loginRequired }
+            controller: "settings.payment.controller"
         }).
         state('results', {
             url: '/results/:q/',
@@ -151,6 +201,12 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             template: " ",
             controller: "changePasswordModalController"
         }).
+        state('splash', {
+            url: "/:id",
+            controller: 'splashController',
+            onEnter: joinRoom,
+            onExit: leaveRoom
+        }).
         state('otherwise', {
             url: '/feed'
         });
@@ -167,6 +223,14 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 
 
 }]);
+
+
+
+
+//
+//htsApp.run(['socketio', function(socketio) {
+//    console.log('kicking off socketio factory');
+//}]);
 
 
 //Verifies is password field match
@@ -258,6 +322,147 @@ htsApp.filter('cleanHeading', ['$sce', function ($sce) {
 
 htsApp.filter('cleanBody', ['$sce', function ($sce) {
     return function (dirtyBody) {
+
+
+        dirtyBody = dirtyBody.replace(/[\r\n]/g, '<br />');
+        //console.log(dirtyBody);
+
+
+        //var LINKY_URL_REGEXP =
+        //        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
+        //    MAILTO_REGEXP = /^mailto:/;
+        //
+        //return function(text, target) {
+        //    if (!text) return text;
+        //    var match;
+        //    var raw = text;
+        //    var html = [];
+        //    var url;
+        //    var i;
+        //    while ((match = raw.match(LINKY_URL_REGEXP))) {
+        //        // We can not end in these as they are sometimes found at the end of the sentence
+        //        url = match[0];
+        //        // if we did not match ftp/http/www/mailto then assume mailto
+        //        if (!match[2] && !match[4]) {
+        //            url = (match[3] ? 'http://' : 'mailto:') + url;
+        //        }
+        //        i = match.index;
+        //        addText(raw.substr(0, i));
+        //        addLink(url, match[0].replace(MAILTO_REGEXP, ''));
+        //        raw = raw.substring(i + match[0].length);
+        //    }
+        //    addText(raw);
+        //    return $sanitize(html.join(''));
+        //
+        //    function addText(text) {
+        //        if (!text) {
+        //            return;
+        //        }
+        //        html.push(sanitizeText(text));
+        //    }
+        //
+        //    function addLink(url, text) {
+        //        html.push('<a ');
+        //        if (angular.isDefined(target)) {
+        //            html.push('target="',
+        //                target,
+        //                '" ');
+        //        }
+        //        html.push('href="',
+        //            url.replace(/"/g, '&quot;'),
+        //            '">');
+        //        addText(text);
+        //        html.push('</a>');
+        //    }
+        //};
+
+
+
+
+        //Find any word that is in ALL CAPS and only capitalize the first letter
+        return dirtyBody.replace(/\b([A-Z]{2,})\b/g, function (dirtyBody) {
+
+            //Test against regex expression to find items like integers followed by simicolon.  i.e. 5556;
+            var integersAndSimicolon = new RegExp("\\S+([0-9];)");
+            if (!integersAndSimicolon.test(dirtyBody)) {
+
+                //console.log(dirtyBody);
+                //
+                //var catchNewLineChar = new RegExp("↵");
+                //if (catchNewLineChar.test);
+
+                //TODO: Catch ↵ character and insert new line in html
+
+                var cleanedBody = dirtyBody.charAt(0).toUpperCase() + dirtyBody.substr(1).toLowerCase();
+                return $sce.trustAsHtml(cleanedBody);
+
+            } else {
+                return '';
+            }
+        });
+    };
+}]);
+
+
+htsApp.filter('cleanBodyExcerpt', ['$sce', function ($sce) {
+    return function (dirtyBody) {
+
+
+        //dirtyBody = dirtyBody.replace(/[\r\n]/g, '<br />');
+        //console.log(dirtyBody);
+
+
+        //var LINKY_URL_REGEXP =
+        //        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
+        //    MAILTO_REGEXP = /^mailto:/;
+        //
+        //return function(text, target) {
+        //    if (!text) return text;
+        //    var match;
+        //    var raw = text;
+        //    var html = [];
+        //    var url;
+        //    var i;
+        //    while ((match = raw.match(LINKY_URL_REGEXP))) {
+        //        // We can not end in these as they are sometimes found at the end of the sentence
+        //        url = match[0];
+        //        // if we did not match ftp/http/www/mailto then assume mailto
+        //        if (!match[2] && !match[4]) {
+        //            url = (match[3] ? 'http://' : 'mailto:') + url;
+        //        }
+        //        i = match.index;
+        //        addText(raw.substr(0, i));
+        //        addLink(url, match[0].replace(MAILTO_REGEXP, ''));
+        //        raw = raw.substring(i + match[0].length);
+        //    }
+        //    addText(raw);
+        //    return $sanitize(html.join(''));
+        //
+        //    function addText(text) {
+        //        if (!text) {
+        //            return;
+        //        }
+        //        html.push(sanitizeText(text));
+        //    }
+        //
+        //    function addLink(url, text) {
+        //        html.push('<a ');
+        //        if (angular.isDefined(target)) {
+        //            html.push('target="',
+        //                target,
+        //                '" ');
+        //        }
+        //        html.push('href="',
+        //            url.replace(/"/g, '&quot;'),
+        //            '">');
+        //        addText(text);
+        //        html.push('</a>');
+        //    }
+        //};
+
+
+
+
         //Find any word that is in ALL CAPS and only capitalize the first letter
         return dirtyBody.replace(/\b([A-Z]{2,})\b/g, function (dirtyBody) {
 
