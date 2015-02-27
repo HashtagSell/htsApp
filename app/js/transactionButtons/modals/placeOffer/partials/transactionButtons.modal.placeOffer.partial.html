@@ -8,31 +8,36 @@
 
     <form class="form-horizontal">
         <div class="modal-header">
-            <h3 id="myModalLabel">Suggest a Meeting Time</h3>
+            <h3 id="myModalLabel">Submit your offer</h3>
         </div>
         <div class="modal-body">
-            Please propose the date & times(s) you can meet at:
+            The price on this item is firm.
             <br>
             <br>
-            <b>{{result.location.formatted_address}}</b>
+            Seller request you meet
+            <span class="mention-highlighter">@{{result.external.threeTaps.location.formatted}}</span>
             <br>
             <br>
-            <div class="row">
-                <div class="dropdown col-lg-6 col-md-6 col-sm-6 col-xs-8">
-                    <a class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#" href="#">
-                        <div class="input-group">
-                            <input type="text" class="form-control" data-ng-model="data.dateDropDownInput">
-                            <span class="input-group-addon">
-                                <i class="glyphicon glyphicon-calendar"></i>
-                            </span>
-                        </div>
-                    </a>
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                        <datetimepicker data-ng-model="data.dateDropDownInput" data-datetimepicker-config="{}" data-on-set-time="onTimeSet(newDate, oldDate)"/>
-                    </ul>
-                </div>
-
-
+            <ul>
+                <li ng-repeat="proposedTime in offer.proposedTimes track by $index">
+                    {{proposedTime.when | date:'MMM d, y h:mm a'}}
+                    <i class="fa fa-trash-o" ng-click="removeProposedTime($index)" style="cursor: pointer; color: red"></i>
+                </li>
+            </ul>
+            <div class="dropdown row" dropdown is-open="dropDownStatus.isOpen">
+                <a href class="dropdown-toggle col-xs-8" dropdown-toggle>
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-ng-model="data.dateDropDownInput" placeholder="Propose dates/times to meet">
+                        <span class="input-group-addon">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </span>
+                    </div>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <datetimepicker data-ng-model="data.dateDropDownInput" data-datetimepicker-config="{ minuteStep: 15 }" data-on-set-time="onTimeSet(newDate, oldDate)"/>
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -40,7 +45,8 @@
             <span ng-show="!userObj.user_settings.loggedIn" class="pull-left">
                 <small><a ng-click="dismiss('signUp')" style="cursor: pointer;">Create your free HashtagSell account.</a></small>
             </span>
-            <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+            {{allowSubmission}}
+            <button class="btn btn-default btn-primary" ng-click="sendOffer()" ng-disabled="disableSubmission">Im Offering {{result.askingPrice.value | currency : $ : 0}}</button>
         </div>
     </form>
 

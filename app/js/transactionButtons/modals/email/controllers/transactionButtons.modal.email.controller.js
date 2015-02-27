@@ -47,23 +47,23 @@ htsApp.factory('quickComposeFactory', ['Session', '$window', function(Session, $
 
             switch (provider) {
                 case "gmail":
-                    mailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=" + result.annotations.source_account + "&su=" + result.heading + "&body=" + result.external_url;
+                    mailLink = "https://mail.google.com/mail/?view=cm&fs=1&to=" + result.annotations.source_account + "&su=" + result.heading + "&body=" + result.external.source.url;
                     $window.open(mailLink);
                     break;
                 case "yahoo":
-                    mailLink = "http://compose.mail.yahoo.com/?to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external_url;
+                    mailLink = "http://compose.mail.yahoo.com/?to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external.source.url;
                     $window.open(mailLink);
                     break;
                 case "hotmail":
-                    mailLink = "https://mail.live.com/default.aspx?rru=compose&to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external_url;
+                    mailLink = "https://mail.live.com/default.aspx?rru=compose&to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external.source.url;
                     $window.open(mailLink);
                     break;
                 case "aol":
-                    mailLink = "http://mail.aol.com/mail/compose-message.aspx?to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external_url;
+                    mailLink = "http://mail.aol.com/mail/compose-message.aspx?to=" + result.annotations.source_account + "&subject=" + result.heading + "&body=" + result.external.source.url;
                     $window.open(mailLink);
                     break;
                 case "mailto":
-                    mailLink = 'mailto:' + result.annotations.source_account + '?Subject=' + result.heading + '&body=' + result.external_url;
+                    mailLink = 'mailto:' + result.annotations.source_account + '?Subject=' + result.heading + '&body=' + result.external.source.url;
                     $window.open(mailLink);
                     break;
             }
