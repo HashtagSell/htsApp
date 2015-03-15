@@ -19,6 +19,7 @@ exports.lookup = function(ip, promise){
     };
 
     if(isPrivateOrLocalIP(ip)){ //Hardcode the IP if we are running on location machine.
+        //ip = "199.83.169.50"; //94043 DLA PIPER SPOOF ADDRESS
         ip = "216.38.134.18";
         //ip = "104.156.240.172";
     }
