@@ -140,6 +140,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <br>
                             <div style="margin-left: 20%;">
                                 <h4>Description:</h4>
                                 <div style="line-height: 20px; padding-bottom: 75px;" ng-bind-html="result.body | cleanBody">
@@ -164,13 +165,16 @@
                             <!--SideNav-->
                             <div class="list-group splash-bs-side-nav ng-cloak" ng-controller="sideNav.controller">
                                 <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.source_account" ng-click="sideNav.splashItems[1].action(result)" style="cursor: pointer">
-                                    <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller
+                                    <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email Seller
                                 </a>
                                 <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.phone" ng-click="sideNav.splashItems[2].action(result)" style="cursor: pointer">
-                                    <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller
+                                    <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone Seller
                                 </a>
                                 <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="sideNav.splashItems[3].action(result)" style="cursor: pointer">
-                                    <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place offer
+                                    <i class="fa fa-calendar-o fa-fw fa-lg"></i>&nbsp; Meet Seller
+                                </a>
+                                <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" style="cursor: pointer">
+                                    <i class="fa fa-paypal fa-fw fa-lg"></i>&nbsp; Payment & Shipping
                                 </a>
                                 <a class="list-group-item"  ng-if="result.external.source.code === 'E_BAY'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
                                     <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place bid
@@ -182,7 +186,7 @@
                                     <i class="fa fa-flag fa-fw fa-lg"></i>&nbsp; Report
                                 </a>
                                 <a class="list-group-item" ng-if="result.external.source.url && result.external.source.code != 'HSHTG'" ng-click="sideNav.splashItems[4].action(result)" style="cursor: pointer">
-                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Link to original
+                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Show original
                                 </a>
                             </div>
 
