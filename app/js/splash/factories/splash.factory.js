@@ -30,6 +30,14 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     annotationsDictionary.put("sqft","Sq Ft");
     annotationsDictionary.put("size_dimensions","Dimensions");
 
+
+    //TODO: Remove after svnt
+    //annotationsDictionary.put("Hard Drive (Gb)","Hard Drive");
+    //annotationsDictionary.put("Memory (Gb)","Memory");
+    //annotationsDictionary.put("Screen (inches)","Screen");
+    //annotationsDictionary.put("Warranty","Warranty");
+
+
     //ebay annotations
     //annotationsDictionary.put("listingtype","Listing Type");
 
@@ -64,14 +72,37 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     factory.sanitizeAnnotations = function (annoationsObj) {
 
         var sanitizedAnnotationsObj = {};
-
+        console.log(annoationsObj);
         angular.forEach(annoationsObj, function(value, key) {
-            //console.log(key + ': ' + value);
 
-            var validatedKey = annotationsDictionary.get(key);
+            if(typeof key === 'string') {
+                var validatedKey = annotationsDictionary.get(key);
 
-            if (validatedKey) {
-                sanitizedAnnotationsObj[validatedKey] = value;
+                if (validatedKey) {
+                    sanitizedAnnotationsObj[validatedKey] = value;
+                }
+            } else {  //TODO: Fix me, HSHTG items format annotation differently
+                console.log(value);
+
+                //var hshtgAnnotation = value;
+                //
+                //var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+
+                //if (hshtgvalidatedKey) {
+                //    if(hshtgvalidatedKey === "Hard Drive" || hshtgvalidatedKey === "Memory") {
+                //
+                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"GB";
+                //
+                //    } else if (hshtgvalidatedKey === "Screen") {
+                //
+                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"-inch";
+                //
+                //    } else {
+                //
+                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
+                //    }
+                //}
+
             }
 
 
