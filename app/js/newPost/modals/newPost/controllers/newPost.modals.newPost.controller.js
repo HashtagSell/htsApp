@@ -58,7 +58,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 },
                 'successmultiple': function (file, response) {
 
-                    console.log(response);
+                    console.log('what is this!', response);
 
                     var newPost = $scope.jsonObj;
 
@@ -140,24 +140,20 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
         }
 
+        //console.log("-----Post Complete----");
+        //console.log(status);
+        //$modalInstance.dismiss({reason: "stageOneSuccess", payload: newPost});
+        //mentionsFactory.resetJsonTemplate();
+
+
         //Josh's posting API
         $http.post(ENV.postingAPI, newPost).
             success(function (status) {
                 console.log("-----Post Complete----");
                 console.log(status);
-                $modalInstance.dismiss("stageOneSuccess");
+                $modalInstance.dismiss({reason: "stageOneSuccess", payload: status});
                 mentionsFactory.resetJsonTemplate();
             });
-
-        //$http.post('/post', newPost).
-        //    success(function (status) {
-        //        console.log("-----Post Complete----");
-        //        console.log(status);
-        //        $modalInstance.dismiss("success");
-        //        mentionsFactory.resetJsonTemplate();
-        //    });
-
-        //TODO: return the successfully saved hts post JSON and join the socket.io room.
     };
 
     //========= # Products =========

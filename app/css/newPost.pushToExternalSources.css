@@ -1,0 +1,162 @@
+.fa:hover {
+    color: blue;
+}
+
+
+
+/*input[type="checkbox"].twitter{*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin: 0;*/
+    /*border: 0 none;*/
+    /*padding: 0;*/
+/*}*/
+
+input[type="checkbox"].twitter:before{
+    content: url('/images/logo/sources/twitter_ad_unselected.png');
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+input[type="checkbox"].twitter:checked:before{
+    content: url('/images/logo/sources/twitter_ad_selected.png');
+}
+
+input[type="checkbox"].twitter:hover:before{
+    content: url('/images/logo/sources/twitter_ad_selected.png');
+}
+
+
+
+
+
+
+
+
+/*input[type="checkbox"].facebook{*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin: 0;*/
+    /*border: 0 none;*/
+    /*padding: 0;*/
+/*}*/
+
+input[type="checkbox"].facebook:before{
+    content: url('/images/logo/sources/facebook_ad_unselected.png');
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+input[type="checkbox"].facebook:checked:before{
+    content: url('/images/logo/sources/facebook_ad_selected.png');
+}
+
+input[type="checkbox"].facebook:hover:before{
+    content: url('/images/logo/sources/facebook_ad_selected.png');
+}
+
+
+
+
+
+
+
+/*input[type="checkbox"].ebay{*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin: 0;*/
+    /*border: 0 none;*/
+    /*padding: 0;*/
+/*}*/
+
+input[type="checkbox"].ebay:before{
+    content: url('/images/logo/sources/ebay_unselected.png');
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+input[type="checkbox"].ebay:checked:before{
+    content: url('/images/logo/sources/ebay_selected.png');
+}
+
+input[type="checkbox"].ebay:hover:before{
+    content: url('/images/logo/sources/ebay_selected.png');
+}
+
+
+
+
+
+
+/*input[type="checkbox"].amazon{*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin: 0;*/
+    /*border: 0 none;*/
+    /*padding: 0;*/
+/*}*/
+
+input[type="checkbox"].amazon:before{
+    content: url('/images/logo/sources/amazon_unselected.png');
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+input[type="checkbox"].amazon:checked:before{
+    content: url('/images/logo/sources/amazon_selected.png');
+}
+
+input[type="checkbox"].amazon:hover:before{
+    content: url('/images/logo/sources/amazon_selected.png');
+}
+
+
+
+
+
+/*input[type="checkbox"].craigslist{*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*margin: 0;*/
+    /*border: 0 none;*/
+    /*padding: 0;*/
+/*}*/
+
+input[type="checkbox"].craigslist:before{
+    content: url('/images/logo/sources/craigslist_unselected.png');
+    display: block;
+    width: 90px;
+    height: 90px;
+    overflow: hidden;
+    position: absolute;
+    top: -10px;
+    right: 10px;
+}
+
+input[type="checkbox"].craigslist:checked:before{
+    content: url('/images/logo/sources/craigslist_selected.png');
+}
+
+input[type="checkbox"].craigslist:hover:before{
+    content: url('/images/logo/sources/craigslist_selected.png');
+}

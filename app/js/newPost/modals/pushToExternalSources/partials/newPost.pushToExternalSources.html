@@ -1,11 +1,23 @@
-<div>
-    <div class="modal-header">
-        <h3 class="modal-title">Ahh, push it.</h3>
-    </div>
-    <div class="modal-body">
-        Select the sources you'd like to push to.
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-default" ng-click="dismiss('stageTwoSuccess')">Next</button>
-    </div>
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/newPost.pushToExternalSources.css" />
+    <title></title>
+</head>
+<body>
+<div class="modal-header">
+    <h3 class="modal-title" style="text-align: center">Ad Networks</h3>
 </div>
+<div class="modal-body" style="height: 100px;">
+
+    <label ng-repeat="source in sources.marketplaces" class="col-xs-2" style="width:20%;">
+        <input type="checkbox" value="{{source.name}}" ng-model="source.selected" class="{{source.class}}">
+    </label>
+
+</div>
+<div class="modal-footer" style="background-color:rgba(235, 121, 121, .9);">
+    <button class="btn btn-default" ng-click="dismiss('stageTwoSuccess')">Next</button>
+</div>
+</body>
+</html>

@@ -15,11 +15,12 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
             }
         });
 
-        modalInstance.result.then(function (selectedItem) {
-            $scope.modalContent.selected = selectedItem;
-        }, function (reason) {
-            if(reason === "stageOneSuccess"){
-                $scope.pushtoExternalService();
+        modalInstance.result.then(function (dismissObj) {
+
+        }, function (dismissObj) {
+            if(dismissObj.reason === "stageOneSuccess"){
+
+                $scope.pushtoExternalService(dismissObj.payload);
             }
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -27,19 +28,23 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
 
 
 
-    $scope.pushtoExternalService = function () {
+    $scope.pushtoExternalService = function (newPostJson) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
-            size: 'lg'
+            resolve: {
+                newPost : function () {
+                    return newPostJson;
+                }
+            }
         });
 
-        modalInstance.result.then(function (selectedItem) {
+        modalInstance.result.then(function (dismissObj) {
 
-        }, function (reason) {
-            if(reason === "stageTwoSuccess"){
-                $scope.congrats();
+        }, function (dismissObj) {
+            if(dismissObj.reason === "stageTwoSuccess"){
+                $scope.congrats(dismissObj);
             }
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -48,15 +53,19 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
 
 
 
-    $scope.congrats = function () {
+    $scope.congrats = function (postingObj) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
             controller: 'newPostCongrats',
-            size: 'lg'
+            resolve: {
+                newPost: function () {
+                    return postingObj;
+                }
+            }
         });
 
-        modalInstance.result.then(function (selectedItem) {
+        modalInstance.result.then(function () {
 
         }, function (reason) {
             if(reason === "dismiss"){

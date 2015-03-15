@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
+htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV) {
 
     var factory = {}; //init the factory
 
@@ -163,9 +163,9 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
             var annotationsDictionary = new Hashtable();
             annotationsDictionary.put("year","Year");
             annotationsDictionary.put("condition","Condition");
-            annotationsDictionary.put("make","Make");
+            //annotationsDictionary.put("make","Make");
             annotationsDictionary.put("title_status","Title");
-            annotationsDictionary.put("model","Model");
+            //annotationsDictionary.put("model","Model");
             annotationsDictionary.put("mileage","Mileage");
             annotationsDictionary.put("transmission","Transmission");
             annotationsDictionary.put("drive","Drive");
@@ -300,6 +300,14 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
 
                     console.log("ANNOTATION HASHTAG IS: ", factory.jsonTemplate.mentions.hashtags[j].hashtag, "!!!!!!!!!!!");
 
+
+                    var presentationMode = false;
+                    if(factory.jsonTemplate.mentions.hashtags[j].hashtag === "macbook air"){
+                        console.log('presentation mode!');
+
+                        presentationMode = true;
+                    }
+
                     results = factory.jsonTemplate.mentions.hashtags[j].results;
 
                     if (results) {
@@ -377,6 +385,18 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
 
                             }
                         });
+
+
+                        //TODO: Presentation only.  Please remove after SVNT.
+                        if(presentationMode){
+                            annotationArray = annotationArray.concat([
+                                {key: 'Hard Drive (Gb)', value: null},
+                                {key: 'Memory (Gb)', value: null},
+                                {key: 'Screen (inches)', value: null},
+                                {key: 'Warranty', value: null}
+                            ]);
+                        }
+
 
                         factory.jsonTemplate.annotations = annotationArray;
 
@@ -470,16 +490,22 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
             console.log(placeMetaData);
 
             var locationObj = {};
+            var geo = {};
+            geo.location = {};
 
             if (placeMetaData.formatted_address) {
                 locationObj.formatted_address = placeMetaData.formatted_address;
             }
 
 
-
             if (placeMetaData.geometry.location.lat()) {
                 locationObj.lat = placeMetaData.geometry.location.lat();
                 locationObj.long = placeMetaData.geometry.location.lng();
+
+                var lat = placeMetaData.geometry.location.lat();
+                var long = placeMetaData.geometry.location.lng();
+
+                geo.coords = [long, lat];
             }
 
 
@@ -492,27 +518,56 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
                     if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
                         state = placeMetaData.address_components[i].short_name;
                         locationObj.state = state;
+                        geo.location.state = state;
                     }
 
                     //Get City
                     if (placeMetaData.address_components[i].types[0] == "locality") {
                         city = placeMetaData.address_components[i].long_name;
                         locationObj.short_name = city;
+                        geo.location.city = city;
                     }
 
                     //Get Country
                     if (placeMetaData.address_components[i].types[0] == "country") {
                         country = placeMetaData.address_components[i].short_name;
                         locationObj.country = country;
+                        geo.location.country = country;
                     }
 
                     //Get Zipcode
                     if (placeMetaData.address_components[i].types[0] == "postal_code") {
                         zipcode = placeMetaData.address_components[i].short_name;
                         locationObj.zipcode = zipcode;
+                        geo.location.postalCode = zipcode;
                     }
-
                 }
+
+                //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
+                if(!geo.location.postalCode) {
+
+                    $http.get('/search/reversegeocode', {
+                        params: {
+                            lat: lat,
+                            long: long
+                        }
+                    }).success(function (data, status) {
+
+                        console.log(data);
+
+                        for(j=0; j<data.results[0].address_components.length; j++){
+
+                            var adComponent = data.results[0].address_components[j];
+
+                            if (adComponent.types[0] == "postal_code") {
+                                geo.location.postalCode = adComponent.long_name;
+                                break;
+                            }
+                        }
+
+                    });
+                }
+
             }
 
 
@@ -565,6 +620,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', function ($q, $http) {
                 //TODO: Determine accuracy be evaluating lat lon boundaries
 
                 factory.jsonTemplate.location = locationObj;
+
+                factory.jsonTemplate.geo = geo;
 
                 deferred.resolve(factory.jsonTemplate);
             }
