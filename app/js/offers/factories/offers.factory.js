@@ -9,6 +9,9 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'mailboxFac
     //Socket.io calls this function when new-offer is emitted
     factory.newOfferNotification = function (offer) {
 
+        mailboxFactory.mail.offers.sent.data = [];
+        mailboxFactory.mail.offers.received.data = [];
+
         console.log(
             '%s placed an %s offers on postingId %s to meet @ %s around %s',
             offer.username,
@@ -117,8 +120,8 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'mailboxFac
             }
         }
 
-        mailboxFactory.mail.offers.sent.data = offersSent;
-        mailboxFactory.mail.offers.received.data = offersReceived;
+        mailboxFactory.mail.offers.sent.data = mailboxFactory.mail.offers.sent.data.concat(offersSent);
+        mailboxFactory.mail.offers.received.data = mailboxFactory.mail.offers.received.data.concat(offersReceived);
         mailboxFactory.mail.totalUnread();
 
         console.log('our mailbox: ',mailboxFactory.mail);
@@ -169,6 +172,9 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'mailboxFac
 
     factory.acceptOffer = function (postingId, offerId, payload) {
 
+        mailboxFactory.mail.offers.sent.data = [];
+        mailboxFactory.mail.offers.received.data = [];
+
         console.log('postingId', postingId);
         console.log('offerId', offerId);
         console.log('accepting this offer', payload);
@@ -205,6 +211,9 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'mailboxFac
 
 
     factory.deleteOffer = function (postingId, offerId) {
+
+        mailboxFactory.mail.offers.sent.data = [];
+        mailboxFactory.mail.offers.received.data = [];
 
         console.log('postingId', postingId);
         console.log('offerId', offerId);
