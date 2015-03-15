@@ -45,6 +45,13 @@ module.exports = function(app, passport) {
     app.get('/search/categorylookup', reference.getAllCategories);
 
 
+    // =====================================
+    // Reverse geocode via lat long to get postal code =
+    // =====================================
+    var geocode = require('./utils/reverseGeocode'); //Proxy between HTS and Google reverse geocode
+    app.get('/search/reversegeocode', geocode.reverseGeocode);
+
+
 
     // =====================================
     // CRON Update categories cache ========
@@ -78,6 +85,8 @@ module.exports = function(app, passport) {
     // =====================================
     var posting_api = require('./api/posting_api');
     app.post('/upload', isLoggedIn, function(req, res) {
+
+        console.log(req.files);
 
         if (req.files.profilePhoto || req.files.bannerPhoto) { // based on param the user is updating profile photo
             user_settings_api.updateUserPhotos(req, res);
