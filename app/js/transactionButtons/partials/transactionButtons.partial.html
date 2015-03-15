@@ -9,7 +9,7 @@
 <button ng-if="result.source == 'CRAIG' && !result.annotations.phone && !result.annotations.source_account" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</button>
 
 <!--E_Bay Item-->
-<a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-credit-card fa-lg"></i>&nbsp; Place bid</a>
+<a ng-if="result.source == 'E_BAY'" style="cursor: pointer;" ng-click="placeBid(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-credit-card fa-lg"></i>&nbsp; Place Bid</a>
 
 <!--E_Bay Motors-->
 <a ng-if="result.source == 'EBAYM'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
@@ -24,4 +24,4 @@
 <a ng-if="result.source == 'AUTOD'" style="cursor: pointer;" ng-click="openSplash(); $event.stopPropagation();" class="btn btn-default" role="button"><i class="fa fa-external-link fa-lg"></i>&nbsp; Details</a>
 
 <!--HashtagSell Item-->
-<a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="placeOffer(); $event.stopPropagation();" class="btn btn-danger" role="button"><i class="fa fa-credit-card fa-lg"></i>&nbsp; Place offer</a>
+<a ng-if="result.source == 'HSHTG'" style="cursor: pointer;" ng-click="placeOffer(); $event.stopPropagation();" class="btn btn-danger" role="button"><i class="fa fa-calendar-o fa-lg"></i>&nbsp; Let's Meet</a>

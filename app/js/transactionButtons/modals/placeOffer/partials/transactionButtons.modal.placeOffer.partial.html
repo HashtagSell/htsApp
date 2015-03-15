@@ -8,14 +8,13 @@
 
     <form class="form-horizontal">
         <div class="modal-header">
-            <h3 id="myModalLabel">Submit your offer</h3>
+            <h3 id="myModalLabel">Let's meet!</h3>
         </div>
         <div class="modal-body">
-            The price on this item is firm.
+            Schedule a time you can meet the seller face to face.
             <br>
             <br>
-            Seller request you meet
-            <span class="mention-highlighter">@{{result.external.threeTaps.location.formatted}}</span>
+            Location: <span class="mention-highlighter">@{{result.external.threeTaps.location.formatted}}</span>
             <br>
             <br>
             <ul>
@@ -27,7 +26,7 @@
             <div class="dropdown row" dropdown is-open="dropDownStatus.isOpen">
                 <a href class="dropdown-toggle col-xs-8" dropdown-toggle>
                     <div class="input-group">
-                        <input type="text" class="form-control" data-ng-model="data.dateDropDownInput" placeholder="Propose dates/times to meet">
+                        <input type="text" class="form-control" data-ng-model="data.dateDropDownInput" placeholder="Propose times you can meet">
                         <span class="input-group-addon">
                             <i class="glyphicon glyphicon-calendar"></i>
                         </span>
@@ -46,7 +45,7 @@
                 <small><a ng-click="dismiss('signUp')" style="cursor: pointer;">Create your free HashtagSell account.</a></small>
             </span>
             {{allowSubmission}}
-            <button class="btn btn-default btn-primary" ng-click="sendOffer()" ng-disabled="disableSubmission">Im Offering {{result.askingPrice.value | currency : $ : 0}}</button>
+            <button class="btn btn-default btn-primary" ng-click="sendOffer()" ng-disabled="disableSubmission">Send</button>
         </div>
     </form>
 
