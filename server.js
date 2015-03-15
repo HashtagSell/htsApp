@@ -51,6 +51,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.set('json spaces', 2);
+
 app.use(multer({ dest: './uploads/'}));
 
 app.set('view engine', 'ejs'); // set up ejs for templating
