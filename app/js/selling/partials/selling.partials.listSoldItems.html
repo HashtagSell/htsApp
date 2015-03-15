@@ -89,6 +89,32 @@
                     <div class="row">
                         <div class="caption">
                             <h4 class="carousel-heading">{{::result.heading}}</h4>
+                            <!--<span ng-if="result.publishing">-->
+                                <span style="float:right; margin-right: 15px;">
+                                    <a href="#" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/twitter_ad_unselected.png" style="height: 40px;"></a>
+                                </span>
+
+                                <span style="float:right;">
+                                    <a href="#" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/facebook_ad_unselected.png" style="height: 40px;"></a>
+                                </span>
+
+                                <span style="float:right;">
+                                    <a href="#" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/craigslist_unselected.png" style="height: 40px;"></a>
+                                </span>
+
+                                <span style="float:right;">
+                                    <a href="#" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/amazon_unselected.png" style="height: 40px;"></a>
+                                </span>
+
+                                <span style="float:right;" ng-if="result.publishing.ebay">
+                                    <a ng-href="{{result.publishing.ebay.url}}" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/ebay_selected.png" style="height: 40px;"></a>
+                                </span>
+
+                                <span style="float:right;" ng-if="!result.publishing.ebay">
+                                    <a href="#" target="_blank" ng-click="$event.stopPropagation();"><img src="/images/logo/sources/ebay_unselected.png" style="height: 40px;"></a>
+                                </span>
+
+                            <!--</span>-->
                             <p class="carousel-body" ng-bind-html="result.body"></p>
                         </div>
                     </div>
