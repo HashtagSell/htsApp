@@ -42,7 +42,7 @@ exports.newQuery = function (req, result, promise) {
                 "geo": {
                     "min": minDistance,
                     "max": maxDistance,
-                    "coords": userLong+','+userLat
+                    "coords": [userLong, userLat].join(',')
                 },
                 "filters": {
                     "mandatory": {
