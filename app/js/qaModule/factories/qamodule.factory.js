@@ -13,6 +13,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
     //Socket.io calls this function when new-question is emitted
     factory.notifySellerOfNewQuestion = function (question) {
 
+        mailboxFactory.mail.questions.sent.data = [];
+        mailboxFactory.mail.questions.received.data = [];
+
         console.log(
             '%s asked a question on postingId %s : "%s"',
             question.username,
@@ -84,7 +87,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
 
                 //mailboxFactory.mail.questions.received.unread = mailboxFactory.mail.questions.received.unread.concat(response.data.results);
 
-
+                //console.log(response);
 
                 factory.parseAllQuestions(response.data.results).then(function (response) {
 
@@ -151,8 +154,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
             }
         }
 
-        mailboxFactory.mail.questions.sent.data = questionsSent;
-        mailboxFactory.mail.questions.received.data = questionsReceived;
+        mailboxFactory.mail.questions.sent.data = mailboxFactory.mail.questions.sent.data.concat(questionsSent);
+        mailboxFactory.mail.questions.received.data = mailboxFactory.mail.questions.received.data.concat(questionsReceived);
+
         mailboxFactory.mail.totalUnread();
 
         console.log(mailboxFactory.mail);
@@ -167,6 +171,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
 
 
     factory.submitQuestion = function (question, postingId, username) {
+
+        mailboxFactory.mail.questions.sent.data = [];
+        mailboxFactory.mail.questions.received.data = [];
 
         var deferred = $q.defer();
 
@@ -204,6 +211,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
 
     factory.submitAnswer = function (postingId, questionId, payload) {
 
+        mailboxFactory.mail.questions.sent.data = [];
+        mailboxFactory.mail.questions.received.data = [];
+
         var deferred = $q.defer();
 
         $http({
@@ -237,6 +247,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
 
     factory.deleteQuestion = function (postingId, questionId) {
 
+        mailboxFactory.mail.questions.sent.data = [];
+        mailboxFactory.mail.questions.received.data = [];
+
         var deferred = $q.defer();
 
         $http({
@@ -266,6 +279,9 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', 'mailboxFactory', 'Se
 
 
     factory.deleteAnswer = function (postingId, questionId, answerId) {
+
+        mailboxFactory.mail.questions.sent.data = [];
+        mailboxFactory.mail.questions.received.data = [];
 
         var deferred = $q.defer();
 
