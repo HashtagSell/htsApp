@@ -54,4 +54,4 @@ api/ebay-trading-api
 
 
 app/dist
-htsApp.config
+app/js/htsApp.config
