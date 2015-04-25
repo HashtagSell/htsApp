@@ -126,6 +126,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         newPost.username = Session.userObj.user_settings.name;
 
         //loop through the hashtags and formulate the heading of post
+
         newPost.heading = '';
         for (i = 0; i < newPost.mentions.hashtags.length; i++) {
             if (i !== newPost.mentions.hashtags.length - 1) {

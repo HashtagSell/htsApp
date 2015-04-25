@@ -32,6 +32,30 @@ module.exports = function(grunt) {
                     }
                 }
             },
+            staging: {
+                options: {
+                    dest: './app/js/htsApp.config'
+                },
+                constants: {
+                    ENV: {
+                        name: 'staging',
+                        htsAppUrl: 'https://staging.hashtagsell.com:8081',
+                        postingAPI: 'https://staging.hashtagsell.com:4043/v1/postings/',
+                        userAPI: 'https://staging.hashtagsell.com:4043/v1/users/',
+                        realtimePostingAPI: 'https://staging.hashtagsell.com:4044/postings',
+                        realtimeUserAPI: 'https://staging.hashtagsell.com:4044/users',
+                        syncAgentAPI: 'https://staging.hashtagsell.com:8881',
+                        groupingsAPI: 'https://staging.hashtagsell.com:4043/v1/groupings/',
+                        annotationsAPI: 'https://staging.hashtagsell.com:4043/v1/annotations',
+                        facebookAuth: 'https://staging.hashtagsell.com:8081/auth/facebook',
+                        twitterAuth: 'https://staging.hashtagsell.com:8081/auth/twitter',
+                        ebayAuth: 'https://staging.hashtagsell.com:8081/auth/ebay',
+                        ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
+                        ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
+                        fbAppId: '367471540085253'
+                    }
+                }
+            },
             production: {
                 options: {
                     dest: './app/js/htsApp.config'
@@ -40,16 +64,16 @@ module.exports = function(grunt) {
                     ENV: {
                         name: 'production',
                         htsAppUrl: 'https://www.hashtagsell.com',
-                        postingAPI: 'http://localhost:4043/v1/postings/',
-                        userAPI: 'http://localhost:4043/v1/users/',
-                        realtimePostingAPI: 'http://localhost:4044/postings',
-                        realtimeUserAPI: 'http://localhost:4044/users',
-                        syncAgentAPI: 'http://localhost:8881',
-                        groupingsAPI: 'http://localhost:4043/v1/groupings/',
-                        annotationsAPI: 'http://localhost:4043/v1/annotations',
-                        facebookAuth: 'http://localhost:8081/auth/facebook',
-                        twitterAuth: 'http://localhost:8081/auth/twitter',
-                        ebayAuth: 'http://localhost:8081/auth/ebay',
+                        postingAPI: 'https://www.hashtagsell.com/v1/postings/',
+                        userAPI: 'https://www.hashtagsell.com/v1/users/',
+                        realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
+                        realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
+                        syncAgentAPI: 'https://www.hashtagsell.com:8881',
+                        groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
+                        annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
+                        facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
+                        twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
+                        ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367469320085475'
@@ -302,42 +326,42 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-services');
 
 
-    grunt.registerTask('start-ingest', function (target) {
+
+    //Starts ingest agent on local machine
+    grunt.registerTask('start-local-ingest', function (target) {
         return grunt.task.run(['shell:startMongo', 'shell:startPostingApi', 'shell:startSync', 'shell:startRealTimeApi']);
     });
-    grunt.registerTask('stop-ingest', function (target) {
+    //Stops ingest agent on local machine
+    grunt.registerTask('stop-local-ingest', function (target) {
         return grunt.task.run(['shell:stopMongo', 'shell:stopPostingApi', 'shell:stopSync', 'shell:stopRealTimeApi']);
     });
 
 
 
 
-
-    grunt.registerTask('start-api', function (target) {
+    //starts mongo, freegeoip, postingapi, prerender.io server, realtime svc
+    grunt.registerTask('start-local-apis', function (target) {
         return grunt.task.run(['shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi']);
     });
-    grunt.registerTask('stop-api', function (target) {
+    //stops mongo, freegeoip, postingapi, prerender.io server, realtime svc
+    grunt.registerTask('stop-local-apis', function (target) {
         return grunt.task.run(['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
     });
 
 
 
-
-    grunt.registerTask('start-app', function (target) {
+    //starts htsApp on localhost
+    grunt.registerTask('start-local-htsApp', function (target) {
         return grunt.task.run('ngconstant:development', 'jshint', 'concurrent');
     });
 
 
-    //Minifiy all code and run on local machine
+    //Builds htsApp to prepare for localhost testing
     grunt.registerTask('build-local', ['ngconstant:development', 'jshint', 'concat', 'uglify', 'cssmin']);
 
+    //Builds htsApp to prepare for https://staging.hashtagsell.com testing
     grunt.registerTask('build-staging', ['ngconstant:staging', 'jshint', 'concat', 'uglify', 'cssmin']);
 
+    //Builds htsApp to prepare for https://www.hashtagsell.com deployment
     grunt.registerTask('build-prod', ['ngconstant:production', 'jshint', 'concat', 'uglify', 'cssmin']);
-
-    //TODO: pickup build-dev contents, publish to github dev branch, run aws.git push to deploy to beta.hashtagsell.com
-    //grunt.registerTask('commit-dev', ['jshint', 'concat', 'uglify']);
-
-    //TODO: save minifed CSS and JS, to build-prod folder, commmit only production necessary files to github prod branch, run aws.git push to deploy to production
-    //grunt.registerTask('deploy', ['jshint', 'concat', 'uglify']);
 };
