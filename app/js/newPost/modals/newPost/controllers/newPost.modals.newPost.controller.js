@@ -138,7 +138,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
 
         //Josh's posting API
-        $http.post('http://10.0.1.14:4043/v1/postings/', newPost).
+        $http.post(ENV.postingAPI, newPost).
             success(function(posting) {
                 console.log("-----Post Complete----");
                 console.log(posting);
