@@ -47,8 +47,11 @@ angular-modules
 uploads
 
 # core apis have their own reposoitories
-posting-api
-posting-sync-agent
-realtime-svc
-ebay-trading-api
+api/posting-api
+api/posting-sync-agent
+api/realtime-svc
+api/ebay-trading-api
 
+
+app/dist
+htsApp.config
