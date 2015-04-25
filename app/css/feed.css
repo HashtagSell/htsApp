@@ -20,14 +20,17 @@ ul.ivh-treeview .ivh-treeview-toggle {
 
 
 .feed-inner-container {
-    max-height: 100%;
+    max-height: 400px;
+    margin-top: 12px;
+    max-height: 400px;
+    margin-bottom: 20px;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
 }
 
 .feed-category-selector {
-    margin-top: 10px;
+    margin-bottom:0px;
 }
 
 

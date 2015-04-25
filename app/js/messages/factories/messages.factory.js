@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/24/15.
  */
-htsApp.factory('messagesFactory', ['mailboxFactory', function (mailboxFactory) {
+htsApp.factory('messagesFactory', function () {
 
     var factory = {};
 
@@ -16,4 +16,4 @@ htsApp.factory('messagesFactory', ['mailboxFactory', function (mailboxFactory) {
     };
 
     return factory;
-}]);
+});

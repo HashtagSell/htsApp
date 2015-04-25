@@ -8,11 +8,19 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     // =====================================
     // Spawns Sign In Modal ================
     // =====================================
-    factory.signInModal = function (redirect) {
+    factory.signInModal = function (params) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
-            controller: 'signInModalController'
+            controller: 'signInModalController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                params: function(){
+                    return params;
+                }
+            }
         });
 
         modalInstance.result.then(function (reason) {
@@ -20,13 +28,15 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
         }, function (reason) {
             console.log(reason);
             if(reason === "signUp") {
-                factory.signUpModal();
+                $state.go('signup', {'redirect': params.redirect});
             } else if (reason === "forgot") {
-                factory.forgotPasswordModal();
+                $state.go('forgot', {'redirect': params.redirect});
             } else if (reason === "signIn") {
-                factory.signInModal();
-            } else if (reason === "successful login" && redirect) {
-                $state.go(redirect);
+                $state.go('signin', {'redirect': params.redirect});
+            } else if (reason === "successful login" && params.redirect) {
+                $state.go(params.redirect);
+            }  else if (reason === "successful login" && !params.redirect) {
+                $state.go('feed');
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -39,22 +49,25 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     // =====================================
     // Spawns Sign Up Modal ================
     // =====================================
-    factory.signUpModal = function () {
+    factory.signUpModal = function (params) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
-            controller: 'signupModalContainer'
+            controller: 'signupModalContainer',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static'
         });
 
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
             if(reason === "success"){
-                factory.checkEmailModal();
+                $state.go('checkemail');
             } else if (reason === "forgot") {
-                factory.forgotPasswordModal();
+                $state.go('forgot', {'redirect': params.redirect});
             } else if (reason === "signIn") {
-                factory.signInModal();
+                $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -70,7 +83,10 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
 
         var modalInstance = $modal.open({
             templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
-            controller: 'checkEmailController'
+            controller: 'checkEmailController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static'
         });
 
         modalInstance.result.then(function (reason) {
@@ -85,18 +101,30 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     // =====================================
     // Spawns Forgot Password Modal ================
     // =====================================
-    factory.forgotPasswordModal = function () {
+    factory.forgotPasswordModal = function (params) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
-            controller: 'forgotPasswordController'
+            controller: 'forgotPasswordController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                params: function () {
+                    return params;
+                }
+            }
         });
 
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
             if(reason === "success"){
-                factory.checkEmailModal();
+                $state.go('checkemail');
+            } else if (reason === "signUp") {
+                $state.go('signup', {'redirect': params.redirect});
+            } else if (reason === "signIn") {
+                $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -107,22 +135,73 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     // =====================================
     // User can change their password in settings once they're logged in ================
     // =====================================
-    factory.updatePasswordModal = function () {
+    //factory.updatePasswordModal = function () {
+    //
+    //    var modalInstance = $modal.open({
+    //        templateUrl: 'js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
+    //        controller: 'updatePasswordModalController',
+    //        size: 'sm'
+    //    });
+    //
+    //    modalInstance.result.then(function (reason) {
+    //
+    //    }, function (reason) {
+    //        console.log(reason);
+    //
+    //        $log.info('Modal dismissed at: ' + new Date());
+    //    });
+    //
+    //};
+
+
+
+
+    // =====================================
+    // User can change their if they're not logged in using email recovery token ================
+    // =====================================
+    factory.resetPasswordModal = function (redirect, token) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
-            controller: 'updatePasswordModalController'
+            templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
+            controller: 'resetPasswordModalController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                token: function () {
+                    return token;
+                }
+            }
         });
 
-        modalInstance.result.then(function (reason) {
+        modalInstance.result.then(function (response) {
 
-        }, function (reason) {
-            console.log(reason);
-
+        }, function (response) {
+            console.log(response);
+            if(response.success) {
+                $state.go('signin', {'redirect': 'feed', email: response.email});
+            }
             $log.info('Modal dismissed at: ' + new Date());
         });
 
     };
+
+
+
+    //factory.facebookAuthModal = function () {
+    //
+    //    var modalInstance = $modal.open({
+    //        templateUrl: 'js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
+    //        controller: 'facebookAuthController'
+    //    });
+    //
+    //    modalInstance.result.then(function (reason) {
+    //
+    //    }, function (reason) {
+    //        $log.info('Modal dismissed at: ' + new Date());
+    //    });
+    //};
+
 
 
     return factory;

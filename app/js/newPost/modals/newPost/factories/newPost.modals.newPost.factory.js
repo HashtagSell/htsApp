@@ -138,8 +138,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
         this.jsonTemplate.mentions.hashtags.push({hashtag: selectedProduct.value, results: null});
 
-        console.log("here is our json template");
-        console.log(this.jsonTemplate);
+        //console.log("here is our json template");
+        //console.log(this.jsonTemplate);
 
         //TODO: Omit Adult Categories if Safe_Search is on
         //        if(!Session.getLoginStatus() || Session.getSessionValue("safe_search")){
@@ -388,14 +388,14 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
 
                         //TODO: Presentation only.  Please remove after SVNT.
-                        if(presentationMode){
-                            annotationArray = annotationArray.concat([
-                                {key: 'Hard Drive (Gb)', value: null},
-                                {key: 'Memory (Gb)', value: null},
-                                {key: 'Screen (inches)', value: null},
-                                {key: 'Warranty', value: null}
-                            ]);
-                        }
+                        //if(presentationMode){
+                        //    annotationArray = annotationArray.concat([
+                        //        {key: 'Hard Drive (Gb)', value: null},
+                        //        {key: 'Memory (Gb)', value: null},
+                        //        {key: 'Screen (inches)', value: null},
+                        //        {key: 'Warranty', value: null}
+                        //    ]);
+                        //}
 
 
                         factory.jsonTemplate.annotations = annotationArray;
@@ -548,8 +548,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
                     $http.get('/search/reversegeocode', {
                         params: {
-                            lat: lat,
-                            long: long
+                            lat: placeMetaData.geometry.location.lat(),
+                            long: placeMetaData.geometry.location.lng()
                         }
                     }).success(function (data, status) {
 

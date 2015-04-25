@@ -26,54 +26,72 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
 
 
     //updateFeed is triggered on interval and performs polling call to server for more items
-    var paginate = function () {
+    var paginate = function (page) {
 
-        searchFactory.query().then(function (response) {
+        searchFactory.paginate(page).then(function (response) {
 
             if (response.status !== 200) {
 
-                $scope.status.pleaseWait = false;
-                $scope.status.error.message = ":( Oops.. Something went wrong.";
-                $scope.status.error.trace = response.data.error;
+                searchFactory.status.pleaseWait = false;
+                searchFactory.status.loading = false;
+                searchFactory.status.error.message = ":( Oops.. Something went wrong.";
+                searchFactory.status.error.trace = response.data.error;
 
             } else if (response.status === 200) {
 
-                if (!$scope.results) { //If there are not results on the page yet, this is our first query
+                if(response.data.results.length) { //If we have results
 
-                    searchFactory.filterArray($scope.views, 'pagination');
+                    if (!$scope.results) { //If there are not results on the page yet, this is our first query
 
-                    //Function passed into onVsIndexChange Directive
-                    $scope.infiniteScroll = function (startIndex, endIndex) {
-                        console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.results.gridRows.length);
-                        if (!searchFactory.status.loading && endIndex >= $scope.results.gridRows.length - 3) {
-                            console.log("paginating");
-                            searchFactory.status.loading  = true;
-                            paginate();
-                        }
-                    };
+                        searchFactory.filterArray($scope.views, 'pagination');
 
-                } else { //If there are already results on the page the add them to the top of the array
+                        //Function passed into onVsIndexChange Directive
+                        $scope.infiniteScroll = function (startIndex, endIndex) {
+                            console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.results.gridRows.length);
+                            if (!searchFactory.status.loading && endIndex >= $scope.results.gridRows.length - 3) {
+                                console.log("paginating");
+                                searchFactory.status.loadingMessage = "Fetching more awesome...";
+                                searchFactory.status.loading = true;
+                                page = page + 1;
+                                paginate(page);
+                            }
+                        };
 
-                    searchFactory.filterArray($scope.views, 'pagination');
+                    } else { //If there are already results on the page then add them to the bottom of the array and filter
+
+                        searchFactory.filterArray($scope.views, 'pagination');
+
+                    }
+
+                    $scope.results = searchFactory.results;
+
+                    searchFactory.status.pleaseWait = false;
+                    searchFactory.status.loading = false;
+
+                } else if (!response.data.results.length && page === 0) { //No results found on the first search
+
+                    searchFactory.status.pleaseWait = false;
+                    searchFactory.status.loading = false;
+                    searchFactory.status.error.message = "¯\\_(ツ)_/¯  Nothing found.  Keep your searches simple.";
+
+                } else if (!response.data.results.length && page > 0) { //No results found after pagination
+
+                    searchFactory.status.pleaseWait = false;
+                    searchFactory.status.loadingMessage = "Congratulations!  You've finished the internet!";
 
                 }
-
-                $scope.results = searchFactory.results;
-
-                searchFactory.status.pleaseWait = false;
-
-                searchFactory.status.loading = false;
 
             }
         }, function (response) {
 
             searchFactory.status.pleaseWait = false;
+            searchFactory.status.loading = false;
             searchFactory.status.error.message = "(゜_゜) Oops.. Something went wrong.";
-            searchFactory.status.error.trace = response;
+            searchFactory.status.error.trace = response.data.error;
 
         });
     };
-    paginate();
+    paginate(0);
 
 
     uiGmapGoogleMapApi.then(function(maps) {

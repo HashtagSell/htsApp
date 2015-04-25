@@ -1,14 +1,10 @@
-// config/passport.js
-
 // load all the things we need
 var LocalStrategy  = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var TwitterStrategy = require('passport-twitter').Strategy;
 
 // load up the user model
 var User = require('../database/models/user.js');
-
-// used to compile the email templates
-var ejs = require('ejs');
 
 
 var common   = require('../common.js');
@@ -88,42 +84,43 @@ module.exports = function(passport) {
         // pull in our app id and secret from our auth.js file
         clientID        : configAuth.facebookAuth.clientID,
         clientSecret    : configAuth.facebookAuth.clientSecret,
-        callbackURL     : configAuth.facebookAuth.callbackURL
+        callbackURL     : configAuth.facebookAuth.callbackURL,
+        passReqToCallback: true
 
-    }, function(token, refreshToken, profile, done) { // facebook will send back the token and profile
+    }, function(req, token, refreshToken, profile, done) { // facebook will send back the token and profile
 
         // asynchronous
-        process.nextTick(function() {
+        process.nextTick(function () {
+
+            console.log("profile", profile);
+            console.log("refreshToken", refreshToken);
+            console.log("token", token);
 
             // find the user in the database based on their facebook id
-            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+            User.findOne({'_id': req.user._id}, function (err, user) {
 
                 // if there is an error, stop everything and return that
                 // ie an error connecting to the database
                 if (err)
                     return done(err);
 
-                // if the user is found, then log them in
+                // if the user is found, then log them in (SAVE Facebook JSON if not done already!)
                 if (user) {
-                    return done(null, user); // user found, return that user
-                } else {
-                    // if there is no user found with that facebook id, create them
-                    var newUser            = new User();
-
                     // set all of the facebook information in our user model
-                    newUser.facebook.id    = profile.id; // set the users facebook id
-                    newUser.facebook.token = token; // we will save the token that facebook provides to the user
-                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                    newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+                    user.user_settings.linkedAccounts.facebook.id = profile.id; // set the users facebook id
+                    user.user_settings.linkedAccounts.facebook.token = token; // we will save the token that facebook provides to the user
+                    user.user_settings.linkedAccounts.facebook.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                    user.user_settings.linkedAccounts.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
 
                     // save our user to the database
-                    newUser.save(function(err) {
+                    user.save(function (err) {
                         if (err)
                             throw err;
 
-                        // if successful, return the new user
-                        return done(null, newUser);
+                        // if successful, return the updated user
+                        return done(null, user);
                     });
+
                 }
 
             });
@@ -132,4 +129,61 @@ module.exports = function(passport) {
     }));
 
 
+
+
+    // =========================================================================
+    // TWITTER =================================================================
+    // =========================================================================
+    passport.use(new TwitterStrategy({
+
+            consumerKey     : configAuth.twitterAuth.consumerKey,
+            consumerSecret  : configAuth.twitterAuth.consumerSecret,
+            callbackURL     : configAuth.twitterAuth.callbackURL,
+            passReqToCallback: true
+
+        },
+        function(req, token, tokenSecret, profile, done) {
+
+            console.log('token', token);
+            console.log('tokenSecret', tokenSecret);
+            console.log('profile', profile);
+
+
+            // make the code asynchronous
+            // User.findOne won't fire until we have all our data back from Twitter
+            process.nextTick(function () {
+
+                console.log("ADD TWITTER CREDS TO LOGGED IN USER");
+
+                // find the user in the database based on their facebook id
+                User.findOne({'_id': req.user._id}, function (err, user) {
+
+                    // if there is an error, stop everything and return that
+                    // ie an error connecting to the database
+                    if (err)
+                        return done(err);
+
+                    // if the user is found, then log them in (SAVE Facebook JSON if not done already!)
+                    if (user) {
+                        // set all of the facebook information in our user model
+                        user.user_settings.linkedAccounts.twitter.id = profile.id; // set the users facebook id
+                        user.user_settings.linkedAccounts.twitter.token = token; // we will save the token that facebook provides to the user
+                        user.user_settings.linkedAccounts.twitter.tokenSecret = tokenSecret; // we will save the token that facebook provides to the user
+                        user.user_settings.linkedAccounts.twitter.username = profile.username;
+                        user.user_settings.linkedAccounts.twitter.displayName = profile.displayName;
+
+                        // save our user to the database
+                        user.save(function (err) {
+                            if (err)
+                                throw err;
+
+                            // if successful, return the updated user
+                            return done(null, user);
+                        });
+                    }
+                });
+
+            });
+
+        }));
 };

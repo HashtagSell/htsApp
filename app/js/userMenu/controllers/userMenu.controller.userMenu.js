@@ -6,8 +6,6 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
 
     $scope.userObj = Session.userObj;
 
-    console.log('userMenu sees', $scope.userObj);
-
     $scope.logout = function () {
 
         Session.destroy();

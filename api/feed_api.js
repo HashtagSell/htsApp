@@ -6,7 +6,6 @@ var Promise = require('promise');
 var geolocation = require("../utils/ipgeolocation.js");
 var vendorSearch = require("../utils/vendorSearch.js");
 var vendorCleanup = require("../utils/vendorCleanup.js");
-var internalSearch = require("../utils/internalSearch.js");
 var CityCodeModel = require("../config/database/models/3TapsCityCode.js");
 
 exports.poll = function(req, res){
@@ -159,36 +158,6 @@ exports.poll = function(req, res){
 
                     callback(null, res, req, result);
                 });
-            },
-            function (res, req, result, callback) { //Conduct search to internal HashtagSell Database
-                console.log("***************************");
-                console.log("Search HashtagSell Mongo DB");
-                console.log("***************************");
-
-                //var promise = new Promise(function (resolve, reject) {
-                //    internalSearch.poll(req, result, function (error, response) { //Use our popular category service
-                //        if (error) {
-                //
-                //            reject(error);
-                //
-                //            res.send({error: error});  //HashtagSell DB query failed
-                //
-                //        } else {
-                //
-                //            resolve(response);  //HashtagSell DB query succeeded
-                //        }
-                //    });
-                //});
-                //
-                //
-                //promise.then(function (internalResults) {
-                //
-                //    result.merged = internalResults;
-                //
-                //    callback(null, res, req, result);
-                //});
-
-                callback(null, res, req, result);
             }
         ], function (err, res, req, result) {
             res.send(result);
@@ -286,34 +255,6 @@ exports.poll = function(req, res){
                     callback(null, res, req, result);
                 });
             }
-            //function (res, req, result, callback) { //Conduct search to internal HashtagSell Database
-            //    console.log("***************************");
-            //    console.log("Search HashtagSell Mongo DB");
-            //    console.log("***************************");
-            //
-            //    var promise = new Promise(function (resolve, reject) {
-            //        internalSearch.query(req, result, function (error, response) { //Use our popular category service
-            //            if (error) {
-            //
-            //                reject(error);
-            //
-            //                res.send({error: error});  //HashtagSell DB query failed
-            //
-            //            } else {
-            //
-            //                resolve(response);  //HashtagSell DB query succeeded
-            //            }
-            //        });
-            //    });
-            //
-            //
-            //    promise.then(function (internalResults) {
-            //
-            //        result.merged = internalResults;
-            //
-            //        callback(null, res, req, result);
-            //    });
-            //}
         ], function (err, res, req, result) {
             res.send(result);
             console.log("DONE WITH PAGINATION");

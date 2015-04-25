@@ -47,7 +47,12 @@
     "angular-bootstrap-switch": "~0.3.0",
     "slick-carousel": "~1.4.1",
     "socket.io-client": "~1.3.4",
-    "angular-ui-bootstrap-bower": "~0.12.0"
+    "angular-ui-bootstrap-bower": "~0.12.0",
+    "angular-ui-notification": "~0.0.5",
+    "angular-ui-unique": "https://github.com/angular-ui/ui-utils.git#bower-unique",
+    "angular-cookies": "~1.3.15",
+    "ui-router-extras": "~0.0.13",
+    "angular-easyfb": "~1.2.1"
   },
   "resolutions": {
     "angular": "~1.3.9",

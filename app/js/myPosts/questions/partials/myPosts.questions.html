@@ -1,0 +1,46 @@
+<div ng-repeat="question in post.questions.results">
+    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-show="!!question.answers.length === showAnswered || !question.answers.length">
+        <div style="background-color: #ffffff; padding: 10px;">
+            <div>
+                <img ng-src="{{question.userProfile.profile_photo}}" height="40" style="position: relative; top: -12px;">
+                <div style="display: inline-block">
+                    <div>
+                        @{{question.username}}
+                    </div>
+                    <div>
+                        {{question.modifiedAt | date:"MMMM d 'at' h:mma"}}
+                    </div>
+                </div>
+                <div>
+                    <div class="dropdown" dropdown on-toggle="toggled(open)" style="position: absolute; top: 10px; right: 15px;">
+                      <a href class="dropdown-toggle" dropdown-toggle><i class="fa fa-chevron-down"></i></a>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                          <li>
+                              <a href ng-click="deleteQuestion(question.postingId, question.questionId, $index)">Delete Question</a>
+                          </li>
+                      </ul>
+                    </div>
+                </div>
+                <div>
+                    Q: {{question.value}}
+                </div>
+                <div ng-show="question.answers.length">
+                    <div ng-repeat="answer in question.answers">
+                        A: {{answer.value}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 10px; background-color: whitesmoke;">
+            <img ng-src={{userObj.user_settings.profile_photo}} height="32">
+            <div style="display: inline-block; width: 75%; position: relative; top: 5px;">
+                <input class="col-md-7 col-xs-12 form-control" height="32" style="position: relative; top: 8px;" ng-keyup="$event.keyCode == 13 && submitAnswer(question, $index)" placeholder="Add answer" ng-model="question.givenAnswer"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-xs-12">
+    <a ng-show="showAnswered && post.questions.results.length" ng-click="showAnswered = !showAnswered">Hide questions already answered?</a>
+    <a ng-show="!showAnswered && post.questions.results.length" ng-click="showAnswered = !showAnswered">Show questions already answered?</a>
+    <span ng-show="!post.questions.results.length">Buyer's questions about your {{post.heading}} will appear here.</span>
+</div>

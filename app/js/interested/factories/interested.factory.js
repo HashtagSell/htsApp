@@ -1,4 +1,4 @@
-htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function (Session, $window, sideNavFactory) {
+htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
 
     //Init favesFactory Object
     var favesFactory = {};
@@ -10,12 +10,34 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
     //Takes in a item and adds it to users favorites list or removes if already there
     favesFactory.addFave = function (item, callback) {
 
-        Session.userObj.user_settings.favorites.push(item);
+        var alreadyFavorited = _.some(Session.userObj.user_settings.favorites, function (favorite) {
+                return (favorite.postingId === item.postingId);
+            });
 
-        Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
 
-        //Update the badge on the default side menu
-        sideNavFactory.defaultMenu[3].alerts = Session.userObj.user_settings.favorites.length;
+        if(!alreadyFavorited) { //check to make sure the item is not already favorited.
+
+            if(item.external.source.code === "HSHTG") {
+
+                myPostsFactory.getPostingIdQuestionsAndOffers(item.postingId).then(function (response) {
+
+                    var postWithQuestionOfferAndProfile = response.data;
+
+                    Session.userObj.user_settings.favorites.push(postWithQuestionOfferAndProfile);
+
+                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+
+                });
+
+            } else {
+
+                Session.userObj.user_settings.favorites.push(item);
+
+                Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+
+            }
+
+        }
 
     };
 
@@ -35,16 +57,66 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
 
         //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
         if(matchingIndexes.length > 0){
-            //for(i=0; i<matchingIndexes.length; i++){
-                currentFavorites.splice(matchingIndexes[0],1);
-            //}
+            currentFavorites.splice(matchingIndexes[0],1);
 
             Session.setSessionValue("favorites", currentFavorites, callback);
         }
-
-        //Update the badge on the default side menu
-        sideNavFactory.defaultMenu[3].alerts = Session.userObj.user_settings.favorites.length;
     };
+
+
+
+
+
+    //Socketio passes emit object and we update the wishlist items.
+    favesFactory.updateFavorite = function (emit, callback) {
+        var currentFavorites = Session.userObj.user_settings.favorites;
+
+        console.log('emitted favorite object', emit);
+
+        console.log('currentFavorites', currentFavorites);
+
+        var matchingIndex;
+
+        for(var i = 0; i < currentFavorites.length; i++){
+            var oldFavorite = currentFavorites[i];
+
+            console.log(oldFavorite.postingId, emit.posting.postingId);
+
+            if(oldFavorite.postingId === emit.posting.postingId){
+                matchingIndex = i;
+                break;
+            }
+        }
+
+        console.log('done with loop');
+
+        if (matchingIndex >= 0) {
+            console.log('here is matching favorite');
+            console.log(currentFavorites[matchingIndex]);
+
+
+            myPostsFactory.getPostingIdQuestionsAndOffers(emit.posting.postingId).then(function (response) {
+
+                var postWithQuestionOfferAndProfile = response.data;
+
+                Session.userObj.user_settings.favorites[matchingIndex] = postWithQuestionOfferAndProfile;
+
+
+                try {
+                    favesFactory.refreshTable();
+                } catch(err){
+                    console.log(err);
+                } finally {
+                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+                }
+
+            });
+
+
+        }
+    };
+
+
 
 
     favesFactory.checkFave = function (item, callback) {
@@ -74,34 +146,6 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
         console.log("refreshing favorites table");
         //favesFactory.currentFavorites = Session.getSessionValue('favorites');
         favesFactory.tableParams.reload();
-    };
-
-    favesFactory.getFavesCount = function () {
-      return Session.userObj.user_settings.favorites.length;
-    };
-
-
-    favesFactory.updateFavorites = function(updatedFavorites) {
-        console.log("setting favorite");
-        console.log(updatedFavorites);
-
-        //var currentFavorites = Session.userObj.user_settings.favorites;
-        //
-        ////Used to store index of item existing fave in db
-        //var faveIndex = null;
-        //
-        ////If the new favorite's ID matching an existing favorite then note the index of that item
-        //_.some(currentFavorites, function(oldFav) {
-        //    if(oldFav.id == updatedFav.id){
-        //        faveIndex = currentFavorites.indexOf(oldFav);
-        //    }
-        //});
-        //
-        ////If we have index of matching item than remove the favorite.  If we do not have index of existing favorite than add it.
-        //
-        //currentFavorites.splice(faveIndex,1, updatedFav);
-
-        Session.setSessionValue('favorites', updatedFavorites);
     };
 
 
@@ -134,8 +178,10 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
         Session.setSessionValue("user_labels", sessionObj.user_settings.user_labels);
     };
 
+
+
+
     favesFactory.removeFavoriteLabel = function(labelToRemove, callback){
-//        Session.removeFavoriteLabel(labelToRemove, callback);
 
         var sessionObj = Session.userObj; //Get entire session object
         sessionObj.user_settings.user_labels = _.without(sessionObj.user_settings.user_labels, _.findWhere(sessionObj.user_settings.user_labels, labelToRemove)); //find the user label and remove it from session object
@@ -158,6 +204,7 @@ htsApp.factory('favesFactory', ['Session', '$window', 'sideNavFactory', function
     favesFactory.getUserLabels = function(){
         return Session.getSessionValue("user_labels");
     };
+
 
 
     return favesFactory;

@@ -1,130 +1,128 @@
+<div class="modal-header hts-post-title">
+        <!--<span class="pull-left hover-pointer" ng-click="alert('fullscreen zen editor soon.')">-->
+            <!--<i class="fa fa-arrows-alt"></i>-->
+        <!--</span>-->
+    Create New Post
+        <span class="pull-right hover-pointer" ng-click="dismiss('cancel post')">
+            <i class="fa fa-close"></i>
+        </span>
+</div>
+<div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="/css/newpost.css">
-    <link rel="stylesheet" href="/medium-editor/dist/css/medium-editor.min.css">
-    <link rel="stylesheet" href="/medium-editor/dist/css/themes/bootstrap.css">
+    <div class="row remove-row-margins">
+        <div id="htsPost"
+             ng-class="jsonObj.annotations.length > 0 ? 'col-lg-10' : 'col-lg-12' "
+             mentio
+             contenteditable
+             data-disable-double-return
+             ng-focus="clearDemo()"
+             data-placeholder="I'm selling"
+             class="editor hts-input"
+             mentio-require-leading-space="true"
+             mentio-macros="macros"
+             mentio-id="'hashtag'"
+             mentio-typed-term="typedTerm"
+             ng-model="jsonObj.body">
 
-
-    <div class="modal-header hts-post-title">
-            <span class="pull-left hover-pointer" ng-click="alert('fullscreen zen editor soon.')">
-                <i class="fa fa-arrows-alt"></i>
-            </span>
-        Create New Post
-            <span class="pull-right hover-pointer" ng-click="dismiss('cancel post')">
-                <i class="fa fa-close"></i>
-            </span>
-    </div>
-    <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
-
-        <div class="row remove-row-margins">
-            <div id="htsPost"
-                 ng-class="jsonObj.annotations.length > 0 ? 'col-lg-10' : 'col-lg-12' "
-                 mentio
-                 contenteditable
-                 data-disable-double-return
-                 ng-focus="clearExample()"
-                 data-placeholder="I'm selling"
-                 class="editor hts-input"
-                 mentio-require-leading-space="true"
-                 mentio-macros="macros"
-                 mentio-id="'hashtag'"
-                 mentio-typed-term="typedTerm"
-                 ng-model="jsonObj.body">
+            I'm selling my <span class="mention-highlighter" contenteditable="false" popover-placement="bottom" popover="# your item for sale" popover-trigger="show">#coffee table</span>&nbsp;
+            for <span  class="mention-highlighter-price" contenteditable="false" popover-placement="top" popover="$ your price" popover-trigger="show">$75</span>&nbsp;
+            <span class="mention-highlighter-location" contenteditable="false" popover-placement="bottom" popover="@ your meeting location!" popover-trigger="show">@1234 Mulberry Street, New York, NY, United States</span>&nbsp;
+        </div>
+        <div ng-class="jsonObj.annotations.length > 0 ? 'col-lg-2' : 'hidden-lg' " class="hts-annotations-container">
+            <div ng-repeat="annotation in jsonObj.annotations">
+                <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
             </div>
-            <div ng-class="jsonObj.annotations.length > 0 ? 'col-lg-2' : 'hidden-lg' " class="hts-annotations-container">
-                <div ng-repeat="annotation in jsonObj.annotations">
-                    <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
-                </div>
-            </div>
-
         </div>
 
-        <div class="inset-toolbar">
-            <div>
-                <button id="imageUpload" class="btn btn-primary" style="height: 60px;">
+    </div>
+
+    <div class="inset-toolbar">
+        <div>
+            <div style="position: absolute; bottom: 15px;">
+                <button id="imageUpload" class="btn btn-primary" style="height: 45px; border-radius: 0px 0px 0px 4px;">
                     <i class="fa fa-camera"> Add photo</i>
                 </button>
             </div>
 
-            <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container">{{uploadMessage}}</progressbar>
+            <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container progress-striped active">{{uploadMessage}}</progressbar>
 
-            <div>
-                <button class="btn btn-primary" ng-click="processPost()" style="height: 60px;">
+            <div style="position: absolute; right: 15px; bottom: 15px;" class="sellModalButton" popover-placement="left" popover="Publish on Amazon, eBay, Craigslist, and HashtagSell!" popover-trigger="show">
+                <button class="btn btn-primary" ng-click="processPost()" style="height: 45px; border-radius: 0px 0px 4px 0px;">
                     <i class="fa fa-slack">Sell It</i>
                 </button>
             </div>
         </div>
-
     </div>
+</div>
 
 
-    <!--ng-TEMPLATES-->
+<!--ng-TEMPLATES-->
 
-    <mentio-menu style="z-index: 1100 !important;"
-            mentio-for="'hashtag'"
-            mentio-trigger-char="'#'"
-            mentio-items="products"
-            mentio-template-url="/product-mentions.tpl"
-            mentio-search="searchProducts(term)"
-            mentio-select="getProductTextRaw(item)">
-    </mentio-menu>
+<mentio-menu style="z-index: 1100 !important;"
+        mentio-for="'hashtag'"
+        mentio-trigger-char="'#'"
+        mentio-items="products"
+        mentio-template-url="/product-mentions.tpl"
+        mentio-search="searchProducts(term)"
+        mentio-select="getProductTextRaw(item)">
+</mentio-menu>
 
-    <mentio-menu style="z-index: 1100 !important;"
-            mentio-for="'hashtag'"
-            mentio-trigger-char="'@'"
-            mentio-items="places"
-            mentio-template-url="/place-mentions.tpl"
-            mentio-search="searchPlaces(term)"
-            mentio-select="getPlacesTextRaw(item)">
-    </mentio-menu>
+<mentio-menu style="z-index: 1100 !important;"
+        mentio-for="'hashtag'"
+        mentio-trigger-char="'@'"
+        mentio-items="places"
+        mentio-template-url="/place-mentions.tpl"
+        mentio-search="searchPlaces(term)"
+        mentio-select="getPlacesTextRaw(item)">
+</mentio-menu>
 
-    <mentio-menu style="z-index: 1100 !important;"
-            mentio-for="'hashtag'"
-            mentio-trigger-char="'$'"
-            mentio-items="prices"
-            mentio-template-url="/price-mentions.tpl"
-            mentio-search="searchPrice(term)"
-            mentio-select="getPricesTextRaw(item)">
-    </mentio-menu>
+<mentio-menu style="z-index: 1100 !important;"
+        mentio-for="'hashtag'"
+        mentio-trigger-char="'$'"
+        mentio-items="prices"
+        mentio-template-url="/price-mentions.tpl"
+        mentio-search="searchPrice(term)"
+        mentio-select="getPricesTextRaw(item)">
+</mentio-menu>
 
-    <script type="text/ng-template" id="/product-mentions.tpl">
-        <ul class="list-group user-search demo-scrollable-menu">
-            <li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">
+<script type="text/ng-template" id="/product-mentions.tpl">
+    <ul class="list-group user-search demo-scrollable-menu">
+        <li mentio-menu-item="product" ng-repeat="product in items" class="list-group-item">
 
-                <span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+            <span class="text-primary" ng-bind-html="product.value | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
 
-            </li>
-        </ul>
-    </script>
+        </li>
+    </ul>
+</script>
 
-    <script type="text/ng-template" id="/place-mentions.tpl">
-        <ul class="list-group user-search demo-scrollable-menu">
-            <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
+<script type="text/ng-template" id="/place-mentions.tpl">
+    <ul class="list-group user-search demo-scrollable-menu">
+        <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
 
-                <span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+            <span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
 
-            </li>
-        </ul>
-    </script>
-
-
-    <script type="text/ng-template" id="/price-mentions.tpl">
-        <ul class="list-group user-search demo-scrollable-menu">
-            <li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">
-
-                <span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
-
-            </li>
-        </ul>
-    </script>
+        </li>
+    </ul>
+</script>
 
 
-    <script type="text/ng-template" id="dropzone-thumbnail.html">
-            <div class="dz-preview">
-                <img data-dz-thumbnail />
-                <i data-dz-remove class="fa fa-times dz-remove"></i>
-            </div>
-            <div>
-                <strong class="error text-danger" data-dz-errormessage></strong>
-            </div>
-    </script>
+<script type="text/ng-template" id="/price-mentions.tpl">
+    <ul class="list-group user-search demo-scrollable-menu">
+        <li mentio-menu-item="price" ng-repeat="price in items" class="list-group-item">
+
+            <span class="text-primary" ng-bind-html="price.suggestion | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>
+
+        </li>
+    </ul>
+</script>
+
+
+<script type="text/ng-template" id="dropzone-thumbnail.html">
+        <div class="dz-preview">
+            <img data-dz-thumbnail />
+            <i data-dz-remove class="fa fa-times dz-remove"></i>
+        </div>
+        <div>
+            <strong class="error text-danger" data-dz-errormessage></strong>
+        </div>
+</script>

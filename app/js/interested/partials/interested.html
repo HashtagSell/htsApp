@@ -1,16 +1,20 @@
-<link rel="stylesheet" href="css/interested.css"/>
-
 <div ui-view></div>
 
-<div ng-show="!currentFaves.length" class="background-instructions">
-    <div class="inset-background-text">
-        :( Awww... You haven't favorited anything.
-    </div>
-</div>
+<div class="outer-container-interested interested-well">
 
-<div ng-show="currentFaves.length" class="outer-container-interested interested-well">
-    <!--TODO: Need this table header to be fixed.-->
-    <div>
+    <!--{{expandedPostingId}}-->
+
+    <!--{{currentState}}-->
+
+    <div ng-show="!currentFaves.length" class="background-instructions">
+        <div class="inset-background-text">
+            Click the star, ask a question, or place an offer on an item for sale.
+        </div>
+    </div>
+
+
+
+    <div ng-show="currentFaves.length">
         <table ng-table="tableParams" class="table">
             <thead>
             <tr ng-show="checkboxes.checked">
@@ -36,7 +40,7 @@
                     <input type="checkbox" style="text-align: center; vertical-align: middle;" ng-model="checkboxes.masterCheck" id="select_all" name="filter-checkbox">
                 </th>
                 <th  colspan="9" class="text-center">
-                    <input type="text" ng-model="filters.$" placeholder="Search Favorites" style="width:98%; margin:0px;"/>
+                    <input class="form-control" type="text" ng-model="filters.$" placeholder="Filter Watchlist" style="width:98%; margin:0px;"/>
                 </th>
                 <th colspan="2" style="vertical-align: middle;" class="text-center sortable" ng-class="{
                                         'sort-asc': tableParams.isSortBy('price', 'asc'),
@@ -55,35 +59,59 @@
 
             </thead>
             <tbody>
-                <tr ng-repeat="favorite in $data">
+                <tr ng-repeat-start="favorite in $data">
                     <td width="30" style="text-align: center; vertical-align: middle;">
                         <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" />
                     </td>
-                    <td style="width:70px; cursor: pointer;" ng-click='openSplash(favorite)'>
+                    <!--TODO: ng-click='openSplash(favorite)'-->
+                    <td style="width:70px; cursor: pointer;">
                         <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
                     </td>
-                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;" ng-click='openSplash(favorite)'>
-                        {{favorite.heading | cleanHeading}}
-                        <br>
-                        <small>
-                            <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
-                                <tr>
-                                    <td>#{{label}}&nbsp;&nbsp;</td>
-                                    <td ng-click="removeIndividualLabel()" style="cursor: pointer; z-index: 10;">x</td>
-                                </tr>
-                            </table>
-                        </small>
+                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;">
+                        <h4>{{::favorite.heading | cleanHeading}}</h4>
+                        <div>
+                            <small>
+                                <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
+                                    <tr>
+                                        <td>#{{label}}&nbsp;&nbsp;</td>
+                                        <td ng-click="removeIndividualLabel()" style="cursor: pointer; z-index: 10;">x</td>
+                                    </tr>
+                                </table>
+                            </small>
+                        </div>
+                        <div>
+                            <button class="btn btn-default" type="button" ui-sref="watchlist.questions({postingId: favorite.postingId})">
+                                Questions
+                            </button>
+
+                            <button class="btn btn-default" type="button" ui-sref="watchlist.offers({postingId: favorite.postingId})">
+                                Offers
+                            </button>
+                        </div>
                     </td>
                     <td ng-if="favorite.askingPrice.value" style="vertical-align: middle;">
-                        {{::favorite.askingPrice.value | currency : $ : 0}}
+                        <h5>{{::favorite.askingPrice.value | currency : $ : 0}}</h5>
                     </td>
                     <td ng-if="!favorite.askingPrice.value" style="vertical-align: middle;">
-                        No price
+                        <h4>No price</h4>
                     </td>
                     <td style="width:20px; vertical-align: middle;">
                         <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite);" style="color:red; cursor: pointer;"></i>
                     </td>
                 </tr>
+
+                <tr ng-show="currentState === 'watchlist.questions' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
+                    <td colspan="6" style="background-color: rgb(253, 253, 253);">
+                        <sender-questions-more-info post="favorite"></sender-questions-more-info>
+                    </td>
+                </tr>
+
+                <tr ng-repeat-end ng-show="currentState === 'watchlist.offers' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
+                    <td colspan="6" style="background-color: rgb(253, 253, 253);">
+                        <sender-offers-more-info post="favorite"></sender-offers-more-info>
+                    </td>
+                </tr>
+
             </tbody>
         </table>
     </div>

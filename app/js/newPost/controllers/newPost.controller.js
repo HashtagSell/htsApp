@@ -8,6 +8,8 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
             templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
             resolve: {
                 mentionsFactory: function () {
                     return newPostFactory;
@@ -20,7 +22,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
         }, function (dismissObj) {
             if(dismissObj.reason === "stageOneSuccess"){
 
-                $scope.pushtoExternalService(dismissObj.payload);
+                $scope.pushtoExternalService(dismissObj.post);
             }
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -28,14 +30,14 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
 
 
 
-    $scope.pushtoExternalService = function (newPostJson) {
+    $scope.pushtoExternalService = function (post) {
 
         var modalInstance = $modal.open({
             templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
             resolve: {
                 newPost : function () {
-                    return newPostJson;
+                    return post;
                 }
             }
         });

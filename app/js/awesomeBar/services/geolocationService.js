@@ -1,6 +1,4 @@
-/**
- * Created by braddavis on 10/19/14.
- */
+//Created by braddavis on 10/19/14.
 htsApp.service('geolocationService', ['$http', '$q', function ($http, $q) {
 
     this.locateUser = function (service) {

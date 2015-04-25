@@ -1,5 +1,9 @@
 //Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
-htsApp.controller('signInModalController', ['$scope', '$modalInstance', 'authFactory', function ($scope, $modalInstance, authFactory) {
+htsApp.controller('signInModalController', ['$scope', '$modalInstance', '$window', 'authFactory', 'params', function ($scope, $modalInstance, $window, authFactory, params) {
+
+    if (params.email) {
+        $scope.email = params.email;
+    }
 
     $scope.loginPassport = function (isValid) {
         if (isValid) {
@@ -26,6 +30,15 @@ htsApp.controller('signInModalController', ['$scope', '$modalInstance', 'authFac
             });
         }
     };
+
+    //$scope.facebookAuth = function () {
+    //    $window.open(ENV.facebookAuth);
+    //};
+    //
+    //
+    //$scope.twitterAuth = function () {
+    //    $window.open(ENV.twitterAuth);
+    //};
 
 
     $scope.dismiss = function (reason) {

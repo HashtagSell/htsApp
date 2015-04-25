@@ -1,16 +1,14 @@
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session', '$templateCache', 'authModalFactory', function ($scope, $window, Session, $templateCache, authModalFactory) {
+htsApp.controller('settings.profile.controller', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
+
+    $scope.userObj = Session.userObj;
 
     $scope.bindingObj = {
         currentlyUploadingProfilePhoto: false,
         currentlyUploadingBannerPhoto: false,
         requireUpdate: true
-    };
-
-    $scope.updatePassword = function () {
-        authModalFactory.updatePasswordModal();
     };
 
 
@@ -55,7 +53,6 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
 
 
 
-
     $scope.bannerDropzoneConfig = {
         'options': { // passed into the Dropzone constructor
             paramName: "bannerPhoto", // The name that will be used to transfer the file
@@ -95,17 +92,14 @@ htsApp.controller('settings.profile.controller', ['$scope', '$window', 'Session'
     };
 
 
-    $scope.userObj = Session.userObj;
 
     $scope.requireUpdate = function () {
-
         $scope.bindingObj.requireUpdate = false;
     };
 
     $scope.submitUpdatedProfile = function () {
         Session.setSessionValue('biography', $scope.userObj.user_settings.biography, function () {
             $scope.bindingObj.requireUpdate = true;
-
         });
     };
 

@@ -12,28 +12,40 @@ var userSchema = mongoose.Schema({
         resetPasswordExpires: Date,
         role         : String
     },
-    facebook         : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
-    twitter          : {
-        id           : String,
-        token        : String,
-        displayName  : String,
-        username     : String
-    },
-    google           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
     user_settings    : {
         name         : String,
         biography    : { type: String, default: "Add a profile description" },
         location_type: { type: String, default: "Approximate" },
+        linkedAccounts: {
+            facebook         : {
+                id           : String,
+                token        : String,
+                tokenExpiration: Date,
+                email        : String,
+                name         : String
+            },
+            twitter          : {
+                id           : String,
+                token        : String,
+                tokenSecret  : String,
+                tokenExpiration: Date,
+                displayName  : String,
+                username     : String
+            },
+            ebay             : {
+                timestamp    : Date,
+                version      : String,
+                build        : String,
+                eBayAuthToken: String,
+                hardExpirationTime: Date
+            },
+            amazon           : {
+                id           : String,
+                token        : String,
+                email        : String,
+                name         : String
+            }
+        },
         safe_search  : { type: Boolean, default: true },
         email_provider : {
             type: Array,

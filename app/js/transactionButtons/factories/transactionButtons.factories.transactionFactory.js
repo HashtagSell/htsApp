@@ -80,11 +80,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
     //CL item does not have phone and email so we open splash detailed view.
     transactionFactory.openSplash = function (result) {
         splashFactory.result = result;
-        if($state.is("feed")) {
-            $state.go('feed.splash', {id: result.external.source.url});
-        } else if ($state.is("results")) {
-            $state.go('results.splash', {id: result.external.source.url});
-        }
+        $state.go('results.splash', {id: result.external.source.url});
     };
 
 
@@ -99,6 +95,20 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
             $window.open(result.external.source.url);
         }
+    };
+
+
+    transactionFactory.showOriginal = function (result) {
+
+        if (!Session.userObj.user_settings.loggedIn) {
+
+            authModalFactory.signInModal();
+
+        } else {
+
+            $window.open(result.external.source.url);
+        }
+
     };
 
 

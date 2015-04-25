@@ -1,5 +1,9 @@
-<div class="background-instructions">
-    <div class="inset-background-text">
-        User Profile, Messages, & Ratings (Coming soon)
+<div class="outer-container">
+    <div class="inner-container-padding">
+        <tabset>
+            <tab ng-repeat="tab in nav" heading="{{tab.title}}" active="tab.active" disabled="tab.disabled">
+                {{tab.data}}
+            </tab>
+        </tabset>
     </div>
 </div>

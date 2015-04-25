@@ -81,7 +81,7 @@ htsApp.directive('slickCarousel', ['$timeout', '$templateCache', function($timeo
                 });
                 scope.init = function() {
                     var slick;
-                    console.log(element);
+                    //console.log(element);
                     slick = element.slick(options);
                     scope.internalControl = scope.control || {};
                     SLICK_FUNCTION_WHITELIST.forEach(function(value) {

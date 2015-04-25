@@ -1,15 +1,15 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', function ($scope, $http, $q, $modalInstance, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory) {
 
-    $scope.cleared = false;
+    $scope.demoCleared = false;
 
-    $scope.clearExample = function () {
+    $scope.clearDemo = function () {
         console.log("clearing contents");
-        if (!$scope.cleared) {
+        if (!$scope.demoCleared) {
             document.getElementById("htsPost").innerHTML = "";
-            $scope.cleared = true;
+            $scope.demoCleared = true;
         }
     };
 
@@ -19,11 +19,10 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         return JSON.stringify($scope.jsonObj, null, 4);
     };
 
-    $scope.macros = {
-        'obo': '*Or Best Offer*',
-        '(smile)': '<img src="http://a248.e.akamai.net/assets.github.com/images/icons/emoji/smile.png"' +
-        ' height="20" width="20">'
-    };
+    //TODO: Handle auctions
+    //$scope.macros = {
+    //    'obo': '*Or Best Offer*'
+    //};
 
     $scope.dismiss = function (reason) {
         mentionsFactory.resetJsonTemplate();
@@ -94,7 +93,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                         $scope.uploadMessage = progress+'%';
                         $scope.$apply($scope.uploadProgress);
                     } else if (progress === 100) {
-                        $scope.uploadMessage = 'Please wait while we finish up...';
+                        $scope.uploadMessage = 'Preparing photos.. please wait.';
                         $scope.$apply($scope.uploadProgress);
                     }
                 }
@@ -122,8 +121,6 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
 
     $scope.publishPost = function () {
-        console.log($scope.jsonObj);
-        //alert("Publishing post.  THis ");
         var newPost = $scope.jsonObj;
 
         newPost.username = Session.userObj.user_settings.name;
@@ -140,19 +137,16 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
         }
 
-        //console.log("-----Post Complete----");
-        //console.log(status);
-        //$modalInstance.dismiss({reason: "stageOneSuccess", payload: newPost});
-        //mentionsFactory.resetJsonTemplate();
-
-
         //Josh's posting API
-        $http.post(ENV.postingAPI, newPost).
-            success(function (status) {
+        $http.post('http://10.0.1.14:4043/v1/postings/', newPost).
+            success(function(posting) {
                 console.log("-----Post Complete----");
-                console.log(status);
-                $modalInstance.dismiss({reason: "stageOneSuccess", payload: status});
-                mentionsFactory.resetJsonTemplate();
+                console.log(posting);
+                $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
+
+            }).
+            error(function(data, status, headers, config) {
+                alert('post failed');
             });
     };
 
@@ -161,15 +155,15 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         if (term) {
             mentionsFactory.predictProduct(term).then(function (results) {
                 $scope.products = results;
-                console.log("Here is scope.products", $scope.products);
+                //console.log("Here is scope.products", $scope.products);
             });
         }
     };
 
     $scope.getProductTextRaw = function (product) {
         mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
-            console.log(jsonTemplate);
-            console.log("done");
+            //console.log(jsonTemplate);
+            //console.log("done");
         });
         return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
     };
@@ -193,7 +187,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             console.log("done");
         });
         console.log("updated ui");
-        return '<span class="mention-highlighter" contentEditable="false">@' + selectedPlace.description + '</span>';
+        return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
     };
 
     //========= $ Prices =========
@@ -208,5 +202,45 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         mentionsFactory.getPriceMetaData(selectedPrice);
         return '<span class="mention-highlighter-price" contentEditable="false">$' + selectedPrice.suggestion + '</span>';
     };
+
+
+
+    //Demo plays to describe how to sell an item
+    (function demo () {
+        $timeout(function () {
+            if (!$scope.demoCleared) {
+                $(".mention-highlighter").triggerHandler('show');
+            }
+
+            $timeout(function () {
+                if (!$scope.demoCleared) {
+                    $(".mention-highlighter").triggerHandler('hide');
+                    $(".mention-highlighter-price").triggerHandler('show');
+                }
+
+                $timeout(function () {
+                    if (!$scope.demoCleared) {
+                        $(".mention-highlighter-price").triggerHandler('hide');
+                        $(".mention-highlighter-location").triggerHandler('show');
+                    }
+
+                    $timeout(function () {
+                        if (!$scope.demoCleared) {
+                            $(".mention-highlighter-location").triggerHandler('hide');
+                            $(".sellModalButton").triggerHandler('show');
+                        }
+
+                        $timeout(function () {
+                            $(".sellModalButton").triggerHandler('hide');
+                        }, 4000);
+
+                    }, 4000);
+
+                }, 4000);
+
+            }, 4000);
+
+        }, 1000);
+    })();
 
 }]);

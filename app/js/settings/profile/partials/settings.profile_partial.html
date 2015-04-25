@@ -1,39 +1,30 @@
-<link rel="stylesheet" href="css/settings.profile.css"/>
+<div>
+    <div class="settings-header">
+        <h3>Profile Settings</h3>
+        <h4>Manage your profile</h4>
+    </div>
+</div>
 
-<div class="outer-container col-lg-7 col-md-6 col-sm-11 col-xs-11">
-    <div class="inner-container inner-container-padding">
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Password:</label>
+<form class="form-horizontal">
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Profile Photo</label>
+        <div class="col-sm-5">
+
+            <div ng-hide="bindingObj.currentlyUploadingProfilePhoto">
+                <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
             </div>
-            <div class="col-lg-6 col-md-4">
-                <a ng-click="updatePassword()">Update Password</a>
+
+            <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
+
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Profile Photo:</label>
-            </div>
-            <div class="col-lg-6 col-md-4">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Banner Photo</label>
 
-                <div ng-hide="bindingObj.currentlyUploadingProfilePhoto">
-                    <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
-                </div>
-
-                <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
-
-                </div>
-            </div>
-
-
-        </div>
-
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Heading Banner:</label>
-            </div>
-
+        <div class="col-sm-5">
             <div ng-hide="bindingObj.currentlyUploadingBannerPhoto">
                 <img class='triggerBannerImageUpload' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
             </div>
@@ -42,40 +33,23 @@
 
             </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Bio:</label>
-            </div>
-            <div class="col-lg-6">
-                <textarea ng-model="userObj.user_settings.biography" ng-change="requireUpdate()">{{userObj.user_settings.biography}}</textarea>
-            </div>
-        </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">About me</label>
 
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Facebook:</label>
-            </div>
-            <div class="col-lg-6 col-md-4">
-                <a>Link Facebook</a>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-6 col-md-4">
-                <label class="pull-right">Twitter:</label>
-            </div>
-            <div class="col-lg-6 col-md-4">
-                <a>Link Twitter</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 col-lg-offset-6 col-md-4 col-md-offset-4">
-                <button class="btn btn-primary" ng-disabled="bindingObj.requireUpdate" ng-click="submitUpdatedProfile()">Update Profile</button>
-            </div>
+        <div class="col-sm-2">
+            <textarea class="form-control" ng-model="userObj.user_settings.biography" ng-change="requireUpdate()">{{userObj.user_settings.biography}}</textarea>
         </div>
     </div>
-</div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label"></label>
+        <div class="col-sm-5">
+            <button class="btn btn-success" ng-disabled="bindingObj.requireUpdate" ng-click="submitUpdatedProfile()">Submit Changes</button>
+        </div>
+    </div>
+</form>
 
 
 

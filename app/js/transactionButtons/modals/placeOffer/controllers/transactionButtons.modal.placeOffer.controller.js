@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/4/15.
  */
-htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session', 'result', 'ENV', '$filter', 'offersFactory', function ($scope, $modalInstance, Session, result, ENV, $filter, offersFactory) {
+htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session', 'result', 'ENV', '$filter', 'offersFactory', 'favesFactory', 'socketio', function ($scope, $modalInstance, Session, result, ENV, $filter, offersFactory, favesFactory, socketio) {
 
     //Logged in user details
     $scope.userObj = Session.userObj;
@@ -68,17 +68,21 @@ htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session'
 
     $scope.sendOffer = function () {
 
-        offersFactory.sendOffer($scope.result.postingId, $scope.offer).then(function (response) {
+        socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function(){
 
-            $scope.dismiss("offer sent");
+            offersFactory.sendOffer($scope.result.postingId, $scope.offer).then(function (response) {
 
-        }, function (err) {
+                $scope.dismiss("offer sent");
 
-            $scope.dismiss("error");
+            }, function (err) {
 
-            alert(err);
+                $scope.dismiss("error");
 
-        });
+                alert(err);
+
+            });
+
+        }); //Join the room of each posting the user places an offer on.
 
     };
 

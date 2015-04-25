@@ -1,9 +1,9 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $sce, $state, $modal, splashFactory, Session, socketio) {
+htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $rootScope, $sce, $state, $modal, splashFactory, Session, socketio) {
 
-    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', 'authModalFactory', 'favesFactory', 'qaFactory', function ($scope, sideNavFactory, uiGmapGoogleMapApi, authModalFactory, favesFactory, qaFactory) {
+    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', 'authModalFactory', 'favesFactory', 'qaFactory', 'transactionFactory', function ($scope, sideNavFactory, uiGmapGoogleMapApi, authModalFactory, favesFactory, qaFactory, transactionFactory) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
@@ -70,7 +70,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
         if ($scope.userObj.user_settings.loggedIn) {
             favesFactory.checkFave($scope.result, function (response) {
-                console.log('favorited response: ' + response);
+                //console.log('favorited response: ' + response);
                 $scope.favorited = response;
             });
         }
@@ -78,15 +78,17 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
         $scope.toggleFave = function (item) {
             if ($scope.userObj.user_settings.loggedIn) {
-                console.log('favorited status: ', $scope.favorited);
-                console.log(item);
+                //console.log('favorited status: ', $scope.favorited);
+                //console.log(item);
                 if (!$scope.favorited) { //If not already favorited
                     favesFactory.addFave(item, function () {  //Add the favorite and flag as done
                         $scope.favorited = true;
+                        socketio.joinPostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
                     });
                 } else { //toggle off favorite
                     favesFactory.removeFave(item, function () {
                         $scope.favorited = false;
+                        socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
                     });
                 }
             } else {
@@ -99,7 +101,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
         //If we do not know the formatted address of the item we use the lat and lon to reverse geocode the closest address or cross-street.
         if (!$scope.result.external.threeTaps.location.formatted) {
-            console.log($scope.result);
+            //console.log($scope.result);
             (function () {
 
                 var geocoder = new google.maps.Geocoder();
@@ -109,7 +111,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
                     if (status === google.maps.GeocoderStatus.OK) {
                         if (results[1]) {
-                            console.log('reverse geocoded info', results[1].formatted_address);
+                            //console.log('reverse geocoded info', results[1].formatted_address);
 
                             $scope.windowOptions.content = results[1].formatted_address;
                         }
@@ -122,7 +124,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         } else {
 
             $scope.windowOptions.content = $scope.result.external.threeTaps.location.formatted;
-            console.log('already have address: ', $scope.windowOptions.content);
+            //console.log('already have address: ', $scope.windowOptions.content);
         }
 
         //If the item has annotations then display only ones that match our whitelist.
@@ -134,7 +136,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         //Responsive Navigation
         $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
 
-        console.log($scope);
+        //console.log($scope);
 
         $scope.toggleOffCanvasSideNav = function () {
             $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
@@ -146,7 +148,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         $scope.getPostingIdQuestions = function() {
 
             qaFactory.getPostingIdQuestions($scope.result.postingId).then(function (response) {
-                console.log(response);
+                //console.log(response);
             }, function (err) {
                 console.log(err);
             });
@@ -154,15 +156,59 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
         };
 
         $scope.submitQuestion = function(question) {
-            if ($scope.userObj.user_settings.loggedIn) {
-                qaFactory.submitQuestion(question, $scope.result.postingId, $scope.userObj.user_settings.name).then(function (response) {
-                    console.log(response);
-                }, function (err) {
-                   console.log(err);
+
+            var loggedIn = $scope.userObj.user_settings.loggedIn;
+
+            if (loggedIn) {
+
+                var post = $scope.result;
+                var username = $scope.userObj.user_settings.name;
+
+                socketio.joinPostingRoom(post.postingId, 'inWatchList', function(){
+
+                    qaFactory.submitQuestion(question, post, username).then(function (response) {
+
+                        console.log(response);
+
+                    }, function (err) {
+                        console.log(err);
+                    });
+
                 });
+
             } else {
                 authModalFactory.signInModal();
             }
+        };
+
+
+
+
+
+
+
+        $scope.emailSeller = function (result) {
+            transactionFactory.quickCompose(result);
+        };
+
+        $scope.displayPhone = function (result) {
+            transactionFactory.displayPhone(result);
+        };
+
+        $scope.placeOffer = function (result) {
+            transactionFactory.placeOffer(result);
+        };
+
+        $scope.buyOnline = function (result) {
+            alert('online payment and shipping coming soon!');
+        };
+
+        $scope.placeBid = function (result) {
+            transactionFactory.placeBid(result);
+        };
+
+        $scope.showOriginal = function (result) {
+            transactionFactory.showOriginal(result);
         };
 
 
@@ -175,22 +221,23 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
 
         var splashInstance = $modal.open({
             backdrop: false,
-            templateUrl: "js/splash/partials/splash_content_new.html",
+            templateUrl: "js/splash/partials/splash_content.html",
             windowTemplateUrl: "js/splash/partials/splash_window.html",
             controller: splashInstanceCtrl
         });
 
 
         splashInstance.result.then(function (selectedItem) {
-            console.log(selectedItem);
+            //console.log(selectedItem);
         }, function (reason) {
-            console.log('Splash dismissed at: ' + new Date());
-            if(reason === 'feed' || reason === 'selling' || reason === 'notifications' || reason === 'interested' || reason === 'mailbox') {
+            //console.log('Splash dismissed at: ' + new Date());
+            if(reason === 'feed' || reason === 'notifications' || reason === 'interested' || reason === 'myposts' || reason === 'watchlist') {
                 splashInstance.dismiss();
                 $state.go(reason);
             } else {
                 splashInstance.dismiss();
                 $state.go('^');
+                //$state.go($rootScope.previousState);
             }
         });
 
@@ -205,7 +252,7 @@ htsApp.controller('splashController', ['$scope', '$sce', '$state', '$modal', 'sp
     //If the result object is passed in via router
     if (splashFactory.result) {
 
-        console.log(splashFactory.result);
+        //console.log(splashFactory.result);
 
         showSplashModal();
 
@@ -237,7 +284,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
         },
         link : function (scope, element, attrs) {
 
-            console.log(scope.result.images[0]);
+            //console.log(scope.result.images[0]);
 
             if(scope.result.external.source.code === 'HSHTG') {
 
@@ -254,7 +301,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                         var sellerProfileDetails = response.data.user;
 
-                        console.log(sellerProfileDetails);
+                        //console.log(sellerProfileDetails);
 
                         var bannerElement = angular.element(element[0].querySelector('.profile'));
                         bannerElement.css({
@@ -293,7 +340,10 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                     });
                 } else {
 
-                    alert('finish banner placeholder');
+                    bannerElement.css({
+                        'background-image': "url(/images/userMenu/header-placeholder.png)",
+                        'background-size': "cover"
+                    });
                 }
 
                 var usernamePlaceholder = angular.element(element[0].querySelector('.splash-bs-username'));

@@ -1,30 +1,25 @@
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Session, transactionFactory) {
+htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     var factory = {};
 
     //DEFAULT MENU
     factory.defaultMenu = [{
-        name: "My Feed",
+        name: "Feed",
         alerts: null,
         link: "feed",
         active: false
     }, {
-        name: "I'm Selling",
+        name: "My Posts",
         alerts: null,
-        link: "selling",
+        link: "myposts",
         active: false
     }, {
-        name: "My Mailbox",
+        name: "Watch List",
         alerts: null,
-        link: "mailbox.inbox.offers",
-        active: false
-    }, {
-        name: "My Favorites",
-        alerts: Session.userObj.user_settings.favorites.length,
-        link: "interested",
+        link: "watchlist",
         active: false
     }, {
         name: "Notify Me",
@@ -33,50 +28,7 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         active: false
     }];
 
-
-
-    //SPLASH SCREEN MENU
-    factory.splashMenu = [{
-        name: "Back",
-        alerts: null,
-        link: null,
-        active: false,
-        action: function () {
-            console.log('dismiss splash and go back state');
-        }
-    }, {
-        name: "Email Seller",
-        alerts: null,
-        link: null,
-        active: false,
-        action: function (result) {
-            transactionFactory.quickCompose(result);
-        }
-    }, {
-        name: "Call Seller",
-        alerts: null,
-        link: null,
-        active: false,
-        action: function (result) {
-            transactionFactory.displayPhone(result);
-        }
-    }, {
-        name: "Place Offer",
-        alerts: null,
-        link: null,
-        active: false,
-        action: function (result) {
-            transactionFactory.placeOffer(result);
-        }
-    }, {
-        name: "Show Original Post",
-        alerts: null,
-        link: null,
-        active: false,
-        action: function (result) {
-            transactionFactory.placeBid(result);
-        }
-    }];
+    factory.items = factory.defaultMenu;
 
 
 
@@ -88,17 +40,22 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
         link: null,
         active: false
     }, {
-        name: "General Settings",
+        name: "Account",
         alerts: null,
-        link: "settings.general",
+        link: "settings.account",
         active: false
     }, {
-        name: "Edit Profile",
+        name: "Password",
+        alerts: null,
+        link: "settings.password",
+        active: false
+    }, {
+        name: "Profile",
         alerts: null,
         link: "settings.profile",
         active: false
     }, {
-        name: "Payment Settings",
+        name: "Payment & Shipping",
         alerts: null,
         link: "settings.payment",
         active: false
@@ -115,75 +72,40 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.settingsMenu[1].active = false;
                 factory.settingsMenu[2].active = false;
                 factory.settingsMenu[3].active = false;
+                factory.settingsMenu[4].active = false;
                 factory.items = factory.settingsMenu;
                 break;
-            case 'settings.general':
+            case 'settings.account':
                 factory.settingsMenu[0].active = false;
                 factory.settingsMenu[1].active = true;
                 factory.settingsMenu[2].active = false;
                 factory.settingsMenu[3].active = false;
+                factory.settingsMenu[4].active = false;
+                factory.items = factory.settingsMenu;
+                break;
+            case 'settings.password':
+                factory.settingsMenu[0].active = false;
+                factory.settingsMenu[1].active = false;
+                factory.settingsMenu[2].active = true;
+                factory.settingsMenu[3].active = false;
+                factory.settingsMenu[4].active = false;
                 factory.items = factory.settingsMenu;
                 break;
             case 'settings.profile':
                 factory.settingsMenu[0].active = false;
                 factory.settingsMenu[1].active = false;
-                factory.settingsMenu[2].active = true;
-                factory.settingsMenu[3].active = false;
+                factory.settingsMenu[2].active = false;
+                factory.settingsMenu[3].active = true;
+                factory.settingsMenu[4].active = false;
                 factory.items = factory.settingsMenu;
                 break;
             case 'settings.payment':
                 factory.settingsMenu[0].active = false;
                 factory.settingsMenu[1].active = false;
                 factory.settingsMenu[2].active = false;
-                factory.settingsMenu[3].active = true;
+                factory.settingsMenu[3].active = false;
+                factory.settingsMenu[4].active = true;
                 factory.items = factory.settingsMenu;
-                break;
-
-
-
-            //Splash results
-            case 'splash':
-                factory.splashMenu[0].active = false;
-                factory.splashMenu[1].active = false;
-                factory.splashMenu[2].active = false;
-                factory.splashItems = factory.splashMenu;
-                break;
-
-            //Splash Menu results
-            case 'results.splash':
-                factory.splashMenu[0].active = false;
-                factory.splashMenu[1].active = false;
-                factory.splashMenu[2].active = false;
-                factory.splashItems = factory.splashMenu;
-                break;
-
-
-
-            //Splash Menu Interested
-            case 'interested.splash':
-                factory.splashMenu[0].active = false;
-                factory.splashMenu[1].active = false;
-                factory.splashMenu[2].active = false;
-                factory.splashItems = factory.splashMenu;
-                break;
-
-
-
-            //Splash Menu Selling
-            case 'selling.splash':
-                factory.splashMenu[0].active = false;
-                factory.splashMenu[1].active = false;
-                factory.splashMenu[2].active = false;
-                factory.splashItems = factory.splashMenu;
-                break;
-
-
-            //Splash Menu Feed
-            case 'feed.splash':
-                factory.splashMenu[0].active = false;
-                factory.splashMenu[1].active = false;
-                factory.splashMenu[2].active = false;
-                factory.splashItems = factory.splashMenu;
                 break;
 
 
@@ -194,119 +116,27 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
-            case 'selling':
+            case 'myposts':
                 factory.defaultMenu[0].active = false;
                 factory.defaultMenu[1].active = true;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
-            case 'mailbox':
+            case 'watchlist':
                 factory.defaultMenu[0].active = false;
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = true;
                 factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.inbox':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.outbox':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.inbox.offers':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.inbox.offers.offer':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.outbox.offers':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.outbox.offers.offer':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.inbox.questions':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.inbox.questions.question':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.outbox.questions':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'mailbox.outbox.questions.question':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = true;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
-                factory.items = factory.defaultMenu;
-                break;
-            case 'interested':
-                factory.defaultMenu[0].active = false;
-                factory.defaultMenu[1].active = false;
-                factory.defaultMenu[2].active = false;
-                factory.defaultMenu[3].active = true;
-                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'notifications':
                 factory.defaultMenu[0].active = false;
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
-                factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = true;
+                factory.defaultMenu[3].active = true;
                 factory.items = factory.defaultMenu;
                 break;
             case 'results':
@@ -314,7 +144,6 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
             case 'profile':
@@ -322,7 +151,6 @@ htsApp.factory('sideNavFactory', ['Session', 'transactionFactory', function (Ses
                 factory.defaultMenu[1].active = false;
                 factory.defaultMenu[2].active = false;
                 factory.defaultMenu[3].active = false;
-                factory.defaultMenu[4].active = false;
                 factory.items = factory.defaultMenu;
                 break;
         }

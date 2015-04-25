@@ -1,8 +1,9 @@
-htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'newPostFactory', function ($window, $scope, $location, mentionsFactory) {
+htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'newPostFactory', '$state', function ($window, $scope, $location, mentionsFactory, $state) {
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
-        $location.path("/results/"+$scope.query+"/");
+        //$location.path("/results/"+$scope.query+"/");
+        $state.go('results', {q: $scope.query});
     };
 
     ////========= # Products =========

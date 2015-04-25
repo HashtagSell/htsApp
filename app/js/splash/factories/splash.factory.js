@@ -72,7 +72,7 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     factory.sanitizeAnnotations = function (annoationsObj) {
 
         var sanitizedAnnotationsObj = {};
-        console.log(annoationsObj);
+        //console.log(annoationsObj);
         angular.forEach(annoationsObj, function(value, key) {
 
             if(typeof key === 'string') {
@@ -82,7 +82,7 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
                     sanitizedAnnotationsObj[validatedKey] = value;
                 }
             } else {  //TODO: Fix me, HSHTG items format annotation differently
-                console.log(value);
+                //console.log(value);
 
                 //var hshtgAnnotation = value;
                 //

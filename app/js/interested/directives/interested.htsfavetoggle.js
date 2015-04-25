@@ -5,7 +5,7 @@ htsApp.directive('htsFaveToggle', function () {
     return {
         restrict: 'E',
         template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();"></span>',
-        controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', function ($scope, $element, favesFactory, Session, authModalFactory) {
+        controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', 'socketio', function ($scope, $element, favesFactory, Session, authModalFactory, socketio) {
 
             //console.log(Session.userObj);
             //
@@ -22,10 +22,13 @@ htsApp.directive('htsFaveToggle', function () {
                     if (!$scope.favorited) { //If not already favorited
                         favesFactory.addFave(item, function () {  //Add the favorite and flag as done
                             $scope.favorited = true;
+                            socketio.joinPostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
                         });
                     } else { //toggle off favorite
                         favesFactory.removeFave(item, function () {
                             $scope.favorited = false;
+                            socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
+
                         });
                     }
                 } else {

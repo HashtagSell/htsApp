@@ -30,7 +30,7 @@ exports.id = function(req, res) {
         } else if (!user) {
 
             console.log("not a real id");
-            res.redirect('/404');
+            res.redirect('/forgot?msg=Account already activated.');
 
 
             // found user that needs activation
@@ -44,7 +44,7 @@ exports.id = function(req, res) {
                 if (err) {
                     throw err;
                 } else {
-                    res.redirect('/');
+                    res.redirect('/signin?email=' + user.local.email + '&tour=true');
                 }
             });
 
@@ -89,7 +89,7 @@ exports.forgotPassword = function(req, res){
                 {
                     user:{
                         name: user.user_settings.name,
-                        activation: "http://"+req.headers.host+"/#/reset/"+user.local.resetPasswordToken+"/",
+                        activation: "http://"+req.headers.host+"/reset/"+user.local.resetPasswordToken+"/",
                         email: email
                     },
                     images:{
@@ -162,7 +162,7 @@ exports.reset = function(req, res){
             } else if (!user) {
                 return res.json(
                     {
-                        error: "No user found with that email/token."
+                        error: "Token expired.  www.hashtagSell.com/forgot to get a new token."
                     }
                 )
 
@@ -180,7 +180,8 @@ exports.reset = function(req, res){
                     } else {
                         return res.json(
                             {
-                                success: true
+                                success: true,
+                                email: user.local.email
                             }
                         )
 
@@ -393,85 +394,6 @@ exports.signup = function(req, res) {
                 }
 
             });
-        }
-    });
-};
-
-
-
-
-exports.subscribe = function(req, res) {
-
-    var email = req.body.email.toLowerCase();
-    var name = req.body.name;
-
-    console.log(email, name);
-
-
-    //Search our users collection for the user with the activation id in the url
-    Subscriber.findOne({ 'user.email': email }, function (err, result) {
-
-        //systematic error. Redirect to page so user can report error.
-        if (err) {
-            console.log("error");
-            return res.json({error:err});
-
-            // if no user is found, then this is a bad activation id
-        } else if (result) {
-            return res.json({error:"Congrats! This email is already on our list.  Hang tight!"});
-
-
-            // found user that needs activation
-        } else if (!result) {
-
-            var newSubscriber = Subscriber();
-
-            newSubscriber.user.email = email;
-
-            newSubscriber.user.name = name;
-
-            newSubscriber.save(function(err) {
-                if (err) {
-                    throw err;
-                } else {
-                    //Get the ejs template for registration email
-                    var subscription_template = fs.readFileSync(__dirname + '/../config/mailer/email_templates/subscription_email_template.ejs', "utf8");
-
-                    //Variables for EJS to inject into template
-                    var emailObj =
-                    {
-                        user:{
-                            name: name
-                        },
-                        images:{
-                            fb_logo: "http://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
-                            twitter_logo: "http://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
-                            hts_logo: "http://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
-                        }
-                    };
-
-                    //Merge the template
-                    var compiled_html = ejs.render(subscription_template, emailObj);
-
-                    //Setup plain text email in case user cannot view Rich text emails
-                    var plain_text = "Thanks for supporting HashtagSell.  You'll be the first to know when we launch!";
-
-                    //Build the email message
-                    var opts = {
-                        from: "HashtagSell <registration@hashtagsell.com>",
-                        to: email,
-                        subject: "HashtagSell is almost there!",
-                        html: compiled_html,
-                        text: plain_text
-                    }
-
-                    // Send Registration Email
-                    mailer.sendMail(opts);
-
-                    res.json({success:"Thanks for subscribing!  We've sent you a confirmation email and you'll be the first to know when we launch!"});
-                }
-            });
-
         }
     });
 };

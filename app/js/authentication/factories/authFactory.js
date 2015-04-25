@@ -18,6 +18,9 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
                 if (passportResponse.data.success) { //We are logged in!!
 
                     Session.create(passportResponse.data);
+
+                    console.log('PASSPORT RESPONSE', passportResponse);
+
                     deferred.resolve(passportResponse.data);
 
                 } else { //There was an error logging the user in

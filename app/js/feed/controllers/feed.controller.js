@@ -144,18 +144,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     $scope.getAllCategoriesFromServer = function () {
         feedFactory.lookupCategories().then(function (response) {
 
-            //TODO: Use josh's API' http://localhost:4043/v1/groupings/
-
-            console.log(response);
-
             if(response.status !== 200) {
 
                 console.log(response.data.error);
 
             } else if (response.status === 200) {
 
-                //$scope.categories = response.data.categories;
-                formatCategories(response.data.categories);
+                $scope.feedCategoryObj.nestedCategories = formatCategories(response.data.results);
+
+                console.log($scope.feedCategoryObj.nestedCategories);
 
             }
         }, function (response) {
@@ -173,74 +170,62 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     var formatCategories = function (serverCategories) {
 
-        var nestedCategories = [];
+        var safeSearchOn = Session.userObj.user_settings.safe_search;
+        var sanitizedCategoryList = [];
 
-        nestedCategories.push({
-            'name': serverCategories[0].group_name,
-            'code': serverCategories[0].group_code,
-            'selected' : isCategoryDefaultSelected(serverCategories[0].group_code),
-            'children': [{
-                'name': serverCategories[0].name,
-                'code': serverCategories[0].code,
-                'selected' : isCategoryDefaultSelected(serverCategories[0].code)
-            }]
-        });
+        for (var i = 0; i < serverCategories.length; i++) {
 
-        //3Taps returns flat category structure.  We need nested structure.
-        //Loop though all the categories and nest child categories under group categories.
-        for (i = 1; i < serverCategories.length; i++) {
+            var parentCategory = serverCategories[i];
 
-            for (j = 0; j < nestedCategories.length; j++) {
+            switch (parentCategory.code) {
+                case 'SSSS':
+                case 'VVVV':
+                case 'RRRR':
+                case 'MMMM':
+                case 'PPPP':
+                    if(safeSearchOn && parentCategory.code === 'PPPP' ||  safeSearchOn && parentCategory.code === 'MMMM') { //If safe search is turned on
+                        continue;
+                    } else {
+                        parentCategory.name = toTitleCase(parentCategory.name);
+                        parentCategory.selected = isCategoryDefaultSelected(parentCategory.code);
 
-                if(Session.userObj.user_settings.safe_search  && serverCategories[i].group_code === 'PPPP' ||  Session.userObj.user_settings.safe_search  && serverCategories[i].group_code === 'MMMM') { //If safe search is turned on
-                    break;
-                }
+                        for (var j = 0; j < parentCategory.categories.length; j++) {
 
-                if (nestedCategories[j].code === serverCategories[i].group_code) { //If category group code is already found in our nestedCategories then add the child category to the group
+                            var childCategory = parentCategory.categories[j];
 
-                    nestedCategories[j].children.push({
-                        'name': serverCategories[i].name,
-                        'code': serverCategories[i].code,
-                        'selected': isCategoryDefaultSelected(serverCategories[i].code)
-                    });
-                    break;
+                            childCategory.name = toTitleCase(childCategory.name);
+                            childCategory.selected = isCategoryDefaultSelected(childCategory.code);
 
-                } else if (j == nestedCategories.length - 1) {
+                            if (childCategory.selected) {
+                                parentCategory.selected = true;
+                            }
+                        }
 
-
-                    nestedCategories.push({
-                        'name': serverCategories[i].group_name,
-                        'code': serverCategories[i].group_code,
-                        'selected': isCategoryDefaultSelected(serverCategories[i].group_code),
-                        'children': [{
-                            'name': serverCategories[i].name,
-                            'code': serverCategories[i].code,
-                            'selected': isCategoryDefaultSelected(serverCategories[i].code)
-                        }]
-                    });
-
-
-                }
-
-
+                        sanitizedCategoryList.push(parentCategory);
+                    }
             }
-
         }
 
-        ivhTreeviewMgr.validate(nestedCategories);
+        ivhTreeviewMgr.validate(sanitizedCategoryList);
 
-        $scope.feedCategoryObj.nestedCategories = nestedCategories;
-        console.log(nestedCategories);
+        console.log(sanitizedCategoryList);
+
+        return sanitizedCategoryList;
     };
+
+    //Capitalize first char of every word in sentence string
+    function toTitleCase(str){
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
 
 
     //This function used while converting 3Taps flat category list into nested list.
     //If this function returns true the checkbox will be pre-checked in the UI when the page is loaded cause user set this preference previously.
     var isCategoryDefaultSelected = function (categoryCode) {
-        for(k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
-            if($scope.feedCategoryObj.userDefaultCategories[k].code == categoryCode) {
+        for(var k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
+            if($scope.feedCategoryObj.userDefaultCategories[k].code === categoryCode) {
                 return true;
-            } else if (k == $scope.feedCategoryObj.userDefaultCategories.length -1) {
+            } else if (k === $scope.feedCategoryObj.userDefaultCategories.length -1) {
                 return false;
             }
         }
@@ -257,12 +242,12 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             for (t = 0; t < tree.length; t++) {
                 if (!tree[t].selected) {
-                    for (u = 0; u < tree[t].children.length; u++) {
-                        if (tree[t].children[u].selected) {
+                    for (u = 0; u < tree[t].categories.length; u++) {
+                        if (tree[t].categories[u].selected) {
                             newSelectedCategories.push(
                                 {
-                                    'name': tree[t].children[u].name,
-                                    'code': tree[t].children[u].code
+                                    'name': tree[t].categories[u].name,
+                                    'code': tree[t].categories[u].code
                                 }
                             );
                         }

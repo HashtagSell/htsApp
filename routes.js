@@ -1,15 +1,25 @@
 module.exports = function(app, passport) {
 
-    // =====================================
-    // ========= SEARCH PROXY ==============
-    // =====================================
-    var search = require('./api/search_api'); //Proxy between HTS and 3TAPS
-    app.get('/search', search.vendor);
-
-
 
     // =====================================
-    // ========= SEARCH PROXY (RETIRE SOON) USED WHEN USER CREATES NEW POST ==============
+    // HOME PAGE (with login links) ========
+    // =====================================
+    app.get('/', function(req, res) {
+        res.render('index.ejs'); // load the index.ejs file
+    });
+
+
+    // =====================================
+    // LOGOUT ==============================
+    // =====================================
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+    });
+
+
+    // =====================================
+    // ========= SEARCH PROXY (RETIRE SOON) ONLY USED WHEN USER CREATES NEW POST ==============
     // =====================================
     var search_old = require('./api/search_api_old'); //Proxy between HTS and 3TAPS
     app.get('/search_old', search_old.vendor);
@@ -17,7 +27,7 @@ module.exports = function(app, passport) {
 
 
     // =====================================
-    // ========= USER FEED ==============
+    // ========= USER FEED ================ (RETIRE SOON SINCE MOVING TO SOCKET.IO UPDATES)
     // =====================================
     var feed = require('./api/feed_api'); //Proxy between HTS and 3TAPS Polling
     app.get('/userfeed', feed.poll);
@@ -25,28 +35,15 @@ module.exports = function(app, passport) {
 
 
     // =====================================
-    // Locations Lookup ====================
+    // Categories Metadata Lookup ========== (RETIRE SOON: USED TO FIND POPULAR CATEGORY WHEN USER SELLS THEIR #item_name_here)
     // =====================================
     var reference = require('./api/reference_api'); //Lookup 3taps formatted metro codes
-    app.get('/search/locations', reference.locationMetadata);
-
-
-
-    // =====================================
-    // Categories Metadata Lookup ==========
-    // =====================================
     app.get('/search/categories', reference.categoryMetadata);
 
 
 
     // =====================================
-    // Get list of all possible categories =
-    // =====================================
-    app.get('/search/categorylookup', reference.getAllCategories);
-
-
-    // =====================================
-    // Reverse geocode via lat long to get postal code =
+    // Reverse geocode via lat long to get postal code(Used to lookup the zip code a lat long falls into.  Necessary to post to ebay!)
     // =====================================
     var geocode = require('./utils/reverseGeocode'); //Proxy between HTS and Google reverse geocode
     app.get('/search/reversegeocode', geocode.reverseGeocode);
@@ -54,34 +51,7 @@ module.exports = function(app, passport) {
 
 
     // =====================================
-    // CRON Update categories cache ========
-    // =====================================
-    var cron = require('./api/admin/cronJobs'); //Lookup 3taps formatted metro codes
-    app.get('/cronjob/categories', isAdmin, cron.updateCategories);
-
-
-
-    // =====================================
-    // CRON Locations ======================
-    // =====================================
-    app.get('/cronjob/locations', isAdmin, cron.updateLocations);
-
-
-
-    // =====================================
-    // HOME PAGE (with login links) ========
-    // =====================================
-    app.get('/', function(req, res) {
-        res.render('index.ejs', { // load the index.ejs file
-
-        });
-    });
-
-
-
-
-    // =====================================
-    // Photo Upload ======================
+    // Photo Upload ======================== (Used when user uploads profile photo, banner photo, or adds an item to item they're selling)
     // =====================================
     var posting_api = require('./api/posting_api');
     app.post('/upload', isLoggedIn, function(req, res) {
@@ -100,7 +70,7 @@ module.exports = function(app, passport) {
 
 
     // =====================================
-    // LOGIN ===============================
+    // LOCAL AUTHENTICATION ================
     // =====================================
     app.post('/login', function(req, res) {
         passport.authenticate('local-login', function (err, user, msg) {
@@ -115,51 +85,31 @@ module.exports = function(app, passport) {
                     console.log("error occurred during passport login");
                     return res.json({error : err});
                 }
-                return res.json(
-                    {
-                        success: true,
-                        user_settings: req.user.user_settings
+                return res.json({
+                        "success" : true,
+                        "user_settings" : req.user.user_settings || {},
+                        "facebook" : req.user.facebook || {},
+                        "twitter" : req.user.twitter || {},
+                        "ebay" : req.user.ebay || {},
+                        "amazon" : req.user.amazon || {}
                     })
             });
         })(req, res);
     });
 
-
-
-
-    // =====================================
-    // SIGN UP =============================
-    // =====================================
+    //Local auth user signup
     var activate = require('./api/activate_acct.js');
     app.post('/signup', activate.signup);
 
-
-
-    // =====================================
-    //  Account Activation =================
-    // =====================================
+    //Local auth email activation url
     app.get('/activate', activate.id);
 
-
-
-    // =====================================
-    // FORGOT PASSWORD =====================
-    // =====================================
+    //Local auth fogot password
     app.post('/forgot', activate.forgotPassword);
 
-
-
-    // =====================================
-    // RESETS PASSWORD =====================
-    // =====================================
+    //Local auth reset password
     app.post('/reset', activate.reset);
 
-
-
-    // =====================================
-    // Early Access Subscribe ==============
-    // =====================================
-    app.post('/subscribe', activate.subscribe);
 
 
 
@@ -168,75 +118,123 @@ module.exports = function(app, passport) {
     // FACEBOOK AUTH ROUTES ================
     // =====================================
     // route for facebook authentication and login
-    app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+    app.get('/auth/facebook', function(res, req, next){
+        passport.authenticate('facebook', { scope : ['email', 'publish_actions']}, function(res, req, next){
+            console.log('okay');
+        })(res, req, next);
+
+    });
 
     // handle the callback after facebook has authenticated the user
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect : '/',
-            failureRedirect : '/'
+            successRedirect : '/settings/account',
+            failureRedirect : '/settings/account'
         })
     );
 
+    var facebook = require('./api/facebook_api');
+    app.delete('/auth/facebook', function(req, res) {
+        facebook.disconnectAccount(req, res);
+    });
+
 
 
 
     // =====================================
-    // Get User Profile ====================
+    // TWITTER AUTH ROUTES =================
     // =====================================
+    // route for twitter authentication and login
+    app.get('/auth/twitter', function(res, req, next){
+
+        passport.authenticate('twitter', function(res, req, next){
+            console.log('twitter Okay');
+        })(res, req, next);
+
+
+        console.log(res);
+        console.log('res above');
+
+    });
+
+    // handle the callback after twitter has authenticated the user
+    app.get('/auth/twitter/callback',
+        passport.authenticate('twitter', {
+            successRedirect : '/settings/account',
+            failureRedirect : '/settings/account'
+        })
+    );
+
+    var twitterApi = require('./api/twitter_api');
+    app.delete('/auth/twitter', function(req, res) {
+        twitterApi.disconnectAccount(req, res);
+    });
+
+
+
+    app.post('/publishTweet', function(req, res) {
+        twitterApi.publishToTwitter(req, res);
+    });
+
+
+
+
+    // =====================================
+    // EBAY AUTH ROUTES ====================
+    // =====================================
+    // route for twitter authentication and login
+    var ebay = require('./api/ebay_api');
+    app.get('/auth/ebay/sessionId', function(req, res){
+        ebay.getSessionId(req, res);
+    });
+
+    app.get('/auth/ebay/fetchToken', function(req, res){
+        ebay.fetchToken(req, res);
+    });
+
+    app.delete('/auth/ebay', function(req, res) {
+        ebay.disconnectAccount(req, res);
+    });
+
+
+    app.get('/ebayauth', function(req, res){
+        res.send("Please wait as we redirect you to eBay sign-in page...");
+    });
+
+
+
+
+    // =====================================
+    // USER API ============================
+    // =====================================
+
+    //Get all data associated with username
     app.get('/getprofile', activate.getProfile);
 
-
-
-    // =====================================
-    // Keep user_settings in sync with server
-    // =====================================
+    //Push updated user data to server (favorites, items for sale, labels, user settings, etc).
     var user_settings_api = require('./api/user_settings_api.js');
     app.post('/updateUserSettings', isLoggedIn, user_settings_api.push);
 
+    //Get all the user's user_settings
+    app.get('/getUserSettings', isLoggedIn, user_settings_api.getUserSettings);
+
 
 
 
     // =====================================
-    // Generate private beta access keys
+    // PRIVATE BETA ADMIN ACCESS
     // =====================================
+
+    //Generate user and group keys for user's to signup with
     var admin = require('./api/admin/admin.js');
     app.get('/generatekeys', isAdmin, admin.generateKeys);
 
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
-    app.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/');
+
+    //Since using HTML5 mode in htsApp.js we need to preface all requests so that they are directed to index.ejs.. this way we use the client-side angular router.
+    app.use(function(req, res) {
+        res.render(__dirname + '/views/index.ejs');
     });
-
-
-    // =====================================
-    // 404 Redirect ========================
-    // =====================================
-    app.use(function(req, res, next){
-        res.status(404);
-
-        // respond with html page
-        if (req.accepts('html')) {
-            res.render('404.ejs', {
-                url: req.url
-            });
-            return;
-        }
-
-        // respond with json
-        if (req.accepts('json')) {
-            res.send({ error: 'Not found' });
-            return;
-        }
-
-        // default to plain-text. send()
-        res.type('txt').send('"We can know only that we know nothing. And that is the highest degree of human wisdom."');
-    });
-
 
 };
 

@@ -28,53 +28,6 @@ exports.reverseGeocode = function(req, res){
         qs: queryObject
     }, function (err, webResponse, body) {
 
-        //parse the response body
-        //var json = tryParseJSON(body);
-        //if (!json) {
-        //    json = {
-        //        response : body
-        //    };
-        //}
-        //
-        //// check for retry
-        //if (res && res.statusCode >= 500) {
-        //
-        //    console.log('status code greater than or equal to 500');
-        //
-        //    //return callback(err || json);
-        //
-        //    promise(null, vendorResponse);
-        //}
-        //
-        //if (!res) {
-        //    //return callback(
-        //    //    new Error('no response from server - possibly a remote server crash'));
-        //
-        //    console.log('no response from server - possibly a remote server crash');
-        //
-        //    promise(null, vendorResponse);
-        //
-        //}
-        //
-        //// if there is an error, kick it back
-        //if (err) {
-        //
-        //    console.log('we have an error querying posting API');
-        //
-        //    //return callback(err);
-        //
-        //    promise(null, vendorResponse);
-        //}
-        //
-        //vendorPosts = vendorPosts.concat(json.results);
-        //
-        //vendorPosts.sort(function(obj1, obj2) {
-        //    // Sort nearest to furthest
-        //    return obj1.geo.distance - obj2.geo.distance;
-        //});
-        //
-        //promise(null, vendorPosts);
-
         res.json(JSON.parse(body));
     });
 

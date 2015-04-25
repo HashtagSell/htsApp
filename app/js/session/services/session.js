@@ -69,9 +69,10 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     //Adds all users setting to HTML5 session storage
     this.create = function (data) {
-        console.log('Updating local storage with ',data);
+        console.log('Updating local storage with', data);
         data.user_settings.loggedIn = true;
         this.userObj.user_settings = data.user_settings; //ONLY ADD USER_SETTING PROPERTY TO OBJECT OTHERWISE BINDING FAILS AND UI DOES NOT LIVE UPDATE.
+
         console.log('data about to be written to local storage', this.userObj);
 
         $window.localStorage.hts_storage = angular.toJson(this.userObj.user_settings);
@@ -92,6 +93,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
     this.getSessionValue = function (key) {
         if (this.userObj.user_settings[key]) {
             return this.userObj.user_settings[key];
+        }else if (this.userObj.user_settings.linkedAccounts[key]) {
+            return this.userObj.user_settings.linkedAccounts[key];
         } else {
             return false;
         }
@@ -100,9 +103,37 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
     //Set a particular user setting in HTML5 session storage then update the server
     this.setSessionValue = function (key, value, callback) {
         console.log("set " + key + " in HTML5 user settings to ", value);
-        this.userObj.user_settings[key] = value;
+
+        if (this.userObj.user_settings[key]) {
+            this.userObj.user_settings[key] = value;
+        } else if (this.userObj.user_settings.linkedAccounts[key]) {
+            this.userObj.user_settings.linkedAccounts[key] = value;
+        }
+
         this.create(this.userObj);
         this.updateServer(callback);
+    };
+
+
+    this.getUserFromServer = function () {
+
+        var deferred = $q.defer();
+
+        $http.get('/getUserSettings')
+
+            .then(function (response) {
+
+                var data = {};
+                data.user_settings = response.data;
+
+                deferred.resolve(data);
+
+            },            //error
+            function (data, status, headers, config) {
+                deferred.reject();
+            });
+
+        return deferred.promise;
     };
 
 

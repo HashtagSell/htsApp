@@ -2,7 +2,7 @@ htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeo
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-        if (toState.name === 'results') {
+        if (toState.name === 'results' || toState.name === 'results.splash') {
             $scope.showFilterBar = true;
         } else {
             $scope.showFilterBar = false;

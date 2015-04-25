@@ -18,12 +18,19 @@ mongoose.connect(configDB.url); // connect to our database
 require('./config/passport/passport.js')(passport); // passport for configuration
 
 
+//Uses prerender.io service to generate html pages for search engines and crawlers.
+if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
+    app.use(require('prerender-node').set('prerenderServiceUrl', 'http://localhost:3000/').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
+} else if (process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
+    app.use(require('prerender-node').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
+}
+
 
 //force HTTPS if request is coming from production
 app.use(function(req, res, next) {
     var host = req.get('host');
 
-    if(host === "hashtagsell.com" || host == "www.hashtagsell.com") {
+    if(host === "hashtagsell.com" || host === "www.hashtagsell.com") {
 
         host = "www.hashtagsell.com";  //Force url to always contain www
 
@@ -51,6 +58,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+//Ensure json responses are pretty formatted
 app.set('json spaces', 2);
 
 app.use(multer({ dest: './uploads/'}));
@@ -74,6 +82,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
 require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+
 
 // launch ======================================================================
 app.listen(port);

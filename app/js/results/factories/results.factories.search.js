@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/14/14.
  */
-htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', '$timeout', 'utilsFactory', function ($http, $stateParams, $location, $q, $log, $timeout, utilsFactory) {
+htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', '$timeout', 'utilsFactory', 'ENV', function ($http, $stateParams, $location, $q, $log, $timeout, utilsFactory, ENV) {
 
     var factory = {};
 
@@ -39,55 +39,168 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         error: {}
     };
 
-    factory.queryParams = {};
+
+    factory.getInnerContainerDimensions = function () {
+        return 'function re-defined via resizeGrid directive';
+    };
 
 
-    factory.query = function () {
+    factory.paginate = function (page) {
 
         var deferred = $q.defer();
 
-        var search_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/search?q=" + $stateParams.q;
+        if (page === 0) {
+            factory.getPopularCategories().then(function (response) {
 
-        //TODO: Check if next_page param equal to 0.  this indicates no more results.
+                if(response.status === 200) {
 
-        if (factory.queryParams.anchor) {
-            search_api += "&anchor=" + factory.queryParams.anchor + "&next_page=" + factory.queryParams.next_page + "&next_tier=" + factory.queryParams.next_tier;
-        }
+                    if (response.data.length) {
 
-        $log.info(search_api);
+                        var winningCategories = [];
+                        var total = 0;
 
-        $http({method: 'GET', url: search_api}).
-            then(function (response, status, headers, config) {
+                        for (var i = 0; i < response.data.length; i++) {
 
-                if (response.data.external.postings.length) {
+                            var firstCategory = response.data[i];
 
-                    factory.queryParams.anchor = response.data.external.anchor;
-                    factory.queryParams.next_page = response.data.external.next_page;
-                    factory.queryParams.next_tier = response.data.external.next_tier;
+                            total = total + firstCategory.count;
 
-                    //response = utilsFactory.convertToHTSObjStructure(response);
+                        }
 
-                    factory.results.unfiltered = factory.results.unfiltered.concat(response.data.external.postings);
+                        var avg = (total / response.data.length);
+
+                        for (var j = 0; j < response.data.length; j++) {
+
+                            var secondCategory = response.data[j];
+
+                            if (secondCategory.count >= avg) {
+                                winningCategories.push(secondCategory.code);
+                            }
+
+                        }
+
+                        if (winningCategories.length) {
+                            factory.defaultParams.filters.optional = {
+                                exact: {
+                                    categoryCode: winningCategories.join(",")
+                                }
+                            };
+                        }
+                    }
+                }
+
+            }).then(function () {
+
+                factory.defaultParams.filters.mandatory.contains.heading = $stateParams.q;
+
+                factory.query(page).then(function (response) {
+
                     deferred.resolve(response);
 
-                } else {
-
-                    factory.status.pleaseWait = false;
-                    factory.status.error.message = "¯\\_(ツ)_/¯  Keep your searches simple.  And don't worry, we're fixing this... ";
-
-                }
-            },
-            function (response, status, headers, config) {
-
-                deferred.reject(response);
+                });
             });
+        } else {
+
+            factory.query(page).then(function (response) {
+
+                deferred.resolve(response);
+
+            });
+        }
 
         return deferred.promise;
     };
 
 
-    factory.getInnerContainerDimensions = function () {
-        return 'function re-defined via resizeGrid directive';
+
+    factory.getPopularCategories = function () {
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'GET',
+            url: ENV.groupingsAPI + 'popular',
+            params: {'query' : $stateParams.q}
+        }).then(function (response) {
+
+            //console.log('weighted categories: ', response);
+
+            deferred.resolve(response);
+
+        }, function (err) {
+            deferred.reject(err);
+        });
+
+        return deferred.promise;
+
+    };
+
+
+
+    factory.query = function (page) {
+
+        var deferred = $q.defer();
+
+        //console.log(factory.defaultParams);
+
+        var bracketURL = utilsFactory.bracketNotationURL(factory.defaultParams);
+        console.log('final URL', bracketURL);
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + bracketURL
+        }).then(function (response) {
+
+            //console.log('search results: ', response);
+
+            if(response.data.results.length) {
+
+                factory.defaultParams = {
+                    start: (page + 1) * response.data.options.count,
+                    //start: 0,
+                    count: response.data.options.count,
+                    filters: response.data.options.filters,
+                    geo: {
+                        coords: response.data.options.geo.coords,
+                        //min: response.data.results[response.data.results.length - 1].geo.distance,
+                        min: response.data.options.geo.min,
+                        max: response.data.options.geo.max
+                    },
+                    sort: {}
+                };
+
+                factory.results.unfiltered = factory.results.unfiltered.concat(response.data.results);
+            }
+
+            deferred.resolve(response);
+
+        }, function (err) {
+            deferred.reject(err);
+        });
+
+
+
+        return deferred.promise;
+
+    };
+
+
+
+    factory.defaultParams = {
+        start: 0,
+        count: 35,
+        filters: {
+            mandatory: {
+                contains: {
+                    heading: null
+                }
+            }
+        },
+        geo: {
+            lookup: true,
+            min: 0,
+            max: 12890000 // 8000 miles in meters
+        }
     };
 
 
@@ -161,13 +274,13 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         if (views.gridView) {
             var dimensions = factory.getInnerContainerDimensions();
             var itemWidth = 290;
-            console.log('width: ' + dimensions.w + '/' + itemWidth + ' equals...');
+            //console.log('width: ' + dimensions.w + '/' + itemWidth + ' equals...');
             numColumns = Math.floor(dimensions.w / itemWidth);
             factory.results.gridPercentageWidth = 100 / numColumns;
-            console.log("Calculated " + numColumns + " columns at " + factory.results.gridPercentageWidth + "% width.");
+            //console.log("Calculated " + numColumns + " columns at " + factory.results.gridPercentageWidth + "% width.");
         } else {
             numColumns = 1;
-            console.log("List View: " + numColumns + " columns!");
+            //console.log("List View: " + numColumns + " columns!");
         }
 
 
@@ -206,7 +319,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         if (i + j < results.length) {
                             //console.log(i + j);
-                            //console.log(results[i + j]);
+
 
                             if (results[i + j].askingPrice.value) {
                                 factory.updatePriceSlider(results[i + j].askingPrice.value);
@@ -241,8 +354,6 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
             console.log('Grid Rows: ', factory.results.gridRows);
 
-        } else {
-            console.log('column calculation did not change');
         }
 
     };
@@ -254,8 +365,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     factory.updatePriceSlider = function (itemPrice) {
-        //console.log(factory.priceSlider);
-        if (itemPrice > factory.priceSlider.max) {
+
+        if (parseInt(itemPrice) > parseInt(factory.priceSlider.max)) {
 
             factory.priceSlider.max = itemPrice;
 
@@ -372,8 +483,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     factory.filterArray = function (views, reason) {
-        console.log('filterArray view view type: ', views, factory.filter);
-        console.log('filterArray view reason: ', reason);
+        //console.log('filterArray view view type: ', views, factory.filter);
+        //console.log('filterArray view reason: ', reason);
 
         var filterToggles = factory.filter;
         var priceSliderRange = factory.priceSlider;
@@ -468,11 +579,25 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         factory.map.markers = [];
 
-        factory.queryParams = {};
-
-
         factory.status.pleaseWait = true;
         factory.status.error = {};
+
+        factory.defaultParams = {
+            start: 0,
+            count: 35,
+            filters: {
+                mandatory: {
+                    contains: {
+                        heading: null
+                    }
+                }
+            },
+            geo: {
+                lookup: true,
+                min: 0,
+                max: 100000
+            }
+        };
     };
 
 

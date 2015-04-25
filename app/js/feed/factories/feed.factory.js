@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', 'utilsFactory', function( $http, $stateParams, $location, $q, Session, utilsFactory) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', 'ENV', function( $http, $stateParams, $location, $q, Session, ENV) {
 
     var factory = {};
 
@@ -94,16 +94,12 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
         var deferred = $q.defer();
 
-        //TODO: Lookup users selected categories we should poll for them
-
-        var reference_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/search/categorylookup";
-
-        $http({method: 'GET', url: reference_api}).
-            then(function (response, status, headers, config) {
+        $http({
+            method: 'GET',
+            url: ENV.groupingsAPI
+        }).then(function (response, status, headers, config) {
 
                 console.log('reference api response', response);
-
-                //factory.categories = response.data;
 
                 deferred.resolve(response);
 

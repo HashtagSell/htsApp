@@ -1,0 +1,28 @@
+.outer-container-settings {
+    position: absolute;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    top: 77px;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+}
+
+
+.custom-settings-well {
+    min-height: 20px;
+    padding: 0px 0px 45px 0px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    margin: 0px 15px 0px 0px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+
+.settings-header {
+    padding: 0px 12px 3px 12px;
+    border-bottom: thin solid #D2D2D2;
+    margin-bottom: 17px;
+}

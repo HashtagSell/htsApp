@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="css/results.css"/>
-
 <div ui-view></div>
 
 <div ng-show="status.error.message" class="background-instructions">
@@ -118,7 +116,7 @@
             </div>
         </div>
         <div class="loadingMore" ng-show="status.loading">
-            <img src="/images/app/ajax-loader.gif">&nbsp;Fetching more awesome...</div>
+            <img src="/images/app/ajax-loader.gif">&nbsp;{{status.loadingMessage}}</div>
         </div>
     </div>
 

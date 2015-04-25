@@ -44,8 +44,6 @@ exports.lookup = function(ip, promise){
                 console.log("*** FreeGeoIP Crashed!!");
                 console.log("*** Starting FreeGeoIP again.");
 
-
-
                 function puts(error, stdout, stderr) {
                     sys.puts(stdout);
                 };

@@ -1,0 +1,43 @@
+<div ng-repeat="question in post.questions.results">
+    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12">
+        <div style="background-color: #ffffff; padding: 10px;">
+            <div>
+                <img ng-src="{{question.userProfile.profile_photo}}" height="40" style="position: relative; top: -12px;">
+                <div style="display: inline-block">
+                    <div>
+                        @{{question.username}}
+                    </div>
+                    <div>
+                        Sent {{question.modifiedAt | date:"MMMM d 'at' h:mma"}}
+                    </div>
+                </div>
+                <div ng-show="question.username === userObj.user_settings.name">
+                    <div class="dropdown" dropdown on-toggle="toggled(open)" style="position: absolute; top: 10px; right: 15px;">
+                      <a href class="dropdown-toggle" dropdown-toggle><i class="fa fa-chevron-down"></i></a>
+                      <ul class="dropdown-menu dropdown-menu-right">
+                          <li>
+                              <a href ng-click="deleteQuestion(question.postingId, question.questionId)">Delete my question</a>
+                          </li>
+                      </ul>
+                    </div>
+                </div>
+                <div>
+                    Q: {{question.value}}
+                </div>
+                <div ng-show="question.answers.length">
+                    <div ng-repeat="answer in question.answers">
+                        A: {{answer.value}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 10px; background-color: #F4A460; color:#ffffff" ng-show="!question.answers.length">
+            Waiting on seller to answer.  Hang tight!
+        </div>
+    </div>
+</div>
+<div class="col-xs-12">
+    <!--<a ng-show="showAnswered && post.questions.results.length" ng-click="showAnswered = !showAnswered">Hide questions already answered?</a>-->
+    <!--<a ng-show="!showAnswered && post.questions.results.length" ng-click="showAnswered = !showAnswered">Show questions already answered?</a>-->
+    <span ng-show="!post.questions.results.length">User questions associated with this item will appear here.</span>
+</div>

@@ -3,60 +3,109 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>HashtagSell Sign In</title>
+    <style>
+        /*----- Genral Classes start ------*/
+        hr{
+            margin: 30px 20px;
+            border-top:2px solid #1C1E26 ;
+            border-bottom:2px solid #38404D;
+        }
+        .list-unstyled {
+            padding-left: 0;
+            list-style: none;
+        }
+        .list-inline li {
+            display: inline-block;
+            padding-right: 5px;
+            padding-left: 5px;
+            margin-bottom: 10px;
+        }
+        /*---- General classes end -------*/
+
+        /*Change icons size here*/
+        .social-icons .fa {
+            font-size: 1.8em;
+        }
+        /*Change icons circle size and color here*/
+        .social-icons .fa {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            color: #FFF;
+            color: rgba(255, 255, 255, 0.8);
+            -webkit-transition: all 0.3s ease-in-out;
+            -moz-transition: all 0.3s ease-in-out;
+            -ms-transition: all 0.3s ease-in-out;
+            -o-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .social-icons.icon-circle .fa{
+            border-radius: 50%;
+        }
+        .social-icons.icon-rounded .fa{
+            border-radius:5px;
+        }
+        .social-icons.icon-flat .fa{
+            border-radius: 0;
+        }
+
+        .social-icons .fa:hover, .social-icons .fa:active {
+            color: #FFF;
+            -webkit-box-shadow: 1px 1px 3px #333;
+            -moz-box-shadow: 1px 1px 3px #333;
+            box-shadow: 1px 1px 3px #333;
+        }
+        .social-icons.icon-zoom .fa:hover, .social-icons.icon-zoom .fa:active {
+            -webkit-transform: scale(1.1);
+            -moz-transform: scale(1.1);
+            -ms-transform: scale(1.1);
+            -o-transform: scale(1.1);
+            transform: scale(1.1);
+        }
+
+        .social-icons .fa-facebook,.social-icons .fa-facebook-square{background-color:#3C599F;}
+        .social-icons .fa-twitter,.social-icons .fa-twitter-square{background-color:#32CCFE;}
+
+    </style>
 </head>
 <body>
 
     <form name="loginForm" id="loginForm" class="form-horizontal" ng-submit="loginPassport(loginForm.$valid)" novalidate>
         <div class="modal-header">
-            <h3 id="myModalLabel">Welcome to HashtagSell</h3>
+            <h3 id="myModalLabel">Welcome!</h3>
         </div>
         <div class="modal-body">
-            <label class="control-label" for="email">Email Address:</label>
+            <!--<ul class="social-icons icon-circle icon-zoom list-unstyled list-inline">-->
+                <!--<li> <a href="/auth/facebook" target="_self"><i class="fa fa-facebook"></i></a></li>-->
+                <!--<li> <a href="/auth/twitter" target="_self"><i class="fa fa-twitter"></i></a></li>-->
+            <!--</ul>-->
+
             <div class="controls">
-                <input type="email" id="email" ng-model="email" required>
+                <input class="form-control" type="email" id="email" ng-model="email" placeholder="Email" required>
             </div>
             <br>
-            <label class="control-label" for="password">Password:</label>
             <div class="controls">
-                <input type="password" id="password" ng-model="password" required>
-                <br>
+                <input class="form-control" type="password" id="password" ng-model="password" placeholder="Password" required>
                 <small class="text-danger">
                     {{message}}
                 </small>
                 <br>
                 <a href ng-click="dismiss('signUp')">
-                    <small>Create account?</small>
+                    <small>Create Account</small>
                 </a>
                 <small> | </small>
                 <a href ng-click="dismiss('forgot')">
-                    <small>Forgot password?</small>
+                    <small>Forgot Your Password?</small>
                 </a>
             </div>
         </div>
         <div class="modal-footer">
             <input class="btn btn-success" type="submit" value="Log In" id="submit" ng-disabled="loginForm.$invalid">
-            <button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>
+            <!--<button class="btn btn-default" ng-click="dismiss('dismiss')">Close</button>-->
         </div>
     </form>
-
-
-
-
-    <!--<div class="modal-header">-->
-        <!--<h3 class="modal-title">Private Beta Login!</h3>-->
-    <!--</div>-->
-    <!--<div class="modal-body">-->
-        <!--<ul>-->
-            <!--<li ng-repeat="item in items">-->
-                <!--<a ng-click="selected.item = item">{{ item }}</a>-->
-            <!--</li>-->
-        <!--</ul>-->
-        <!--Selected: <b>{{ selected.item }}</b>-->
-    <!--</div>-->
-    <!--<div class="modal-footer">-->
-        <!--<button class="btn btn-primary" ng-click="ok()">OK</button>-->
-        <!--<button class="btn btn-warning" ng-click="cancel()">Cancel</button>-->
-    <!--</div>-->
 
 </body>
 </html>

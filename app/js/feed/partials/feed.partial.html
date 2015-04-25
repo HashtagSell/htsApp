@@ -1,7 +1,3 @@
-
-<link rel="stylesheet" href="/css/feed.css"/>
-<link rel="stylesheet" href="/angular-ivh-treeview/dist/ivh-treeview.css"/>
-
 <div ui-view></div>
 
 <div ng-show="status.error.message" class="background-instructions">
@@ -95,14 +91,14 @@
 <!--Category Tree-->
 <div ng-show="results.length" class="feed-category-container hidden-sm hidden-xs">
 
-    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Quick-Search Categories" style="width: 200px; margin-top: 20px;"/>
+    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories" style="width: 200px; margin-top: 20px;"/>
 
     <div class="feed-inner-container">
         <!--Category tree selector-->
         <div ivh-treeview="feedCategoryObj.nestedCategories"
              ivh-treeview-label-attribute="'name'"
              ivh-treeview-id-attribute="'code'"
-             ivh-treeview-children-attribute="'children'"
+             ivh-treeview-children-attribute="'categories'"
              ivh-treeview-selected-attribute="'selected'"
              ivh-treeview-change-handler="categoryOnChange"
              ivh-treeview-filter="filterCategories"
@@ -111,6 +107,6 @@
 
     </div>
     <div>
-        Select the categories you want to see in your feed.
+        Select the category of items you want to see in your feed.
     </div>
 </div>

@@ -9,26 +9,54 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ngSanitize']);
+var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'angular-medium-editor', 'ngSanitize', 'ui-notification', 'ezfb']);
 
 
 
 //Forcing XHR requests via Angular $http (AJAX)
-htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTreeviewOptionsProvider', function ($httpProvider, $stateProvider, $urlRouterProvider, ivhTreeviewOptionsProvider) {
+htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$tooltipProvider', 'ivhTreeviewOptionsProvider', '$locationProvider', 'ezfbProvider', 'ENV', function ($httpProvider, $stateProvider, $urlRouterProvider, $tooltipProvider, ivhTreeviewOptionsProvider, $locationProvider, ezfbProvider, ENV) {
 
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
+
+    //Tells search engines and crawlers this site loads content dynamically
+    $locationProvider.hashPrefix('!');
+
+
+    //set locale of easy facebook angular module
+    ezfbProvider.setLocale('en_US');
+
+    ezfbProvider.setInitParams({
+        // This is my FB app id
+        appId: ENV.fbAppId,
+        version: 'v2.1'
+    });
+
+    //Allows me to programatically show/hide popovers needed in tutorials
+    $tooltipProvider.setTriggers({
+        'show': 'hide'
+    });
+
+
     //function assigned to routes that can only be accessed when user logged in
-    var loginRequired = ['$q', 'Session', 'authModalFactory', 'sideNavFactory', function ($q, Session, authModalFactory, sideNavFactory) {
+    var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', function ($q, Session, $state, $timeout, redirect) {
         var deferred = $q.defer();
 
-        if (!Session.userObj.user_settings.loggedIn) {
-            deferred.reject();
-            //$location.path('/');
-            //$location.path('/');
+        console.log('checking login!', Session.userObj);
+        console.log('login Checker should redirect to', redirect);
 
-            authModalFactory.signInModal(sideNavFactory.redirect.name);
+        if (!Session.userObj.user_settings.loggedIn) {
+
+            $timeout(function() {
+                $state.go('signup', { 'redirect': redirect });
+            });
+
+            deferred.reject();
 
         } else {
             deferred.resolve();
@@ -41,42 +69,88 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
 
     var joinRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
        if (Session.userObj.user_settings.loggedIn) {
-           socketio.joinPostingRoom($stateParams.id);
+           socketio.joinPostingRoom($stateParams.id, 'toggleSplash');
 
-           //if(splashFactory.result.external.source === 'HSHTG') {
-               socketio.joinUserRoom('brozeph', Session.userObj.user_settings.name);
-           //}
+           //TODO: This is running before we have any data in factory.
+           if(splashFactory.result) {
+               if (splashFactory.result.external.source === 'HSHTG') {
+
+                   var postingOwner = splashFactory.result.username;
+
+                   socketio.joinUserRoom(postingOwner, Session.userObj.user_settings.name);
+               }
+           }
        }
     }];
 
     var leaveRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
         if (Session.userObj.user_settings.loggedIn) {
-            socketio.leavePostingRoom($stateParams.id);
+            socketio.leavePostingRoom($stateParams.id, 'toggleSplash');
 
-            //if(splashFactory.result.external.source === 'HSHTG') {
-                socketio.leaveUserRoom(Session.userObj.user_settings.user);
-            //}
+            if(splashFactory.result) {
+                if (splashFactory.result.external.source === 'HSHTG') {
+
+                    var postingOwner = splashFactory.result.username;
+
+                    socketio.leaveUserRoom(postingOwner);
+                }
+            }
         }
     }];
 
 
-    $urlRouterProvider.otherwise('/feed');
+    $urlRouterProvider.otherwise(function($injector, $location){
+        var state = $injector.get('$state');
+        state.go('404');
+        return $location.path();
+    });
 
 
     $stateProvider.
+        state('404', {
+            views: {
+                "root": {
+                    templateUrl: 'js/404/partials/404.html'
+                }
+            }
+        }).
         state('new-post', {
             url: "/new-post",
-            controller: 'newPostController'
+            controller: 'newPostController',
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'new-post';
+                }
+            }
         }).
         state('profile', {
             url: "/profile",
             templateUrl: 'js/profile/partials/profile.partial.html',
-            resolve: { loginRequired: loginRequired }
+            controller: 'profile.controller',
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'profile';
+                }
+            }
+        }).
+        state('root', {
+            url: "/",
+            onEnter: function ($state) {
+                $state.go('feed');
+            }
         }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
-            controller: "feed.controller"
+            controller: "feed.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'feed';
+                }
+            }
         }).
         state('feed.splash', {
             url: "/:id",
@@ -84,24 +158,24 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             onEnter: joinRoom,
             onExit: leaveRoom
         }).
-        state('selling', {
-            url: "/selling",
-            templateUrl: "js/selling/partials/selling.partials.listSoldItems.html",
-            controller: 'selling.controller.listSoldItems',
-            resolve: { loginRequired: loginRequired }
-        }).
-        state('selling.splash', {
-            url: "/:id",
-            controller: 'splashController',
-            resolve: { loginRequired: loginRequired }
-        }).
-        state('interested', {
-            url: "/interested",
+        state('watchlist', {
+            url: "/watchlist",
             templateUrl: "js/interested/partials/interested.html",
             controller: 'myFavesController',
-            resolve: { loginRequired: loginRequired }
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist';
+                }
+            }
         }).
-        state('interested.splash', {
+        state('watchlist.questions', {
+            url: "/questions/:postingId"
+        }).
+        state('watchlist.offers', {
+            url: "/offers/:postingId"
+        }).
+        state('watchlist.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
@@ -111,69 +185,53 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
-            resolve: { loginRequired: loginRequired }
+            rresolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'notifications';
+                }
+            }
         }).
-        state('mailbox', {
-            url: "/mailbox",
-            templateUrl: "js/mailbox/partials/mailbox.html",
-            controller: 'mailbox.controller',
-            resolve: { loginRequired: loginRequired }
+        state('myposts', {
+            url: "/myposts",
+            templateUrl: "js/myPosts/partials/myPosts.html",
+            controller: 'myPosts.controller',
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts';
+                }
+            }
         }).
-        state('mailbox.inbox', {
-            url: "/inbox",
-            template: "<div ui-view></div>"
+        state('myposts.questions', {
+            url: "/questions/:postingId"
         }).
-        state('mailbox.outbox', {
-            url: "/outbox",
-            template: "<div ui-view></div>"
+        state('myposts.offers', {
+            url: "/offers/:postingId"
         }).
-        state('mailbox.inbox.offers', {
-            url: "/offers",
-            templateUrl: "js/mailbox/inbox/offers/partials/mailbox.inbox.offers.html",
-            controller: 'inbox.offers.controller'
-        }).
-        state('mailbox.outbox.offers', {
-            url: "/offers",
-            templateUrl: "js/mailbox/outbox/offers/partials/mailbox.outbox.offers.html",
-            controller: 'outbox.offers.controller'
-        }).
-        state('mailbox.inbox.offers.offer', {
-            url: "/:postingId/:offerId",
-            templateUrl: "js/mailbox/inbox/offers/offer/partials/offers.offer.html",
-            controller: "offer.offers.controller"
-        }).
-        state('mailbox.outbox.offers.offer', {
-            url: "/:postingId/:offerId"
-        }).
-        state('mailbox.inbox.questions', {
-            url: "/questions",
-            templateUrl: "js/mailbox/inbox/questions/partials/mailbox.inbox.questions.html",
-            controller: 'inbox.questions.controller',
-        }).
-        state('mailbox.outbox.questions', {
-            url: "/questions",
-            templateUrl: "js/mailbox/outbox/questions/partials/mailbox.outbox.questions.html",
-            controller: 'outbox.questions.controller'
-        }).
-        state('mailbox.inbox.questions.question', {
-            url: "/:postingId/:questionId",
-            templateUrl: "js/mailbox/inbox/questions/question/partials/questions.question.html",
-            controller: 'question.questions.controller'
-        }).
-        state('mailbox.outbox.questions.question', {
-            url: "/:postingId/:questionId",
-            templateUrl: "js/mailbox/inbox/questions/question/partials/questions.question.html",
-            controller: 'question.questions.controller'
+        state('myposts.splash', {
+            url: "/:id",
+            controller: 'splashController'
         }).
         state('settings', {
             url: "/settings",
-            template: "<div ui-view></div>",
-            resolve: { loginRequired: loginRequired }
+            templateUrl: "js/settings/settings_partial.html",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings';
+                }
+            }
         }).
-        state('settings.general', {
-            url: "/general",
-            templateUrl: "js/settings/general/partials/settings.general_partial.html",
-            controller: "settings.general.controller"
+        state('settings.account', {
+            url: "/account",
+            templateUrl: "js/settings/account/partials/settings.account_partial.html",
+            controller: "settings.account.controller"
+        }).
+        state('settings.password', {
+            url: "/password",
+            templateUrl: "js/settings/password/partials/settings.password_partial.html",
+            controller: "settings.password.controller"
         }).
         state('settings.profile', {
             url: "/profile",
@@ -186,29 +244,86 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
             controller: "settings.payment.controller"
         }).
         state('results', {
-            url: '/results/:q/',
+            url: '/q/:q',
             controller: 'results.controller',
-            templateUrl: "js/results/partials/results_partial.html"
+            templateUrl: "js/results/partials/results_partial.html",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'results';
+                }
+            }
+            //deepStateRedirect: {
+            //    default: { state: "results", params: { q: "logitech" } },
+            //    params: true,
+            //    fn: function($dsr$) {
+            //        return false;
+            //    }
+            //}
         }).
         state('results.splash', {
-            url: ":id",
-            controller: 'splashController',
-            onEnter: joinRoom,
-            onExit: leaveRoom
-        }).
-        state('reset', {
-            url: '/reset/:uid/',
-            template: " ",
-            controller: "changePasswordModalController"
-        }).
-        state('splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
             onExit: leaveRoom
         }).
-        state('otherwise', {
-            url: '/feed'
+        state('twitter', {
+            url: "/tw/:id",
+            controller: 'splashController'
+        }).
+        state('facebook', {
+            url: "/fb/:id",
+            controller: 'splashController'
+        }).
+        state('ebay', {
+            url: "/eb/:id",
+            controller: 'splashController'
+        }).
+        state('amazon', {
+            url: "/az/:id",
+            controller: 'splashController'
+        }).
+        state('signin', {
+            url: '/signin?email&tour',
+            params: {
+                'redirect': null,
+                'email': null,
+                'tour': null
+            },
+            controller: function(authModalFactory, $state) {
+                console.log($state.params);
+                authModalFactory.signInModal($state.params);
+            }
+        }).
+        state('signup', {
+            url: '/signup',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.signUpModal($state.params);
+            }
+        }).
+        state('checkemail', {
+            url: '/checkemail',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.checkEmailModal($state.params);
+            }
+        }).
+        state('forgot', {
+            url: '/forgot?msg',
+            params: {
+                'redirect': null,
+                'msg': null
+            },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.forgotPasswordModal($state.params);
+            }
+        }).
+        state('reset', {
+            url: '/reset/:token/',
+            controller: function(authModalFactory, $state) {
+                authModalFactory.resetPasswordModal('signin', $state.params.token);
+            }
         });
 
 
@@ -219,18 +334,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', 'ivhTree
         twistieLeafTpl: '',
         defaultSelectedState: false
     });
-
-
-
 }]);
-
-
-
-
-//
-//htsApp.run(['socketio', function(socketio) {
-//    console.log('kicking off socketio factory');
-//}]);
 
 
 //Verifies is password field match
@@ -323,61 +427,7 @@ htsApp.filter('cleanHeading', ['$sce', function ($sce) {
 htsApp.filter('cleanBody', ['$sce', function ($sce) {
     return function (dirtyBody) {
 
-
         dirtyBody = dirtyBody.replace(/[\r\n]/g, '<br />');
-        //console.log(dirtyBody);
-
-
-        //var LINKY_URL_REGEXP =
-        //        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
-        //    MAILTO_REGEXP = /^mailto:/;
-        //
-        //return function(text, target) {
-        //    if (!text) return text;
-        //    var match;
-        //    var raw = text;
-        //    var html = [];
-        //    var url;
-        //    var i;
-        //    while ((match = raw.match(LINKY_URL_REGEXP))) {
-        //        // We can not end in these as they are sometimes found at the end of the sentence
-        //        url = match[0];
-        //        // if we did not match ftp/http/www/mailto then assume mailto
-        //        if (!match[2] && !match[4]) {
-        //            url = (match[3] ? 'http://' : 'mailto:') + url;
-        //        }
-        //        i = match.index;
-        //        addText(raw.substr(0, i));
-        //        addLink(url, match[0].replace(MAILTO_REGEXP, ''));
-        //        raw = raw.substring(i + match[0].length);
-        //    }
-        //    addText(raw);
-        //    return $sanitize(html.join(''));
-        //
-        //    function addText(text) {
-        //        if (!text) {
-        //            return;
-        //        }
-        //        html.push(sanitizeText(text));
-        //    }
-        //
-        //    function addLink(url, text) {
-        //        html.push('<a ');
-        //        if (angular.isDefined(target)) {
-        //            html.push('target="',
-        //                target,
-        //                '" ');
-        //        }
-        //        html.push('href="',
-        //            url.replace(/"/g, '&quot;'),
-        //            '">');
-        //        addText(text);
-        //        html.push('</a>');
-        //    }
-        //};
-
-
-
 
         //Find any word that is in ALL CAPS and only capitalize the first letter
         return dirtyBody.replace(/\b([A-Z]{2,})\b/g, function (dirtyBody) {
@@ -385,11 +435,6 @@ htsApp.filter('cleanBody', ['$sce', function ($sce) {
             //Test against regex expression to find items like integers followed by simicolon.  i.e. 5556;
             var integersAndSimicolon = new RegExp("\\S+([0-9];)");
             if (!integersAndSimicolon.test(dirtyBody)) {
-
-                //console.log(dirtyBody);
-                //
-                //var catchNewLineChar = new RegExp("↵");
-                //if (catchNewLineChar.test);
 
                 //TODO: Catch ↵ character and insert new line in html
 
@@ -407,73 +452,12 @@ htsApp.filter('cleanBody', ['$sce', function ($sce) {
 htsApp.filter('cleanBodyExcerpt', ['$sce', function ($sce) {
     return function (dirtyBody) {
 
-
-        //dirtyBody = dirtyBody.replace(/[\r\n]/g, '<br />');
-        //console.log(dirtyBody);
-
-
-        //var LINKY_URL_REGEXP =
-        //        /((ftp|https?):\/\/|(www\.)|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s.;,(){}<>"”’]/,
-        //    MAILTO_REGEXP = /^mailto:/;
-        //
-        //return function(text, target) {
-        //    if (!text) return text;
-        //    var match;
-        //    var raw = text;
-        //    var html = [];
-        //    var url;
-        //    var i;
-        //    while ((match = raw.match(LINKY_URL_REGEXP))) {
-        //        // We can not end in these as they are sometimes found at the end of the sentence
-        //        url = match[0];
-        //        // if we did not match ftp/http/www/mailto then assume mailto
-        //        if (!match[2] && !match[4]) {
-        //            url = (match[3] ? 'http://' : 'mailto:') + url;
-        //        }
-        //        i = match.index;
-        //        addText(raw.substr(0, i));
-        //        addLink(url, match[0].replace(MAILTO_REGEXP, ''));
-        //        raw = raw.substring(i + match[0].length);
-        //    }
-        //    addText(raw);
-        //    return $sanitize(html.join(''));
-        //
-        //    function addText(text) {
-        //        if (!text) {
-        //            return;
-        //        }
-        //        html.push(sanitizeText(text));
-        //    }
-        //
-        //    function addLink(url, text) {
-        //        html.push('<a ');
-        //        if (angular.isDefined(target)) {
-        //            html.push('target="',
-        //                target,
-        //                '" ');
-        //        }
-        //        html.push('href="',
-        //            url.replace(/"/g, '&quot;'),
-        //            '">');
-        //        addText(text);
-        //        html.push('</a>');
-        //    }
-        //};
-
-
-
-
         //Find any word that is in ALL CAPS and only capitalize the first letter
         return dirtyBody.replace(/\b([A-Z]{2,})\b/g, function (dirtyBody) {
 
             //Test against regex expression to find items like integers followed by simicolon.  i.e. 5556;
             var integersAndSimicolon = new RegExp("\\S+([0-9];)");
             if (!integersAndSimicolon.test(dirtyBody)) {
-
-                //console.log(dirtyBody);
-                //
-                //var catchNewLineChar = new RegExp("↵");
-                //if (catchNewLineChar.test);
 
                 //TODO: Catch ↵ character and insert new line in html
 

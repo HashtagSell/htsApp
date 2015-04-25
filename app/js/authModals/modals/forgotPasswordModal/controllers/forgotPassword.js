@@ -1,5 +1,10 @@
 //Controller catches forgot password process from the forgot password modal and passes it to our authFactory
-htsApp.controller('forgotPasswordController', ['$scope', '$modalInstance', 'authFactory', function ($scope, $modalInstance, authFactory) {
+htsApp.controller('forgotPasswordController', ['$scope', '$modalInstance', 'authFactory', 'params', function ($scope, $modalInstance, authFactory, params) {
+
+    if(params.msg) {
+        $scope.message = "This activation email link has already been used.  Sign in or reset your password.";
+    }
+
     $scope.forgotPassword = function (isValid) {
         if (isValid) {
             var email = $scope.email;

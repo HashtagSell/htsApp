@@ -6,163 +6,221 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"><![endif]-->
 
-<head>
+<head ng-controller="metaController">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="fragment" content="!">
 
-    <title>HashtagSell &middot; Rethinking Online Classifieds</title>
+    <title ng-bind="metatags.page.title"></title>
+
+    <!-- Search Engines -->
+    <meta name='description' content=" {{metatags.page.description}} ">
+    <meta name="google-site-verification" content=" {{metatags.page.googleVerification}} " />
+
+    <!-- Facebook -->
+    <meta property='og:title' content=' {{metatags.facebook.title}} '/>
+    <meta property='og:image' content=' {{metatags.facebook.image}} '/>
+    <meta property='og:site_name' content=' {{metatags.facebook.site_name}} '/>
+    <meta property='og:description' content=' {{metatags.facebook.description}} '/>
+    <meta property='og:url' content=' {{metatags.facebook.url}} '/>
+
+    <!-- Twitter -->
+    <meta name='twitter:card' content=' {{metatags.twitter.card}} '>
+    <meta name='twitter:domain' content=' {{metatags.twitter.domain}} '>
+    <meta name='twitter:site' content=' {{metatags.twitter.site}} '>
+    <meta name='twitter:creator' content=' {{metatags.twitter.creator}} '>
+    <meta name='twitter:image:src' content=' {{metatags.twitter.image}} '>
+    <meta name='twitter:app:id:iphone' content=' {{metatags.twitter.appIdiPhone}} '>
+    <meta name='twitter:app:id:ipad' content=' {{metatags.twitter.appIdiPad}} '>
+    <meta name='twitter:app:id:googleplay' content=' {{metatags.twitter.appIdGooglePlay}} '>
+    <meta name='twitter:app:url:ipad' content=' {{metatags.twitter.appUrliPad}} '>
+    <meta name='twitter:app:url:googleplay' content=' {{metatags.twitter.appUrlGooglePlay}} '>
+    <meta name='twitter:app:url:iphone' content=' {{metatags.twitter.appUrliPhone}} '>
+    <meta name='twitter:description' content=' {{metatags.twitter.description}} '>
+    <meta name='twitter:title' content=' {{metatags.twitter.title}} '>
+    <meta name='twitter:url' content=' {{metatags.twitter.url}} '>
 
     <!-- Styles -->
     <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" />
+    <link rel="stylesheet" href="/angular-ivh-treeview/dist/ivh-treeview.css"/>
     <link rel="stylesheet" href="/ng-table/ng-table.min.css" />
     <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/slick-carousel/slick/slick.css" />
     <link rel="stylesheet" href="/slick-carousel/slick/slick-theme.css" />
     <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
     <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
+    <link rel="stylesheet" href="/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link rel="stylesheet" href="/medium-editor/dist/css/medium-editor.min.css">
+    <link rel="stylesheet" href="/medium-editor/dist/css/themes/bootstrap.css">
 
     <link rel="stylesheet" href="/css/index.css" />
     <link rel="stylesheet" href="/css/splash.css" />
     <link rel="stylesheet" href="/css/result_item_styles.css" />
+    <link rel="stylesheet" href="/css/feed.css"/>
+    <link rel="stylesheet" href="/css/interested.css"/>
+    <link rel="stylesheet" href="/css/myposts.css"/>
+    <link rel="stylesheet" href="/css/profile.css"/>
+    <link rel="stylesheet" href="/css/results.css"/>
+    <link rel="stylesheet" href="/css/settings.profile.css"/>
+    <link rel="stylesheet" href="/css/newpost.css">
+    <link rel="stylesheet" href="/css/newPost.pushToExternalSources.css" />
+    <link rel="stylesheet" href="/css/settings.css"/>
+
+    <!--ONLY LOADED IN PRODUCTION-->
+    <!--<link rel="stylesheet" href="/dist/css/styles.min.css"/>-->
+
+    <base href="/">
 </head>
 
 <body ng-controller="mainController" ng-cloak>
-    <div class="navbar navbar-default nav-links navbar-fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
-                <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
-            </a>
-            <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
-                <i class="fa fa-bars fa-2x"></i>
-            </a>
-            <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
-                <form role="search" ng-submit="awesomeBarSubmit()">
-                    <div class="input-group">
-                        <input
-                            type="text"
-                            class="form-control"
-                            ng-model="query"
-                            placeholder="I'm searching for..."
-                            style="background-color: #EAEAEA">
-                            <!--mentio-->
-                            <!--mentio-require-leading-space="true"-->
-                            <!--mentio-macros="macros"-->
-                            <!--mentio-id="'hashtag'"-->
-                            <!--mentio-typed-term="typedTerm"-->
+    <div ui-view="root">
+        <div class="navbar navbar-default nav-links navbar-fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
+                    <img src="/images/logo/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
+                </a>
+                <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
+                    <i class="fa fa-bars fa-2x"></i>
+                </a>
+                <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
+                    <form role="search" ng-submit="awesomeBarSubmit()">
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                ng-model="query"
+                                placeholder="I'm searching for..."
+                                style="background-color: #EAEAEA">
+                                <!--mentio-->
+                                <!--mentio-require-leading-space="true"-->
+                                <!--mentio-macros="macros"-->
+                                <!--mentio-id="'hashtag'"-->
+                                <!--mentio-typed-term="typedTerm"-->
 
-                            <!--popover='*Hint: We search in your area by default.  If you want to search in another city use the @ symbol.'-->
-                            <!--popover-placement="bottom"-->
-                            <!--popover-trigger="focus"-->
+                                <!--popover='*Hint: We search in your area by default.  If you want to search in another city use the @ symbol.'-->
+                                <!--popover-placement="bottom"-->
+                                <!--popover-trigger="focus"-->
 
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-danger" type="button">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </span>
-                        </input>
-                    </div>
-                </form>
-
-
-                <!--<mentio-menu style="z-index: 1100 !important;"-->
-                             <!--mentio-for="'hashtag'"-->
-                             <!--mentio-trigger-char="'@'"-->
-                             <!--mentio-items="places"-->
-                             <!--mentio-template-url="/place-mentions.tpl"-->
-                             <!--mentio-search="searchPlaces(term)"-->
-                             <!--mentio-select="getPlacesTextRaw(item)">-->
-                <!--</mentio-menu>-->
-
-
-            </div>
-            <ul class="nav navbar-nav pull-right">
-                <li ng-controller="newPostController">
-                    <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">New post</button>
-                </li>
-                <li class="dropdown" dropdown ng-controller="userMenu">
-                    <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
-                        <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38"/>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
-                        <li><a href ng-click="signIn()">Sign In</a></li>
-                        <li><a href ng-click="signUp()">Create Account</a></li>
-                    </ul>
-                    <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
-                        <li><a ui-sref="settings.general">User Settings</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" ng-click="logout()">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-
-    <div class="master-container">
-        <div class="overlay" ng-class="{ 'active' : !sideNavOffCanvas.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
-        <div class="sidebar-container" ng-class="{ 'active' : !sideNavOffCanvas.hidden}">
-            <div class="bs-profile-nav sidebar-offcanvas">
-                <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}}); background-size : cover; cursor: pointer;" ui-sref="profile">
-                    <div class="profileCircle">
-                        <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
-                    </div>
-                </div>
-                <div ng-controller="newPostController" class="sellButton" ui-sref="profile" style="cursor: pointer">
-                    <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
-                    <div class="bs-username" ng-show="!userObj.user_settings.name">
-                        <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
-                        <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
-                    </div>
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">New post</button>
-                </div>
-
-                <!--SideNav-->
-                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
-                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
-                        {{item.name}}
-                        <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
-                    </a>
-                </div>
-
-
-                <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
-                <div ng-controller="filterBar">
-                    <div class="list-group" ng-show="showFilterBar">
-                        <a class="list-group-item">
-                            <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
-                            <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
-                            <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
-                        </a>
-                        <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
-                        <a class="list-group-item">
-                            <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
-                        </a>
-
-                        <a class="list-group-item">
-                            <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
-                        </a>
-
-                        <a class="list-group-item">
-                            <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
-                        </a>
-
-                        <a class="list-group-item">
-                            <span class="btn-group btn-group-justified">
-                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
-                                <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-danger" type="button">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
                             </span>
-                        </a>
-                    </div>
+                            </input>
+                        </div>
+                    </form>
+
+
+                    <!--<mentio-menu style="z-index: 1100 !important;"-->
+                                 <!--mentio-for="'hashtag'"-->
+                                 <!--mentio-trigger-char="'@'"-->
+                                 <!--mentio-items="places"-->
+                                 <!--mentio-template-url="/place-mentions.tpl"-->
+                                 <!--mentio-search="searchPlaces(term)"-->
+                                 <!--mentio-select="getPlacesTextRaw(item)">-->
+                    <!--</mentio-menu>-->
+
+
                 </div>
+                <ul class="nav navbar-nav pull-right">
+                    <li ng-controller="newPostController">
+                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
+                    </li>
+                    <li class="dropdown" dropdown ng-controller="userMenu">
+                        <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
+                            <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38" height="38"/>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
+                            <li><a href ng-click="signIn()">Sign In</a></li>
+                            <li><a href ng-click="signUp()">Create Account</a></li>
+                        </ul>
+                        <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
+                            <li><a ui-sref="settings.account">User Settings</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/logout" target="_self" ng-click="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
 
 
-        <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNavOffCanvas.hidden}">
-            <div class="container">
-                <div ui-view></div>
+        <div class="master-container">
+            <div class="overlay" ng-class="{ 'active' : !sideNavOffCanvas.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
+            <div class="content-wrapper">
+                <div class="sidebar-container" ng-class="{ 'active' : !sideNavOffCanvas.hidden}">
+                    <div class="bs-profile-nav sidebar-offcanvas">
+                        <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}});">
+                            <span class="sideNavTriggerBannerImageUpload fa-stack">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="bannerDropzoneConfig"></i>
+                            </span>
+                            <div class="profileCircle">
+                                <span class="sideNavTriggerProfileImageUpload fa-stack">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="profileDropzoneConfig"></i>
+                                </span>
+                                <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
+                            </div>
+                        </div>
+                        <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
+                            <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
+                            <div class="bs-username" ng-show="!userObj.user_settings.name">
+                                <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
+                                <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
+                        </div>
+
+                        <!--SideNav-->
+                        <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                            <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
+                                {{item.name}}
+                                <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
+                            </a>
+                        </div>
+
+
+                        <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
+                        <div ng-controller="filterBar">
+                            <div class="list-group" ng-show="showFilterBar">
+                                <a class="list-group-item">
+                                    <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                                    <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
+                                    <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                                </a>
+                                <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
+                                <a class="list-group-item">
+                                    <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
+                                </a>
+
+                                <a class="list-group-item">
+                                    <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
+                                </a>
+
+                                <a class="list-group-item">
+                                    <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
+                                </a>
+
+                                <a class="list-group-item">
+                                    <span class="btn-group btn-group-justified">
+                                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
+                                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNavOffCanvas.hidden}">
+                    <div class="container">
+                        <div ui-view></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -171,6 +229,8 @@
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
     <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.core.min.js"></script>
+    <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.dsr.min.js"></script>
     <script type="text/javascript" src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
     <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
@@ -191,14 +251,18 @@
     <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
     <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
-    <script type="text/javascript" src="//localhost:4044/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script type="text/javascript" src="/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
+    <script type="text/javascript" src="/angular-easyfb/angular-easyfb.min.js"></script>
 
     <!--ANGULAR GLOBAL CONST CONFIG-->
-    <script type="text/javascript" src="htsApp.config"></script>
+    <script type="text/javascript" src="/js/htsApp.config"></script>
 
     <!--ANGULAR-->
-    <script type="text/javascript" src="htsApp.js"></script>
+    <script type="text/javascript" src="htsApp.js"></script> <!--//TODO: Why when I move ./htsApp.js to /js/htsApp.js does angular try to load more than once? -->
+    <script type="text/javascript" src="/js/meta/controllers/meta.controller.js"></script>
+    <script type="text/javascript" src="/js/meta/factories/meta.factory.js"></script>
     <script type="text/javascript" src="/js/main/controllers/main.controller.js"></script>
     <script type="text/javascript" src="/js/userMenu/controllers/userMenu.controller.userMenu.js"></script>
     <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
@@ -215,26 +279,33 @@
     <script type="text/javascript" src="/js/authModals/modals/signInModal/controllers/signIn.js"></script>
     <script type="text/javascript" src="/js/authModals/modals/signUpModal/controllers/signUp.js"></script>
     <script type="text/javascript" src="/js/authModals/modals/forgotPasswordModal/controllers/forgotPassword.js"></script>
+    <script type="text/javascript" src="/js/authModals/modals/resetPasswordModal/controllers/resetPassword.js"></script>
     <script type="text/javascript" src="/js/authModals/modals/checkEmailModal/controllers/checkEmailCtrl.js"></script>
-    <script type="text/javascript" src="/js/authModals/modals/updatePasswordModal/controllers/updatePassword.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/services/geolocationService.js"></script>
     <script type="text/javascript" src="/js/sideNav/controllers/sideNav.controller.js"></script>
     <script type="text/javascript" src="/js/sideNav/factories/sideNav.factory.js"></script>
     <script type="text/javascript" src="/js/sideProfile/controllers/sideProfile.controller.js"></script>
     <script type="text/javascript" src="/js/filterBar/controllers/filterBar.js"></script>
+    <script type="text/javascript" src="/js/profile/factories/profile.factory.js"></script>
+    <script type="text/javascript" src="/js/profile/controllers/profile.controller.js"></script>
     <script type="text/javascript" src="/js/results/controllers/results.controller.js"></script>
     <script type="text/javascript" src="/js/results/factories/results.factories.search.js"></script>
     <script type="text/javascript" src="/js/interested/controllers/interestedController.js"></script>
     <script type="text/javascript" src="/js/interested/factories/interested.factory.js"></script>
     <script type="text/javascript" src="/js/interested/directives/interested.htsfavetoggle.js"></script>
+    <script type="text/javascript" src="/js/interested/directives/interested.faveLabels.js"></script>
+    <script type="text/javascript" src="/js/interested/questions/controllers/watchlist.questions.controller.js"></script>
+    <script type="text/javascript" src="/js/interested/questions/directives/watchlist.questions.moreInfo.directive.js"></script>
+    <script type="text/javascript" src="/js/interested/questions/factories/watchlist.questions.factory.js"></script>
+    <script type="text/javascript" src="/js/interested/offers/controllers/watchlist.offers.controller.js"></script>
+    <script type="text/javascript" src="/js/interested/offers/directives/watchlist.offers.moreInfo.directive.js"></script>
     <script type="text/javascript" src="/js/splash/controllers/splash.controller.js"></script>
     <script type="text/javascript" src="/js/splash/factories/splash.factory.js"></script>
-    <script type="text/javascript" src="/js/settings/general/controllers/settings.general.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/account/controllers/settings.account.controller.js"></script>
+    <script type="text/javascript" src="/js/settings/password/controllers/settings.password.controller.js"></script>
     <script type="text/javascript" src="/js/settings/profile/controllers/settings.profile.controller.js"></script>
     <script type="text/javascript" src="/js/settings/payment/controllers/settings.payment.controller.js"></script>
-    <script type="text/javascript" src="/js/selling/controllers/selling.controller.listSoldItems.js"></script>
-    <script type="text/javascript" src="/js/selling/factories/selling.factories.listSoldItems.js"></script>
     <script type="text/javascript" src="/js/feed/controllers/feed.controller.js"></script>
     <script type="text/javascript" src="/js/feed/factories/feed.factory.js"></script>
     <script type="text/javascript" src="/js/slickCarousel/directives/slickCarousel.directive.js"></script>
@@ -244,20 +315,23 @@
     <script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>
     <script type="text/javascript" src="/js/transactionButtons/modals/placeOffer/controllers/transactionButtons.modal.placeOffer.controller.js"></script>
     <script type="text/javascript" src="/js/notifications/controllers/notifications.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/controllers/mailbox.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/inbox/offers/controllers/inbox.offers.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/inbox/offers/offer/controllers/offers.offer.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/inbox/questions/controllers/inbox.questions.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/inbox/questions/question/controllers/questions.question.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/outbox/offers/controllers/outbox.offers.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/outbox/questions/controllers/outbox.questions.controller.js"></script>
-    <script type="text/javascript" src="/js/mailbox/factories/mailbox.factory.js"></script>
-    <script type="text/javascript" src="/js/offers/factories/offers.factory.js"></script>
     <script type="text/javascript" src="/js/messages/factories/messages.factory.js"></script>
-    <script type="text/javascript" src="/js/qamodule/factories/qamodule.factory.js"></script>
     <script type="text/javascript" src="/js/socketio/factories/socketio.factory.js"></script>
-    <script type="text/javascript" src="/js/utils/factories/utils.factory.js"></script>
+    <script type="text/javascript" src="/js/utils/bracketNotation/utils.factory.js"></script>
+    <script type="text/javascript" src="/js/myPosts/controllers/myPosts.controller.js"></script>
+    <script type="text/javascript" src="/js/myPosts/factories/myPosts.factory.js"></script>
+    <script type="text/javascript" src="/js/myPosts/questions/controllers/myPosts.questions.controller.js"></script>
+    <script type="text/javascript" src="/js/myPosts/questions/directives/myPosts.questions.moreInfo.directive.js"></script>
+    <script type="text/javascript" src="/js/myPosts/questions/factories/myPosts.questions.factory.js"></script>
+    <script type="text/javascript" src="/js/myPosts/offers/controllers/myPosts.offers.controller.js"></script>
+    <script type="text/javascript" src="/js/myPosts/offers/directives/myPosts.offers.moreInfo.directive.js"></script>
+    <script type="text/javascript" src="/js/myPosts/offers/factories/myPosts.offers.factory.js"></script>
+    <script type="text/javascript" src="/js/utils/ebay/ebay.factory.js"></script>
+    <script type="text/javascript" src="/js/utils/facebook/facebook.factory.js"></script>
+    <script type="text/javascript" src="/js/utils/twitter/twitter.factory.js"></script>
 
+
+    <!--<script> window.prerenderReady = false; </script>-->
 
 
 
@@ -272,7 +346,7 @@
     <!--</script>-->
 
     <!--ONLY LOADED IN PRODUCTION-->
-    <!--<script type="text/javascript" src="/dist/HashtagSell.min.js"></script>-->
+    <!--<script type="text/javascript" src="/dist/js/HashtagSell.min.js"></script>-->
 
 </body>
 </html>
