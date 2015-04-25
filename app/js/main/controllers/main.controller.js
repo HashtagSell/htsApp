@@ -91,7 +91,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
         Session.getUserFromServer().then(function (response) {
 
-            console.log('pass this to create to update to update userObj and html5 storage', response);
+            //console.log('pass this to create to update to update userObj and html5 storage', response);
 
             Session.create(response);
 
