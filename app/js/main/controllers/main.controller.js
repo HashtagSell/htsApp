@@ -10,14 +10,14 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     };
 
 
-    $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
         $rootScope.previousState = fromState.name;
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
 
 
-        if (toState.name === 'results' || toState.name === 'results.splash') {
+        if (toState.name === 'results') {
 
             $timeout(function () {
 
@@ -66,17 +66,11 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
         } else {
 
-            $timeout(function () {
+            var navbar = angular.element(document.getElementsByClassName('navbar-fixed-top'));
+            var sideBarContainer = angular.element(document.getElementsByClassName('sidebar-container'));
 
-                //console.log('showing responsive navbar');
-
-                var navbar = angular.element(document.getElementsByClassName('navbar-fixed-top'));
-                var sideBarContainer = angular.element(document.getElementsByClassName('sidebar-container'));
-
-                navbar.removeClass('hide-navbar');
-                sideBarContainer.removeClass('sidebar-container-roll-up');
-            }, 200);
-
+            navbar.removeClass('hide-navbar');
+            sideBarContainer.removeClass('sidebar-container-roll-up');
         }
 
 

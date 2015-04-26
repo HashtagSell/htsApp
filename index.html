@@ -84,7 +84,7 @@
                 <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
                     <i class="fa fa-bars fa-2x"></i>
                 </a>
-                <div class="col-lg-5 col-lg-offset-2 col-md-5 col-md-offset-1 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
+                <div class="col-lg-5 col-lg-offset-1 col-md-4 col-md-offset-0 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
                     <form role="search" ng-submit="awesomeBarSubmit()">
                         <div class="input-group">
                             <input
@@ -125,6 +125,26 @@
 
                 </div>
                 <ul class="nav navbar-nav pull-right">
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="feed">
+                            Feed
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="myposts">
+                            My Posts
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="watchlist">
+                            Watchlist
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="notifications">
+                            Notify Me
+                        </a>
+                    </li>
                     <li ng-controller="newPostController">
                         <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
                     </li>
@@ -329,10 +349,6 @@
     <script type="text/javascript" src="/js/utils/ebay/ebay.factory.js"></script>
     <script type="text/javascript" src="/js/utils/facebook/facebook.factory.js"></script>
     <script type="text/javascript" src="/js/utils/twitter/twitter.factory.js"></script>
-
-
-    <!--<script> window.prerenderReady = false; </script>-->
-
 
 
     <!--<script type="text/ng-template" id="/place-mentions.tpl">-->

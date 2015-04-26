@@ -229,22 +229,16 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
         splashInstance.result.then(function (selectedItem) {
             //console.log(selectedItem);
-        }, function (reason) {
-            //console.log('Splash dismissed at: ' + new Date());
-            if(reason === 'feed' || reason === 'notifications' || reason === 'interested' || reason === 'myposts' || reason === 'watchlist') {
-                splashInstance.dismiss();
-                $state.go(reason);
-            } else {
-                splashInstance.dismiss();
+        }, function (direct) {
+            if(!direct) {
                 $state.go('^');
-                //$state.go($rootScope.previousState);
             }
         });
 
 
         //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
-        $scope.$on('$stateChangeStart', function () {
-            splashInstance.dismiss();
+        $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            splashInstance.dismiss('direct');
         });
     };
 

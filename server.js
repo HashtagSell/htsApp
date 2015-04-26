@@ -63,8 +63,6 @@ app.set('json spaces', 2);
 
 app.use(multer({ dest: './uploads/'}));
 
-app.set('view engine', 'ejs'); // set up ejs for templating
-
 // required for passport
 app.use(session({
     secret: 'slothloveschunk',
@@ -86,4 +84,4 @@ require('./routes.js')(app, passport); // load our routes and pass in our app an
 
 // launch ======================================================================
 app.listen(port);
-console.log('HashtagSell | '+process.env.NODE_ENV+' ENV | PORT: ' + port);
+console.log('HashtagSell | ' + process.env.NODE_ENV +' ENV | PORT: ' + port);

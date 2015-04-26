@@ -5,7 +5,7 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.render('index.ejs'); // load the index.ejs file
+        res.sendFile(__dirname + '/index.html'); // load index.html which kicks off angular
     });
 
 
@@ -233,7 +233,7 @@ module.exports = function(app, passport) {
 
     //Since using HTML5 mode in htsApp.js we need to preface all requests so that they are directed to index.ejs.. this way we use the client-side angular router.
     app.use(function(req, res) {
-        res.render(__dirname + '/views/index.ejs');
+        res.sendFile(__dirname + '/index.html');
     });
 
 };
