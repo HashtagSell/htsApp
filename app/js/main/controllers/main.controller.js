@@ -11,10 +11,14 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
         $rootScope.previousState = fromState.name;
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
+
+
+        $scope.sideNavOffCanvas.hidden = true;
 
 
         if (toState.name === 'results') {
@@ -62,7 +66,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
                     }
                 });
 
-            }, 200);
+            }, 250);
 
         } else {
 

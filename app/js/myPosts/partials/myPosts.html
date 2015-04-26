@@ -1,9 +1,7 @@
+<div ui-view></div>
+
 <div class="outer-container-myposts custom-myposts-well">
 
-
-            <!--{{expandedPostingId}}-->
-
-            <!--{{currentState}}-->
     <div ng-show="!userPosts.data.length" class="background-instructions">
         <div class="inset-background-text">
             :( Awww... You're not selling anything.  <span ng-click="newPost();" style="cursor: pointer; color: rgb(66, 139, 202);">Try it out?</span>
@@ -35,7 +33,7 @@
                     <tbody>
 
                         <!--TODO: Open splash on click-->
-                        <tr ng-repeat-start="post in $data" style="cursor: pointer">
+                        <tr ng-repeat-start="post in $data" style="cursor: pointer" ng-click="openSplash(post)">
 
                             <td style="width:1px;">
                                 <img ng-show="post.images.length" ng-src="{{post.images[0].thumbnail || post.images[0].full}}" style="height:70px; width: 70px;">
@@ -48,18 +46,18 @@
                                 <!--<div ng-bind-html="post.body"/>-->
 
                                 <div style="float: left;">
-                                    <button class="btn btn-default" type="button" ui-sref="myposts.questions({postingId: post.postingId})" ng-init="unreadQuestionsCount = countUnreadQuestions(post);">
+                                    <button class="btn btn-default" type="button" ui-sref="myposts.questions({postingId: post.postingId})" ng-init="unreadQuestionsCount = countUnreadQuestions(post);" ng-click="$event.stopPropagation();">
                                         Questions <span ng-if="unreadQuestionsCount > 0" class="badge">{{unreadQuestionsCount}}</span>
                                     </button>
 
-                                    <button class="btn btn-default" type="button" ui-sref="myposts.offers({postingId: post.postingId})" ng-init="unreadOffersCount = countUnreadOffers(post);">
+                                    <button class="btn btn-default" type="button" ui-sref="myposts.offers({postingId: post.postingId})" ng-init="unreadOffersCount = countUnreadOffers(post);" ng-click="$event.stopPropagation();">
                                         Offers <span ng-if="unreadOffersCount > 0" class="badge">{{unreadOffersCount}}</span>
                                     </button>
                                 </div>
 
                                 <div style="float: right;">
-                                    <i class="fa fa-minus-circle fa-2x" ng-click="deletePost(post)" style="color:red; margin-right: 20px;" popover="Delete post" popover-trigger="mouseenter" popover-placement="left"></i>
-                                    <i class="fa fa-pencil-square-o fa-2x" ng-click="editPost(post)" style="color:#494949; margin-right: 20px;" popover="Edit post" popover-trigger="mouseenter" popover-placement="left"></i>
+                                    <i class="fa fa-minus-circle fa-2x" ng-click="deletePost(post); $event.stopPropagation();" style="color:red; margin-right: 20px;" popover="Delete post" popover-trigger="mouseenter" popover-placement="left"></i>
+                                    <i class="fa fa-pencil-square-o fa-2x" ng-click="editPost(post); $event.stopPropagation();" style="color:#494949; margin-right: 20px;" popover="Edit post" popover-trigger="mouseenter" popover-placement="left"></i>
                                 </div>
                             </td>
                         </tr>

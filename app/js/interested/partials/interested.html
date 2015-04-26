@@ -59,11 +59,10 @@
 
             </thead>
             <tbody>
-                <tr ng-repeat-start="favorite in $data">
+                <tr ng-repeat-start="favorite in $data" ng-click="openSplash(favorite)">
                     <td width="30" style="text-align: center; vertical-align: middle;">
-                        <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" />
+                        <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" ng-click="$event.stopPropagation();"/>
                     </td>
-                    <!--TODO: ng-click='openSplash(favorite)'-->
                     <td style="width:70px; cursor: pointer;">
                         <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
                     </td>
@@ -74,17 +73,17 @@
                                 <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
                                     <tr>
                                         <td>#{{label}}&nbsp;&nbsp;</td>
-                                        <td ng-click="removeIndividualLabel()" style="cursor: pointer; z-index: 10;">x</td>
+                                        <td ng-click="removeIndividualLabel(); $event.stopPropagation();" style="cursor: pointer; z-index: 10;">x</td>
                                     </tr>
                                 </table>
                             </small>
                         </div>
                         <div>
-                            <button class="btn btn-default" type="button" ui-sref="watchlist.questions({postingId: favorite.postingId})">
+                            <button class="btn btn-default" type="button" ui-sref="watchlist.questions({postingId: favorite.postingId})" ng-click="$event.stopPropagation();">
                                 Questions
                             </button>
 
-                            <button class="btn btn-default" type="button" ui-sref="watchlist.offers({postingId: favorite.postingId})">
+                            <button class="btn btn-default" type="button" ui-sref="watchlist.offers({postingId: favorite.postingId})" ng-click="$event.stopPropagation();">
                                 Offers
                             </button>
                         </div>
@@ -96,7 +95,7 @@
                         <h4>No price</h4>
                     </td>
                     <td style="width:20px; vertical-align: middle;">
-                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite);" style="color:red; cursor: pointer;"></i>
+                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;"></i>
                     </td>
                 </tr>
 

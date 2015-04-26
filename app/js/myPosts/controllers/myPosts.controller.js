@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', function ($scope, $filter, $modal, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification) {
+htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -173,6 +173,15 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPosts
             delay: 10000
         });  //Send the webtoast
 
+    };
+
+
+
+    //passes properties associated with clicked DOM element to splashFactory for detailed view
+    $scope.openSplash = function(post){
+        splashFactory.result = post;
+        console.log(splashFactory.result);
+        $state.go('myposts.splash', { id: post.postingId });
     };
 
 }]);
