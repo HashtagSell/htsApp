@@ -99,6 +99,21 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
+    //$urlRouterProvider.rule(function($injector, $location) {
+    //
+    //    var path = $location.path();
+    //    var hasTrailingSlash = path[path.length-1] === '/';
+    //
+    //    if(hasTrailingSlash) {
+    //
+    //        //if last charcter is a slash, return the same url without the slash
+    //        var newPath = path.substr(0, path.length - 1);
+    //        return newPath;
+    //    }
+    //
+    //});
+
+
     $urlRouterProvider.otherwise(function($injector, $location){
         var state = $injector.get('$state');
         state.go('404');
@@ -244,7 +259,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             controller: "settings.payment.controller"
         }).
         state('results', {
-            url: '/q/:q/:city',
+            url: '/q/:q',
             params: {
                 'q': null,
                 'city': null,
@@ -479,13 +494,13 @@ htsApp.filter('cleanBodyExcerpt', ['$sce', function ($sce) {
 
 
 
-htsApp.directive('contenteditable', ['$sce', function ($sce) {
+htsApp.directive('awesomebar', ['$sce', function ($sce) {
     return {
         restrict: 'A', // only activate on element attribute
         require: '?ngModel', // get a hold of NgModelController
         link: function (scope, element, attrs, ngModel) {
+
             function read() {
-                console.log('reading');
                 var html = element.html();
                 // When we clear the content editable the browser leaves a <br> behind
                 // If strip-br attribute is provided then we strip this out
@@ -506,17 +521,65 @@ htsApp.directive('contenteditable', ['$sce', function ($sce) {
             };
 
             // Listen for change events to enable binding
-            element.on('blur keyup', function (e) {
+            element.on('keydown keyup', function (e) {
 
-                console.log(e.which);
 
-                if(e.which == '76') {
-                    console.log('L pressed');
-                    return '';
+
+                //console.log(e);
+
+                //If the user pressed the enter key
+                if(parseInt(e.which) === 13 && e.type === "keydown") {
+                    //Check to see if the mentio menu is open or not
+                    var mentioMenu = angular.element( document.querySelector( '#mentioMenu') );
+
+                    if(mentioMenu[0].style.display === "none"){
+                        console.log('mentio list closed.. submitting query');
+                        scope.awesomeBarSubmit();
+                    } else if(mentioMenu[0].style.display === "block") {
+                        console.log('mentio list open');
+                    }
+                    e.preventDefault();
                 } else {
                     scope.$apply(read);
                 }
+            });
+            read(); // initialize
+        }
+    };
+}]);
 
+
+
+
+htsApp.directive('sellbox', ['$sce', function ($sce) {
+    return {
+        restrict: 'A', // only activate on element attribute
+        require: '?ngModel', // get a hold of NgModelController
+        link: function (scope, element, attrs, ngModel) {
+            function read() {
+                var html = element.html();
+                // When we clear the content editable the browser leaves a <br> behind
+                // If strip-br attribute is provided then we strip this out
+                if (attrs.stripBr && html === '<br>') {
+                    html = '';
+                }
+                ngModel.$setViewValue(html);
+            }
+
+            if (!ngModel) return; // do nothing if no ng-model
+
+            // Specify how UI should be updated
+            ngModel.$render = function () {
+                console.log('doing this');
+                if (ngModel.$viewValue !== element.html()) {
+                    element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                }
+            };
+
+            // Listen for change events to enable binding
+            element.on('blur keydown', function (e) {
+
+                scope.$apply(read);
 
             });
             read(); // initialize

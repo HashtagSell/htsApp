@@ -89,6 +89,7 @@
                         <div class="input-group">
                             <div id="awesomeBar"
                                  contenteditable
+                                 awesomebar
                                  class="form-control"
                                  ng-focus="clearPlaceholder()"
                                  ng-change="validateQueryObj()"
@@ -118,9 +119,9 @@
                         </div>
                     </form>
 
-                    <!--<div>{{queryObj}}</div>-->
+                    <!--<div>{{queryObj.q}}</div>-->
 
-                    <mentio-menu style="z-index: 1100 !important;"
+                    <mentio-menu id="mentioMenu" style="z-index: 1100 !important;"
                                  mentio-for="'awesomePlace'"
                                  mentio-trigger-char="'@'"
                                  mentio-items="cities"

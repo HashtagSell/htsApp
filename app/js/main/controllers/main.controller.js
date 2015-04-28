@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/24/15.
  */
-htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', '$location', '$window', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, $location, $window) {
+htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', 'awesomeBarFactory', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, awesomeBarFactory) {
 
     $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
 
@@ -76,6 +76,10 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
             navbar.removeClass('hide-navbar');
             sideBarContainer.removeClass('sidebar-container-roll-up');
         }
+
+        //if(fromState.name === "results" && toState.name !== "results.splash"){
+        //    awesomeBarFactory.queryObj.q = "I'm searching for...";
+        //}
 
 
     });

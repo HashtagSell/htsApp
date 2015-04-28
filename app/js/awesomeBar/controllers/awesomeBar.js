@@ -1,4 +1,4 @@
-htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', '$state', 'searchFactory', function ($window, $scope, $location, awesomeBarFactory, $state, searchFactory) {
+htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
     //$scope.awesomeText = "I'm searching for...";
 
@@ -22,24 +22,35 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
 
-        searchFactory.resetResultsView();
+        if($scope.queryObj.q) {
 
-        //cache the entire users search string before we strip it apart and build our query object
-        var entireSearchString = $scope.queryObj.q;
+            console.log('before sanatize', $scope.queryObj);
 
-        if($scope.queryObj.locationObj) {
+            searchFactory.resetResultsView();
+
+            //cache the entire users search string before we strip it apart and build our query object
+            var entireSearchString = $scope.queryObj.q;
 
             var strippedHTML = strip($scope.queryObj.q);
 
+            console.log('stripped html', strippedHTML);
+
             var subString = strippedHTML.replace('@' + $scope.queryObj.city, "").trim();
 
+            console.log('trimmed string', subString);
+
             $scope.queryObj.q = subString;
+
+            console.log('after sanatize', $scope.queryObj);
+
+            $state.go('results', $scope.queryObj);
+
+            $scope.queryObj.q = entireSearchString;
         }
 
-        $state.go('results', $scope.queryObj);
-
-        $scope.queryObj.q = entireSearchString;
     };
+
+
 
     function strip(html) {
         var tmp = document.createElement("DIV");
@@ -67,7 +78,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
         if (city) {
             awesomeBarFactory.predictPlace(city).then(function (results) {
                 $scope.cities = results;
-                console.log("Here is scope.cities", $scope.cities);
+                //console.log("Here is scope.cities", $scope.cities);
             });
         }
     };

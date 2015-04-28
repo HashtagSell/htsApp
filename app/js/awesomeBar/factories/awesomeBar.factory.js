@@ -17,8 +17,6 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
     factory.googleMap = new google.maps.Map(document.createElement("map-canvas"));
 
 
-
-
     factory.predictPlace = function (city) {
 
         var defaultBounds = new google.maps.LatLngBounds(
