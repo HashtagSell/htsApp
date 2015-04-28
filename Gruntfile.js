@@ -20,7 +20,6 @@ module.exports = function(grunt) {
                         userAPI: 'http://localhost:4043/v1/users/',
                         realtimePostingAPI: 'http://localhost:4044/postings',
                         realtimeUserAPI: 'http://localhost:4044/users',
-                        syncAgentAPI: 'http://localhost:8881',
                         groupingsAPI: 'http://localhost:4043/v1/groupings/',
                         annotationsAPI: 'http://localhost:4043/v1/annotations',
                         facebookAuth: 'http://localhost:8081/auth/facebook',
@@ -41,10 +40,9 @@ module.exports = function(grunt) {
                         name: 'staging',
                         htsAppUrl: 'https://staging.hashtagsell.com',
                         postingAPI: 'https://staging-posting-api.hashtagsell.com/v1/postings/',
-                        userAPI: 'https://staging.hashtagsell.com/v1/users/',
-                        realtimePostingAPI: 'https://staging-realtime-svc.hashtagsell.com/postings',
-                        realtimeUserAPI: 'https://staging-realtime-svc.hashtagsell.com/users',
-                        syncAgentAPI: 'https://staging-posting-sync-agent.hashtagsell.com',
+                        userAPI: 'https://staging-posting-api.hashtagsell.com/v1/users/',
+                        realtimePostingAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/postings',
+                        realtimeUserAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/users',
                         groupingsAPI: 'https://staging-posting-api.hashtagsell.com/v1/groupings/',
                         annotationsAPI: 'https://staging-posting-api.hashtagsell.com/v1/annotations',
                         facebookAuth: 'https://staging.hashtagsell.com/auth/facebook',
@@ -68,7 +66,6 @@ module.exports = function(grunt) {
                         userAPI: 'https://www.hashtagsell.com/v1/users/',
                         realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
                         realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
-                        syncAgentAPI: 'https://www.hashtagsell.com:8881',
                         groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
                         annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
                         facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
@@ -134,6 +131,7 @@ module.exports = function(grunt) {
             dev: {
                 tasks: ['nodemon', 'watch'],
                 options: {
+                    async: true,
                     logConcurrentOutput: true
                 }
             }
@@ -143,6 +141,7 @@ module.exports = function(grunt) {
                 script: 'server.js',
                 watch: ['./api/**/*.js', './config/**/*.js', './utils/**/*.js', './views/**/*.js'],
                 options: {
+                    async: true,
                     env: {
                         PORT: '8081',
                         NODE_ENV: 'DEVELOPMENT'
@@ -178,6 +177,7 @@ module.exports = function(grunt) {
                 files: ['<%= jshint.files %>'],
                 tasks: ['jshint'],
                 options: {
+                    async: true,
                     livereload: true
                 }
             },
@@ -270,7 +270,7 @@ module.exports = function(grunt) {
             startRealTimeApi: {
                 command: './startRealTimeApiIfNotRunning.sh',
                 options: {
-                    async: false,
+                    async: true,
                     stdout: true,
                     stderr: true,
                     failOnError: true
@@ -328,40 +328,27 @@ module.exports = function(grunt) {
 
 
     //Starts ingest agent on local machine
-    grunt.registerTask('start-local-ingest', function (target) {
-        return grunt.task.run(['shell:startMongo', 'shell:startPostingApi', 'shell:startSync', 'shell:startRealTimeApi']);
-    });
+    grunt.registerTask('start-local-ingest', ['shell:startMongo', 'shell:startPostingApi', 'shell:startSync', 'shell:startRealTimeApi']);
     //Stops ingest agent on local machine
-    grunt.registerTask('stop-local-ingest', function (target) {
-        return grunt.task.run(['shell:stopMongo', 'shell:stopPostingApi', 'shell:stopSync', 'shell:stopRealTimeApi']);
-    });
+    grunt.registerTask('stop-local-ingest', ['shell:stopMongo', 'shell:stopPostingApi', 'shell:stopSync', 'shell:stopRealTimeApi']);
 
 
 
+    //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
+    grunt.registerTask('start-dev-htsApp', ['ngconstant:development', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent']);
 
-    //starts mongo, freegeoip, postingapi, prerender.io server, realtime svc
-    grunt.registerTask('start-local-apis', function (target) {
-        return grunt.task.run(['shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi']);
-    });
-    //stops mongo, freegeoip, postingapi, prerender.io server, realtime svc
-    grunt.registerTask('stop-local-apis', function (target) {
-        return grunt.task.run(['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
-    });
+    //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
+    grunt.registerTask('stop-dev-htsApp', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
 
 
 
-    //starts htsApp on localhost
-    grunt.registerTask('start-local-htsApp', function (target) {
-        return grunt.task.run('ngconstant:development', 'jshint', 'concurrent');
-    });
+    //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
+    grunt.registerTask('start-staging-htsApp', 'ngconstant:staging');
 
 
-    //Builds htsApp to prepare for localhost testing
-    grunt.registerTask('build-local', ['ngconstant:development', 'jshint', 'concat', 'uglify', 'cssmin']);
 
-    //Builds htsApp to prepare for https://staging.hashtagsell.com testing
-    grunt.registerTask('build-staging', ['ngconstant:staging', 'jshint', 'concat', 'uglify', 'cssmin']);
+    //TODO: Use grunt include to add single concatonated css and js file to index.html
+    //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
+    grunt.registerTask('start-prod-htsApp', ['ngconstant:production', 'jshint', 'concat', 'uglify', 'cssmin']);
 
-    //Builds htsApp to prepare for https://www.hashtagsell.com deployment
-    grunt.registerTask('build-prod', ['ngconstant:production', 'jshint', 'concat', 'uglify', 'cssmin']);
 };
