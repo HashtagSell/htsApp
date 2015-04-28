@@ -12,17 +12,23 @@ var multer       = require('multer');
 var session      = require('express-session');
 var MongoStore   = require('connect-mongo')(session);
 
-// configuration ===============================================================
-var configDB = require('./config/database/mongo.js');
-mongoose.connect(configDB.url); // connect to our database
+var common   = require('./config/common.js');
+var env  = common.config();
+
+
+// Connect to Mongo db =====================================
+mongoose.connect(env.mongo.url); // connect to our database
+
+
+//Passport.js config
 require('./config/passport/passport.js')(passport); // passport for configuration
 
 
 //Uses prerender.io service to generate html pages for search engines and crawlers.
 if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
-    app.use(require('prerender-node').set('prerenderServiceUrl', 'http://localhost:3000/').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
+    app.use(require('prerender-node').set('prerenderServiceUrl', env.prerender_io.url).set('prerenderToken', env.prerender_io.token));
 } else { //use prerender.io service
-    app.use(require('prerender-node').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
+    app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 }
 
 
@@ -58,14 +64,18 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+
 //Ensure json responses are pretty formatted
 app.set('json spaces', 2);
 
+
+//Required for image uploads.
 app.use(multer({ dest: './uploads/'}));
 
-// required for passport
+
+//Passport session details
 app.use(session({
-    secret: 'slothloveschunk',
+    secret: env.passportjs.secret,
     saveUninitialized: true,
     resave: true,
     cookie : { maxAge: 3600000 * 24 * 30 * 2 },
@@ -82,6 +92,6 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 require('./routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
 
-// launch ======================================================================
+// start Node server ===========================================================
 app.listen(port);
-console.log('HashtagSell | ' + process.env.NODE_ENV +' ENV | PORT: ' + port);
+console.log('HashtagSell | ' + process.env.NODE_ENV + ' ENV | PORT: ' + port);

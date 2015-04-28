@@ -8,7 +8,7 @@ module.exports = function(grunt) {
                 name: 'globalVars'
             },
             // Environment targets
-            development: {
+            dev: {
                 options: {
                     dest: './app/js/htsApp.config'
                 },
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            staging: {
+            stage: {
                 options: {
                     dest: './app/js/htsApp.config'
                 },
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
                     }
                 }
             },
-            production: {
+            prod: {
                 options: {
                     dest: './app/js/htsApp.config'
                 },
@@ -129,7 +129,7 @@ module.exports = function(grunt) {
         },
         concurrent: {
             dev: {
-                tasks: ['nodemon', 'watch'],
+                tasks: ['nodemon:dev', 'watch'],
                 options: {
                     async: true,
                     logConcurrentOutput: true
@@ -139,9 +139,8 @@ module.exports = function(grunt) {
         nodemon: {
             dev: {
                 script: 'server.js',
-                watch: ['./api/**/*.js', './config/**/*.js', './utils/**/*.js', './views/**/*.js'],
+                watch: ['./api/**/*.js', './config/**/*.js', './utils/**/*.js'],
                 options: {
-                    async: true,
                     env: {
                         PORT: '8081',
                         NODE_ENV: 'DEVELOPMENT'
@@ -168,6 +167,24 @@ module.exports = function(grunt) {
                                 require('fs').writeFileSync('.rebooted', 'rebooted: ' + new Date());
                             }, 1000);
                         });
+                    }
+                }
+            },
+            stage: {
+                script: 'server.js',
+                options: {
+                    env: {
+                        PORT: '8081',
+                        NODE_ENV: 'STAGING'
+                    }
+                }
+            },
+            prod: {
+                script: 'server.js',
+                options: {
+                    env: {
+                        PORT: '8081',
+                        NODE_ENV: 'PRODUCTION'
                     }
                 }
             }
@@ -335,7 +352,7 @@ module.exports = function(grunt) {
 
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('start-dev-htsApp', ['ngconstant:development', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent']);
+    grunt.registerTask('start-dev-htsApp', ['ngconstant:dev', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
     grunt.registerTask('stop-dev-htsApp', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
@@ -343,12 +360,12 @@ module.exports = function(grunt) {
 
 
     //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
-    grunt.registerTask('start-staging-htsApp', 'ngconstant:staging');
+    grunt.registerTask('start-staging-htsApp', ['ngconstant:stage', 'nodemon:stage']);
 
 
 
     //TODO: Use grunt include to add single concatonated css and js file to index.html
     //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('start-prod-htsApp', ['ngconstant:production', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('start-prod-htsApp', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin', 'nodemon:prod']);
 
 };
