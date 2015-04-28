@@ -91,7 +91,21 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
             }).then(function () {
 
+                console.log($stateParams);
+
                 factory.defaultParams.filters.mandatory.contains.heading = $stateParams.q;
+
+                if($stateParams.locationObj) {
+                    if ($stateParams.locationObj.geometry) {
+
+                        factory.defaultParams.geo.lookup = false;
+
+                        var lat = $stateParams.locationObj.geometry.location.lat();
+                        var lon = $stateParams.locationObj.geometry.location.lng();
+
+                        factory.defaultParams.geo.coords = [lon, lat];
+                    }
+                }
 
                 factory.query(page).then(function (response) {
 

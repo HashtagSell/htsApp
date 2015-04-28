@@ -244,7 +244,12 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             controller: "settings.payment.controller"
         }).
         state('results', {
-            url: '/q/:q',
+            url: '/q/:q/:city',
+            params: {
+                'q': null,
+                'city': null,
+                'locationObj': null
+            },
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html",
             resolve: {
@@ -253,16 +258,15 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                     return 'results';
                 }
             }
-            //deepStateRedirect: {
-            //    default: { state: "results", params: { q: "logitech" } },
-            //    params: true,
-            //    fn: function($dsr$) {
-            //        return false;
-            //    }
-            //}
         }).
         state('results.splash', {
             url: "/:id",
+            params: {
+                'q': null,
+                'city': null,
+                'locationObj': null,
+                'id': null
+            },
             controller: 'splashController',
             onEnter: joinRoom,
             onExit: leaveRoom
@@ -470,3 +474,84 @@ htsApp.filter('cleanBodyExcerpt', ['$sce', function ($sce) {
         });
     };
 }]);
+
+
+
+
+
+htsApp.directive('contenteditable', ['$sce', function ($sce) {
+    return {
+        restrict: 'A', // only activate on element attribute
+        require: '?ngModel', // get a hold of NgModelController
+        link: function (scope, element, attrs, ngModel) {
+            function read() {
+                console.log('reading');
+                var html = element.html();
+                // When we clear the content editable the browser leaves a <br> behind
+                // If strip-br attribute is provided then we strip this out
+                if (attrs.stripBr && html === '<br>') {
+                    html = '';
+                }
+                ngModel.$setViewValue(html);
+            }
+
+            if (!ngModel) return; // do nothing if no ng-model
+
+            // Specify how UI should be updated
+            ngModel.$render = function () {
+                console.log('doing this');
+                if (ngModel.$viewValue !== element.html()) {
+                    element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
+                }
+            };
+
+            // Listen for change events to enable binding
+            element.on('blur keyup', function (e) {
+
+                console.log(e.which);
+
+                if(e.which == '76') {
+                    console.log('L pressed');
+                    return '';
+                } else {
+                    scope.$apply(read);
+                }
+
+
+            });
+            read(); // initialize
+        }
+    };
+}]);
+
+
+
+
+
+htsApp.directive('dropzone', function () {
+
+    return {
+        link: function ($scope, element, attrs) {
+            var config, dropzone;
+
+            console.log("dropzone scope:", $scope);
+
+            // Disabling autoDiscover, otherwise Dropzone will try to attach twice.
+            Dropzone.autoDiscover = false;
+
+            config = $scope[attrs.dropzone];
+
+            // create a Dropzone for the element with the given options
+            dropzone = new Dropzone(element[0], config.options);
+
+            // bind the given event handlers
+            angular.forEach(config.eventHandlers, function (handler, event) {
+                dropzone.on(event, handler);
+            });
+
+            config.init = function () {
+                dropzone.processQueue();
+            };
+        }
+    };
+});

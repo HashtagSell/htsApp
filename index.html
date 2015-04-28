@@ -85,42 +85,49 @@
                     <i class="fa fa-bars fa-2x"></i>
                 </a>
                 <div class="col-lg-5 col-lg-offset-1 col-md-4 col-md-offset-0 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
-                    <form role="search" ng-submit="awesomeBarSubmit()">
+                    <form role="search">
                         <div class="input-group">
-                            <input
-                                type="text"
-                                class="form-control"
-                                ng-model="query"
-                                placeholder="I'm searching for..."
-                                style="background-color: #EAEAEA">
-                                <!--mentio-->
-                                <!--mentio-require-leading-space="true"-->
-                                <!--mentio-macros="macros"-->
-                                <!--mentio-id="'hashtag'"-->
-                                <!--mentio-typed-term="typedTerm"-->
+                            <div id="awesomeBar"
+                                 contenteditable
+                                 class="form-control"
+                                 ng-focus="clearPlaceholder()"
+                                 ng-change="validateQueryObj()"
+                                 ng-model="queryObj.q"
+                                 mentio
+                                 mentio-require-leading-space="true"
+                                 mentio-macros="macros"
+                                 mentio-id="'awesomePlace'"
+                                 mentio-typed-term="city"
+                                 style="background-color: #EAEAEA">I'm searching for...</div>
+
+
 
                                 <!--popover='*Hint: We search in your area by default.  If you want to search in another city use the @ symbol.'-->
                                 <!--popover-placement="bottom"-->
                                 <!--popover-trigger="focus"-->
 
                             <span class="input-group-btn">
-                                <button type="submit" class="btn btn-danger" type="button">
+                                <!--TODO: Advanced drop down fields-->
+                                <!--<button type="button" class="btn btn-default">-->
+                                    <!--Austin <span class="caret"></span>-->
+                                <!--</button>-->
+                                <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
-                            </span>
                             </input>
                         </div>
                     </form>
 
+                    <!--<div>{{queryObj}}</div>-->
 
-                    <!--<mentio-menu style="z-index: 1100 !important;"-->
-                                 <!--mentio-for="'hashtag'"-->
-                                 <!--mentio-trigger-char="'@'"-->
-                                 <!--mentio-items="places"-->
-                                 <!--mentio-template-url="/place-mentions.tpl"-->
-                                 <!--mentio-search="searchPlaces(term)"-->
-                                 <!--mentio-select="getPlacesTextRaw(item)">-->
-                    <!--</mentio-menu>-->
+                    <mentio-menu style="z-index: 1100 !important;"
+                                 mentio-for="'awesomePlace'"
+                                 mentio-trigger-char="'@'"
+                                 mentio-items="cities"
+                                 mentio-template-url="/awesomePlace.tpl"
+                                 mentio-search="searchPlaces(term)"
+                                 mentio-select="getCityMetaData(item)">
+                    </mentio-menu>
 
 
                 </div>
@@ -288,8 +295,6 @@
     <script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/newPost/controllers/newPost.modals.newPost.controller.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/newPost/factories/newPost.modals.newPost.factory.js"></script>
-    <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.dropzone.js"></script>
-    <script type="text/javascript" src="/js/newPost/modals/newPost/directives/newPost.modals.newPost.directives.contenteditable.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/congrats/controllers/newPost.congrats.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/pushToExternalSources/controllers/newPost.pushToExternalSources.js"></script>
     <script type="text/javascript" src="/js/newPost/modals/pushToExternalSources/factories/newPost.pushToExternalSources.factory.js"></script>
@@ -302,7 +307,7 @@
     <script type="text/javascript" src="/js/authModals/modals/resetPasswordModal/controllers/resetPassword.js"></script>
     <script type="text/javascript" src="/js/authModals/modals/checkEmailModal/controllers/checkEmailCtrl.js"></script>
     <script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>
-    <script type="text/javascript" src="/js/awesomeBar/services/geolocationService.js"></script>
+    <script type="text/javascript" src="/js/awesomeBar/factories/awesomeBar.factory.js"></script>
     <script type="text/javascript" src="/js/sideNav/controllers/sideNav.controller.js"></script>
     <script type="text/javascript" src="/js/sideNav/factories/sideNav.factory.js"></script>
     <script type="text/javascript" src="/js/sideProfile/controllers/sideProfile.controller.js"></script>
@@ -351,15 +356,15 @@
     <script type="text/javascript" src="/js/utils/twitter/twitter.factory.js"></script>
 
 
-    <!--<script type="text/ng-template" id="/place-mentions.tpl">-->
-        <!--<ul class="list-group user-search demo-scrollable-menu">-->
-            <!--<li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">-->
+    <script type="text/ng-template" id="/awesomePlace.tpl">
+        <ul class="list-group user-search demo-scrollable-menu">
+            <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
 
-                <!--<span class="text-primary" ng-bind-html="place.description | mentioHighlight:typedTerm:'menu-highlighted' | unsafe"></span>-->
+                <span class="text-primary" ng-bind-html="place.description | mentioHighlight:city:'menu-highlighted' | unsafe"></span>
 
-            <!--</li>-->
-        <!--</ul>-->
-    <!--</script>-->
+            </li>
+        </ul>
+    </script>
 
     <!--ONLY LOADED IN PRODUCTION-->
     <!--<script type="text/javascript" src="/dist/js/HashtagSell.min.js"></script>-->
