@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 4/14/15.
  */
-var ebay = require('./ebay-trading-api/index');
+var ebay = require('ebay-trading-api');
 var common   = require('../config/common.js');
 var config   = common.config();
 var User = require('../config/database/models/user.js');
