@@ -50,10 +50,7 @@ uploads
 api/posting-api
 api/posting-sync-agent
 api/realtime-svc
-api/ebay-trading-api
 
-
-app/dist
 app/js/htsApp.config
 
 .rdb
