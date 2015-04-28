@@ -352,20 +352,20 @@ module.exports = function(grunt) {
 
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('start-dev-htsApp', ['ngconstant:dev', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
+    grunt.registerTask('start-htsApp-dev', ['ngconstant:dev', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('stop-dev-htsApp', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
+    grunt.registerTask('stop-htsApp-dev', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
 
 
 
     //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
-    grunt.registerTask('start-staging-htsApp', ['ngconstant:stage', 'nodemon:stage']);
+    grunt.registerTask('start-htsApp-staging', ['ngconstant:stage', 'nodemon:stage']);
 
 
 
     //TODO: Use grunt include to add single concatonated css and js file to index.html
     //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('start-prod-htsApp', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin', 'nodemon:prod']);
+    grunt.registerTask('start-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin', 'nodemon:prod']);
 
 };
