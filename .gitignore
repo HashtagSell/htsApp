@@ -56,4 +56,4 @@ api/ebay-trading-api
 app/dist
 app/js/htsApp.config
 
-*.rdb
+.rdb
