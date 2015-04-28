@@ -21,7 +21,7 @@ require('./config/passport/passport.js')(passport); // passport for configuratio
 //Uses prerender.io service to generate html pages for search engines and crawlers.
 if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderServiceUrl', 'http://localhost:3000/').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
-} else if (process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
+} else { //use prerender.io service
     app.use(require('prerender-node').set('prerenderToken', 'kUoQBvD9vHaR9piPE0fq'));
 }
 
