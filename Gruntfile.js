@@ -208,7 +208,7 @@ module.exports = function(grunt) {
         shell: {
             //start mongo
             startMongo: {
-                command: './startMongoIfNotRunning.sh',
+                command: './shell-scripts/startMongoIfNotRunning.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -217,7 +217,7 @@ module.exports = function(grunt) {
                 }
             },
             stopMongo: {
-                command: './stopMongo.sh',
+                command: './shell-scripts/stopMongo.sh',
                 options: {
                     async: false,
                     stdout: true,
@@ -227,7 +227,7 @@ module.exports = function(grunt) {
             },
             //start freeGeoIp
             startFreeGeoIp: {
-                command: './startFreeGeoIpIfNotRunning.sh',
+                command: './shell-scripts/startFreeGeoIpIfNotRunning.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -236,7 +236,7 @@ module.exports = function(grunt) {
                 }
             },
             stopFreeGeoIp: {
-                command: './stopFreeGeoIp.sh',
+                command: './shell-scripts/stopFreeGeoIp.sh',
                 options: {
                     async: false,
                     stdout: true,
@@ -246,7 +246,7 @@ module.exports = function(grunt) {
             },
             //start postingAPI
             startPostingApi: {
-                command: './startPostingApiIfNotRunning.sh',
+                command: './shell-scripts/startPostingApiIfNotRunning.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -256,7 +256,7 @@ module.exports = function(grunt) {
             },
             //start postingAPI
             stopPostingApi: {
-                command: './stopPostingApi.sh',
+                command: './shell-scripts/stopPostingApi.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -266,7 +266,7 @@ module.exports = function(grunt) {
             },
             //start prerender.io local service
             startPrerenderServer: {
-                command: './startPrerenderIfNotRunning.sh',
+                command: './shell-scripts/startPrerenderIfNotRunning.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -275,7 +275,7 @@ module.exports = function(grunt) {
                 }
             },
             stopPrerenderServer: {
-                command: './stopPrerender.sh',
+                command: './shell-scripts/stopPrerender.sh',
                 options: {
                     async: false,
                     stdout: true,
@@ -285,7 +285,7 @@ module.exports = function(grunt) {
             },
             //start realtime-svc api
             startRealTimeApi: {
-                command: './startRealTimeApiIfNotRunning.sh',
+                command: './shell-scripts/startRealTimeApiIfNotRunning.sh',
                 options: {
                     async: true,
                     stdout: true,
@@ -294,7 +294,7 @@ module.exports = function(grunt) {
                 }
             },
             stopRealTimeApi: {
-                command: './stopRealTimeApi.sh',
+                command: './shell-scripts/stopRealTimeApi.sh',
                 options: {
                     async: false,
                     stdout: true,
@@ -304,7 +304,7 @@ module.exports = function(grunt) {
             },
             //start posting ingestion
             startSync: {
-                command: './startSyncAgentIfNotRunning.sh',
+                command: './shell-scripts/startSyncAgentIfNotRunning.sh',
                 options: {
                     async: false,
                     stdout: true,
@@ -313,7 +313,7 @@ module.exports = function(grunt) {
                 }
             },
             stopSync: {
-                command: './stopSyncAgent.sh',
+                command: './shell-scripts/stopSyncAgent.sh',
                 options: {
                     async: false,
                     stdout: true,
