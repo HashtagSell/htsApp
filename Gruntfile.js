@@ -139,7 +139,6 @@ module.exports = function(grunt) {
         nodemon: {
             dev: {
                 script: 'server.js',
-                watch: ['./api/**/*.js', './config/**/*.js', './utils/**/*.js'],
                 options: {
                     env: {
                         PORT: '8081',
@@ -352,7 +351,7 @@ module.exports = function(grunt) {
 
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('start-htsApp-dev', ['ngconstant:dev', 'jshint', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
+    grunt.registerTask('start-htsApp-dev', ['ngconstant:dev', 'jshint', 'concat', 'uglify', 'cssmin', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
     grunt.registerTask('stop-htsApp-dev', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
@@ -360,12 +359,15 @@ module.exports = function(grunt) {
 
 
     //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
-    grunt.registerTask('start-htsApp-staging', ['ngconstant:stage', 'nodemon:stage']);
+    grunt.registerTask('build-htsApp-staging', ['ngconstant:stage', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('start-htsApp-staging', 'nodemon:stage');
 
 
 
     //TODO: Use grunt include to add single concatonated css and js file to index.html
+    //TODO: Update robot.txt file to allow all user-agents in production
     //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('start-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin', 'nodemon:prod']);
+    grunt.registerTask('start-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('start-htsApp-prod', 'nodemon:prod');
 
 };
