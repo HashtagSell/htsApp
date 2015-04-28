@@ -3,7 +3,7 @@ body {
 }
 
 html, body {
-    background-color: #CFD5DD;
+    background-color: #C2CAD5;
     color: #494949;
 }
 
@@ -347,7 +347,8 @@ div.img-div{
         z-index:1040;
         /*background-color:#777777;*/
         /*background-color: #7C92AE;*/
-        background-color: #9BA9BB;
+        /*background-color: #9BA9BB;*/
+        background-color: #C2CAD5;
         overflow-y:auto;
         overflow-x: hidden;
 
@@ -426,7 +427,7 @@ div.img-div{
     .overlay {
         display: none;
         position: absolute;
-        top: 57px;
+        top: 56px;
         bottom: 0;
         left: 0;
         right: 0;
@@ -440,7 +441,7 @@ div.img-div{
     }
 
     .sidebar-container {
-        /*border-right: 3px solid rgb(82, 82, 82);*/
+        border-right: 3px solid rgb(181, 181, 181);
         /*width:85%;*/
         top:56px;
         bottom:0;
