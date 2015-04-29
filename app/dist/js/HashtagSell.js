@@ -1760,7 +1760,34 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
 
     return factory;
-}]);;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', function ($scope, $rootScope, searchFactory, $timeout) {
+}]);;/**
+ * Created by braddavis on 4/28/15.
+ */
+htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', 'Session', function($scope, feedbackFactory, Session) {
+
+    $scope.feedback = feedbackFactory.feedback;
+
+    $scope.userObj = Session.userObj;
+
+    $scope.submitFeedback = function() {
+        console.log($scope.feedback);
+    };
+
+}]);;/**
+ * Created by braddavis on 4/28/15.
+ */
+htsApp.factory('feedbackFactory', function () {
+   var factory = {};
+
+    factory.feedback = {
+        form: {
+            generalFeedback: null,
+            visible: false
+        }
+    };
+
+    return factory;
+});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', function ($scope, $rootScope, searchFactory, $timeout) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -2667,14 +2694,15 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
 }]);;/**
  * Created by braddavis on 1/24/15.
  */
-htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', 'awesomeBarFactory', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, awesomeBarFactory) {
+htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory) {
+
+    $scope.userObj = Session.userObj;
 
     $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
 
     $scope.toggleOffCanvasSideNav = function () {
         $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
     };
-
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -2683,7 +2711,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
 
-
+        //Hide the side navigation after user clicks a link
         $scope.sideNavOffCanvas.hidden = true;
 
 
@@ -2742,32 +2770,22 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
             navbar.removeClass('hide-navbar');
             sideBarContainer.removeClass('sidebar-container-roll-up');
         }
-
-        //if(fromState.name === "results" && toState.name !== "results.splash"){
-        //    awesomeBarFactory.queryObj.q = "I'm searching for...";
-        //}
-
-
     });
 
 
-    $scope.userObj = Session.userObj;
 
-
-
+    //RUNS ON PAGE LOAD.  Fetches user object from server as soon as page loads
     if ($scope.userObj.user_settings.loggedIn) {
 
         Session.getUserFromServer().then(function (response) {
-
-            //console.log('pass this to create to update to update userObj and html5 storage', response);
-
             Session.create(response);
 
         });
-
     }
 
 
+
+    //Joins/Leaves rooms and builds/destroys userobject on login/logout
     $scope.$watch('userObj.user_settings.loggedIn', function(newValue, oldValue) {
         if(newValue){
             socketio.init(Session.userObj.user_settings.name);
