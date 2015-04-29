@@ -55,20 +55,6 @@
     <link rel="stylesheet" href="/medium-editor/dist/css/medium-editor.min.css">
     <link rel="stylesheet" href="/medium-editor/dist/css/themes/bootstrap.css">
 
-    <!--CSS DEV ONLY-->
-    <!--<link rel="stylesheet" href="/css/index.css" />-->
-    <!--<link rel="stylesheet" href="/css/splash.css" />-->
-    <!--<link rel="stylesheet" href="/css/result_item_styles.css" />-->
-    <!--<link rel="stylesheet" href="/css/feed.css"/>-->
-    <!--<link rel="stylesheet" href="/css/interested.css"/>-->
-    <!--<link rel="stylesheet" href="/css/myposts.css"/>-->
-    <!--<link rel="stylesheet" href="/css/profile.css"/>-->
-    <!--<link rel="stylesheet" href="/css/results.css"/>-->
-    <!--<link rel="stylesheet" href="/css/settings.profile.css"/>-->
-    <!--<link rel="stylesheet" href="/css/newpost.css">-->
-    <!--<link rel="stylesheet" href="/css/newPost.pushToExternalSources.css" />-->
-    <!--<link rel="stylesheet" href="/css/settings.css"/>-->
-
     <!--ONLY LOADED IN PRODUCTION-->
     <link rel="stylesheet" href="/dist/css/styles.min.css"/>
 
@@ -244,7 +230,41 @@
                         <div ui-view></div>
                     </div>
                 </div>
+
             </div>
+
+
+            <!--<div class="footer-master-container" ng-controller="feedbackController" ng-class="{ 'feedback-visible' : feedback.form.visible }">-->
+
+                <!--<div class="footer container" ng-click="feedback.form.visible = !feedback.form.visible">-->
+                    <!--Provide Feedback-->
+                <!--</div>-->
+
+                <!--<div class="feedback-container container">-->
+                    <!--<form class="form-horizontal" ng-submit="submitFeedback()">-->
+
+
+                        <!--<div class="form-group">-->
+                            <!--<div class="col-lg-4 col-md-6 col-sm-10 col-xs-12">-->
+                                <!--<input type="text" class="form-control" placeholder="email" ng-model="feedback.form.email"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group">-->
+                            <!--<div class="col-lg-4 col-md-6 col-sm-10 col-xs-12">-->
+                                <!--<input type="text" class="form-control" placeholder="General feedback" ng-model="feedback.form.generalFeedback"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group">-->
+                            <!--<div class="col-sm-5">-->
+                                <!--<button class="btn btn-primary" type="submit">Submit</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+            <!--</div>-->
+
         </div>
     </div>
 
@@ -280,84 +300,7 @@
     <script type="text/javascript" src="/angular-easyfb/angular-easyfb.min.js"></script>
 
 
-    <!--ANGULAR-->
-    <script type="text/javascript" src="htsApp.js"></script> <!--//TODO: Why when I move ./htsApp.js to /js/htsApp.js does angular try to load more than once? -->
-
-    <!--ONLY LOADED IN PRODUCTION-->
     <script type="text/javascript" src="/dist/js/HashtagSell.js"></script>
-
-
-    <!--ANGULAR GLOBAL CONST CONFIG DEV ONLY-->
-    <!--<script type="text/javascript" src="/js/htsApp.config"></script>-->
-
-    <!--ANGULAR DEV ONLY-->
-    <!--<script type="text/javascript" src="/js/meta/controllers/meta.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/meta/factories/meta.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/main/controllers/main.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/userMenu/controllers/userMenu.controller.userMenu.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/controllers/newPost.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/modals/newPost/controllers/newPost.modals.newPost.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/modals/newPost/factories/newPost.modals.newPost.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/modals/congrats/controllers/newPost.congrats.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/modals/pushToExternalSources/controllers/newPost.pushToExternalSources.js"></script>-->
-    <!--<script type="text/javascript" src="/js/newPost/modals/pushToExternalSources/factories/newPost.pushToExternalSources.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authentication/factories/authFactory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/session/services/session.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/factories/authModal.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/modals/signInModal/controllers/signIn.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/modals/signUpModal/controllers/signUp.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/modals/forgotPasswordModal/controllers/forgotPassword.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/modals/resetPasswordModal/controllers/resetPassword.js"></script>-->
-    <!--<script type="text/javascript" src="/js/authModals/modals/checkEmailModal/controllers/checkEmailCtrl.js"></script>-->
-    <!--<script type="text/javascript" src="/js/awesomeBar/controllers/awesomeBar.js"></script>-->
-    <!--<script type="text/javascript" src="/js/awesomeBar/factories/awesomeBar.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/sideNav/controllers/sideNav.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/sideNav/factories/sideNav.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/sideProfile/controllers/sideProfile.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/filterBar/controllers/filterBar.js"></script>-->
-    <!--<script type="text/javascript" src="/js/profile/factories/profile.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/profile/controllers/profile.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/results/controllers/results.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/results/factories/results.factories.search.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/controllers/interestedController.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/factories/interested.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/directives/interested.htsfavetoggle.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/directives/interested.faveLabels.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/questions/controllers/watchlist.questions.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/questions/directives/watchlist.questions.moreInfo.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/questions/factories/watchlist.questions.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/offers/controllers/watchlist.offers.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/interested/offers/directives/watchlist.offers.moreInfo.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/splash/controllers/splash.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/splash/factories/splash.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/settings/account/controllers/settings.account.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/settings/password/controllers/settings.password.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/settings/profile/controllers/settings.profile.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/settings/payment/controllers/settings.payment.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/feed/controllers/feed.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/feed/factories/feed.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/slickCarousel/directives/slickCarousel.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/transactionButtons/factories/transactionButtons.factories.transactionFactory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/transactionButtons/directives/transactionButtons.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/transactionButtons/modals/email/controllers/transactionButtons.modal.email.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/transactionButtons/modals/phone/controllers/transactionButtons.modal.phone.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/transactionButtons/modals/placeOffer/controllers/transactionButtons.modal.placeOffer.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/notifications/controllers/notifications.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/messages/factories/messages.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/socketio/factories/socketio.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/utils/bracketNotation/utils.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/controllers/myPosts.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/factories/myPosts.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/questions/controllers/myPosts.questions.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/questions/directives/myPosts.questions.moreInfo.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/questions/factories/myPosts.questions.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/offers/controllers/myPosts.offers.controller.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/offers/directives/myPosts.offers.moreInfo.directive.js"></script>-->
-    <!--<script type="text/javascript" src="/js/myPosts/offers/factories/myPosts.offers.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/utils/ebay/ebay.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/utils/facebook/facebook.factory.js"></script>-->
-    <!--<script type="text/javascript" src="/js/utils/twitter/twitter.factory.js"></script>-->
-
 
 
     <script type="text/ng-template" id="/awesomePlace.tpl">
