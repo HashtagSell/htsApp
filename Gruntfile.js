@@ -191,16 +191,23 @@ module.exports = function(grunt) {
         watch: {
             'client-javascript': {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint'],
+                tasks: ['jshint', 'concat'],
                 options: {
                     async: true,
-                    livereload: true
+                    livereload: false
+                }
+            },
+            css: {
+                files: ['./app/css/*.css'],
+                tasks: ['cssmin'],
+                options: {
+                    livereload: false,
                 }
             },
             server: {
                 files: ['.rebooted'],
                 options: {
-                    livereload: true
+                    livereload: false
                 }
             }
         },
@@ -367,7 +374,7 @@ module.exports = function(grunt) {
     //TODO: Use grunt include to add single concatonated css and js file to index.html
     //TODO: Update robot.txt file to allow all user-agents in production
     //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('start-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('build-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('start-htsApp-prod', 'nodemon:prod');
 
 };
