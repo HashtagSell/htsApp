@@ -134,7 +134,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
         if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
                 controller: 'quickComposeController',
                 resolve: {
                     result: function () {

@@ -11,7 +11,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.signInModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
+            templateUrl: '/js/authModals/modals/signInModal/partials/signIn.html',
             controller: 'signInModalController',
             size: 'sm',
             keyboard: false,
@@ -52,7 +52,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.signUpModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
+            templateUrl: '/js/authModals/modals/signUpModal/partials/signUp.html',
             controller: 'signupModalContainer',
             size: 'sm',
             keyboard: false,
@@ -82,7 +82,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.checkEmailModal = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
+            templateUrl: '/js/authModals/modals/checkEmailModal/partials/checkEmail.html',
             controller: 'checkEmailController',
             size: 'sm',
             keyboard: false,
@@ -104,7 +104,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.forgotPasswordModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
+            templateUrl: '/js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
             controller: 'forgotPasswordController',
             size: 'sm',
             keyboard: false,
@@ -138,7 +138,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     //factory.updatePasswordModal = function () {
     //
     //    var modalInstance = $modal.open({
-    //        templateUrl: 'js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
+    //        templateUrl: '/js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
     //        controller: 'updatePasswordModalController',
     //        size: 'sm'
     //    });
@@ -162,7 +162,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.resetPasswordModal = function (redirect, token) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
+            templateUrl: '/js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
             controller: 'resetPasswordModalController',
             size: 'sm',
             keyboard: false,
@@ -191,7 +191,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     //factory.facebookAuthModal = function () {
     //
     //    var modalInstance = $modal.open({
-    //        templateUrl: 'js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
+    //        templateUrl: '/js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
     //        controller: 'facebookAuthController'
     //    });
     //

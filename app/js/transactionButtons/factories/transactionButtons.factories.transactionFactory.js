@@ -17,7 +17,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
             if (Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
 
                 var modalInstance = $modal.open({
-                    templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                    templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
                     controller: 'quickComposeController',
                     resolve: {
                         result: function () {
@@ -55,7 +55,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
         } else {
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
+                templateUrl: '/js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
                 controller: 'phoneModalController',
                 resolve: {
                     result: function () {
@@ -117,7 +117,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
         if(Session.userObj.user_settings.loggedIn) {  //If user logged In
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
+                templateUrl: '/js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
                 controller: 'placeOfferController',
                 resolve: {
                     result: function () {

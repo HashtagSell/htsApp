@@ -42,7 +42,7 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
             resolve: {

@@ -5,7 +5,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
             keyboard: false,
@@ -33,7 +33,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
     $scope.pushtoExternalService = function (post) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
+            templateUrl: '/js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
             resolve: {
                 newPost : function () {
@@ -58,7 +58,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
     $scope.congrats = function (postingObj) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
+            templateUrl: '/js/newPost/modals/congrats/partials/newPost.congrats.html',
             controller: 'newPostCongrats',
             resolve: {
                 newPost: function () {
