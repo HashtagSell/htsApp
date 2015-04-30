@@ -89,13 +89,13 @@ exports.forgotPassword = function(req, res){
                 {
                     user:{
                         name: user.user_settings.name,
-                        activation: "http://"+req.headers.host+"/reset/"+user.local.resetPasswordToken+"/",
+                        activation: "https://"+req.headers.host+"/reset/"+user.local.resetPasswordToken+"/",
                         email: email
                     },
                     images:{
-                        fb_logo: "http://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
-                        twitter_logo: "http://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
-                        hts_logo: "http://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
+                        fb_logo: "https://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
+                        twitter_logo: "https://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
+                        hts_logo: "https://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
                     }
                 };
 
@@ -340,13 +340,13 @@ exports.signup = function(req, res) {
                                     {
                                         user:{
                                             name: newUser.user_settings.name,
-                                            activation: "http://"+req.headers.host+"/activate?id="+newUser.stats.activation_code,
+                                            activation: "https://"+req.headers.host+"/activate?id="+newUser.stats.activation_code,
                                             keyToShare: keyToShare
                                         },
                                         images:{
-                                            fb_logo: "http://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
-                                            twitter_logo: "http://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
-                                            hts_logo: "http://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
+                                            fb_logo: "https://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
+                                            twitter_logo: "https://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
+                                            hts_logo: "https://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
                                         }
                                     };
 
