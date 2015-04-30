@@ -43,9 +43,6 @@ bower_components
 # Old Modules before angular implementation these only used for reference
 angular-modules
 
-# uploads folder temporarily stores photo uploads
-uploads
-
 # core apis have their own reposoitories
 api/posting-api
 api/posting-sync-agent
