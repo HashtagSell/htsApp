@@ -78,6 +78,11 @@ module.exports = function(grunt) {
                 }
             }
         },
+        clean: {
+            dev: ["uploads"],
+            stage: ["uploads"],
+            prod: ["uploads"]
+        },
         //Concat combines all js files in js directory to one file.
         concat: {
             options: {
@@ -341,6 +346,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-concurrent');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-node-inspector');
@@ -358,7 +364,7 @@ module.exports = function(grunt) {
 
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('start-htsApp-dev', ['ngconstant:dev', 'jshint', 'concat', 'uglify', 'cssmin', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
+    grunt.registerTask('start-htsApp-dev', ['clean:dev', 'ngconstant:dev', 'jshint', 'concat', 'uglify', 'cssmin', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
     grunt.registerTask('stop-htsApp-dev', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
@@ -366,7 +372,7 @@ module.exports = function(grunt) {
 
 
     //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
-    grunt.registerTask('build-htsApp-staging', ['ngconstant:stage', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('build-htsApp-staging', ['clean:stage', 'ngconstant:stage', 'jshint', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('start-htsApp-staging', 'nodemon:stage');
 
 
@@ -374,7 +380,7 @@ module.exports = function(grunt) {
     //TODO: Use grunt include to add single concatonated css and js file to index.html
     //TODO: Update robot.txt file to allow all user-agents in production
     //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('build-htsApp-prod', ['ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
     grunt.registerTask('start-htsApp-prod', 'nodemon:prod');
 
 };
