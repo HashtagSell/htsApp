@@ -635,7 +635,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.signInModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
+            templateUrl: '/js/authModals/modals/signInModal/partials/signIn.html',
             controller: 'signInModalController',
             size: 'sm',
             keyboard: false,
@@ -676,7 +676,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.signUpModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
+            templateUrl: '/js/authModals/modals/signUpModal/partials/signUp.html',
             controller: 'signupModalContainer',
             size: 'sm',
             keyboard: false,
@@ -706,7 +706,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.checkEmailModal = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
+            templateUrl: '/js/authModals/modals/checkEmailModal/partials/checkEmail.html',
             controller: 'checkEmailController',
             size: 'sm',
             keyboard: false,
@@ -728,7 +728,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.forgotPasswordModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
+            templateUrl: '/js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
             controller: 'forgotPasswordController',
             size: 'sm',
             keyboard: false,
@@ -762,7 +762,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     //factory.updatePasswordModal = function () {
     //
     //    var modalInstance = $modal.open({
-    //        templateUrl: 'js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
+    //        templateUrl: '/js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
     //        controller: 'updatePasswordModalController',
     //        size: 'sm'
     //    });
@@ -786,7 +786,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     factory.resetPasswordModal = function (redirect, token) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
+            templateUrl: '/js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
             controller: 'resetPasswordModalController',
             size: 'sm',
             keyboard: false,
@@ -815,7 +815,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
     //factory.facebookAuthModal = function () {
     //
     //    var modalInstance = $modal.open({
-    //        templateUrl: 'js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
+    //        templateUrl: '/js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
     //        controller: 'facebookAuthController'
     //    });
     //
@@ -1980,7 +1980,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
         if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
                 controller: 'quickComposeController',
                 resolve: {
                     result: function () {
@@ -2957,7 +2957,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPosts
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
             resolve: {
@@ -3989,7 +3989,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
             keyboard: false,
@@ -4017,7 +4017,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     $scope.pushtoExternalService = function (post) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
+            templateUrl: '/js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
             resolve: {
                 newPost : function () {
@@ -4042,7 +4042,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     $scope.congrats = function (postingObj) {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
+            templateUrl: '/js/newPost/modals/congrats/partials/newPost.congrats.html',
             controller: 'newPostCongrats',
             resolve: {
                 newPost: function () {
@@ -7599,7 +7599,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
         var splashInstance = $modal.open({
             backdrop: false,
-            templateUrl: "js/splash/partials/splash_content.html",
+            templateUrl: "/js/splash/partials/splash_content.html",
             windowTemplateUrl: "js/splash/partials/splash_window.html",
             controller: splashInstanceCtrl
         });
@@ -7992,7 +7992,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
             if (Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
 
                 var modalInstance = $modal.open({
-                    templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                    templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
                     controller: 'quickComposeController',
                     resolve: {
                         result: function () {
@@ -8030,7 +8030,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
         } else {
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
+                templateUrl: '/js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
                 controller: 'phoneModalController',
                 resolve: {
                     result: function () {
@@ -8092,7 +8092,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
         if(Session.userObj.user_settings.loggedIn) {  //If user logged In
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
+                templateUrl: '/js/transactionButtons/modals/placeOffer/partials/transactionButtons.modal.placeOffer.partial.html',
                 controller: 'placeOfferController',
                 resolve: {
                     result: function () {
@@ -8405,7 +8405,7 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
             controller: 'newPostModal',
             size: 'lg',
             resolve: {
