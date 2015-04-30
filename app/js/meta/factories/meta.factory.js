@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 4/22/15.
  */
-htsApp.factory('metaFactory', function () {
+htsApp.factory('metaFactory', ['ENV', function (ENV) {
     var factory = {};
 
 
@@ -9,14 +9,15 @@ htsApp.factory('metaFactory', function () {
         page: {
             title: "HashtagSell · Rethinking Online Classifieds",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            googleVerification: "QEL7PxohhyFKyG5zg8Utt8ohbB_HzYjdYUnDXdhFBt0"
+            googleVerification: "QEL7PxohhyFKyG5zg8Utt8ohbB_HzYjdYUnDXdhFBt0",
+            faviconUrl: ENV.htsAppUrl + "/images/favicon/favicon.ico"
         },
         facebook: {
             title: "HashtagSell Online Classifieds",
-            image: "https://www.hashtagsell.com/images/logo/HashtagSell_Logo_Home.svg",
+            image: ENV.htsAppUrl + "/images/logo/HashtagSell_Logo_Home.svg",
             site_name: "HashtagSell.com",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            url: "https://hashtagsell.com"
+            url: ENV.htsAppUrl
         },
         twitter: {
             card: "summary",
@@ -24,9 +25,9 @@ htsApp.factory('metaFactory', function () {
             site: "@hashtagsell",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             title: "HashtagSell.com - Rethinking Online Classifieds",
-            url: "https://www.hashtagsell.com",
+            url: ENV.htsAppUrl,
             creator: "",
-            image: "https://www.hashtagsell.com/images/logo/HashtagSell_Logo_Home.svg",
+            image: ENV.htsAppUrl + "/images/logo/HashtagSell_Logo_Home.svg",
             appIdiPhone: "",
             appIdiPad: "",
             appIdGooglePlay: "",
@@ -38,4 +39,4 @@ htsApp.factory('metaFactory', function () {
 
 
     return factory;
-});
+}]);
