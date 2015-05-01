@@ -11,4 +11,8 @@ WORKDIR /home/hashtagsell/hts-app
 COPY . /home/hashtagsell/hts-app
 RUN npm install && bower install
 
+USER root
+RUN chmod -R 777 /home/hashtagsell/hts-app/tmp/
+USER hashtagsell
+
 EXPOSE 8081
