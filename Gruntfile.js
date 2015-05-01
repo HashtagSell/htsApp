@@ -81,13 +81,13 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            dev: ["uploads"],
-            stage: ["uploads"],
-            prod: ["uploads"]
+            dev: ["tmp"],
+            stage: ["tmp"],
+            prod: ["tmp"]
         },
         "file-creator": {
             "gitignore": {
-                "uploads/.gitignore": function(fs, fd, done) {
+                "tmp/.gitignore": function(fs, fd, done) {
                     fs.writeSync(fd, '# Ignore everything in this directory *# Except this file!.gitignore');
                     done();
                 }
