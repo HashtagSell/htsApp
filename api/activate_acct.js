@@ -403,7 +403,7 @@ exports.signup = function(req, res) {
 
 exports.getProfile = function(req, res){
 
-    var username = req.param('username');
+    var username = req.body.username;
 
     User.findOne({ 'user_settings.name' : username }, function (err, user) {
 
