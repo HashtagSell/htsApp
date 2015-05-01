@@ -59,7 +59,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
         var deferred = $q.defer();
 
-        $http.jsonp('http://suggestqueries.google.com/complete/search?callback=?', {
+        $http.jsonp('//suggestqueries.google.com/complete/search?callback=?', {
             params: {
                 "client": "products-cc",
                 "hl": "en",
