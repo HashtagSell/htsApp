@@ -65,3 +65,11 @@ li.label-list:hover span.delete-label{
     left: 0;
     right: 0;
 }
+
+@media screen and (max-width: 992px) {
+
+    .outer-container-interested{
+        left: 15px;
+    }
+
+}

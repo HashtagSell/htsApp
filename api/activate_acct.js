@@ -417,12 +417,14 @@ exports.getProfile = function(req, res){
 
         if(user)
             //console.log(user);
-            return res.json({user: {
-                'profile_photo': user.user_settings.profile_photo,
-                'banner_photo': user.user_settings.banner_photo,
-                'name': user.user_settings.name
+            return res.json(
+                {user: {
+                    'profile_photo': user.user_settings.profile_photo,
+                    'banner_photo': user.user_settings.banner_photo,
+                    'name': user.user_settings.name
+                    }
                 }
-            });
+            );
     });
 
 };

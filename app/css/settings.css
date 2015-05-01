@@ -8,6 +8,14 @@
     right: 0;
 }
 
+@media screen and (max-width: 992px) {
+
+    .outer-container-settings{
+        left: 15px;
+    }
+
+}
+
 
 .custom-settings-well {
     min-height: 20px;
@@ -26,3 +34,4 @@
     border-bottom: thin solid #D2D2D2;
     margin-bottom: 17px;
 }
+
