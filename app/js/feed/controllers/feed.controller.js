@@ -47,14 +47,56 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
-                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 290;
-                        } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 455;
+
+                        var posting = response.data.external.postings[i];
+
+                        if (posting.images.length === 0) {
+                            posting.feedItemHeight = 290;
+                        } else if (posting.images.length === 1) {
+                            posting.feedItemHeight = 290;
+
+                            if (posting.username === 'CRAIG') {
+                                if(posting.images[0].full) {
+                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, 'https://');
+                                }
+
+                                if(posting.images[0].thumb) {
+                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, 'https://');
+                                }
+
+                                if(posting.images[0].images) {
+                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, 'https://');
+                                }
+                            }
+
+                        } else if (posting.images.length > 1) {
+                            posting.feedItemHeight = 455;
+
+                            if (posting.username === 'CRAIG') {
+
+                                for(var j=0; j < posting.images.length; j++){
+                                    var imageObj = posting.images[j];
+
+                                    if(imageObj.full) {
+                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                    if(imageObj.thumb) {
+                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                    if(imageObj.images) {
+                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                }
+
+                            }
+
                         }
 
                         if (resumePersisted) {
-                            $scope.results.unshift(response.data.external.postings[i]);
+                            $scope.results.unshift(posting);
                         }
                     }
 
