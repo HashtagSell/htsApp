@@ -93,9 +93,9 @@ exports.forgotPassword = function(req, res){
                         email: email
                     },
                     images:{
-                        fb_logo: "https://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
-                        twitter_logo: "https://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
-                        hts_logo: "https://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
+                        fb_logo: "https://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                        twitter_logo: "https://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                        hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
                     }
                 };
 
@@ -344,9 +344,9 @@ exports.signup = function(req, res) {
                                             keyToShare: keyToShare
                                         },
                                         images:{
-                                            fb_logo: "https://"+req.headers.host+"/images/logo/facebook/png/FB-f-Logo__white_50.png",
-                                            twitter_logo: "https://"+req.headers.host+"/images/logo/twitter/Twitter_logo_white.png",
-                                            hts_logo: "https://"+req.headers.host+"/images/logo/HashtagSell_Logo_Home.png"
+                                            fb_logo: "https://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                                            twitter_logo: "https://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                                            hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
                                         }
                                     };
 
