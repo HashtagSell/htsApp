@@ -50,7 +50,7 @@ exports.upload = function(req, res) {
         fs.readFile(imgObj.path, function (err, file_buffer) {
             var params = {
                 ACL: 'public-read',
-                Bucket: 'images.hashtagsell.com',
+                Bucket: config.aws.s3_static_bucket,
                 Key: imgObj.name,
                 Body: file_buffer,
                 ContentType: imgObj.mimetype
@@ -81,7 +81,7 @@ exports.upload = function(req, res) {
                 var indexOfImageGroup = imageGroupHashtable.get(imgObj.file);
                 console.log("Hashtable response is: ", indexOfImageGroup);
 
-                if(indexOfImageGroup != undefined) {
+                if(indexOfImageGroup !== undefined) {
 
                     console.log("hashtable found", indexOfImageGroup);
                     status.images[indexOfImageGroup][imgObj.type] = imgObj.url;
@@ -137,7 +137,7 @@ exports.upload = function(req, res) {
             var path = image.path;
             var name = image.name;
             var mimetype = image.mimetype;
-            var url = "http://images.hashtagsell.com/" + name;
+            var url = config.aws.s3_static_url + "/" + name;
             var type = "full";
             var imgObj = {path: path, name: name, mimetype: mimetype, url: url, type: type, file:name};
 
@@ -149,7 +149,7 @@ exports.upload = function(req, res) {
                     if(image.width > 253){  //If larger than 253 px wide then create thumbnail
                         var thumb_name = 'thumb_' + name;
                         var thumb_path = 'uploads/' + thumb_name;
-                        var thumb_url = "http://images.hashtagsell.com/" + thumb_name;
+                        var thumb_url = config.aws.s3_static_url + "/" + thumb_name;
                         var thumb_mimetype = mimetype;
                         var type = "thumbnail";
                         var thumb_imgObj = {path: thumb_path, name: thumb_name, mimetype: thumb_mimetype, url: thumb_url, type: type, file:name};
