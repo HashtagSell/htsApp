@@ -149,7 +149,7 @@
 .noImage-Placeholder {
     height: 250px;
     margin: 0 auto;
-    background-image: url('/images/app/img_placeholder.gif');
+    background-image: url('https://static.hashtagsell.com/htsApp/placeholders/img_placeholder.gif');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center center;
@@ -253,7 +253,7 @@
 
 .grid-noImage-Placeholder {
     height: 216px;
-    background-image: url('/images/app/img_placeholder.gif');
+    background-image: url('https://static.hashtagsell.com/htsApp/placeholders/img_placeholder.gif');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -292,7 +292,7 @@ ribbon{
 
 ribbon:before{
     content:" ";
-    background:url(/images/priceRibbon/ribbon.png);
+    background:url(https://static.hashtagsell.com/htsApp/results-elements/ribbon.png);
     display:block;
     width:10px;
     height:10px;

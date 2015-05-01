@@ -13,7 +13,7 @@
 /*}*/
 
 input[type="checkbox"].twitter:before{
-    content: url('/images/logo/sources/twitter_ad_unselected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/twitter_ad_unselected.png');
     display: block;
     width: 90px;
     height: 90px;
@@ -24,11 +24,11 @@ input[type="checkbox"].twitter:before{
 }
 
 input[type="checkbox"].twitter:checked:before{
-    content: url('/images/logo/sources/twitter_ad_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/twitter_ad_selected.png');
 }
 
 input[type="checkbox"].twitter:hover:before{
-    content: url('/images/logo/sources/twitter_ad_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/twitter_ad_selected.png');
 }
 
 
@@ -47,7 +47,7 @@ input[type="checkbox"].twitter:hover:before{
 /*}*/
 
 input[type="checkbox"].facebook:before{
-    content: url('/images/logo/sources/facebook_ad_unselected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/facebook_ad_unselected.png');
     display: block;
     width: 90px;
     height: 90px;
@@ -58,11 +58,11 @@ input[type="checkbox"].facebook:before{
 }
 
 input[type="checkbox"].facebook:checked:before{
-    content: url('/images/logo/sources/facebook_ad_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/facebook_ad_selected.png');
 }
 
 input[type="checkbox"].facebook:hover:before{
-    content: url('/images/logo/sources/facebook_ad_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/facebook_ad_selected.png');
 }
 
 
@@ -80,7 +80,7 @@ input[type="checkbox"].facebook:hover:before{
 /*}*/
 
 input[type="checkbox"].ebay:before{
-    content: url('/images/logo/sources/ebay_unselected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/ebay_unselected.png');
     display: block;
     width: 90px;
     height: 90px;
@@ -91,11 +91,11 @@ input[type="checkbox"].ebay:before{
 }
 
 input[type="checkbox"].ebay:checked:before{
-    content: url('/images/logo/sources/ebay_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/ebay_selected.png');
 }
 
 input[type="checkbox"].ebay:hover:before{
-    content: url('/images/logo/sources/ebay_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/ebay_selected.png');
 }
 
 
@@ -112,7 +112,7 @@ input[type="checkbox"].ebay:hover:before{
 /*}*/
 
 input[type="checkbox"].amazon:before{
-    content: url('/images/logo/sources/amazon_unselected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/amazon_unselected.png');
     display: block;
     width: 90px;
     height: 90px;
@@ -123,11 +123,11 @@ input[type="checkbox"].amazon:before{
 }
 
 input[type="checkbox"].amazon:checked:before{
-    content: url('/images/logo/sources/amazon_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/amazon_selected.png');
 }
 
 input[type="checkbox"].amazon:hover:before{
-    content: url('/images/logo/sources/amazon_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/amazon_selected.png');
 }
 
 
@@ -143,7 +143,7 @@ input[type="checkbox"].amazon:hover:before{
 /*}*/
 
 input[type="checkbox"].craigslist:before{
-    content: url('/images/logo/sources/craigslist_unselected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/craigslist_unselected.png');
     display: block;
     width: 90px;
     height: 90px;
@@ -154,9 +154,9 @@ input[type="checkbox"].craigslist:before{
 }
 
 input[type="checkbox"].craigslist:checked:before{
-    content: url('/images/logo/sources/craigslist_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/craigslist_selected.png');
 }
 
 input[type="checkbox"].craigslist:hover:before{
-    content: url('/images/logo/sources/craigslist_selected.png');
+    content: url('https://static.hashtagsell.com/logos/marketplaces/craigslist_selected.png');
 }

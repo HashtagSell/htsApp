@@ -335,7 +335,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else {
 
                     bannerElement.css({
-                        'background-image': "url(/images/userMenu/header-placeholder.png)",
+                        'background-image': "url(https://static.hashtagsell.com/htsApp/placeholders/header-placeholder.png)",
                         'background-size': "cover"
                     });
                 }
@@ -345,7 +345,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 if (scope.result.external.source.code === "APSTD") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/apartments_com_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/apartments_com_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -354,7 +354,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "AUTOD") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/autotrader_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/autotrader_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -363,7 +363,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "BKPGE") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/backpage_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/backpage_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -372,7 +372,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/craigslist_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -381,7 +381,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "EBAYM") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/ebay_motors_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_motors_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -390,7 +390,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "E_BAY") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/ebay_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_splash.png)",
                         'background-size': "cover"
                     });
 

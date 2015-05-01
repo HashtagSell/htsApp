@@ -7,7 +7,7 @@
 </div>
 
 <div class="outer-container">
-    <img ng-if="status.pleaseWait" src="/images/logo/hashtag_spinner.gif" class="spinner-abs-center"/>
+    <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div class="results-container" resize-grid ng-class="{ 'split-results-container' : views.showMap }">
         <!--GRID VIEW-->
         <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="77" vs-excess="30" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
@@ -116,7 +116,7 @@
             </div>
         </div>
         <div class="loadingMore" ng-show="status.loading">
-            <img src="/images/app/ajax-loader.gif">&nbsp;{{status.loadingMessage}}</div>
+            <img src="https://static.hashtagsell.com/htsApp/spinners/ajax-loader.gif">&nbsp;{{status.loadingMessage}}</div>
         </div>
     </div>
 
