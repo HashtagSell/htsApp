@@ -51,7 +51,7 @@ exports.upload = function(req, res) {
             var params = {
                 ACL: 'public-read',
                 Bucket: config.aws.s3_static_bucket,
-                Key: imgObj.name,
+                Key: "posts/" + imgObj.name,
                 Body: file_buffer,
                 ContentType: imgObj.mimetype
             };
@@ -63,8 +63,6 @@ exports.upload = function(req, res) {
 
 
     var uploadPhoto = function (count, params, imgObj, callback) {
-
-//        console.log("uploading photo", params.Key);
 
         s3.putObject(params, function (err, data) {
 
@@ -137,9 +135,17 @@ exports.upload = function(req, res) {
             var path = image.path;
             var name = image.name;
             var mimetype = image.mimetype;
-            var url = config.aws.s3_static_url + "/" + name;
+            var url = config.aws.s3_static_url + "/posts/" + name;
             var type = "full";
-            var imgObj = {path: path, name: name, mimetype: mimetype, url: url, type: type, file:name};
+
+            var imgObj = {
+                path: path,
+                name: name,
+                mimetype: mimetype,
+                url: url,
+                type: type,
+                file:name
+            };
 
             imgsToUpload.push(imgObj);
 
@@ -148,14 +154,14 @@ exports.upload = function(req, res) {
                     console.log(image);
                     if(image.width > 253){  //If larger than 253 px wide then create thumbnail
                         var thumb_name = 'thumb_' + name;
-                        var thumb_path = 'uploads/' + thumb_name;
-                        var thumb_url = config.aws.s3_static_url + "/" + thumb_name;
+                        var thumb_path = 'tmp/' + thumb_name;
+                        var thumb_url = config.aws.s3_static_url + "/posts/" + thumb_name;
                         var thumb_mimetype = mimetype;
                         var type = "thumbnail";
                         var thumb_imgObj = {path: thumb_path, name: thumb_name, mimetype: thumb_mimetype, url: thumb_url, type: type, file:name};
 
                         easyimg.resize({
-                            src: path, dst: 'uploads/thumb_' + name,
+                            src: path, dst: 'tmp/thumb_' + name,
                             width: 253
                         }).then(
                             function (image) {
