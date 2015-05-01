@@ -252,21 +252,21 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster1.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster1.png',
                     height: 35,
                     width: 35
                 },
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster2.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster2.png',
                     height: 35,
                     width: 35
                 },
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster2.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster2.png',
                     height: 35,
                     width: 35
                 }
