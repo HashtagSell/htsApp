@@ -10,11 +10,11 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell · Rethinking Online Classifieds",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             googleVerification: "QEL7PxohhyFKyG5zg8Utt8ohbB_HzYjdYUnDXdhFBt0",
-            faviconUrl: ENV.htsAppUrl + "/images/favicon/favicon.ico"
+            faviconUrl: "https://static.hashtagsell.com/htsApp/favicon/favicon.ico"
         },
         facebook: {
             title: "HashtagSell Online Classifieds",
-            image: ENV.htsAppUrl + "/images/logo/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
             site_name: "HashtagSell.com",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             url: ENV.htsAppUrl
@@ -27,7 +27,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell.com - Rethinking Online Classifieds",
             url: ENV.htsAppUrl,
             creator: "",
-            image: ENV.htsAppUrl + "/images/logo/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
             appIdiPhone: "",
             appIdiPad: "",
             appIdGooglePlay: "",
