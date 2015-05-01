@@ -99,20 +99,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
-    //$urlRouterProvider.rule(function($injector, $location) {
-    //
-    //    var path = $location.path();
-    //    var hasTrailingSlash = path[path.length-1] === '/';
-    //
-    //    if(hasTrailingSlash) {
-    //
-    //        //if last charcter is a slash, return the same url without the slash
-    //        var newPath = path.substr(0, path.length - 1);
-    //        return newPath;
-    //    }
-    //
-    //});
-
 
     $urlRouterProvider.otherwise(function($injector, $location){
         var state = $injector.get('$state');
@@ -126,16 +112,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             views: {
                 "root": {
                     templateUrl: 'js/404/partials/404.html'
-                }
-            }
-        }).
-        state('new-post', {
-            url: "/new-post",
-            controller: 'newPostController',
-            resolve: {
-                loginRequired: loginRequired,
-                redirect: function () {
-                    return 'new-post';
                 }
             }
         }).
