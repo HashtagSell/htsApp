@@ -109,7 +109,7 @@ exports.updateUserPhotos = function (req, res) {
 
                     var params = {
                         ACL: 'public-read',
-                        Bucket: config.S3_BUCKET,
+                        Bucket: config.aws.s3_static_bucket,
                         Key: image.name,
                         Body: file_buffer,
                         ContentType: image.mimetype
@@ -182,11 +182,11 @@ exports.updateUserPhotos = function (req, res) {
 
                 } else if (user) { //found user with email.  check if current passwords match.
 
-                    var S3ImageUrl = 'http://' + config.S3_BUCKET + "/" + image.name;
+                    var S3ImageUrl = config.aws.s3_static_url + "/" + image.name;
 
-                    if(image.type == 'profilePhoto') {
+                    if(image.type === 'profilePhoto') {
                         user.user_settings.profile_photo = S3ImageUrl;
-                    } else if (image.type == 'bannerPhoto') {
+                    } else if (image.type === 'bannerPhoto') {
                         user.user_settings.banner_photo = S3ImageUrl;
                     }
 
