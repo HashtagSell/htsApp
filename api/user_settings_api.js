@@ -82,6 +82,8 @@ exports.getUserSettings = function(req, res) {
 
 exports.updateUserPhotos = function (req, res) {
 
+    console.log('here is request!!', req);
+
     async.waterfall([
         function(callback){
 
@@ -107,13 +109,29 @@ exports.updateUserPhotos = function (req, res) {
 
                 } else {
 
-                    var params = {
-                        ACL: 'public-read',
-                        Bucket: config.aws.s3_static_bucket,
-                        Key: image.name,
-                        Body: file_buffer,
-                        ContentType: image.mimetype
-                    };
+                    if(image.type === 'profilePhoto') {
+
+                        var params = {
+                            ACL: 'public-read',
+                            Bucket: config.aws.s3_static_bucket,
+                            Key: 'users/' + req.user._id + '/profile-photo/' + image.name,
+                            Body: file_buffer,
+                            ContentType: image.mimetype
+                        };
+
+                    } else if (image.type === 'bannerPhoto') {
+
+                        var params = {
+                            ACL: 'public-read',
+                            Bucket: config.aws.s3_static_bucket,
+                            Key: 'users/' + req.user._id + '/banner-photo/' + image.name,
+                            Body: file_buffer,
+                            ContentType: image.mimetype
+                        };
+
+                    }
+
+
 
                     callback(null, params, image);
                 }
@@ -182,11 +200,13 @@ exports.updateUserPhotos = function (req, res) {
 
                 } else if (user) { //found user with email.  check if current passwords match.
 
-                    var S3ImageUrl = config.aws.s3_static_url + "/" + image.name;
+                    var S3ImageUrl = '';
 
                     if(image.type === 'profilePhoto') {
+                        S3ImageUrl = config.aws.s3_static_url + '/users/' + req.user._id + '/profile-photo/' + image.name;
                         user.user_settings.profile_photo = S3ImageUrl;
                     } else if (image.type === 'bannerPhoto') {
+                        S3ImageUrl = config.aws.s3_static_url + '/users/' + req.user._id + '/banner-photo/' + image.name;
                         user.user_settings.banner_photo = S3ImageUrl;
                     }
 
