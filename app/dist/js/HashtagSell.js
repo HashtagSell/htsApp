@@ -99,20 +99,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
-    //$urlRouterProvider.rule(function($injector, $location) {
-    //
-    //    var path = $location.path();
-    //    var hasTrailingSlash = path[path.length-1] === '/';
-    //
-    //    if(hasTrailingSlash) {
-    //
-    //        //if last charcter is a slash, return the same url without the slash
-    //        var newPath = path.substr(0, path.length - 1);
-    //        return newPath;
-    //    }
-    //
-    //});
-
 
     $urlRouterProvider.otherwise(function($injector, $location){
         var state = $injector.get('$state');
@@ -126,16 +112,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             views: {
                 "root": {
                     templateUrl: 'js/404/partials/404.html'
-                }
-            }
-        }).
-        state('new-post', {
-            url: "/new-post",
-            controller: 'newPostController',
-            resolve: {
-                loginRequired: loginRequired,
-                redirect: function () {
-                    return 'new-post';
                 }
             }
         }).
@@ -1369,14 +1345,56 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
-                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 290;
-                        } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 455;
+
+                        var posting = response.data.external.postings[i];
+
+                        if (posting.images.length === 0) {
+                            posting.feedItemHeight = 290;
+                        } else if (posting.images.length === 1) {
+                            posting.feedItemHeight = 290;
+
+                            if (posting.username === 'CRAIG') {
+                                if(posting.images[0].full) {
+                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, 'https://');
+                                }
+
+                                if(posting.images[0].thumb) {
+                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, 'https://');
+                                }
+
+                                if(posting.images[0].images) {
+                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, 'https://');
+                                }
+                            }
+
+                        } else if (posting.images.length > 1) {
+                            posting.feedItemHeight = 455;
+
+                            if (posting.username === 'CRAIG') {
+
+                                for(var j=0; j < posting.images.length; j++){
+                                    var imageObj = posting.images[j];
+
+                                    if(imageObj.full) {
+                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                    if(imageObj.thumb) {
+                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                    if(imageObj.images) {
+                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, 'https://');
+                                    }
+
+                                }
+
+                            }
+
                         }
 
                         if (resumePersisted) {
-                            $scope.results.unshift(response.data.external.postings[i]);
+                            $scope.results.unshift(posting);
                         }
                     }
 
@@ -2860,7 +2878,7 @@ htsApp.controller('metaController', ['$scope', 'metaFactory', function ($scope, 
 }]);;/**
  * Created by braddavis on 4/22/15.
  */
-htsApp.factory('metaFactory', function () {
+htsApp.factory('metaFactory', ['ENV', function (ENV) {
     var factory = {};
 
 
@@ -2868,14 +2886,15 @@ htsApp.factory('metaFactory', function () {
         page: {
             title: "HashtagSell · Rethinking Online Classifieds",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            googleVerification: "QEL7PxohhyFKyG5zg8Utt8ohbB_HzYjdYUnDXdhFBt0"
+            googleVerification: "QEL7PxohhyFKyG5zg8Utt8ohbB_HzYjdYUnDXdhFBt0",
+            faviconUrl: "https://static.hashtagsell.com/htsApp/favicon/favicon.ico"
         },
         facebook: {
             title: "HashtagSell Online Classifieds",
-            image: "https://www.hashtagsell.com/images/logo/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
             site_name: "HashtagSell.com",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            url: "https://hashtagsell.com"
+            url: ENV.htsAppUrl
         },
         twitter: {
             card: "summary",
@@ -2883,9 +2902,9 @@ htsApp.factory('metaFactory', function () {
             site: "@hashtagsell",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             title: "HashtagSell.com - Rethinking Online Classifieds",
-            url: "https://www.hashtagsell.com",
+            url: ENV.htsAppUrl,
             creator: "",
-            image: "https://www.hashtagsell.com/images/logo/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
             appIdiPhone: "",
             appIdiPad: "",
             appIdGooglePlay: "",
@@ -2897,7 +2916,7 @@ htsApp.factory('metaFactory', function () {
 
 
     return factory;
-});;/**
+}]);;/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
@@ -3989,7 +4008,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     $scope.newPost = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
+            templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
             controller: 'newPostModal',
             size: 'lg',
             keyboard: false,
@@ -4017,7 +4036,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     $scope.pushtoExternalService = function (post) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/pushToExternalSources/partials/newpost.pushToExternalSources.html',
+            templateUrl: '/js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
             resolve: {
                 newPost : function () {
@@ -5729,21 +5748,21 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster1.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster1.png',
                     height: 35,
                     width: 35
                 },
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster2.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster2.png',
                     height: 35,
                     width: 35
                 },
                 {
                     textColor: 'white',
                     fontFamily: 'Open Sans, Helvetica, Arial, sans-serif',
-                    url: '/images/map/cluster2.png',
+                    url: 'https://static.hashtagsell.com/htsApp/map-elements/cluster2.png',
                     height: 35,
                     width: 35
                 }
@@ -6099,8 +6118,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     this.defaultUserObj = {
         loggedIn: false,
-        profile_photo: '/images/userMenu/user-placeholder.png',
-        banner_photo: '/images/userMenu/header-placeholder.png',
+        profile_photo: 'https://static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
+        banner_photo: 'https://static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
         safe_search: true,
         email_provider: [
             {
@@ -7713,7 +7732,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else {
 
                     bannerElement.css({
-                        'background-image': "url(/images/userMenu/header-placeholder.png)",
+                        'background-image': "url(https://static.hashtagsell.com/htsApp/placeholders/header-placeholder.png)",
                         'background-size': "cover"
                     });
                 }
@@ -7723,7 +7742,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 if (scope.result.external.source.code === "APSTD") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/apartments_com_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/apartments_com_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -7732,7 +7751,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "AUTOD") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/autotrader_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/autotrader_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -7741,7 +7760,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "BKPGE") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/backpage_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/backpage_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -7750,7 +7769,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/craigslist_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -7759,7 +7778,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "EBAYM") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/ebay_motors_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_motors_splash.png)",
                         'background-size': "cover"
                     });
 
@@ -7768,7 +7787,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "E_BAY") {
 
                     sourceIcon.css({
-                        'background-image': "url(/images/logo/sources/ebay_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_splash.png)",
                         'background-size': "cover"
                     });
 
