@@ -32,11 +32,11 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 }
 
 
-//force HTTPS if request is coming from production
+//force HTTPS if request is coming from production or staging
 app.use(function(req, res, next) {
     var host = req.get('host');
 
-    if(host === "hashtagsell.com" || host === "www.hashtagsell.com") {
+    if(host === "hashtagsell.com" || host === "www.hashtagsell.com" ) {
 
         host = "www.hashtagsell.com";  //Force url to always contain www
 
@@ -45,7 +45,16 @@ app.use(function(req, res, next) {
         } else {
             next();
         }
-    } else {
+    } else if(host === "hashtagsell.com" || host === "www.hashtagsell.com" ) {
+
+        host = "www.hashtagsell.com";  //Force url to always contain www
+
+        if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //If not https
+            res.redirect('https://' + host + req.url); //force https
+        } else {
+            next();
+        }
+    } else  {
         next();
     }
 });
