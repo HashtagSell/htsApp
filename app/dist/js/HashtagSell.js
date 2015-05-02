@@ -1297,9 +1297,185 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
     return factory;
 
 }]);;/**
+ * Created by braddavis on 5/1/15.
+ */
+htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
+
+
+    //Any time the user moves to a different page this function is called.
+    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+        if (toState.name === 'feed' || toState.name === 'feed.splash') {
+            $scope.showCategorySelectorBar = true;
+        } else {
+            $scope.showCategorySelectorBar = false;
+        }
+    });
+
+    //This obj binded to view to create category tree checklist
+    $scope.feedCategoryObj = {};
+
+    //Get the users categories they have chosen to watch in their feed.
+    $scope.feedCategoryObj.userDefaultCategories = Session.userObj.user_settings.feed_categories;
+
+    //Fetch all the possible categories from the server and pass them function that creates nested list the tree checklist UI can understand
+    $scope.getAllCategoriesFromServer = function () {
+        categoryFactory.lookupCategories().then(function (response) {
+
+            if(response.status !== 200) {
+
+                console.log(response.data.error);
+
+            } else if (response.status === 200) {
+
+                $scope.feedCategoryObj.nestedCategories = formatCategories(response.data.results);
+
+                console.log($scope.feedCategoryObj.nestedCategories);
+
+            }
+        }, function (response) {
+
+            console.log(response);
+
+            //TODO: Use modal service to notify users
+            console.log("category lookup error");
+
+        });
+    };
+    $scope.getAllCategoriesFromServer();
+
+
+
+    var formatCategories = function (serverCategories) {
+
+        var safeSearchOn = Session.userObj.user_settings.safe_search;
+        var sanitizedCategoryList = [];
+
+        for (var i = 0; i < serverCategories.length; i++) {
+
+            var parentCategory = serverCategories[i];
+
+            switch (parentCategory.code) {
+                case 'SSSS':
+                case 'VVVV':
+                case 'RRRR':
+                case 'MMMM':
+                case 'PPPP':
+                    if(safeSearchOn && parentCategory.code === 'PPPP' ||  safeSearchOn && parentCategory.code === 'MMMM') { //If safe search is turned on
+                        continue;
+                    } else {
+                        parentCategory.name = toTitleCase(parentCategory.name);
+                        parentCategory.selected = isCategoryDefaultSelected(parentCategory.code);
+
+                        for (var j = 0; j < parentCategory.categories.length; j++) {
+
+                            var childCategory = parentCategory.categories[j];
+
+                            childCategory.name = toTitleCase(childCategory.name);
+                            childCategory.selected = isCategoryDefaultSelected(childCategory.code);
+
+                            if (childCategory.selected) {
+                                parentCategory.selected = true;
+                            }
+                        }
+
+                        sanitizedCategoryList.push(parentCategory);
+                    }
+            }
+        }
+
+        ivhTreeviewMgr.validate(sanitizedCategoryList);
+
+        console.log(sanitizedCategoryList);
+
+        return sanitizedCategoryList;
+    };
+
+
+    //Capitalize first char of every word in sentence string
+    function toTitleCase(str){
+        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    }
+
+
+    //This function used while converting 3Taps flat category list into nested list.
+    //If this function returns true the checkbox will be pre-checked in the UI when the page is loaded cause user set this preference previously.
+    var isCategoryDefaultSelected = function (categoryCode) {
+        for(var k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
+            if($scope.feedCategoryObj.userDefaultCategories[k].code === categoryCode) {
+                return true;
+            } else if (k === $scope.feedCategoryObj.userDefaultCategories.length -1) {
+                return false;
+            }
+        }
+    };
+
+
+    //This function called when user checks or unchecks any item on the category tree.
+    $scope.categoryOnChange = function(node, isSelected, tree) {
+        console.log(node, isSelected, tree);
+
+        if(Session.userObj.user_settings.loggedIn) { //If the user is logged in
+
+            var newSelectedCategories = [];
+
+            for (t = 0; t < tree.length; t++) {
+                if (!tree[t].selected) {
+                    for (u = 0; u < tree[t].categories.length; u++) {
+                        if (tree[t].categories[u].selected) {
+                            newSelectedCategories.push(
+                                {
+                                    'name': tree[t].categories[u].name,
+                                    'code': tree[t].categories[u].code
+                                }
+                            );
+                        }
+                    }
+                } else {
+                    newSelectedCategories.push(
+                        {
+                            'name': tree[t].name,
+                            'code': tree[t].code
+                        }
+                    );
+                }
+
+
+            }
+
+            console.log(newSelectedCategories);
+
+            //Update the server
+            Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
+                if (response.status !== 200) {
+                    alert('could not remove category from user feed.  please notify support.');
+                }
+            });
+
+        } else {
+            //TODO: Deselect the checked item cause user is not logged in.
+            ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
+            authModalFactory.signInModal();
+        }
+    };
+
+    //If the categoryFilter input experiences a change then expand that entire category tree as user types to filter
+    $scope.expandTree = function () {
+        ivhTreeviewMgr.expandRecursive($scope.feedCategoryObj.nestedCategories);
+    };
+
+
+    //Watches the category filter input.  If emptied then collapse the category tree
+    $scope.$watch('filterCategories', function (newVal, oldVal) {
+        if(newVal === '') {
+            ivhTreeviewMgr.collapseRecursive($scope.feedCategoryObj.nestedCategories);
+        }
+    });
+
+
+}]);;/**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'Session', 'ivhTreeviewMgr', 'authModalFactory', function ($scope, feedFactory, splashFactory, $state, $interval, Session, ivhTreeviewMgr, authModalFactory) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
 
     $scope.status = feedFactory.status;
 
@@ -1310,7 +1486,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         speed: 100,
         slidesToScroll: 1,
         variableWidth: true,
-        centerMode: true
+        centerMode: false
     };
 
 
@@ -1473,166 +1649,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     };
 
 
-    //This obj binded to view to create category tree checklist
-    $scope.feedCategoryObj = {};
-
-    //Get the users categories they have chosen to watch in their feed.
-    $scope.feedCategoryObj.userDefaultCategories = Session.userObj.user_settings.feed_categories;
-
-
-    //Fetch all the possible categories from the server and pass them function that creates nested list the tree checklist UI can understand
-    $scope.getAllCategoriesFromServer = function () {
-        feedFactory.lookupCategories().then(function (response) {
-
-            if(response.status !== 200) {
-
-                console.log(response.data.error);
-
-            } else if (response.status === 200) {
-
-                $scope.feedCategoryObj.nestedCategories = formatCategories(response.data.results);
-
-                console.log($scope.feedCategoryObj.nestedCategories);
-
-            }
-        }, function (response) {
-
-            console.log(response);
-
-            //TODO: Use modal service to notify users
-            console.log("category lookup error");
-
-        });
-    };
-    $scope.getAllCategoriesFromServer();
-
-
-
-    var formatCategories = function (serverCategories) {
-
-        var safeSearchOn = Session.userObj.user_settings.safe_search;
-        var sanitizedCategoryList = [];
-
-        for (var i = 0; i < serverCategories.length; i++) {
-
-            var parentCategory = serverCategories[i];
-
-            switch (parentCategory.code) {
-                case 'SSSS':
-                case 'VVVV':
-                case 'RRRR':
-                case 'MMMM':
-                case 'PPPP':
-                    if(safeSearchOn && parentCategory.code === 'PPPP' ||  safeSearchOn && parentCategory.code === 'MMMM') { //If safe search is turned on
-                        continue;
-                    } else {
-                        parentCategory.name = toTitleCase(parentCategory.name);
-                        parentCategory.selected = isCategoryDefaultSelected(parentCategory.code);
-
-                        for (var j = 0; j < parentCategory.categories.length; j++) {
-
-                            var childCategory = parentCategory.categories[j];
-
-                            childCategory.name = toTitleCase(childCategory.name);
-                            childCategory.selected = isCategoryDefaultSelected(childCategory.code);
-
-                            if (childCategory.selected) {
-                                parentCategory.selected = true;
-                            }
-                        }
-
-                        sanitizedCategoryList.push(parentCategory);
-                    }
-            }
-        }
-
-        ivhTreeviewMgr.validate(sanitizedCategoryList);
-
-        console.log(sanitizedCategoryList);
-
-        return sanitizedCategoryList;
-    };
-
-    //Capitalize first char of every word in sentence string
-    function toTitleCase(str){
-        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    }
-
-
-    //This function used while converting 3Taps flat category list into nested list.
-    //If this function returns true the checkbox will be pre-checked in the UI when the page is loaded cause user set this preference previously.
-    var isCategoryDefaultSelected = function (categoryCode) {
-        for(var k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
-            if($scope.feedCategoryObj.userDefaultCategories[k].code === categoryCode) {
-                return true;
-            } else if (k === $scope.feedCategoryObj.userDefaultCategories.length -1) {
-                return false;
-            }
-        }
-    };
-
-
-    //This function called when user checks or unchecks any item on the category tree.
-    $scope.categoryOnChange = function(node, isSelected, tree) {
-        console.log(node, isSelected, tree);
-
-        if(Session.userObj.user_settings.loggedIn) { //If the user is logged in
-
-            var newSelectedCategories = [];
-
-            for (t = 0; t < tree.length; t++) {
-                if (!tree[t].selected) {
-                    for (u = 0; u < tree[t].categories.length; u++) {
-                        if (tree[t].categories[u].selected) {
-                            newSelectedCategories.push(
-                                {
-                                    'name': tree[t].categories[u].name,
-                                    'code': tree[t].categories[u].code
-                                }
-                            );
-                        }
-                    }
-                } else {
-                    newSelectedCategories.push(
-                        {
-                            'name': tree[t].name,
-                            'code': tree[t].code
-                        }
-                    );
-                }
-
-
-            }
-
-            console.log(newSelectedCategories);
-
-            //Update the server
-            Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
-                if (response.status !== 200) {
-                    alert('could not remove category from user feed.  please notify support.');
-                }
-            });
-
-        } else {
-            //TODO: Deselect the checked item cause user is not logged in.
-            ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
-            authModalFactory.signInModal();
-        }
-    };
-
-    //If the categoryFilter input experiences a change then expand that entire category tree as user types to filter
-    $scope.expandTree = function () {
-        ivhTreeviewMgr.expandRecursive($scope.feedCategoryObj.nestedCategories);
-    };
-
-
-    //Watches the category filter input.  If emptied then collapse the category tree
-    $scope.$watch('filterCategories', function (newVal, oldVal) {
-        if(newVal === '') {
-            ivhTreeviewMgr.collapseRecursive($scope.feedCategoryObj.nestedCategories);
-        }
-    });
-
 
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
         feedFactory.resetFeedView();
@@ -1656,7 +1672,7 @@ htsApp.filter('secondsToTimeString', function() {
 });;/**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', 'ENV', function( $http, $stateParams, $location, $q, Session, ENV) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function( $http, $stateParams, $location, $q, Session) {
 
     var factory = {};
 
@@ -1743,33 +1759,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
 
 
-
-
-    factory.lookupCategories = function () {
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'GET',
-            url: ENV.groupingsAPI
-        }).then(function (response, status, headers, config) {
-
-                console.log('reference api response', response);
-
-                deferred.resolve(response);
-
-            }, function (response, status, headers, config) {
-
-                deferred.reject(response);
-            });
-
-        return deferred.promise;
-    };
-
-
-
-
-
     factory.resetFeedView = function () {
 
         factory.status.error = {};
@@ -1805,7 +1794,7 @@ htsApp.factory('feedbackFactory', function () {
     };
 
     return factory;
-});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', function ($scope, $rootScope, searchFactory, $timeout) {
+});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -1833,9 +1822,25 @@ htsApp.factory('feedbackFactory', function () {
     $scope.views = searchFactory.views;
 
     $scope.$watchGroup(['views.gridView', 'views.showMap'], function () {
-        $timeout(function () {
-            searchFactory.filterArray($scope.views, 'resize');
-        }, 1);
+
+        if($rootScope.currentState === "results") {
+
+            $timeout(function () {
+                searchFactory.filterArray($scope.views, 'resize');
+
+
+                if ($scope.views.gridView) { //If grid view enabled don't show css gutters
+                    sideNavFactory.sideNav.listView = false;
+                } else if (!$scope.views.gridView && $scope.views.showMap) {  //If list view is enabled BUT map is visible don't show css gutters
+                    sideNavFactory.sideNav.listView = false;
+                } else if (!$scope.views.gridView && !$scope.views.showMap) {  //If list view is enabled AND map is NOT visible then show the css gutters
+                    sideNavFactory.sideNav.listView = true;
+                }
+
+
+            }, 1);
+
+        }
     });
 
 
@@ -2716,11 +2721,17 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $scope.userObj = Session.userObj;
 
-    $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
+    $scope.sideNav = sideNavFactory.sideNav;
+
+
+
 
     $scope.toggleOffCanvasSideNav = function () {
-        $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
+        $scope.sideNav.hidden = !$scope.sideNav.hidden;
     };
+
+
+
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -2729,8 +2740,18 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
 
+        if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
+            if ($rootScope.currentState === 'feed') {
+                $scope.sideNav.listView = true;
+            } else if($rootScope.previousState === 'results.splash' || $rootScope.previousState === 'feed.splash') {
+                console.log('do nothing');
+            } else {
+                $scope.sideNav.listView = false;
+            }
+        }
+
         //Hide the side navigation after user clicks a link
-        $scope.sideNavOffCanvas.hidden = true;
+        $scope.sideNav.hidden = true;
 
 
         if (toState.name === 'results') {
@@ -4423,7 +4444,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
         var deferred = $q.defer();
 
-        $http.jsonp('http://suggestqueries.google.com/complete/search?callback=?', {
+        $http.jsonp('//suggestqueries.google.com/complete/search?callback=?', {
             params: {
                 "client": "products-cc",
                 "hl": "en",
@@ -5362,7 +5383,7 @@ htsApp.factory('profileFactory', ['$http', '$location', '$q', 'ENV', function ($
         speed: 100,
         slidesToScroll: 1,
         variableWidth: true,
-        centerMode: true
+        centerMode: false
     };
 
 
@@ -6760,8 +6781,9 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
     };
 
 
-    factory.sideNavOffCanvas = {
-        hidden: true
+    factory.sideNav = {
+        hidden: true,
+        listView: true
     };
 
 
@@ -7412,7 +7434,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
             speed: 100,
             slidesToScroll: 1,
             variableWidth: true,
-            centerMode: true
+            centerMode: false
         };
 
 
@@ -7531,12 +7553,12 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
 
         //Responsive Navigation
-        $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
+        $scope.sideNav = sideNavFactory.sideNav;
 
         //console.log($scope);
 
         $scope.toggleOffCanvasSideNav = function () {
-            $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
+            $scope.sideNav.hidden = !$scope.sideNav.hidden;
         };
 
 
@@ -8509,6 +8531,35 @@ htsApp.factory('utilsFactory', ['ENV', function (ENV) {
 
         return urlParts.join('');
 
+    };
+
+
+    return factory;
+}]);;/**
+ * Created by braddavis on 5/1/15.
+ */
+htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, ENV) {
+    var factory = {};
+
+    factory.lookupCategories = function () {
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'GET',
+            url: ENV.groupingsAPI
+        }).then(function (response, status, headers, config) {
+
+            console.log('reference api response', response);
+
+            deferred.resolve(response);
+
+        }, function (response, status, headers, config) {
+
+            deferred.reject(response);
+        });
+
+        return deferred.promise;
     };
 
 
