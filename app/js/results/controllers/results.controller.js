@@ -14,7 +14,7 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
         speed: 100,
         slidesToScroll: 1,
         variableWidth: true,
-        centerMode: true
+        centerMode: false
     };
 
 

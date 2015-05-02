@@ -157,8 +157,9 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
     };
 
 
-    factory.sideNavOffCanvas = {
-        hidden: true
+    factory.sideNav = {
+        hidden: true,
+        listView: true
     };
 
 

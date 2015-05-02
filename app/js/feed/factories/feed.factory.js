@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', 'ENV', function( $http, $stateParams, $location, $q, Session, ENV) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function( $http, $stateParams, $location, $q, Session) {
 
     var factory = {};
 
@@ -85,33 +85,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
         return deferred.promise;
     };
-
-
-
-
-
-    factory.lookupCategories = function () {
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'GET',
-            url: ENV.groupingsAPI
-        }).then(function (response, status, headers, config) {
-
-                console.log('reference api response', response);
-
-                deferred.resolve(response);
-
-            }, function (response, status, headers, config) {
-
-                deferred.reject(response);
-            });
-
-        return deferred.promise;
-    };
-
-
 
 
 

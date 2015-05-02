@@ -10,10 +10,8 @@
 <div class="outer-container col-xs-12">
     <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
 
-    <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="77" vs-excess="30">
-        <div class="feed-item" style="cursor: pointer;" ng-repeat="result in results"
-             ng-click="openSplash(this)"
-                >
+    <div vs-repeat class="inner-container row" vs-size-property="feedItemHeight" vs-offset-before="77" vs-excess="5">
+        <div class="list-item" style="cursor: pointer;" ng-repeat="result in results" ng-click="openSplash(this)">
             <div class="thumbnail">
                 <ribbon ng-if="!!result.askingPrice.value">{{::result.askingPrice.value | currency : $ : 0}}</ribbon>
 
@@ -82,31 +80,30 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
 
 <!--Category Tree-->
-<div ng-show="results.length" class="feed-category-container hidden-sm hidden-xs">
+<!--<div ng-show="results.length" class="feed-category-container hidden-sm hidden-xs">-->
 
-    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories" style="width: 200px; margin-top: 20px;"/>
+    <!--<input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories" style="width: 200px; margin-top: 20px;"/>-->
 
-    <div class="feed-inner-container">
-        <!--Category tree selector-->
-        <div ivh-treeview="feedCategoryObj.nestedCategories"
-             ivh-treeview-label-attribute="'name'"
-             ivh-treeview-id-attribute="'code'"
-             ivh-treeview-children-attribute="'categories'"
-             ivh-treeview-selected-attribute="'selected'"
-             ivh-treeview-change-handler="categoryOnChange"
-             ivh-treeview-filter="filterCategories"
-             class="panel panel-default feed-category-selector">
-        </div>
+    <!--<div class="feed-inner-container">-->
+        <!--&lt;!&ndash;Category tree selector&ndash;&gt;-->
+        <!--<div ivh-treeview="feedCategoryObj.nestedCategories"-->
+             <!--ivh-treeview-label-attribute="'name'"-->
+             <!--ivh-treeview-id-attribute="'code'"-->
+             <!--ivh-treeview-children-attribute="'categories'"-->
+             <!--ivh-treeview-selected-attribute="'selected'"-->
+             <!--ivh-treeview-change-handler="categoryOnChange"-->
+             <!--ivh-treeview-filter="filterCategories"-->
+             <!--class="panel panel-default feed-category-selector">-->
+        <!--</div>-->
 
-    </div>
-    <div>
-        Select the category of items you want to see in your feed.
-    </div>
-</div>
+    <!--</div>-->
+    <!--<div>-->
+        <!--Select the category of items you want to see in your feed.-->
+    <!--</div>-->
+<!--</div>-->

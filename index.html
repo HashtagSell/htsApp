@@ -62,7 +62,7 @@
     <base href="/">
 </head>
 
-<body ng-controller="mainController" ng-cloak>
+<body ng-controller="mainController" ng-cloak class="container">
     <div ui-view="root">
         <div class="navbar navbar-default nav-links navbar-fixed-top">
             <div class="container-fluid">
@@ -156,136 +156,191 @@
             </div>
         </div>
 
+        <!--<div class="overlay" ng-class="{ 'active' : !sideNav.hidden}" ng-click="toggleOffCanvasSideNav()"></div>-->
 
-        <div class="master-container">
-            <div class="overlay" ng-class="{ 'active' : !sideNavOffCanvas.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
-            <div class="content-wrapper">
-                <div class="sidebar-container" ng-class="{ 'active' : !sideNavOffCanvas.hidden}">
-                    <div class="bs-profile-nav sidebar-offcanvas">
-                        <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}});">
-                            <span class="sideNavTriggerBannerImageUpload fa-stack">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="bannerDropzoneConfig"></i>
-                            </span>
-                            <div class="profileCircle">
-                                <span class="sideNavTriggerProfileImageUpload fa-stack">
-                                    <i class="fa fa-circle fa-stack-2x"></i>
-                                    <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="profileDropzoneConfig"></i>
-                                </span>
-                                <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
-                            </div>
-                        </div>
-                        <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
-                            <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
-                            <div class="bs-username" ng-show="!userObj.user_settings.name">
-                                <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
-                                <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
-                            </div>
-                            <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
-                        </div>
+        <div class="sidebar-container" ng-class="{ 'active' : !sideNav.hidden, 'sidebar-container-list-view': sideNav.listView}">
+            <div class="bs-profile-nav sidebar-offcanvas">
 
-                        <!--SideNav-->
-                        <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
-                            <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
-                                {{item.name}}
-                                <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
-                            </a>
-                        </div>
-
-
-                        <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
-                        <div ng-controller="filterBar">
-                            <div class="list-group" ng-show="showFilterBar">
-                                <a class="list-group-item">
-                                    <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
-                                    <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
-                                    <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
-                                </a>
-                                <!--<input slider ng-model="value" type="text" id="mySlider1"  options="ngSliderOptions" />-->
-                                <a class="list-group-item">
-                                    <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
-                                </a>
-
-                                <a class="list-group-item">
-                                    <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
-                                </a>
-
-                                <a class="list-group-item">
-                                    <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
-                                </a>
-
-                                <a class="list-group-item">
-                                    <span class="btn-group btn-group-justified">
-                                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
-                                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
+                <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}});">
+                    <span class="sideNavTriggerBannerImageUpload fa-stack">
+                        <i class="fa fa-circle fa-stack-2x"></i>
+                        <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="bannerDropzoneConfig"></i>
+                    </span>
+                    <div class="profileCircle">
+                        <span class="sideNavTriggerProfileImageUpload fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="profileDropzoneConfig"></i>
+                        </span>
+                        <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
                     </div>
                 </div>
 
-
-                <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNavOffCanvas.hidden}">
-                    <div class="container">
-                        <div ui-view></div>
+                <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
+                    <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
+                    <div class="bs-username" ng-show="!userObj.user_settings.name">
+                        <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
+                        <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
                     </div>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
                 </div>
 
+                <!--SideNav-->
+                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
+                        {{item.name}}
+                        <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
+                    </a>
+                </div>
+
+                <!--&lt;!&ndash;FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE&ndash;&gt;-->
+                <!--<div ng-controller="filterBar">-->
+                    <!--<div class="list-group" ng-show="showFilterBar">-->
+                        <!--<a class="list-group-item">-->
+                            <!--<span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>-->
+                            <!--<span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>-->
+                            <!--<span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>-->
+                        <!--</a>-->
+                        <!--<a class="list-group-item">-->
+                            <!--<input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">-->
+                        <!--</a>-->
+
+                        <!--<a class="list-group-item">-->
+                            <!--<input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">-->
+                        <!--</a>-->
+
+                        <!--<a class="list-group-item">-->
+                            <!--<input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">-->
+                        <!--</a>-->
+
+                        <!--<a class="list-group-item">-->
+                            <!--<span class="btn-group btn-group-justified">-->
+                                <!--<label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>-->
+                                <!--<label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>-->
+                            <!--</span>-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
-
-
-            <div class="footer-master-container" ng-controller="feedbackController" ng-class="{ 'feedback-visible' : feedback.form.visible }">
-
-                <div class="footer container">
-                    <div class="row">
-
-                        <div class="col-sm-4 hidden-xs">
-                            <span id="copyright" ng-show="!feedback.form.visible">©2015 HashtagSell, Inc</span>
-                        </div>
-
-                        <div class="col-sm-4 col-xs-12 text-center feedback-link">
-                            <a ng-click="feedback.form.visible = !feedback.form.visible">Provide Feedback</a>
-                        </div>
-
-                        <div class="col-sm-4 hidden-xs pull-right">
-                            <div ng-show="!feedback.form.visible">
-                                <a href="http://www.facebook.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-facebook"></i></a>
-                                <a href="http://www.twitter.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-twitter"></i></a>
-                                <a class="pull-right" href="http://blog.hashtagsell.com" target="_blank">HashtagBlog</a>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="feedback-container container">
-                    <div class="row">
-                        <form class="form-horizontal" ng-submit="submitFeedback()">
-
-                            <div class="form-group">
-                                <div style="width: 50%; margin: auto;">
-                                    <input type="text" class="form-control" ng-model="feedback.form.email" placeholder="{{userObj.user_settings.name}}" ng-value="userObj.user_settings.name" ng-disabled="true"/>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div style="width: 50%; margin: auto;">
-                                    <textarea rows="5" class="form-control" placeholder="Provide any feedback here.  Don't be shy!  We can take it." ng-model="feedback.form.generalFeedback"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div style="width: 50%; margin: auto;">
-                                    <button class="btn btn-primary" type="submit">Submit</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+
+        <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
+        <div ng-controller="filterBar" ng-class="sideNav.listView ? 'filter-bar-container-right': 'filter-bar-container-left'">
+            <div class="list-group filter-bar" ng-show="showFilterBar">
+                <a class="list-group-item">
+                    <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                    <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
+                    <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                </a>
+                <a class="list-group-item">
+                    <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
+                </a>
+
+                <a class="list-group-item">
+                    <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
+                </a>
+
+                <a class="list-group-item">
+                    <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
+                </a>
+
+                <a class="list-group-item">
+                    <span class="btn-group btn-group-justified">
+                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
+                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+
+
+
+        <!--Category Tree-->
+        <div ng-controller="categorySelectorBar" ng-class="sideNav.listView ? 'category-selector-bar-right': 'category-selector-bar-left'">
+            <div class="category-selector" ng-show="showCategorySelectorBar">
+                <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories"/>
+
+                <div class="feed-inner-container">
+                    <!--Category tree selector-->
+                    <div ivh-treeview="feedCategoryObj.nestedCategories"
+                         ivh-treeview-label-attribute="'name'"
+                         ivh-treeview-id-attribute="'code'"
+                         ivh-treeview-children-attribute="'categories'"
+                         ivh-treeview-selected-attribute="'selected'"
+                         ivh-treeview-change-handler="categoryOnChange"
+                         ivh-treeview-filter="filterCategories"
+                         class="panel panel-default feed-category-selector">
+                    </div>
+
+                </div>
+                <div>
+                    Select the category of items you want to see in your feed.
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+        <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNav.hidden}">
+            <div ui-view></div>
+        </div>
+
+
+        <div class="footer-master-container" ng-controller="feedbackController" ng-class="{ 'feedback-visible' : feedback.form.visible }">
+
+            <div class="footer container">
+                <div class="row">
+
+                    <div class="col-sm-4 hidden-xs">
+                        <span id="copyright" ng-show="!feedback.form.visible">©2015 HashtagSell, Inc</span>
+                    </div>
+
+                    <div class="col-sm-4 col-xs-12 text-center feedback-link">
+                        <a ng-click="feedback.form.visible = !feedback.form.visible">Provide Feedback</a>
+                    </div>
+
+                    <div class="col-sm-4 hidden-xs pull-right">
+                        <div ng-show="!feedback.form.visible">
+                            <a href="http://www.facebook.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-facebook"></i></a>
+                            <a href="http://www.twitter.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-twitter"></i></a>
+                            <a class="pull-right" href="http://blog.hashtagsell.com" target="_blank">HashtagBlog</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="feedback-container container">
+                <div class="row">
+                    <form class="form-horizontal" ng-submit="submitFeedback()">
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <input type="text" class="form-control" ng-model="feedback.form.email" placeholder="{{userObj.user_settings.name}}" ng-value="userObj.user_settings.name" ng-disabled="true"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <textarea rows="5" class="form-control" placeholder="Provide any feedback here.  Don't be shy!  We can take it." ng-model="feedback.form.generalFeedback"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!--IMPORT LIBRARIES-->

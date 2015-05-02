@@ -5,11 +5,17 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $scope.userObj = Session.userObj;
 
-    $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
+    $scope.sideNav = sideNavFactory.sideNav;
+
+
+
 
     $scope.toggleOffCanvasSideNav = function () {
-        $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
+        $scope.sideNav.hidden = !$scope.sideNav.hidden;
     };
+
+
+
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -18,8 +24,18 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
 
+        if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
+            if ($rootScope.currentState === 'feed') {
+                $scope.sideNav.listView = true;
+            } else if($rootScope.previousState === 'results.splash' || $rootScope.previousState === 'feed.splash') {
+                console.log('do nothing');
+            } else {
+                $scope.sideNav.listView = false;
+            }
+        }
+
         //Hide the side navigation after user clicks a link
-        $scope.sideNavOffCanvas.hidden = true;
+        $scope.sideNav.hidden = true;
 
 
         if (toState.name === 'results') {

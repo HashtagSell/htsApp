@@ -15,7 +15,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
             speed: 100,
             slidesToScroll: 1,
             variableWidth: true,
-            centerMode: true
+            centerMode: false
         };
 
 
@@ -134,12 +134,12 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
 
         //Responsive Navigation
-        $scope.sideNavOffCanvas = sideNavFactory.sideNavOffCanvas;
+        $scope.sideNav = sideNavFactory.sideNav;
 
         //console.log($scope);
 
         $scope.toggleOffCanvasSideNav = function () {
-            $scope.sideNavOffCanvas.hidden = !$scope.sideNavOffCanvas.hidden;
+            $scope.sideNav.hidden = !$scope.sideNav.hidden;
         };
 
 

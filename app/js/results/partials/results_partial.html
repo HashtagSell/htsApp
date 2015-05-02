@@ -10,8 +10,8 @@
     <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
     <div class="results-container" resize-grid ng-class="{ 'split-results-container' : views.showMap }">
         <!--GRID VIEW-->
-        <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="77" vs-excess="30" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
-            <div ng-repeat="row in results.gridRows">
+        <div vs-repeat class="inner-container" vs-excess="50" vs-size-property="rowHeight" vs-offset-before="77" vs-excess="5" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
+            <div ng-repeat="row in results.gridRows" style="width: 100%;">
                 <div ng-repeat="result in row.rowContents"
                      ng-click="openSplash(this)"
                      class="grid-item"
@@ -38,8 +38,9 @@
 
 
         <!--LIST VIEW-->
-        <div vs-repeat class="inner-container" vs-excess="20" vs-size-property="rowHeight" vs-offset-before="77" ng-show="!views.gridView">
-            <div ng-repeat="row in results.gridRows" class="result-list-item">
+        <!--{{views.showMap}}-->
+        <div vs-repeat class="inner-container" vs-excess="5" vs-size-property="rowHeight" vs-offset-before="77" ng-show="!views.gridView">
+            <div ng-repeat="row in results.gridRows" ng-class="views.showMap ? 'list-item-map-view':'list-item'">
                 <div style="cursor: pointer;" ng-repeat="result in row.rowContents"
                      ng-click="openSplash(this)"
                         >

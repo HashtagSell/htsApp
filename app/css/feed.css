@@ -34,15 +34,16 @@ ul.ivh-treeview .ivh-treeview-toggle {
 }
 
 
-.feed-item {
-    left: 10px;
-    right: 250px;
+
+.feed-category-container {
+    position: fixed;
+    margin-top: 57px;
+    margin-left: 1120px;
+    width: 200px;
 }
 
 
-@media screen and (max-width: 992px) {
-    .feed-item {
-        left: 20px;
-        right:15px;
-    }
+
+@media screen and (max-width: 1489px) {
+
 }
