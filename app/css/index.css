@@ -254,6 +254,42 @@ h1, h2, h3, h4, h5{
     right: 0px;
 }
 
+
+.splash-content-container {
+    position: absolute;
+    left: 0;
+    top: 0px;
+    right: 0;
+    bottom: 0;
+}
+
+
+
+div.img-div{
+    height:200px;
+    width:200px;
+    overflow:hidden;
+    border-radius:50%;
+}
+
+
+
+.img-div img{
+    -webkit-transform:translate(-50%);
+    margin-left:100px;
+}
+
+
+.circle-image{
+    width:200px;
+    height:200px;
+    border-radius:50%;
+    background-image:url("http://placekitten.com/g/200/400");
+    display:block;
+    background-position-y:25%
+}
+
+
 .spinner-abs-center{
     position: absolute;
     top: 33%;
@@ -261,23 +297,40 @@ h1, h2, h3, h4, h5{
     margin: 0 40%;
 }
 
+
+
+
+/*styling for items in feed.  Also in results route when list view is enabled*/
+.list-item {
+    left: -280px;
+    right: 0px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+
+.list-item-map-view {
+    left: 8px;
+    right: 15px;
+}
+
+
+
 .sidebar-container {
     position: fixed;
     top: 0;
     left: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    transform:translateY(56px) translate3d(0,0,0);
-    -webkit-transform:translateY(56px) translate3d(0,0,0);
+    transform: translate3d(0,56px,0);
+    -webkit-transform: translate3d(0,56px,0);
 }
-
 
 
 .sidebar-container-roll-up {
     transform:translateY(0px) translate3d(0,0,0);
     -webkit-transform:translateY(0px) translate3d(0,0,0);
 }
-
 
 
 .sidebar-container-list-view {
@@ -287,10 +340,77 @@ h1, h2, h3, h4, h5{
 
     left: inherit;
     z-index: 2;
+
+    width: 1480px
+}
+
+
+
+
+/*/!*FILTER BAR USED BY RESULTS PAGE*!/*/
+.filter-bar {
+    margin-top: 20px;
+    width: 280px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+.filter-bar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+
+/*/!*CATEGORY SELECTOR USED BY FEED ROUTE*!/*/
+.category-selector {
+    width: 280px;
+    margin-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+.category-selector-right {
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 
 @media screen and (max-width: 1489px) {
+
+    .sidebar-container-list-view {
+        transform:translate3d(-30px, 56px, 0);
+        -webkit-transform:translate3d(-30px, 56px, 0);
+        left: inherit;
+        z-index: 2;
+        width: 280px;
+        /*transition:all .25s;*/
+        /*-webkit-transition:all .25s;*/
+    }
+
+    .list-item {
+        left: 15px;
+        right: 15px;
+    }
+
+    .filter-bar-right {
+        position: relative;
+    }
+
+    .category-selector-right {
+        position: relative;
+    }
+}
+
+
+
+
+
+@media screen and (max-width: 1200px) {
+
 
     .sidebar-container-list-view {
         transform:translateY(56px) translate3d(0,0,0);
@@ -304,38 +424,12 @@ h1, h2, h3, h4, h5{
 
 
 
-.splash-content-container {
-    position: absolute;
-    left: 0;
-    top: 0px;
-    right: 0;
-    bottom: 0;
-}
 
 
 
 
 
-div.img-div{
-    height:200px;
-    width:200px;
-    overflow:hidden;
-    border-radius:50%;
-}
 
-.img-div img{
-    -webkit-transform:translate(-50%);
-    margin-left:100px;
-}
-
-.circle-image{
-    width:200px;
-    height:200px;
-    border-radius:50%;
-    background-image:url("http://placekitten.com/g/200/400");
-    display:block;
-    background-position-y:25%
-}
 
 
 
@@ -417,7 +511,6 @@ div.img-div{
         transform:translateY(0%) translate3d(0,0,0);
         -webkit-transform:translateY(0%) translate3d(0,0,0);
     }
-
 
 }
 
@@ -516,122 +609,6 @@ div.img-div{
     }
 
 
-}
-
-
-
-
-/*FILTER BAR USED BY RESULTS PAGE*/
-
-
-
-
-.filter-bar-container-left {
-    position: fixed;
-    top: 365px;
-    left: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transform: translateY(56px)translate3d(0,0,0);
-    -webkit-transform: translateY(56px)translate3d(0,0,0);
-}
-
-
-
-.filter-bar-container-right {
-    position: fixed;
-    top: 0;
-    left: inherit;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transform: translateY(56px)translate3d(0,0,0);
-    -webkit-transform: translate3d(1020px,56px,0);
-    z-index: 1;
-}
-
-
-
-
-
-@media screen and (max-width: 1489px) {
-
-    .filter-bar-container-right {
-        position: fixed;
-        top: 365px;
-        left: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        transform: translateY(56px)translate3d(0,0,0);
-        -webkit-transform: translateY(56px)translate3d(0,0,0);
-    }
-}
-
-
-
-
-.filter-bar {
-    margin-top: 20px;
-    width: 280px;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-
-
-
-
-
-
-
-
-/*CATEGORY SELECTOR USED BY FEED ROUTE*/
-
-
-
-.category-selector-bar-right {
-    position: fixed;
-    top: 0;
-    left: inherit;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transform: translateY(56px)translate3d(0,0,0);
-    -webkit-transform: translate3d(1020px,56px,0);
-    z-index: 1;
-}
-
-
-
-.category-selector-bar-left {
-    position: fixed;
-    top: 365px;
-    left: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transform: translateY(56px)translate3d(0,0,0);
-    -webkit-transform: translateY(56px)translate3d(0,0,0);
-}
-
-
-
-@media screen and (max-width: 1489px) {
-
-    .category-selector-bar-right {
-        position: fixed;
-        top: 365px;
-        left: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        transform: translateY(56px)translate3d(0,0,0);
-        -webkit-transform: translateY(56px)translate3d(0,0,0);
-    }
-}
-
-
-.category-selector {
-    width: 280px;
-    margin-top: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
 }
 
 

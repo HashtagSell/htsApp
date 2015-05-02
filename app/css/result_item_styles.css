@@ -255,40 +255,6 @@
 
 
 
-
-
-.list-item {
-    left: -280px;
-    right: 0px;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-
-
-@media screen and (max-width: 1489px) {
-    .list-item {
-        left:10px;
-        right:250px;
-    }
-}
-
-
-
-@media screen and (max-width: 992px) {
-    .list-item {
-        left: 20px;
-        right: 15px;
-    }
-}
-
-.list-item-map-view {
-    left: 8px;
-    right: 15px;
-}
-
-
-
 /*Price ribbon*/
 ribbon{
     clear:both;

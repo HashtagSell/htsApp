@@ -156,7 +156,7 @@
             </div>
         </div>
 
-        <!--<div class="overlay" ng-class="{ 'active' : !sideNav.hidden}" ng-click="toggleOffCanvasSideNav()"></div>-->
+        <div class="overlay" ng-class="{ 'active' : !sideNav.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
 
         <div class="sidebar-container" ng-class="{ 'active' : !sideNav.hidden, 'sidebar-container-list-view': sideNav.listView}">
             <div class="bs-profile-nav sidebar-offcanvas">
@@ -192,98 +192,67 @@
                     </a>
                 </div>
 
-                <!--&lt;!&ndash;FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE&ndash;&gt;-->
-                <!--<div ng-controller="filterBar">-->
-                    <!--<div class="list-group" ng-show="showFilterBar">-->
-                        <!--<a class="list-group-item">-->
-                            <!--<span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>-->
-                            <!--<span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>-->
-                            <!--<span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>-->
-                        <!--</a>-->
-                        <!--<a class="list-group-item">-->
-                            <!--<input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">-->
-                        <!--</a>-->
-
-                        <!--<a class="list-group-item">-->
-                            <!--<input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">-->
-                        <!--</a>-->
-
-                        <!--<a class="list-group-item">-->
-                            <!--<input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">-->
-                        <!--</a>-->
-
-                        <!--<a class="list-group-item">-->
-                            <!--<span class="btn-group btn-group-justified">-->
-                                <!--<label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>-->
-                                <!--<label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>-->
-                            <!--</span>-->
-                        <!--</a>-->
-                    <!--</div>-->
-                <!--</div>-->
             </div>
-        </div>
 
 
-        <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
-        <div ng-controller="filterBar" ng-class="sideNav.listView ? 'filter-bar-container-right': 'filter-bar-container-left'">
-            <div class="list-group filter-bar" ng-show="showFilterBar">
-                <a class="list-group-item">
-                    <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
-                    <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
-                    <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
-                </a>
-                <a class="list-group-item">
-                    <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
-                </a>
 
-                <a class="list-group-item">
-                    <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
-                </a>
 
-                <a class="list-group-item">
-                    <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
-                </a>
+            <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
+            <div ng-controller="filterBar" ng-class="{ 'filter-bar-right': sideNav.listView }">
+                <div class="list-group filter-bar" ng-show="showFilterBar">
+                    <a class="list-group-item">
+                        <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                        <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
+                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                    </a>
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
+                    </a>
 
-                <a class="list-group-item">
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
+                    </a>
+
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
+                    </a>
+
+                    <a class="list-group-item">
                     <span class="btn-group btn-group-justified">
                         <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
                         <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
                     </span>
-                </a>
+                    </a>
+                </div>
             </div>
-        </div>
 
 
 
 
-        <!--Category Tree-->
-        <div ng-controller="categorySelectorBar" ng-class="sideNav.listView ? 'category-selector-bar-right': 'category-selector-bar-left'">
-            <div class="category-selector" ng-show="showCategorySelectorBar">
-                <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories"/>
+            <!--Category Tree-->
+            <div ng-controller="categorySelectorBar" ng-class="{ 'category-selector-right': sideNav.listView }">
+                <div class="category-selector" ng-show="showCategorySelectorBar">
+                    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Filter Categories"/>
 
-                <div class="feed-inner-container">
-                    <!--Category tree selector-->
-                    <div ivh-treeview="feedCategoryObj.nestedCategories"
-                         ivh-treeview-label-attribute="'name'"
-                         ivh-treeview-id-attribute="'code'"
-                         ivh-treeview-children-attribute="'categories'"
-                         ivh-treeview-selected-attribute="'selected'"
-                         ivh-treeview-change-handler="categoryOnChange"
-                         ivh-treeview-filter="filterCategories"
-                         class="panel panel-default feed-category-selector">
+                    <div class="feed-inner-container">
+                        <!--Category tree selector-->
+                        <div ivh-treeview="feedCategoryObj.nestedCategories"
+                             ivh-treeview-label-attribute="'name'"
+                             ivh-treeview-id-attribute="'code'"
+                             ivh-treeview-children-attribute="'categories'"
+                             ivh-treeview-selected-attribute="'selected'"
+                             ivh-treeview-change-handler="categoryOnChange"
+                             ivh-treeview-filter="filterCategories"
+                             class="panel panel-default feed-category-selector">
+                        </div>
+
                     </div>
-
-                </div>
-                <div>
-                    Select the category of items you want to see in your feed.
+                    <div>
+                        Select the category of items you want to see in your feed.
+                    </div>
                 </div>
             </div>
         </div>
-
-
-
-
-
 
 
         <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNav.hidden}">
