@@ -26,7 +26,6 @@ ul.ivh-treeview .ivh-treeview-toggle {
     margin-bottom: 20px;
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
 }
 
 .feed-category-selector {
@@ -40,10 +39,4 @@ ul.ivh-treeview .ivh-treeview-toggle {
     margin-top: 57px;
     margin-left: 1120px;
     width: 200px;
-}
-
-
-
-@media screen and (max-width: 1489px) {
-
 }

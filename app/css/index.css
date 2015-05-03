@@ -306,6 +306,7 @@ div.img-div{
     right: 0px;
     max-width: 900px;
     margin: 0 auto;
+    cursor: pointer;
 }
 
 
@@ -320,6 +321,7 @@ div.img-div{
     position: fixed;
     top: 0;
     left: 0;
+    bottom: 0;
     overflow-y: auto;
     overflow-x: hidden;
     transform: translate3d(0,56px,0);
@@ -339,7 +341,7 @@ div.img-div{
     -webkit-transform:translate3d(-175px, 56px, 0);
 
     left: inherit;
-    z-index: 2;
+    z-index: 1;
 
     width: 1480px
 }
@@ -384,8 +386,6 @@ div.img-div{
     .sidebar-container-list-view {
         transform:translate3d(-30px, 56px, 0);
         -webkit-transform:translate3d(-30px, 56px, 0);
-        left: inherit;
-        z-index: 2;
         width: 280px;
         /*transition:all .25s;*/
         /*-webkit-transition:all .25s;*/
@@ -612,7 +612,11 @@ div.img-div{
 }
 
 
-
+.list-group-item {
+    transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -webkit-transition: all .25s ease-in-out;
+};
 
 
 

@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb']);
+var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick']);
 
 
 
@@ -592,6 +592,228 @@ htsApp.directive('dropzone', function () {
                 dropzone.processQueue();
             };
         }
+    };
+});
+
+
+
+/**
+ * Created by braddavis on 4/7/15.
+ */
+htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory){
+    return {
+        restrict: 'E',
+        scope:{
+            selectedlabels: '=',
+            userlabels: '=',
+            selectedfaves: '=',
+            placeholder: '=ngPlaceholder'
+        },
+        link: function (scope, element) { //Stops dropdown from closing when user clicks on input box
+            element.bind('click', function (event) {
+                event.stopPropagation();
+            });
+        },
+        template: "<span class='dropdown' dropdown>"+
+        "<i class='fa fa-tags dropdown-toggle' dropdown-toggle ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
+        "<ul class='dropdown-menu'>"+
+        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
+        "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
+        "       <a ng-click='setSelectedItem()'>" +
+        "           <span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}" +
+        "           <span ng-class='isChecked(label.name)'><span/>" +
+        "       </a>" +
+        "   </li>" +
+        "   <li>" +
+        "       <a dropdown-toggle ng-click='createNewLabel(query)' ng-show='ifQueryUnique(query)'>{{query}} (create new)</a>" +
+        "   </li>" +
+        "   <li>" +
+        "       <a dropdown-toggle ng-click='applyChanges()' ng-show='updatesNecessary'>Apply</a>" +
+        "   </li>" +
+        "</ul>" +
+        "</span>" ,
+        controller: ['$scope', 'favesFactory', 'Session', function($scope, favesFactory, Session){
+
+            $scope.currentFaves = Session.userObj.user_settings.favorites;
+
+            $scope.openDropdown = function(){
+
+                $scope.selectedlabels = [];
+                $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
+
+                console.log($scope);
+
+                var currentFavorites = $scope.currentFaves;
+
+                angular.forEach($scope.selectedfaves, function(selected, id) {
+                    if(selected) {  //Make sure the item is checked
+                        for(i=0; i<currentFavorites.length; i++){
+                            if(currentFavorites[i].postingId == id && currentFavorites[i].labels){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
+
+                                for(j=0; j<currentFavorites[i].labels.length; j++){ //Loop though all the labels applied to the selected favorite
+                                    var discoveredLabel = currentFavorites[i].labels[j];
+                                    if (!_.contains($scope.selectedlabels, discoveredLabel)) {
+                                        $scope.selectedlabels.push(discoveredLabel);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                });
+            };
+
+            //Return boolean that specifies if the filter sting matches any existing labels... If false then user will see, "new label name (create label)".
+            $scope.ifQueryUnique = function(query){
+                var unique = true; //by default the create label functionality is shown
+                if(!query){ //if the filter string is null
+                    unique = false; //don't show create label
+                } else { //the input field has a value
+                    _.find($scope.userlabels, function (label) { //loop through the users labels
+                        if(label.name == query){ //if the filter string matches a label name
+                            unique = false; //don't show create label
+                        }
+                    });
+                }
+                return unique;
+            };
+
+            $scope.createNewLabel = function(newLabel){
+                var newLabelObj = {name : newLabel};  //formalize the new label
+//                $scope.selectedlabels = []; //Uncheck all the selected labels so that only the new one is applied.
+                favesFactory.addFavoriteLabel(newLabelObj); //hand new label to faves factory for processing
+                $scope.userlabels = favesFactory.getUserLabels(); //get the update user labels TODO: Need a callback here
+                $scope.setSelectedItem(newLabelObj.name);  //pass the name of the new label to get applied to selected favorites
+                $scope.applyChanges(); //
+                $scope.query = ''; //Set the filter string to null and hide the create label functionality
+            };
+
+
+            //Updates list of selected user user labels
+            $scope.setSelectedItem = function(labelname){
+                console.log("in setSElectedItem");
+                $scope.updatesNecessary = true;  //Update view to show "Apply changes functionality"
+                if(!labelname) { //sometimes label names are passed into this function
+                    labelname = this.label.name; //sometimes this function is called by the model
+                }
+                if (_.contains($scope.selectedlabels, labelname)) { //If the label is already checked
+                    $scope.selectedlabels = _.without($scope.selectedlabels, labelname); //uncheck the label
+                } else { //label is not checked
+                    $scope.selectedlabels.push(labelname); //check the label
+                }
+            };
+
+            //Adds or removes label from each selected favorite
+            $scope.applyChanges = function(){
+                var currentFavorites = $scope.currentFaves; //get all the users favorited items
+
+                console.log('looping thought selected faves', $scope.selectedfaves);
+
+                angular.forEach($scope.selectedfaves, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
+                    if(selectedStatus) {  //Make sure the favorite is checked
+                        console.log('this item selected', selectedStatus, id);
+                        for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
+                            if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                                console.log(currentFavorites[i].postingId, id);
+                                currentFavorites[i].labels = $scope.selectedlabels;  //Applies all the checked user labels to the favorite TODO: We should not overwrite all the labels but instead add or remove them
+                            }
+                        }
+                    }
+                });
+
+                Session.setSessionValue('favorites', currentFavorites);
+                //TODO:Select all should only select items on screen.  Not items hidden from filter
+
+                $scope.selectedfaves = {}; //uncheck all the selected favorites from the view
+                $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
+            };
+
+
+            //Deletes the label from the user list and removes the label from any favorite that has it applied
+            $scope.deleteLabel = function($event){
+                $event.stopPropagation();
+                var labelname = this.label.name;
+                var labelToRemove = {name : labelname};
+                favesFactory.removeFavoriteLabel(labelToRemove, $scope.refreshTable);
+            };
+
+            $scope.refreshTable = function(){
+                $scope.userlabels = favesFactory.getUserLabels();
+                favesFactory.refreshTable();
+            };
+
+
+            //toggles checkmark next to user label
+            $scope.isChecked = function (labelname) {
+                if (_.contains($scope.selectedlabels, labelname)) { //check if toggle label is already in list of selected labels
+                    return 'fa fa-check pull-right';
+                }
+                return false;
+            };
+        }]
+    };
+}]);
+
+
+
+/**
+ * Created by braddavis on 12/10/14.
+ */
+htsApp.directive('htsFaveToggle', function () {
+    return {
+        restrict: 'E',
+        template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();" tooltip="{{tooltipMessage}}" tooltip-placement="right" tooltip-trigger="mouseenter"></span>',
+        controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', 'socketio', 'sideNavFactory', '$timeout', function ($scope, $element, favesFactory, Session, authModalFactory, socketio, sideNavFactory, $timeout) {
+
+            //console.log(Session.userObj);
+            //
+            if(Session.userObj.user_settings.loggedIn) {
+                favesFactory.checkFave($scope.result, function (response) {
+                    $scope.favorited = response;
+
+                    $scope.tooltipMessage = 'please wait';
+
+                    if($scope.favorited){
+                        $scope.tooltipMessage = 'Remove from watchlist';
+                    } else {
+                        $scope.tooltipMessage = 'Add to watchlist';
+                    }
+                });
+            }
+
+            $scope.toggleFave = function (item) {
+                if(Session.userObj.user_settings.loggedIn) {
+                    console.log('favorited status: ', $scope.favorited);
+                    console.log(item);
+                    if (!$scope.favorited) { //If not already favorited
+                        favesFactory.addFave(item, function () {  //Add the favorite and flag as done
+                            sideNavFactory.defaultMenu[2].active = true;
+
+                            $timeout(function () {
+                                sideNavFactory.defaultMenu[2].active = false;
+                            }, 500);
+
+                            $scope.favorited = true;
+                            $scope.tooltipMessage = 'Remove from watch list';
+                            socketio.joinPostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
+                        });
+                    } else { //toggle off favorite
+                        favesFactory.removeFave(item, function () {
+                            $scope.favorited = false;
+                            $scope.tooltipMessage = 'Add to watch list';
+                            socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
+
+                        });
+                    }
+                } else {
+
+                    authModalFactory.signInModal();
+
+                }
+                //console.log('bluring element', $element);
+                //$element[0].childNodes[0].blur();
+            };
+        }]
     };
 });
 ;angular.module('globalVars', [])
@@ -1479,14 +1701,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     $scope.status = feedFactory.status;
 
-    $scope.slickConfig = {
-        dots: true,
-        lazyLoad: 'progressive',
-        infinite: true,
-        speed: 100,
-        slidesToScroll: 1,
-        variableWidth: true,
-        centerMode: false
+    $scope.testing = function (ev) {
+        console.log(ev);
+        //ev.stopPropagation();
     };
 
 
@@ -1525,26 +1742,26 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         var posting = response.data.external.postings[i];
 
                         if (posting.images.length === 0) {
-                            posting.feedItemHeight = 290;
+                            posting.feedItemHeight = 261;
                         } else if (posting.images.length === 1) {
-                            posting.feedItemHeight = 290;
+                            posting.feedItemHeight = 261;
 
                             if (posting.username === 'CRAIG') {
                                 if(posting.images[0].full) {
-                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
                                 }
 
                                 if(posting.images[0].thumb) {
-                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
                                 }
 
                                 if(posting.images[0].images) {
-                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
                                 }
                             }
 
                         } else if (posting.images.length > 1) {
-                            posting.feedItemHeight = 455;
+                            posting.feedItemHeight = 420;
 
                             if (posting.username === 'CRAIG') {
 
@@ -1552,15 +1769,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                                     var imageObj = posting.images[j];
 
                                     if(imageObj.full) {
-                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, 'https://');
+                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
                                     }
 
                                     if(imageObj.thumb) {
-                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, 'https://');
+                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
                                     }
 
                                     if(imageObj.images) {
-                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, 'https://');
+                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
                                     }
 
                                 }
@@ -1604,11 +1821,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
                         if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 290;
-                            scrollTopOffset = scrollTopOffset + 290;
+                            response.data.external.postings[i].feedItemHeight = 216;
+                            scrollTopOffset = scrollTopOffset + 216;
                         } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 455;
-                            scrollTopOffset = scrollTopOffset + 455;
+                            response.data.external.postings[i].feedItemHeight = 420;
+                            scrollTopOffset = scrollTopOffset + 420;
                         }
 
                         //Push each new result to top of feed
@@ -2045,205 +2262,7 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
         $state.go('watchlist.splash', { id: favorite.postingId });
     };
 
-}]);;/**
- * Created by braddavis on 4/7/15.
- */
-htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory){
-    return {
-        restrict: 'E',
-        scope:{
-            selectedlabels: '=',
-            userlabels: '=',
-            selectedfaves: '=',
-            placeholder: '=ngPlaceholder'
-        },
-        link: function (scope, element) { //Stops dropdown from closing when user clicks on input box
-            element.bind('click', function (event) {
-                event.stopPropagation();
-            });
-        },
-        template: "<span class='dropdown' dropdown>"+
-        "<i class='fa fa-tags dropdown-toggle' dropdown-toggle ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
-        "<ul class='dropdown-menu'>"+
-        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
-        "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
-        "       <a ng-click='setSelectedItem()'>" +
-        "           <span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}" +
-        "           <span ng-class='isChecked(label.name)'><span/>" +
-        "       </a>" +
-        "   </li>" +
-        "   <li>" +
-        "       <a dropdown-toggle ng-click='createNewLabel(query)' ng-show='ifQueryUnique(query)'>{{query}} (create new)</a>" +
-        "   </li>" +
-        "   <li>" +
-        "       <a dropdown-toggle ng-click='applyChanges()' ng-show='updatesNecessary'>Apply</a>" +
-        "   </li>" +
-        "</ul>" +
-        "</span>" ,
-        controller: ['$scope', 'favesFactory', 'Session', function($scope, favesFactory, Session){
-
-            $scope.currentFaves = Session.userObj.user_settings.favorites;
-
-            $scope.openDropdown = function(){
-
-                $scope.selectedlabels = [];
-                $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
-
-                console.log($scope);
-
-                var currentFavorites = $scope.currentFaves;
-
-                angular.forEach($scope.selectedfaves, function(selected, id) {
-                    if(selected) {  //Make sure the item is checked
-                        for(i=0; i<currentFavorites.length; i++){
-                            if(currentFavorites[i].postingId == id && currentFavorites[i].labels){  //Using the ID of the checked item grab the email, heading, and other meta data from local storage.
-
-                                for(j=0; j<currentFavorites[i].labels.length; j++){ //Loop though all the labels applied to the selected favorite
-                                    var discoveredLabel = currentFavorites[i].labels[j];
-                                    if (!_.contains($scope.selectedlabels, discoveredLabel)) {
-                                        $scope.selectedlabels.push(discoveredLabel);
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-                });
-            };
-
-            //Return boolean that specifies if the filter sting matches any existing labels... If false then user will see, "new label name (create label)".
-            $scope.ifQueryUnique = function(query){
-                var unique = true; //by default the create label functionality is shown
-                if(!query){ //if the filter string is null
-                    unique = false; //don't show create label
-                } else { //the input field has a value
-                    _.find($scope.userlabels, function (label) { //loop through the users labels
-                        if(label.name == query){ //if the filter string matches a label name
-                            unique = false; //don't show create label
-                        }
-                    });
-                }
-                return unique;
-            };
-
-            $scope.createNewLabel = function(newLabel){
-                var newLabelObj = {name : newLabel};  //formalize the new label
-//                $scope.selectedlabels = []; //Uncheck all the selected labels so that only the new one is applied.
-                favesFactory.addFavoriteLabel(newLabelObj); //hand new label to faves factory for processing
-                $scope.userlabels = favesFactory.getUserLabels(); //get the update user labels TODO: Need a callback here
-                $scope.setSelectedItem(newLabelObj.name);  //pass the name of the new label to get applied to selected favorites
-                $scope.applyChanges(); //
-                $scope.query = ''; //Set the filter string to null and hide the create label functionality
-            };
-
-
-            //Updates list of selected user user labels
-            $scope.setSelectedItem = function(labelname){
-                console.log("in setSElectedItem");
-                $scope.updatesNecessary = true;  //Update view to show "Apply changes functionality"
-                if(!labelname) { //sometimes label names are passed into this function
-                    labelname = this.label.name; //sometimes this function is called by the model
-                }
-                if (_.contains($scope.selectedlabels, labelname)) { //If the label is already checked
-                    $scope.selectedlabels = _.without($scope.selectedlabels, labelname); //uncheck the label
-                } else { //label is not checked
-                    $scope.selectedlabels.push(labelname); //check the label
-                }
-            };
-
-            //Adds or removes label from each selected favorite
-            $scope.applyChanges = function(){
-                var currentFavorites = $scope.currentFaves; //get all the users favorited items
-
-                console.log('looping thought selected faves', $scope.selectedfaves);
-
-                angular.forEach($scope.selectedfaves, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
-                    if(selectedStatus) {  //Make sure the favorite is checked
-                        console.log('this item selected', selectedStatus, id);
-                        for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
-                            if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
-                                console.log(currentFavorites[i].postingId, id);
-                                currentFavorites[i].labels = $scope.selectedlabels;  //Applies all the checked user labels to the favorite TODO: We should not overwrite all the labels but instead add or remove them
-                            }
-                        }
-                    }
-                });
-
-                Session.setSessionValue('favorites', currentFavorites);
-                //TODO:Select all should only select items on screen.  Not items hidden from filter
-
-                $scope.selectedfaves = {}; //uncheck all the selected favorites from the view
-                $scope.updatesNecessary = false; //Hide the apply button from the user labels drop down
-            };
-
-
-            //Deletes the label from the user list and removes the label from any favorite that has it applied
-            $scope.deleteLabel = function($event){
-                $event.stopPropagation();
-                var labelname = this.label.name;
-                var labelToRemove = {name : labelname};
-                favesFactory.removeFavoriteLabel(labelToRemove, $scope.refreshTable);
-            };
-
-            $scope.refreshTable = function(){
-                $scope.userlabels = favesFactory.getUserLabels();
-                favesFactory.refreshTable();
-            };
-
-
-            //toggles checkmark next to user label
-            $scope.isChecked = function (labelname) {
-                if (_.contains($scope.selectedlabels, labelname)) { //check if toggle label is already in list of selected labels
-                    return 'fa fa-check pull-right';
-                }
-                return false;
-            };
-        }]
-    };
-}]);;/**
- * Created by braddavis on 12/10/14.
- */
-htsApp.directive('htsFaveToggle', function () {
-    return {
-        restrict: 'E',
-        template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();"></span>',
-        controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', 'socketio', function ($scope, $element, favesFactory, Session, authModalFactory, socketio) {
-
-            //console.log(Session.userObj);
-            //
-            if(Session.userObj.user_settings.loggedIn) {
-                favesFactory.checkFave($scope.result, function (response) {
-                    $scope.favorited = response;
-                });
-            }
-
-            $scope.toggleFave = function (item) {
-                if(Session.userObj.user_settings.loggedIn) {
-                    console.log('favorited status: ', $scope.favorited);
-                    console.log(item);
-                    if (!$scope.favorited) { //If not already favorited
-                        favesFactory.addFave(item, function () {  //Add the favorite and flag as done
-                            $scope.favorited = true;
-                            socketio.joinPostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
-                        });
-                    } else { //toggle off favorite
-                        favesFactory.removeFave(item, function () {
-                            $scope.favorited = false;
-                            socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
-
-                        });
-                    }
-                } else {
-
-                    authModalFactory.signInModal();
-
-                }
-                //console.log('bluring element', $element);
-                //$element[0].childNodes[0].blur();
-            };
-        }]
-    };
-});;htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
+}]);;htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
 
     //Init favesFactory Object
     var favesFactory = {};
@@ -5376,17 +5395,6 @@ htsApp.factory('profileFactory', ['$http', '$location', '$q', 'ENV', function ($
     $scope.views = searchFactory.views;
 
 
-    $scope.slickConfig = {
-        dots: true,
-        lazyLoad: 'progressive',
-        infinite: true,
-        speed: 100,
-        slidesToScroll: 1,
-        variableWidth: true,
-        centerMode: false
-    };
-
-
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;
@@ -5688,7 +5696,6 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                 factory.defaultParams = {
                     start: (page + 1) * response.data.options.count,
-                    //start: 0,
                     count: response.data.options.count,
                     filters: response.data.options.filters,
                     geo: {
@@ -5833,9 +5840,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                     rowHeight = 390;
                 } else { //else the user is in list view.  Height depends on whether result contains 2 or more images.
                     if (results[i].images.length === 0 || results[i].images.length === 1) {
-                        rowHeight = 290;
+                        rowHeight = 261;
                     } else {
-                        rowHeight = 455;
+                        rowHeight = 420;
                     }
                 }
 
@@ -6867,102 +6874,6 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
     };
 
 }]);;/**
- * Created by braddavis on 1/3/15.
- */
-//Custom implementation of https://github.com/kbdaitch/angular-slick-carousel
-//Var needed for slick carousel directives below.
-__indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-
-htsApp.directive('onFinishRender', function() {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attr) {
-            if (scope.$last === true) {
-                return scope.$evalAsync(attr.onFinishRender);
-            }
-        }
-    };
-});
-
-htsApp.directive('slickCarousel', ['$timeout', '$templateCache', function($timeout, $templateCache) {
-
-        var SLICK_FUNCTION_WHITELIST, SLICK_OPTION_WHITELIST, isEmpty;
-
-        $templateCache.put('angular-slick-carousel/template.html', "<div class=\"multiple\" ng-repeat=\"m in media\" on-finish-render=\"init()\">\n  <img ng-if=\"isImage({media: m})\" data-lazy=\"{{m.thumb || m.thumbnail || m.images || m.full}}\"/>\n  <video ng-if=\"isVideo({media: m})\" ng-src=\"{{m.src}}\" type=\"{{m.mimeType}}\" ></video>\n</div>");
-
-        SLICK_OPTION_WHITELIST = ['accessiblity', 'autoplay', 'autoplaySpeed', 'arrows', 'cssEase', 'dots', 'draggable', 'fade', 'easing', 'infinite', 'lazyLoad', 'onBeforeChange', 'onAfterChange', 'pauseOnHover', 'responsive', 'slide', 'slidesToShow', 'slidesToScroll', 'speed', 'swipe', 'touchMove', 'touchThreshold', 'variableWidth', 'vertical'];
-
-        SLICK_FUNCTION_WHITELIST = ['slickGoTo', 'slickNext', 'slickPrev', 'slickPause', 'slickPlay', 'slickAdd', 'slickRemove', 'slickFilter', 'slickUnfilter', 'unslick'];
-
-        isEmpty = function(value) {
-            var key;
-            if (angular.isArray(value)) {
-                return value.length === 0;
-            } else if (angular.isObject(value)) {
-                for (key in value) {
-                    if (value.hasOwnProperty(key)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        };
-
-        return {
-            scope: {
-                settings: '=',
-                control: '=',
-                media: '=',
-                onDirectiveInit: '&',
-                isImage: '&',
-                isVideo: '&'
-            },
-            templateUrl: function(tElement, tAttrs) {
-                if (tAttrs.src) {
-                    return tAttrs.src;
-                }
-                return 'angular-slick-carousel/template.html';
-            },
-            restrict: 'AE',
-            terminal: true,
-            link: function(scope, element, attr) {
-                var options;
-                if (typeof attr.isImage !== 'function') {
-                    scope.isImage = function(params) {
-                        //TODO: Should evaluate mimetype of image.. grrrr
-                        //Here is original code
-                        //return params.media.mimeType === 'image/png' || params.media.mimeType === 'image/jpeg';
-                        return true;
-                    };
-                }
-                if (typeof attr.isVideo !== 'function') {
-                    scope.isVideo = function(params) {
-                        return params.media.mimeType === 'video/mp4';
-                    };
-                }
-                options = scope.settings || {};
-                angular.forEach(attr, function(value, key) {
-                    if (__indexOf.call(SLICK_OPTION_WHITELIST, key) >= 0) {
-                        return options[key] === scope.$eval(value);
-                    }
-                });
-                scope.init = function() {
-                    var slick;
-                    //console.log(element);
-                    slick = element.slick(options);
-                    scope.internalControl = scope.control || {};
-                    SLICK_FUNCTION_WHITELIST.forEach(function(value) {
-                        scope.internalControl[value] = function() {
-                            slick[value].apply(slick, arguments);
-                        };
-                    });
-                    scope.onDirectiveInit();
-                };
-            }
-        };
-    }
-]);;/**
  * Created by braddavis on 1/25/15.
  */
 htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, $http, myPostsFactory, Notification, favesFactory) {
@@ -7426,16 +7337,6 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
-
-        $scope.slickConfig = {
-            dots: true,
-            lazyLoad: 'progressive',
-            infinite: true,
-            speed: 100,
-            slidesToScroll: 1,
-            variableWidth: true,
-            centerMode: false
-        };
 
 
         $scope.toggles = {

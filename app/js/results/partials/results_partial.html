@@ -18,7 +18,7 @@
                      style="width: {{results.gridPercentageWidth}}%;"
                         >
                     <div class="thumbnail" style="cursor: pointer">
-                        <ribbon ng-if="result.askingPrice.value">{{result.askingPrice.value | currency : $ : 0}}</ribbon>
+                        <ribbon-grid ng-if="result.askingPrice.value">{{result.askingPrice.value | currency : $ : 0}}</ribbon-grid>
                         <hts-fave-toggle class="starPositioning"></hts-fave-toggle>
                         <!--<div style="background: url({{result.images[0].full || result.images[0].thumb || result.images[0].images}}) no-repeat center center fixed; height: 172px; webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;"></div>-->
                         <img ng-if="result.images.length" ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="fitImage">
@@ -41,11 +41,10 @@
         <!--{{views.showMap}}-->
         <div vs-repeat class="inner-container" vs-excess="5" vs-size-property="rowHeight" vs-offset-before="77" ng-show="!views.gridView">
             <div ng-repeat="row in results.gridRows" ng-class="views.showMap ? 'list-item-map-view':'list-item'">
-                <div style="cursor: pointer;" ng-repeat="result in row.rowContents"
-                     ng-click="openSplash(this)"
-                        >
+                <div style="cursor: pointer;" ng-repeat="result in row.rowContents" ng-click="openSplash(this)">
+
                     <div class="thumbnail">
-                        <ribbon ng-if="!!result.askingPrice.value" >{{::result.askingPrice.value | currency : $ : 0}}</ribbon>
+                        <ribbon-list ng-if="!!result.askingPrice.value" >{{::result.askingPrice.value | currency : $ : 0}}</ribbon-list>
 
                         <!--Has NO image-->
                         <div ng-if="!result.images.length">
@@ -57,9 +56,9 @@
                                     <div class="row">
                                         <h3 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h3>
                                         <hts-fave-toggle class="noImage-starPositioning"></hts-fave-toggle>
-                                        <p class="carousel-body" ng-bind-html="result.body |cleanBody"></p>
-                                        <div class="pull-left noImage-distance-positioning">
-                                            <i class="fa fa-location-arrow noImage-distance"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.
+                                        <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                                        <div class="pull-left noImage-timestamp">
+                                            <small><i class="fa fa-location-arrow"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -71,7 +70,7 @@
                         <div ng-if="result.images.length == 1">
                             <div class="row">
                                 <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
-                                    <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive singleImage-Image">
+                                    <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive img-rounded singleImage-Image">
                                 </div>
                                 <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 singleImage-TextContainer">
                                     <div class="row">
@@ -79,8 +78,8 @@
                                             <h3 class="singleImage-heading" ng-bind-html="result.heading | cleanHeading"></h3>
                                             <hts-fave-toggle class="singleImage-starPositioning"></hts-fave-toggle>
                                             <p class="singleImage-body" ng-bind-html="result.body |cleanBody"></p>
-                                            <div class="pull-left singleImage-distance-positioning">
-                                                <i class="fa fa-location-arrow singleImage-distance"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.
+                                            <div class="pull-left singleImage-timestamp">
+                                                <small><i class="fa fa-location-arrow"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.</small>
                                             </div>
                                         </div>
                                     </div>
@@ -93,10 +92,16 @@
                         <div ng-if="result.images.length > 1">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <slick-carousel
-                                            settings="slickConfig"
-                                            media="result.images">
-                                    </slick-carousel>
+                                    <slick data="result.images" lazy-load='progressive' init-onload=true dots=true infinite=true slides-to-scroll=1 speed=100 variable-width=true center-mode=false next-arrow=".next-arrow-ctl{{result.postingId}}" prev-arrow=".prev-arrow-ctl{{result.postingId}}">
+
+                                        <button ng-click="$event.stopPropagation();" type="button" data-role="none" class="slick-prev prev-arrow-ctl{{result.postingId}}" aria-label="previous" style="display: block;">Previous</button>
+
+                                        <button ng-click="$event.stopPropagation();" type="button" data-role="none" class="slick-next next-arrow-ctl{{result.postingId}}" aria-label="next" style="display: block;">Next</button>
+
+                                        <div ng-repeat="image in result.images">
+                                            <img data-lazy="{{image.thumb || image.thumbnail || image.images || image.full}}"/>
+                                        </div>
+                                    </slick>
                                 </div>
                             </div>
 
@@ -104,14 +109,14 @@
                                 <div class="caption">
                                     <h3 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h3>
                                     <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
-                                    <div class="carousel-distance-positioning">
-                                        <i class="fa fa-location-arrow carousel-distance"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.
+                                    <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                                    <div class="pull-left carousel-timestamp">
+                                        <small><i class="fa fa-location-arrow"></i>&nbsp;{{::result.geo.distance* 0.00062137 | number:0}} mi.<small>
                                     </div>
-                                    <p class="carousel-body" ng-bind-html="result.body |cleanBody"></p>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,8 +130,6 @@
 
     <div class="map-container" ng-class="{ 'show-map' : views.showMap }" ng-if="views.showMap">
         <ui-gmap-google-map center="map.center" zoom="map.zoom" bounds="map.bounds" draggable="true" options="map.options">
-            <!--<ui-gmap-markers models="map.markers" options="'options'" coords="'coords'" fit="true">-->
-            <!--<ui-gmap-markers models="map.markers" options="'options'" coords="'coords'" fit="true" doCluster="true" clusterOptions="map.clusterOptions" doRebuildAll="true">-->
             <ui-gmap-markers models="map.markers" options="'options'" coords="'coords'" fit="true" doCluster="true" clusterOptions="map.clusterOptions" doRebuildAll="map.refresh">
             </ui-gmap-markers>
         </ui-gmap-google-map>

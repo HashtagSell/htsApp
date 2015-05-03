@@ -7,17 +7,6 @@ htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 's
     $scope.views = searchFactory.views;
 
 
-    $scope.slickConfig = {
-        dots: true,
-        lazyLoad: 'progressive',
-        infinite: true,
-        speed: 100,
-        slidesToScroll: 1,
-        variableWidth: true,
-        centerMode: false
-    };
-
-
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(elems){
         splashFactory.result = elems.result;

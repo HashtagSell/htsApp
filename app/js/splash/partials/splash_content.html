@@ -27,11 +27,11 @@
                                                 <img ng-src="{{::result.images[0].full || result.images[0].thumb || result.images[0].images}}" class="img-responsive singleImage-splash-Image"/>
                                             </div>
                                             <div ng-if="result.images.length > 1">
-                                                <slick-carousel
-                                                        settings="slickConfig"
-                                                        media="result.images"
-                                                        ng-if="toggles.showCarousel">
-                                                </slick-carousel>
+                                                <slick ng-if="toggles.showCarousel" data="result.images" lazy-load='progressive' init-onload=true dots=true infinite=true slides-to-scroll=1 speed=100 variable-width=true center-mode=false>
+                                                    <div ng-repeat="image in result.images">
+                                                        <img data-lazy="{{image.thumb || image.thumbnail || image.images || image.full}}"/>
+                                                    </div>
+                                                </slick>
                                             </div>
                                             <ui-gmap-google-map class="splash-map" center='map.settings.center' zoom='map.settings.zoom' options='map.settings.options' ng-if="!toggles.showCarousel">
 

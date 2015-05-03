@@ -5,14 +5,9 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     $scope.status = feedFactory.status;
 
-    $scope.slickConfig = {
-        dots: true,
-        lazyLoad: 'progressive',
-        infinite: true,
-        speed: 100,
-        slidesToScroll: 1,
-        variableWidth: true,
-        centerMode: false
+    $scope.testing = function (ev) {
+        console.log(ev);
+        //ev.stopPropagation();
     };
 
 
@@ -51,26 +46,26 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         var posting = response.data.external.postings[i];
 
                         if (posting.images.length === 0) {
-                            posting.feedItemHeight = 290;
+                            posting.feedItemHeight = 261;
                         } else if (posting.images.length === 1) {
-                            posting.feedItemHeight = 290;
+                            posting.feedItemHeight = 261;
 
                             if (posting.username === 'CRAIG') {
                                 if(posting.images[0].full) {
-                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
                                 }
 
                                 if(posting.images[0].thumb) {
-                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
                                 }
 
                                 if(posting.images[0].images) {
-                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, 'https://');
+                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
                                 }
                             }
 
                         } else if (posting.images.length > 1) {
-                            posting.feedItemHeight = 455;
+                            posting.feedItemHeight = 420;
 
                             if (posting.username === 'CRAIG') {
 
@@ -78,15 +73,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                                     var imageObj = posting.images[j];
 
                                     if(imageObj.full) {
-                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, 'https://');
+                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
                                     }
 
                                     if(imageObj.thumb) {
-                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, 'https://');
+                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
                                     }
 
                                     if(imageObj.images) {
-                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, 'https://');
+                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
                                     }
 
                                 }
@@ -130,11 +125,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
 
                         if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 290;
-                            scrollTopOffset = scrollTopOffset + 290;
+                            response.data.external.postings[i].feedItemHeight = 216;
+                            scrollTopOffset = scrollTopOffset + 216;
                         } else if (response.data.external.postings[i].images.length > 1) {
-                            response.data.external.postings[i].feedItemHeight = 455;
-                            scrollTopOffset = scrollTopOffset + 455;
+                            response.data.external.postings[i].feedItemHeight = 420;
+                            scrollTopOffset = scrollTopOffset + 420;
                         }
 
                         //Push each new result to top of feed

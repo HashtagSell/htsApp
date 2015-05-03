@@ -8,16 +8,6 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
 
-        $scope.slickConfig = {
-            dots: true,
-            lazyLoad: 'progressive',
-            infinite: true,
-            speed: 100,
-            slidesToScroll: 1,
-            variableWidth: true,
-            centerMode: false
-        };
-
 
         $scope.toggles = {
             showCarousel: true
