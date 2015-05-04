@@ -613,9 +613,9 @@ div.img-div{
 
 
 .list-group-item {
-    transition: all .25s ease-in-out;
-    -moz-transition: all .25s ease-in-out;
-    -webkit-transition: all .25s ease-in-out;
+    transition: all .12s ease-in-out;
+    -moz-transition: all .12s ease-in-out;
+    -webkit-transition: all .12s ease-in-out;
 };
 
 

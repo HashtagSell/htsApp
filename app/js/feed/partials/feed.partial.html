@@ -19,17 +19,12 @@
                 <!--Has NO image-->
                 <div ng-if="!result.images.length">
                     <div class="row">
-                        <div class="col-lg-5 col-md-6 col-sm-6 col-xs-6">
-                            <div class="noImage-Placeholder"></div>
-                        </div>
-                        <div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 noImage-TextContainer">
-                            <div class="row">
-                                <h3 class="carousel-heading" ng-bind-html="result.heading | cleanHeading"></h3>
-                                <hts-fave-toggle class="noImage-starPositioning"></hts-fave-toggle>
-                                <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
-                                <div class="pull-left noImage-timestamp">
-                                    <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
-                                </div>
+                        <div class="caption">
+                            <h3 class="noImage-heading" ng-bind-html="result.heading | cleanHeading"></h3>
+                            <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
+                            <p class="noImage-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
+                            <div class="pull-left carousel-timestamp">
+                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
                             </div>
                         </div>
                     </div>
@@ -82,7 +77,7 @@
                             <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
                             <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
                             <div class="pull-left carousel-timestamp">
-                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.<small>
+                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
                             </div>
                         </div>
                     </div>

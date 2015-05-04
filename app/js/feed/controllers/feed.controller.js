@@ -46,7 +46,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         var posting = response.data.external.postings[i];
 
                         if (posting.images.length === 0) {
-                            posting.feedItemHeight = 261;
+                            posting.feedItemHeight = 179;
                         } else if (posting.images.length === 1) {
                             posting.feedItemHeight = 261;
 
@@ -64,7 +64,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                                 }
                             }
 
-                        } else if (posting.images.length > 1) {
+                        } else {
                             posting.feedItemHeight = 420;
 
                             if (posting.username === 'CRAIG') {
@@ -123,11 +123,13 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
 
-
-                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                        if(response.data.external.postings[i].images.length === 0) {
+                            response.data.external.postings[i].feedItemHeight = 179;
+                            scrollTopOffset = scrollTopOffset + 179;
+                        } else if (response.data.external.postings[i].images.length === 1) {
                             response.data.external.postings[i].feedItemHeight = 216;
                             scrollTopOffset = scrollTopOffset + 216;
-                        } else if (response.data.external.postings[i].images.length > 1) {
+                        } else {
                             response.data.external.postings[i].feedItemHeight = 420;
                             scrollTopOffset = scrollTopOffset + 420;
                         }

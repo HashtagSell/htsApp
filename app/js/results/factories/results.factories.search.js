@@ -314,7 +314,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                 if (views.gridView) {
                     rowHeight = 390;
                 } else { //else the user is in list view.  Height depends on whether result contains 2 or more images.
-                    if (results[i].images.length === 0 || results[i].images.length === 1) {
+                    if(results[i].images.length === 0) {
+                        rowHeight = 179;
+                    } else if (results[i].images.length === 1) {
                         rowHeight = 261;
                     } else {
                         rowHeight = 420;
