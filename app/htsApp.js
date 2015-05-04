@@ -498,11 +498,6 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
-
-
-
-                //console.log(e);
-
                 //If the user pressed the enter key
                 if(parseInt(e.which) === 13 && e.type === "keydown") {
                     //Check to see if the mentio menu is open or not
@@ -553,7 +548,7 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
             };
 
             // Listen for change events to enable binding
-            element.on('blur keydown', function (e) {
+            element.on('keydown keyup', function (e) {
 
                 scope.$apply(read);
 
@@ -791,7 +786,7 @@ htsApp.directive('htsFaveToggle', function () {
 
                             $timeout(function () {
                                 sideNavFactory.defaultMenu[2].active = false;
-                            }, 500);
+                            }, 250);
 
                             $scope.favorited = true;
                             $scope.tooltipMessage = 'Remove from watch list';

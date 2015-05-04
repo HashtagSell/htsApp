@@ -196,6 +196,24 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
         annotationsDictionary.put("exteriorColor","Exterior Color");
         annotationsDictionary.put("interiorColor","Interior Color");
 
+
+        //amazon annotations
+        annotationsDictionary.put("Color","Color");
+        annotationsDictionary.put("Brand","Brand");
+        annotationsDictionary.put("Material Type","Material Type");
+        annotationsDictionary.put("Model","Model");
+        annotationsDictionary.put("Part Number","Part Number");
+        annotationsDictionary.put("Warranty","Warranty");
+        annotationsDictionary.put("CPU Speed","Processor Speed");
+        annotationsDictionary.put("CPU Type","Processor Type");
+        annotationsDictionary.put("Display Size","Screen Size");
+        annotationsDictionary.put("Operating System","OS Version");
+        annotationsDictionary.put("Size","Storage Capacity");
+        annotationsDictionary.put("System Memory Size", "Memory");
+        annotationsDictionary.put("Department", "Department");
+
+
+
         var queryString = this.jsonTemplate.mentions.hashtags.join(" ");
 
 
@@ -223,157 +241,160 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
 
                     var annotationsHashTable = new Hashtable();
                     var annotationCount = 0;
-                    //var annotationLookupCounter = 0;
-                    //var masterArrayOfResults = [];
 
+                    var priceCount = 0;
+                    var totalPrice = 0;
 
-                    //Loop through all the hashtags the user has entered and lookup as many annotations as possible.
-                    //for (j = 0; j < factory.jsonTemplate.mentions.hashtags.length; j++) {
-                    //
-                    //    var hashtag =  factory.jsonTemplate.mentions.hashtags[j].hashtag;
-
-                        //var presentationMode = false;
-                        //if(factory.jsonTemplate.mentions.hashtags[j].hashtag === "macbook air"){
-                        //    console.log('presentation mode!');
-                        //
-                        //    presentationMode = true;
-                        //}
-
-                        //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
-                        var defaultParams = {
-                            start: 0,
-                            count: 300,
-                            filters: {
-                                mandatory: {
-                                    contains: {
-                                        heading: queryString
-                                    }
-                                },
-                                optional: {
-                                    exact: {
-                                        categoryCode: [factory.jsonTemplate.category, ""]
-                                    }
+                    //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
+                    var defaultParams = {
+                        start: 0,
+                        count: 500,
+                        filters: {
+                            mandatory: {
+                                contains: {
+                                    heading: queryString
                                 }
                             },
-                            geo: {
-                                coords: ['-122.431297', '37.773972'],
-                                "min": 0,
-                                "max": 100000
+                            optional: {
+                                exact: {
+                                    categoryCode: [factory.jsonTemplate.category, ""]
+                                }
                             }
-                        };
+                        },
+                        geo: {
+                            coords: ['-122.431297', '37.773972'],
+                            "min": 0,
+                            "max": 100000
+                        }
+                    };
 
-                        var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
+                    var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
 
-                        $http({
-                            method: 'GET',
-                            url: ENV.postingAPI + bracketURL
-                        }).success(function (data) {
 
-                            console.log("ANNOTATION Query IS: ", queryString, "!!!!!!!!!!!");
+                    //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
+                    $http({
+                        method: 'GET',
+                        url: ENV.postingAPI + bracketURL
+                    }).success(function (data) {
 
-                            //if (data.results) {
-                            //    //console.log(data.results);
-                            //    masterArrayOfResults = masterArrayOfResults.concat(data.results);
-                            //}
+                        console.log("ANNOTATION Query response: ", data);
 
-                            //annotationLookupCounter++;
+                        if(data.results.length) {
 
-                            //console.log(annotationLookupCounter + ' .... ' + factory.jsonTemplate.mentions.hashtags.length);
-                            //
-                            ////Now looked up all the annotations of all the hashtags and stored in Hashtable.  Now let's find the popular annotations that our in our annotation dictionary.
-                            //if(annotationLookupCounter === factory.jsonTemplate.mentions.hashtags.length) {
-                            //
-                            //    console.log('done looking up ALL hashtag data!', masterArrayOfResults);
+                            for (var i = 0; i < data.results.length; i++) {
 
-                            if(data.results.length) {
+                                var posting = data.results[i];
 
-                                for (var i = 0; i < data.results.length; i++) {
+                                if (posting.annotations) {
 
-                                    if (data.results[i].annotations) {
+                                    var annotationObj = posting.annotations;
 
-                                        var annotationObj = data.results[i].annotations;
-
-                                        console.log(i, annotationObj);
-                                        for (var key in annotationObj) {
-                                            if (annotationsDictionary.containsKey(key)) {
-                                                annotationCount++;
-                                                if (annotationsHashTable.containsKey(key)) {
-                                                    var currentCount = annotationsHashTable.get(key);
-                                                    var plusOne = currentCount + 1;
-                                                    annotationsHashTable.put(key, plusOne);
-                                                } else {
-                                                    annotationsHashTable.put(key, 1);
-                                                }
+                                    //console.log(i, annotationObj);
+                                    for (var key in annotationObj) {
+                                        if (annotationsDictionary.containsKey(key)) {
+                                            annotationCount++;
+                                            if (annotationsHashTable.containsKey(key)) {
+                                                var currentCount = annotationsHashTable.get(key);
+                                                var plusOne = currentCount + 1;
+                                                annotationsHashTable.put(key, plusOne);
                                             } else {
-                                                //console.log("omitting cause", key, "is not in our dictionary");
+                                                annotationsHashTable.put(key, 1);
                                             }
+                                        } else {
+                                            //console.log("omitting cause", key, "is not in our dictionary");
                                         }
-                                    } else {
-                                        //console.log("does not have annotation object", results[i]);
+                                    }
+                                } else {
+                                    //console.log("does not have annotation object", results[i]);
+                                }
+
+                                if (posting.askingPrice) {
+                                    if(posting.askingPrice.value !== undefined) {
+                                        //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
+                                        priceCount++;
+                                        totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
+                                        //console.log(totalPrice);
                                     }
                                 }
+                            }
 
 
-                                if (annotationsHashTable.size() > 0) {
+                            if (annotationsHashTable.size() > 0) {
 
-                                    //Gather our popular annotations
-                                    console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
-                                    var annotationArray = [];
-                                    var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
+                                //Gather our popular annotations
+                                console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
+                                var annotationArray = [];
+                                var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
 
-                                    console.log("Annotations should weigh more than: ", avg_weight);
+                                console.log("Annotations should weigh more than: ", avg_weight);
 
-                                    annotationsHashTable.each(function (key) {
+                                annotationsHashTable.each(function (key) {
 
-                                        var weight = Math.abs(annotationsHashTable.get(key));
+                                    var weight = Math.abs(annotationsHashTable.get(key));
 
-                                        console.log(key, " has weight of", weight);
+                                    console.log(key, " has weight of", weight);
 
-                                        if (weight >= avg_weight) {
+                                    if (weight >= avg_weight) {
 
-                                            annotationArray.push({key: annotationsDictionary.get(key), value: null});
+                                        annotationArray.push({key: annotationsDictionary.get(key), value: null});
 
-                                            console.log(weight, ">=", avg_weight);
-                                        }
-                                    });
-
-
-                                    //TODO: Presentation only.  Please remove after SVNT.
-                                    //if(presentationMode){
-                                    //    annotationArray = annotationArray.concat([
-                                    //        {key: 'Hard Drive (Gb)', value: null},
-                                    //        {key: 'Memory (Gb)', value: null},
-                                    //        {key: 'Screen (inches)', value: null},
-                                    //        {key: 'Warranty', value: null}
-                                    //    ]);
-                                    //}
-
-
-                                    factory.jsonTemplate.annotations = annotationArray;
-
-                                } else {
-                                    Notification.success({
-                                        title: "Hrmmmmm",
-                                        message: "Please add more hashtags to the description of what you're selling.  Thanks for you patience as our algorithms get smarter and smarter!"
-                                    });
-                                }
-
-
-                                console.log("---------------------------");
-                                console.log("done weighing all hashtags!");
-                                console.log("---------------------------");
-
-                            } else {
-                                Notification.success({
-                                    title: "Hrmmmmm",
-                                    message: "Keep your hashtags simple."
+                                        console.log(weight, ">=", avg_weight);
+                                    }
                                 });
                             }
 
+                            //Caculate average price of all data we retreived.
+                            if(totalPrice > 0){
+                                factory.jsonTemplate.price_avg = totalPrice/priceCount;
+                            }
 
-                            //}
-                        });
-                    //}
+
+                            $http.get(ENV.annotationsAPI, {
+                                params: {
+                                    query: queryString
+                                }
+                            }).success(function (data) {
+
+                                console.log('Amazon data', data);
+
+                                if(data.length) {
+
+                                    for (var k = 0; k < data.length; k++) {
+
+                                        var amazonAnnotation = data[k];
+
+                                        var key = amazonAnnotation.name;
+
+                                        if (annotationsDictionary.containsKey(key)) {
+
+                                            annotationArray.push({key: annotationsDictionary.get(key), value: null});
+
+                                        }
+                                    }
+
+                                    console.log("---------------------------");
+                                    console.log("done adding Amazon annotations!");
+                                    console.log("---------------------------");
+
+                                    factory.jsonTemplate.annotations = annotationArray;
+
+                                }
+
+                                console.log(factory.jsonTemplate);
+
+                            }).error(function (data){
+
+                            });
+
+
+
+                        } else {
+                            Notification.success({
+                                title: "Hrmmmmm",
+                                message: "Keep your hashtags simple."
+                            });
+                        }
+                    });
                 });
             } else {
                 Notification.success({

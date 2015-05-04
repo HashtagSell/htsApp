@@ -153,6 +153,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     //========= # Products =========
     $scope.searchProducts = function (term) {
+        console.log(term);
         if (term) {
             mentionsFactory.predictProduct(term).then(function (results) {
                 $scope.products = results;
@@ -174,6 +175,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.map = mentionsFactory.googleMap;
 
     $scope.searchPlaces = function (term) {
+        console.log(term);
         if (term) {
             mentionsFactory.predictPlace(term).then(function (results) {
                 $scope.places = results;
@@ -193,6 +195,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     //========= $ Prices =========
     $scope.searchPrice = function (term) {
+        console.log(term);
         if (term) {
             $scope.prices = mentionsFactory.predictPrice(term);
             console.log("here is scope.prices", $scope.prices);
