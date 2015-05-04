@@ -498,11 +498,6 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
-
-
-
-                //console.log(e);
-
                 //If the user pressed the enter key
                 if(parseInt(e.which) === 13 && e.type === "keydown") {
                     //Check to see if the mentio menu is open or not
@@ -553,7 +548,7 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
             };
 
             // Listen for change events to enable binding
-            element.on('blur keydown', function (e) {
+            element.on('keydown keyup', function (e) {
 
                 scope.$apply(read);
 
@@ -791,7 +786,7 @@ htsApp.directive('htsFaveToggle', function () {
 
                             $timeout(function () {
                                 sideNavFactory.defaultMenu[2].active = false;
-                            }, 500);
+                            }, 250);
 
                             $scope.favorited = true;
                             $scope.tooltipMessage = 'Remove from watch list';
@@ -1428,6 +1423,7 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     $scope.map = awesomeBarFactory.googleMap;
 
     $scope.searchPlaces = function (city) {
+        console.log(city);
         if (city) {
             awesomeBarFactory.predictPlace(city).then(function (results) {
                 $scope.cities = results;
@@ -1742,7 +1738,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         var posting = response.data.external.postings[i];
 
                         if (posting.images.length === 0) {
-                            posting.feedItemHeight = 261;
+                            posting.feedItemHeight = 179;
                         } else if (posting.images.length === 1) {
                             posting.feedItemHeight = 261;
 
@@ -1760,7 +1756,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                                 }
                             }
 
-                        } else if (posting.images.length > 1) {
+                        } else {
                             posting.feedItemHeight = 420;
 
                             if (posting.username === 'CRAIG') {
@@ -1819,11 +1815,13 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
 
-
-                        if (response.data.external.postings[i].images.length === 0 || response.data.external.postings[i].images.length === 1) {
+                        if(response.data.external.postings[i].images.length === 0) {
+                            response.data.external.postings[i].feedItemHeight = 179;
+                            scrollTopOffset = scrollTopOffset + 179;
+                        } else if (response.data.external.postings[i].images.length === 1) {
                             response.data.external.postings[i].feedItemHeight = 216;
                             scrollTopOffset = scrollTopOffset + 216;
-                        } else if (response.data.external.postings[i].images.length > 1) {
+                        } else {
                             response.data.external.postings[i].feedItemHeight = 420;
                             scrollTopOffset = scrollTopOffset + 420;
                         }
@@ -4311,6 +4309,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     //========= # Products =========
     $scope.searchProducts = function (term) {
+        console.log(term);
         if (term) {
             mentionsFactory.predictProduct(term).then(function (results) {
                 $scope.products = results;
@@ -4332,6 +4331,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.map = mentionsFactory.googleMap;
 
     $scope.searchPlaces = function (term) {
+        console.log(term);
         if (term) {
             mentionsFactory.predictPlace(term).then(function (results) {
                 $scope.places = results;
@@ -4351,6 +4351,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     //========= $ Prices =========
     $scope.searchPrice = function (term) {
+        console.log(term);
         if (term) {
             $scope.prices = mentionsFactory.predictPrice(term);
             console.log("here is scope.prices", $scope.prices);
@@ -4405,7 +4406,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 }]);;/**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV) {
+htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
@@ -4540,10 +4541,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
 
         var deferred = $q.defer();
 
-        this.jsonTemplate.mentions.hashtags.push({hashtag: selectedProduct.value, results: null});
-
-        //console.log("here is our json template");
-        //console.log(this.jsonTemplate);
+        this.jsonTemplate.mentions.hashtags.push(selectedProduct.value);
 
         //TODO: Omit Adult Categories if Safe_Search is on
         //        if(!Session.getLoginStatus() || Session.getSessionValue("safe_search")){
@@ -4553,275 +4551,268 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV
         //            POPULAR_CATEGORY_HASH_TABLESearchString = POPULAR_CATEGORY_HASH_TABLESearchString.substring(0, POPULAR_CATEGORY_HASH_TABLESearchString.length - 1);
         //        }
 
-        $http.get('../search_old?', {
+
+        //These are the only potential annotations we will ask the user for today.
+        var annotationsDictionary = new Hashtable();
+        annotationsDictionary.put("year","Year");
+        annotationsDictionary.put("condition","Condition");
+        annotationsDictionary.put("make","Make");
+        annotationsDictionary.put("title_status","Title");
+        annotationsDictionary.put("model","Model");
+        annotationsDictionary.put("mileage","Mileage");
+        annotationsDictionary.put("transmission","Transmission");
+        annotationsDictionary.put("drive","Drive");
+        annotationsDictionary.put("paint_color","Paint");
+        annotationsDictionary.put("type","Type");
+        annotationsDictionary.put("fuel","Fuel");
+        annotationsDictionary.put("size","Size");
+        annotationsDictionary.put("bathrooms","Bath");
+        annotationsDictionary.put("no_smoking","Smoking");
+        annotationsDictionary.put("bedrooms","Rooms");
+        annotationsDictionary.put("dogs","Dogs");
+        annotationsDictionary.put("cats","Cats");
+        annotationsDictionary.put("attached_garage","Garage");
+        annotationsDictionary.put("laundry_on_site","Laundry");
+        annotationsDictionary.put("sqft","Sq Ft");
+        annotationsDictionary.put("size_dimensions","Dimensions");
+
+        //ebay motors annotations
+        annotationsDictionary.put("body_type","Body Type");
+        annotationsDictionary.put("drive_type","Drive Type");
+        annotationsDictionary.put("engine","Engine");
+        annotationsDictionary.put("exterior_color","Exterior Color");
+        annotationsDictionary.put("for_sale_by","Seller Type");
+        annotationsDictionary.put("interior_color","Interior Color");
+        annotationsDictionary.put("fuel_type","Fuel Type");
+        annotationsDictionary.put("listing_type","Listing Type");
+        annotationsDictionary.put("number_of_cylinders","Cylinders");
+        annotationsDictionary.put("options","Options");
+        annotationsDictionary.put("power_options","Power Options");
+        annotationsDictionary.put("safety_features","Safety");
+        annotationsDictionary.put("ship_to_location","Ship To");
+        annotationsDictionary.put("trim","Trim");
+        annotationsDictionary.put("vehicle_title","Title");
+        annotationsDictionary.put("vin","Vin");
+        annotationsDictionary.put("warranty","Warranty");
+
+        //autotrader annotations
+        annotationsDictionary.put("bodyStyle","Body Type");
+        annotationsDictionary.put("drivetrain","Drive Train");
+        annotationsDictionary.put("exteriorColor","Exterior Color");
+        annotationsDictionary.put("interiorColor","Interior Color");
+
+
+        //amazon annotations
+        annotationsDictionary.put("Color","Color");
+        annotationsDictionary.put("Brand","Brand");
+        annotationsDictionary.put("Material Type","Material Type");
+        annotationsDictionary.put("Model","Model");
+        annotationsDictionary.put("Part Number","Part Number");
+        annotationsDictionary.put("Warranty","Warranty");
+        annotationsDictionary.put("CPU Speed","Processor Speed");
+        annotationsDictionary.put("CPU Type","Processor Type");
+        annotationsDictionary.put("Display Size","Screen Size");
+        annotationsDictionary.put("Operating System","OS Version");
+        annotationsDictionary.put("Size","Storage Capacity");
+        annotationsDictionary.put("System Memory Size", "Memory");
+        annotationsDictionary.put("Department", "Department");
+
+
+
+        var queryString = this.jsonTemplate.mentions.hashtags.join(" ");
+
+
+        $http.get(ENV.groupingsAPI + 'popular', {
             params: {
-                heading: selectedProduct.value,
-                source: 'APTSD|AUTOD|BKPGE|CRAIG|EBAYM|E_BAY',
-                rpp: 99,
-                retvals: "price,category,annotations",
-                logic: true
+                query: queryString
             }
         }).success(function (data, status) {
 
-            //These are the only potential annotations we will ask the user for today.
-            var annotationsDictionary = new Hashtable();
-            annotationsDictionary.put("year","Year");
-            annotationsDictionary.put("condition","Condition");
-            //annotationsDictionary.put("make","Make");
-            annotationsDictionary.put("title_status","Title");
-            //annotationsDictionary.put("model","Model");
-            annotationsDictionary.put("mileage","Mileage");
-            annotationsDictionary.put("transmission","Transmission");
-            annotationsDictionary.put("drive","Drive");
-            annotationsDictionary.put("paint_color","Paint");
-            annotationsDictionary.put("type","Type");
-            annotationsDictionary.put("fuel","Fuel");
-            annotationsDictionary.put("size","Size");
-            annotationsDictionary.put("bathrooms","Bath");
-            annotationsDictionary.put("no_smoking","Smoking");
-            annotationsDictionary.put("bedrooms","Rooms");
-            annotationsDictionary.put("dogs","Dogs");
-            annotationsDictionary.put("cats","Cats");
-            annotationsDictionary.put("attached_garage","Garage");
-            annotationsDictionary.put("laundry_on_site","Laundry");
-            annotationsDictionary.put("sqft","Sq Ft");
-            annotationsDictionary.put("size_dimensions","Dimensions");
+            var popularCategories = data;
 
-            //ebay motors annotations
-            annotationsDictionary.put("body_type","Body Type");
-            annotationsDictionary.put("drive_type","Drive Type");
-            annotationsDictionary.put("engine","Engine");
-            annotationsDictionary.put("exterior_color","Exterior Color");
-            annotationsDictionary.put("for_sale_by","Seller Type");
-            annotationsDictionary.put("interior_color","Interior Color");
-            annotationsDictionary.put("fuel_type","Fuel Type");
-            annotationsDictionary.put("listing_type","Listing Type");
-            annotationsDictionary.put("number_of_cylinders","Cylinders");
-            annotationsDictionary.put("options","Options");
-            annotationsDictionary.put("power_options","Power Options");
-            annotationsDictionary.put("safety_features","Safety");
-            annotationsDictionary.put("ship_to_location","Ship To");
-            annotationsDictionary.put("trim","Trim");
-            annotationsDictionary.put("vehicle_title","Title");
-            annotationsDictionary.put("vin","Vin");
-            annotationsDictionary.put("warranty","Warranty");
-
-            //autotrader annotations
-            annotationsDictionary.put("bodyStyle","Body Type");
-            annotationsDictionary.put("drivetrain","Drive Train");
-            annotationsDictionary.put("exteriorColor","Exterior Color");
-            annotationsDictionary.put("interiorColor","Interior Color");
-
-            var results = data.postings;
-            console.log("vendor search: ", results);
-
-            if (results.length) {
-
-                for (i = 0; i < factory.jsonTemplate.mentions.hashtags.length; i++) {
-                    if (factory.jsonTemplate.mentions.hashtags[i].hashtag == selectedProduct.value) {
-                        console.log("saving metadata to hashtags");
-                        factory.jsonTemplate.mentions.hashtags[i].results = results;
-                    }
-                }
-
-
-                var totalPrice = 0;
-                var catHashTable = new Hashtable();
-                var loopCounter = 0;
-                var mostPopularCategory = null;
-
-                var rankCategory = function (category) {
-
-                    var currentCategoryCount = Math.abs(catHashTable.get(category));
-
-                    console.log(category, " was found ", currentCategoryCount, "times");
-
-                    if (currentCategoryCount > largest) {
-                        largest = currentCategoryCount;
-                        mostPopularCategory = category;
-                    }
-                };
-
-                for (i = 0; i < factory.jsonTemplate.mentions.hashtags.length; i++) {
-
-                    console.log("HASHTAG IS: ", factory.jsonTemplate.mentions.hashtags[i].hashtag, "!!!!!!!!!!!");
-
-                    results = factory.jsonTemplate.mentions.hashtags[i].results;
-
-                    if (results) {
-
-                        var numOfCategoryResults = results.length;
-
-                        for (j = 0; j < numOfCategoryResults; j++) {
-
-                            var categoryCode = results[j].category;
-
-                            loopCounter++;
-
-                            //Tally how many times each category of items is returned
-                            if (catHashTable.containsKey(categoryCode)) {
-                                var count = catHashTable.get(categoryCode);
-                                var plusOne = count + 1;
-                                catHashTable.put(categoryCode, plusOne);
-                            } else {
-                                catHashTable.put(categoryCode, 1);
-                            }
-                            //Add all the prices together
-                            var price = results[j].price;
-                            if (price) {
-                                totalPrice = parseInt(totalPrice + price);
-                            }
-
-                        }
-
-                        //Calculate and save our average price
-                        factory.jsonTemplate.price_avg = parseInt(totalPrice / loopCounter);
-
-
-                        //Divide number of unique categories by number of results to calculate our popular cateogry
-                        console.log("number of unique categories: ", catHashTable.size(), "& number of total results: ", loopCounter);
-                        var avgWeight = Math.abs(loopCounter / catHashTable.size());
-                        console.log("Our avg weight for winning category is: ", avgWeight);
-
-                        var largest = 0;
-
-                        catHashTable.each(rankCategory);
-
-                        console.log("our most popular category is: ", mostPopularCategory);
-                        factory.jsonTemplate.category = mostPopularCategory;
-
-                    }
-
-                }
-
-
-                //Loop through annotations of each result and count the annotation if its in our annotation Dictionary its in our popular category
-                console.log("Looping though all results again");
-                var annotationsHashTable = new Hashtable();
-                var annotationCount = 0;
-
-                for (j = 0; j < factory.jsonTemplate.mentions.hashtags.length; j++) {
-
-                    console.log("ANNOTATION HASHTAG IS: ", factory.jsonTemplate.mentions.hashtags[j].hashtag, "!!!!!!!!!!!");
-
-
-                    var presentationMode = false;
-                    if(factory.jsonTemplate.mentions.hashtags[j].hashtag === "macbook air"){
-                        console.log('presentation mode!');
-
-                        presentationMode = true;
-                    }
-
-                    results = factory.jsonTemplate.mentions.hashtags[j].results;
-
-                    if (results) {
-
-                        var numOfCategoryResultsAgain = results.length;
-
-                        for (i = 0; i < numOfCategoryResultsAgain; i++) {
-                            var categoryCodeAgain = results[i].category;
-
-
-                            //Tally how many times each category of items is returned
-                            if (categoryCodeAgain == mostPopularCategory) {
-                                var annotationObj = results[i].annotations;
-                                if (annotationObj) {
-                                    for (var key in annotationObj) {
-                                        if (annotationsDictionary.containsKey(key)) {
-                                            annotationCount++;
-                                            if (annotationsHashTable.containsKey(key)) {
-                                                var countAgain = annotationsHashTable.get(key);
-                                                var plusOneAgain = countAgain + 1;
-                                                annotationsHashTable.put(key, plusOneAgain);
-                                            } else {
-                                                annotationsHashTable.put(key, 1);
-                                            }
-                                        } else {
-                                            //                                    console.log("omitting cause", key, "is not in our dictionary");
-                                        }
-                                    }
-                                } else {
-                                    console.log("does not have annotation object", results[i]);
-                                }
-
-                            } else {
-                                console.log("omitting cause", categoryCodeAgain, "is not popular", mostPopularCategory);
-                            }
-                        }
-                    }
-                }
-
-
-                $http.get('../search/categories?', {
+            if(popularCategories.length) {
+                //now that we have the popular category code get all the conical information about that category
+                //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
+                $http.get('../search/categories', {
                     params: {
-                        categoryCode: mostPopularCategory
+                        categoryCode: popularCategories[0].code
                     }
                 }).success(function (data, status) {
 
+                    factory.jsonTemplate.category = data.metadata.code;
                     factory.jsonTemplate.category_name = data.metadata.name;
                     factory.jsonTemplate.category_group = data.metadata.group_code;
                     factory.jsonTemplate.category_group_name = data.metadata.group_name;
 
-                    if (annotationsHashTable.size() > 0) {
+                    var annotationsHashTable = new Hashtable();
+                    var annotationCount = 0;
 
-                        //Gather our popular annotations
-                        console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
-                        var annotationArray = [];
-                        var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
+                    var priceCount = 0;
+                    var totalPrice = 0;
 
-                        console.log("Annotations should weigh more than: ", avg_weight);
-
-                        //var hintsString = "Use the \"&\" symbol to include the ";
-                        annotationsHashTable.each(function (key) {
-
-                            var weight = Math.abs(annotationsHashTable.get(key));
-
-                            console.log(key, " has weight of", weight);
-
-                            if (weight >= avg_weight) {
-
-                                annotationArray.push({key: annotationsDictionary.get(key), value: null});
-
-                                //hintsString += annotationsDictionary.get(key) + ", ";
-
-                                console.log(weight, ">=", avg_weight);
-                                //annotationObj[key] = null;
-
+                    //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
+                    var defaultParams = {
+                        start: 0,
+                        count: 500,
+                        filters: {
+                            mandatory: {
+                                contains: {
+                                    heading: queryString
+                                }
+                            },
+                            optional: {
+                                exact: {
+                                    categoryCode: [factory.jsonTemplate.category, ""]
+                                }
                             }
-                        });
+                        },
+                        geo: {
+                            coords: ['-122.431297', '37.773972'],
+                            "min": 0,
+                            "max": 100000
+                        }
+                    };
+
+                    var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
 
 
-                        //TODO: Presentation only.  Please remove after SVNT.
-                        //if(presentationMode){
-                        //    annotationArray = annotationArray.concat([
-                        //        {key: 'Hard Drive (Gb)', value: null},
-                        //        {key: 'Memory (Gb)', value: null},
-                        //        {key: 'Screen (inches)', value: null},
-                        //        {key: 'Warranty', value: null}
-                        //    ]);
-                        //}
+                    //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
+                    $http({
+                        method: 'GET',
+                        url: ENV.postingAPI + bracketURL
+                    }).success(function (data) {
+
+                        console.log("ANNOTATION Query response: ", data);
+
+                        if(data.results.length) {
+
+                            for (var i = 0; i < data.results.length; i++) {
+
+                                var posting = data.results[i];
+
+                                if (posting.annotations) {
+
+                                    var annotationObj = posting.annotations;
+
+                                    //console.log(i, annotationObj);
+                                    for (var key in annotationObj) {
+                                        if (annotationsDictionary.containsKey(key)) {
+                                            annotationCount++;
+                                            if (annotationsHashTable.containsKey(key)) {
+                                                var currentCount = annotationsHashTable.get(key);
+                                                var plusOne = currentCount + 1;
+                                                annotationsHashTable.put(key, plusOne);
+                                            } else {
+                                                annotationsHashTable.put(key, 1);
+                                            }
+                                        } else {
+                                            //console.log("omitting cause", key, "is not in our dictionary");
+                                        }
+                                    }
+                                } else {
+                                    //console.log("does not have annotation object", results[i]);
+                                }
+
+                                if (posting.askingPrice) {
+                                    if(posting.askingPrice.value !== undefined) {
+                                        //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
+                                        priceCount++;
+                                        totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
+                                        //console.log(totalPrice);
+                                    }
+                                }
+                            }
 
 
-                        factory.jsonTemplate.annotations = annotationArray;
+                            if (annotationsHashTable.size() > 0) {
 
-                        //hintsString = hintsString.substring(0, hintsString.length - 2);
-                        //hintsString += " of the " + factory.jsonTemplate.mentions.hashtags[0].hashtag;
-                        //factory.jsonTemplate.hints = hintsString;
+                                //Gather our popular annotations
+                                console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
+                                var annotationArray = [];
+                                var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
 
-                    } else {
+                                console.log("Annotations should weigh more than: ", avg_weight);
 
-                        factory.jsonTemplate.hints = "Looks like your listing belongs in the " + factory.jsonTemplate.category_name + " category.  Add more #'s to describe your item if this is incorrect.";
+                                annotationsHashTable.each(function (key) {
 
-                    }
+                                    var weight = Math.abs(annotationsHashTable.get(key));
+
+                                    console.log(key, " has weight of", weight);
+
+                                    if (weight >= avg_weight) {
+
+                                        annotationArray.push({key: annotationsDictionary.get(key), value: null});
+
+                                        console.log(weight, ">=", avg_weight);
+                                    }
+                                });
+                            }
+
+                            //Caculate average price of all data we retreived.
+                            if(totalPrice > 0){
+                                factory.jsonTemplate.price_avg = totalPrice/priceCount;
+                            }
 
 
-                    console.log("---------------------------");
-                    console.log("done weighing all hashtags!");
-                    console.log("---------------------------");
+                            $http.get(ENV.annotationsAPI, {
+                                params: {
+                                    query: queryString
+                                }
+                            }).success(function (data) {
 
+                                console.log('Amazon data', data);
+
+                                if(data.length) {
+
+                                    for (var k = 0; k < data.length; k++) {
+
+                                        var amazonAnnotation = data[k];
+
+                                        var key = amazonAnnotation.name;
+
+                                        if (annotationsDictionary.containsKey(key)) {
+
+                                            annotationArray.push({key: annotationsDictionary.get(key), value: null});
+
+                                        }
+                                    }
+
+                                    console.log("---------------------------");
+                                    console.log("done adding Amazon annotations!");
+                                    console.log("---------------------------");
+
+                                    factory.jsonTemplate.annotations = annotationArray;
+
+                                }
+
+                                console.log(factory.jsonTemplate);
+
+                            }).error(function (data){
+
+                            });
+
+
+
+                        } else {
+                            Notification.success({
+                                title: "Hrmmmmm",
+                                message: "Keep your hashtags simple."
+                            });
+                        }
+                    });
                 });
-
+            } else {
+                Notification.success({
+                    title: "We need more info",
+                    message: "We could not intelligently determine what category of item you're selling.  Please add more hashtags to your description."
+                });
             }
+
+        }).error(function(data){
+            Notification.error({
+                title: 'Ooops.. Error',
+                message: data
+            });
         });
 
 
@@ -5839,7 +5830,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                 if (views.gridView) {
                     rowHeight = 390;
                 } else { //else the user is in list view.  Height depends on whether result contains 2 or more images.
-                    if (results[i].images.length === 0 || results[i].images.length === 1) {
+                    if(results[i].images.length === 0) {
+                        rowHeight = 179;
+                    } else if (results[i].images.length === 1) {
                         rowHeight = 261;
                     } else {
                         rowHeight = 420;
