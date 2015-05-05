@@ -51,7 +51,8 @@
     "ui-router-extras": "~0.0.13",
     "angular-easyfb": "~1.2.1",
     "angular-bootstrap-slider": "~0.1.1",
-    "angular-slick": "~0.2.1"
+    "angular-slick": "~0.2.1",
+    "jsdiff": "~1.3.2"
   },
   "resolutions": {
     "angular": "~1.3.9"

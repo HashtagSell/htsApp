@@ -522,7 +522,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
 
 
-htsApp.directive('sellbox', ['$sce', function ($sce) {
+htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
     return {
         restrict: 'A', // only activate on element attribute
         require: '?ngModel', // get a hold of NgModelController
@@ -539,6 +539,7 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
 
             if (!ngModel) return; // do nothing if no ng-model
 
+
             // Specify how UI should be updated
             ngModel.$render = function () {
                 console.log('doing this');
@@ -547,12 +548,148 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
                 }
             };
 
+            var oldValue = '';
+
+
+            //Strips HTML from string.
+            function strip(html){
+                var tmp = document.createElement("DIV");
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || "";
+            }
+
+
+            //Load the js diff library
+            var jsDiff = $window.JsDiff;
+            var backspacePressed = false;
+
+
+            scope.$watch('jsonObj.body', function(newValue, oldValue){
+
+                console.log(backspacePressed);
+
+                if(backspacePressed) {
+                    backspacePressed = false;
+                    console.log('==========Backspace Pressed==========');
+
+                    var oldValueStripped = strip(oldValue);
+                    var newValueStripped = strip(newValue);
+
+                    console.log('Old Stripped', oldValueStripped);
+                    console.log('New Stripped', newValueStripped);
+
+                    //Run a diff
+                    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+
+                    if (diff.length) {
+
+                        console.log(diff);
+
+                        for (var i = 0; i < diff.length; i++) {
+                            var excerpt = diff[i];
+                            if (excerpt.removed) {
+                                if (excerpt.value.indexOf('#') !== -1) {
+                                    console.log('hasshtag removed ', excerpt.value);
+
+                                    var hashtagToRemove = excerpt.value.replace('#', '');
+                                    hashtagToRemove = hashtagToRemove.trim();
+
+                                    scope.cleanModel("#", hashtagToRemove);
+                                } else if (excerpt.value.indexOf('$') !== -1) {
+                                    console.log('dollar removed ', excerpt.value);
+
+                                    var priceTagToRemove = excerpt.value.replace('$', '');
+                                    priceTagToRemove = priceTagToRemove.trim();
+
+                                } else if (excerpt.value.indexOf('@') !== -1) {
+                                    console.log('@ removed ', excerpt.value);
+
+                                    var atTagToRemove = excerpt.value.replace('@', '');
+                                    atTagToRemove = atTagToRemove.trim();
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+
+
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
 
-                scope.$apply(read);
+                if(parseInt(e.which) === 8 && e.type === "keydown") {
+                    backspacePressed = true;
+                    console.log('setting backspace pressed to true');
+                }
 
+                //if(parseInt(e.which) === 8 && e.type === "keyup") {
+                //    backspacePressed = false;
+                //    console.log('setting backspace pressed to false');
+                //}
+
+                scope.$apply(read);
             });
+
+
+
+
+            //Watch the posting description as the user types.  If the user remove mentions #'s $'s OR @'s we update our model.
+            //scope.$watch('jsonObj.body', function(newValue, oldValue) {
+            //    //Load the js diff library
+            //    var jsDiff = $window.JsDiff;
+            //
+            //    //Strip the html from new and old values
+            //    var oldValueStripped = strip(oldValue);
+            //    var newValueStripped = strip(newValue);
+            //
+            //    console.log('===========HTML=========');
+            //    console.log(oldValue);
+            //    console.log(newValue);
+            //
+            //    console.log('===========Stripped=========');
+            //    console.log(oldValueStripped);
+            //    console.log(newValueStripped);
+            //
+            //    //Run a diff
+            //    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+            //
+            //    if(diff.length) {
+            //
+            //        console.log(diff);
+            //
+            //        for (var i = 0; i < diff.length; i++){
+            //            var excerpt = diff[i];
+            //            if(excerpt.removed){
+            //                if(excerpt.value.indexOf('#') === 0) {
+            //                    console.log('hasshtag removed ', excerpt.value);
+            //
+            //                    var hashtagToRemove = excerpt.value.replace('#','');
+            //                    hashtagToRemove = hashtagToRemove.trim();
+            //
+            //                    mentionsFactory.removeProductHashtag(hashtagToRemove);
+            //                } else if (excerpt.value.indexOf('$') === 0) {
+            //                    console.log('dollar removed ', excerpt.value);
+            //
+            //                    var priceTagToRemove = excerpt.value.replace('$','');
+            //                    priceTagToRemove = priceTagToRemove.trim();
+            //
+            //                } else if (excerpt.value.indexOf('@') === 0) {
+            //                    console.log('@ removed ', excerpt.value);
+            //
+            //                    var atTagToRemove = excerpt.value.replace('@','');
+            //                    atTagToRemove = atTagToRemove.trim();
+            //                }
+            //            }
+            //        }
+            //    }
+            //});
+
+
+
+
+
+
             read(); // initialize
         }
     };

@@ -522,7 +522,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
 
 
-htsApp.directive('sellbox', ['$sce', function ($sce) {
+htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
     return {
         restrict: 'A', // only activate on element attribute
         require: '?ngModel', // get a hold of NgModelController
@@ -539,6 +539,7 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
 
             if (!ngModel) return; // do nothing if no ng-model
 
+
             // Specify how UI should be updated
             ngModel.$render = function () {
                 console.log('doing this');
@@ -547,12 +548,148 @@ htsApp.directive('sellbox', ['$sce', function ($sce) {
                 }
             };
 
+            var oldValue = '';
+
+
+            //Strips HTML from string.
+            function strip(html){
+                var tmp = document.createElement("DIV");
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || "";
+            }
+
+
+            //Load the js diff library
+            var jsDiff = $window.JsDiff;
+            var backspacePressed = false;
+
+
+            scope.$watch('jsonObj.body', function(newValue, oldValue){
+
+                console.log(backspacePressed);
+
+                if(backspacePressed) {
+                    backspacePressed = false;
+                    console.log('==========Backspace Pressed==========');
+
+                    var oldValueStripped = strip(oldValue);
+                    var newValueStripped = strip(newValue);
+
+                    console.log('Old Stripped', oldValueStripped);
+                    console.log('New Stripped', newValueStripped);
+
+                    //Run a diff
+                    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+
+                    if (diff.length) {
+
+                        console.log(diff);
+
+                        for (var i = 0; i < diff.length; i++) {
+                            var excerpt = diff[i];
+                            if (excerpt.removed) {
+                                if (excerpt.value.indexOf('#') !== -1) {
+                                    console.log('hasshtag removed ', excerpt.value);
+
+                                    var hashtagToRemove = excerpt.value.replace('#', '');
+                                    hashtagToRemove = hashtagToRemove.trim();
+
+                                    scope.cleanModel("#", hashtagToRemove);
+                                } else if (excerpt.value.indexOf('$') !== -1) {
+                                    console.log('dollar removed ', excerpt.value);
+
+                                    var priceTagToRemove = excerpt.value.replace('$', '');
+                                    priceTagToRemove = priceTagToRemove.trim();
+
+                                } else if (excerpt.value.indexOf('@') !== -1) {
+                                    console.log('@ removed ', excerpt.value);
+
+                                    var atTagToRemove = excerpt.value.replace('@', '');
+                                    atTagToRemove = atTagToRemove.trim();
+                                }
+                            }
+                        }
+                    }
+                }
+
+            });
+
+
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
 
-                scope.$apply(read);
+                if(parseInt(e.which) === 8 && e.type === "keydown") {
+                    backspacePressed = true;
+                    console.log('setting backspace pressed to true');
+                }
 
+                //if(parseInt(e.which) === 8 && e.type === "keyup") {
+                //    backspacePressed = false;
+                //    console.log('setting backspace pressed to false');
+                //}
+
+                scope.$apply(read);
             });
+
+
+
+
+            //Watch the posting description as the user types.  If the user remove mentions #'s $'s OR @'s we update our model.
+            //scope.$watch('jsonObj.body', function(newValue, oldValue) {
+            //    //Load the js diff library
+            //    var jsDiff = $window.JsDiff;
+            //
+            //    //Strip the html from new and old values
+            //    var oldValueStripped = strip(oldValue);
+            //    var newValueStripped = strip(newValue);
+            //
+            //    console.log('===========HTML=========');
+            //    console.log(oldValue);
+            //    console.log(newValue);
+            //
+            //    console.log('===========Stripped=========');
+            //    console.log(oldValueStripped);
+            //    console.log(newValueStripped);
+            //
+            //    //Run a diff
+            //    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+            //
+            //    if(diff.length) {
+            //
+            //        console.log(diff);
+            //
+            //        for (var i = 0; i < diff.length; i++){
+            //            var excerpt = diff[i];
+            //            if(excerpt.removed){
+            //                if(excerpt.value.indexOf('#') === 0) {
+            //                    console.log('hasshtag removed ', excerpt.value);
+            //
+            //                    var hashtagToRemove = excerpt.value.replace('#','');
+            //                    hashtagToRemove = hashtagToRemove.trim();
+            //
+            //                    mentionsFactory.removeProductHashtag(hashtagToRemove);
+            //                } else if (excerpt.value.indexOf('$') === 0) {
+            //                    console.log('dollar removed ', excerpt.value);
+            //
+            //                    var priceTagToRemove = excerpt.value.replace('$','');
+            //                    priceTagToRemove = priceTagToRemove.trim();
+            //
+            //                } else if (excerpt.value.indexOf('@') === 0) {
+            //                    console.log('@ removed ', excerpt.value);
+            //
+            //                    var atTagToRemove = excerpt.value.replace('@','');
+            //                    atTagToRemove = atTagToRemove.trim();
+            //                }
+            //            }
+            //        }
+            //    }
+            //});
+
+
+
+
+
+
             read(); // initialize
         }
     };
@@ -1423,11 +1560,9 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     $scope.map = awesomeBarFactory.googleMap;
 
     $scope.searchPlaces = function (city) {
-        console.log(city);
         if (city) {
             awesomeBarFactory.predictPlace(city).then(function (results) {
                 $scope.cities = results;
-                //console.log("Here is scope.cities", $scope.cities);
             });
         }
     };
@@ -4157,7 +4292,7 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
 }]);;/**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', '$window', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory, $window) {
 
     $scope.demoCleared = false;
 
@@ -4273,6 +4408,12 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             authModalFactory.signInModal();
 
         }
+    };
+
+
+    //Sellbox directive calls this to update model when a hash
+    $scope.cleanModel = function(type, mentionToRemove) {
+        mentionsFactory.cleanModel(type, mentionToRemove);
     };
 
 
@@ -4541,7 +4682,9 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
 
         var deferred = $q.defer();
 
-        this.jsonTemplate.mentions.hashtags.push(selectedProduct.value);
+        if(selectedProduct) {
+            this.jsonTemplate.mentions.hashtags.push(selectedProduct.value);
+        }
 
         //TODO: Omit Adult Categories if Safe_Search is on
         //        if(!Session.getLoginStatus() || Session.getSessionValue("safe_search")){
@@ -4551,269 +4694,278 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
         //            POPULAR_CATEGORY_HASH_TABLESearchString = POPULAR_CATEGORY_HASH_TABLESearchString.substring(0, POPULAR_CATEGORY_HASH_TABLESearchString.length - 1);
         //        }
 
+        if(this.jsonTemplate.mentions.hashtags.length) {
 
-        //These are the only potential annotations we will ask the user for today.
-        var annotationsDictionary = new Hashtable();
-        annotationsDictionary.put("year","Year");
-        annotationsDictionary.put("condition","Condition");
-        annotationsDictionary.put("make","Make");
-        annotationsDictionary.put("title_status","Title");
-        annotationsDictionary.put("model","Model");
-        annotationsDictionary.put("mileage","Mileage");
-        annotationsDictionary.put("transmission","Transmission");
-        annotationsDictionary.put("drive","Drive");
-        annotationsDictionary.put("paint_color","Paint");
-        annotationsDictionary.put("type","Type");
-        annotationsDictionary.put("fuel","Fuel");
-        annotationsDictionary.put("size","Size");
-        annotationsDictionary.put("bathrooms","Bath");
-        annotationsDictionary.put("no_smoking","Smoking");
-        annotationsDictionary.put("bedrooms","Rooms");
-        annotationsDictionary.put("dogs","Dogs");
-        annotationsDictionary.put("cats","Cats");
-        annotationsDictionary.put("attached_garage","Garage");
-        annotationsDictionary.put("laundry_on_site","Laundry");
-        annotationsDictionary.put("sqft","Sq Ft");
-        annotationsDictionary.put("size_dimensions","Dimensions");
+            //These are the only potential annotations we will ask the user for today.
+            var annotationsDictionary = new Hashtable();
+            annotationsDictionary.put("year", "Year");
+            annotationsDictionary.put("condition", "Condition");
+            annotationsDictionary.put("make", "Make");
+            annotationsDictionary.put("title_status", "Title");
+            annotationsDictionary.put("model", "Model");
+            annotationsDictionary.put("mileage", "Mileage");
+            annotationsDictionary.put("transmission", "Transmission");
+            annotationsDictionary.put("drive", "Drive");
+            annotationsDictionary.put("paint_color", "Paint");
+            annotationsDictionary.put("type", "Type");
+            annotationsDictionary.put("fuel", "Fuel");
+            annotationsDictionary.put("size", "Size");
+            annotationsDictionary.put("bathrooms", "Bath");
+            annotationsDictionary.put("no_smoking", "Smoking");
+            annotationsDictionary.put("bedrooms", "Rooms");
+            annotationsDictionary.put("dogs", "Dogs");
+            annotationsDictionary.put("cats", "Cats");
+            annotationsDictionary.put("attached_garage", "Garage");
+            annotationsDictionary.put("laundry_on_site", "Laundry");
+            annotationsDictionary.put("sqft", "Sq Ft");
+            annotationsDictionary.put("size_dimensions", "Dimensions");
 
-        //ebay motors annotations
-        annotationsDictionary.put("body_type","Body Type");
-        annotationsDictionary.put("drive_type","Drive Type");
-        annotationsDictionary.put("engine","Engine");
-        annotationsDictionary.put("exterior_color","Exterior Color");
-        annotationsDictionary.put("for_sale_by","Seller Type");
-        annotationsDictionary.put("interior_color","Interior Color");
-        annotationsDictionary.put("fuel_type","Fuel Type");
-        annotationsDictionary.put("listing_type","Listing Type");
-        annotationsDictionary.put("number_of_cylinders","Cylinders");
-        annotationsDictionary.put("options","Options");
-        annotationsDictionary.put("power_options","Power Options");
-        annotationsDictionary.put("safety_features","Safety");
-        annotationsDictionary.put("ship_to_location","Ship To");
-        annotationsDictionary.put("trim","Trim");
-        annotationsDictionary.put("vehicle_title","Title");
-        annotationsDictionary.put("vin","Vin");
-        annotationsDictionary.put("warranty","Warranty");
+            //ebay motors annotations
+            annotationsDictionary.put("body_type", "Body Type");
+            annotationsDictionary.put("drive_type", "Drive Type");
+            annotationsDictionary.put("engine", "Engine");
+            annotationsDictionary.put("exterior_color", "Exterior Color");
+            annotationsDictionary.put("for_sale_by", "Seller Type");
+            annotationsDictionary.put("interior_color", "Interior Color");
+            annotationsDictionary.put("fuel_type", "Fuel Type");
+            annotationsDictionary.put("listing_type", "Listing Type");
+            annotationsDictionary.put("number_of_cylinders", "Cylinders");
+            annotationsDictionary.put("options", "Options");
+            annotationsDictionary.put("power_options", "Power Options");
+            annotationsDictionary.put("safety_features", "Safety");
+            annotationsDictionary.put("ship_to_location", "Ship To");
+            annotationsDictionary.put("trim", "Trim");
+            annotationsDictionary.put("vehicle_title", "Title");
+            annotationsDictionary.put("vin", "Vin");
+            annotationsDictionary.put("warranty", "Warranty");
 
-        //autotrader annotations
-        annotationsDictionary.put("bodyStyle","Body Type");
-        annotationsDictionary.put("drivetrain","Drive Train");
-        annotationsDictionary.put("exteriorColor","Exterior Color");
-        annotationsDictionary.put("interiorColor","Interior Color");
-
-
-        //amazon annotations
-        annotationsDictionary.put("Color","Color");
-        annotationsDictionary.put("Brand","Brand");
-        annotationsDictionary.put("Material Type","Material Type");
-        annotationsDictionary.put("Model","Model");
-        annotationsDictionary.put("Part Number","Part Number");
-        annotationsDictionary.put("Warranty","Warranty");
-        annotationsDictionary.put("CPU Speed","Processor Speed");
-        annotationsDictionary.put("CPU Type","Processor Type");
-        annotationsDictionary.put("Display Size","Screen Size");
-        annotationsDictionary.put("Operating System","OS Version");
-        annotationsDictionary.put("Size","Storage Capacity");
-        annotationsDictionary.put("System Memory Size", "Memory");
-        annotationsDictionary.put("Department", "Department");
+            //autotrader annotations
+            annotationsDictionary.put("bodyStyle", "Body Type");
+            annotationsDictionary.put("drivetrain", "Drive Train");
+            annotationsDictionary.put("exteriorColor", "Exterior Color");
+            annotationsDictionary.put("interiorColor", "Interior Color");
 
 
+            //amazon annotations
+            annotationsDictionary.put("Color", "Color");
+            annotationsDictionary.put("Brand", "Brand");
+            annotationsDictionary.put("Material Type", "Material Type");
+            annotationsDictionary.put("Model", "Model");
+            //annotationsDictionary.put("Part Number", "Part Number");
+            annotationsDictionary.put("Warranty", "Warranty");
+            annotationsDictionary.put("CPU Speed", "Processor Speed");
+            annotationsDictionary.put("CPU Type", "Processor Type");
+            annotationsDictionary.put("Display Size", "Screen Size");
+            annotationsDictionary.put("Operating System", "OS Version");
+            annotationsDictionary.put("Size", "Storage Capacity");
+            annotationsDictionary.put("System Memory Size", "Memory");
+            annotationsDictionary.put("Department", "Department");
 
-        var queryString = this.jsonTemplate.mentions.hashtags.join(" ");
+
+            var queryString = this.jsonTemplate.mentions.hashtags.join(" ");
 
 
-        $http.get(ENV.groupingsAPI + 'popular', {
-            params: {
-                query: queryString
-            }
-        }).success(function (data, status) {
+            $http.get(ENV.groupingsAPI + 'popular', {
+                params: {
+                    query: queryString
+                }
+            }).success(function (data, status) {
 
-            var popularCategories = data;
+                var popularCategories = data;
 
-            if(popularCategories.length) {
-                //now that we have the popular category code get all the conical information about that category
-                //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
-                $http.get('../search/categories', {
-                    params: {
-                        categoryCode: popularCategories[0].code
-                    }
-                }).success(function (data, status) {
+                if (popularCategories.length) {
+                    //now that we have the popular category code get all the conical information about that category
+                    //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
+                    $http.get('../search/categories', {
+                        params: {
+                            categoryCode: popularCategories[0].code
+                        }
+                    }).success(function (data, status) {
 
-                    factory.jsonTemplate.category = data.metadata.code;
-                    factory.jsonTemplate.category_name = data.metadata.name;
-                    factory.jsonTemplate.category_group = data.metadata.group_code;
-                    factory.jsonTemplate.category_group_name = data.metadata.group_name;
+                        factory.jsonTemplate.category = data.metadata.code;
+                        factory.jsonTemplate.category_name = data.metadata.name;
+                        factory.jsonTemplate.category_group = data.metadata.group_code;
+                        factory.jsonTemplate.category_group_name = data.metadata.group_name;
 
-                    var annotationsHashTable = new Hashtable();
-                    var annotationCount = 0;
+                        var annotationsHashTable = new Hashtable();
+                        var annotationCount = 0;
 
-                    var priceCount = 0;
-                    var totalPrice = 0;
+                        var priceCount = 0;
+                        var totalPrice = 0;
 
-                    //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
-                    var defaultParams = {
-                        start: 0,
-                        count: 500,
-                        filters: {
-                            mandatory: {
-                                contains: {
-                                    heading: queryString
+                        //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
+                        var defaultParams = {
+                            start: 0,
+                            count: 500,
+                            filters: {
+                                mandatory: {
+                                    contains: {
+                                        heading: queryString
+                                    }
+                                },
+                                optional: {
+                                    exact: {
+                                        categoryCode: [factory.jsonTemplate.category, ""]
+                                    }
                                 }
                             },
-                            optional: {
-                                exact: {
-                                    categoryCode: [factory.jsonTemplate.category, ""]
-                                }
+                            geo: {
+                                coords: ['-122.431297', '37.773972'],
+                                "min": 0,
+                                "max": 100000
                             }
-                        },
-                        geo: {
-                            coords: ['-122.431297', '37.773972'],
-                            "min": 0,
-                            "max": 100000
-                        }
-                    };
+                        };
 
-                    var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
+                        var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
 
 
-                    //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
-                    $http({
-                        method: 'GET',
-                        url: ENV.postingAPI + bracketURL
-                    }).success(function (data) {
+                        //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
+                        $http({
+                            method: 'GET',
+                            url: ENV.postingAPI + bracketURL
+                        }).success(function (data) {
 
-                        console.log("ANNOTATION Query response: ", data);
+                            console.log("ANNOTATION Query response: ", data);
 
-                        if(data.results.length) {
+                            if (data.results.length) {
 
-                            for (var i = 0; i < data.results.length; i++) {
+                                for (var i = 0; i < data.results.length; i++) {
 
-                                var posting = data.results[i];
+                                    var posting = data.results[i];
 
-                                if (posting.annotations) {
+                                    if (posting.annotations) {
 
-                                    var annotationObj = posting.annotations;
+                                        var annotationObj = posting.annotations;
 
-                                    //console.log(i, annotationObj);
-                                    for (var key in annotationObj) {
-                                        if (annotationsDictionary.containsKey(key)) {
-                                            annotationCount++;
-                                            if (annotationsHashTable.containsKey(key)) {
-                                                var currentCount = annotationsHashTable.get(key);
-                                                var plusOne = currentCount + 1;
-                                                annotationsHashTable.put(key, plusOne);
+                                        //console.log(i, annotationObj);
+                                        for (var key in annotationObj) {
+                                            if (annotationsDictionary.containsKey(key)) {
+                                                annotationCount++;
+                                                if (annotationsHashTable.containsKey(key)) {
+                                                    var currentCount = annotationsHashTable.get(key);
+                                                    var plusOne = currentCount + 1;
+                                                    annotationsHashTable.put(key, plusOne);
+                                                } else {
+                                                    annotationsHashTable.put(key, 1);
+                                                }
                                             } else {
-                                                annotationsHashTable.put(key, 1);
+                                                //console.log("omitting cause", key, "is not in our dictionary");
                                             }
-                                        } else {
-                                            //console.log("omitting cause", key, "is not in our dictionary");
+                                        }
+                                    } else {
+                                        //console.log("does not have annotation object", results[i]);
+                                    }
+
+                                    if (posting.askingPrice) {
+                                        if (posting.askingPrice.value !== undefined) {
+                                            //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
+                                            priceCount++;
+                                            totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
+                                            //console.log(totalPrice);
                                         }
                                     }
-                                } else {
-                                    //console.log("does not have annotation object", results[i]);
                                 }
 
-                                if (posting.askingPrice) {
-                                    if(posting.askingPrice.value !== undefined) {
-                                        //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
-                                        priceCount++;
-                                        totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
-                                        //console.log(totalPrice);
-                                    }
-                                }
-                            }
 
+                                if (annotationsHashTable.size() > 0) {
 
-                            if (annotationsHashTable.size() > 0) {
+                                    //Gather our popular annotations
+                                    console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
+                                    var annotationArray = [];
+                                    var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
 
-                                //Gather our popular annotations
-                                console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
-                                var annotationArray = [];
-                                var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
+                                    console.log("Annotations should weigh more than: ", avg_weight);
 
-                                console.log("Annotations should weigh more than: ", avg_weight);
+                                    annotationsHashTable.each(function (key) {
 
-                                annotationsHashTable.each(function (key) {
+                                        var weight = Math.abs(annotationsHashTable.get(key));
 
-                                    var weight = Math.abs(annotationsHashTable.get(key));
+                                        console.log(key, " has weight of", weight);
 
-                                    console.log(key, " has weight of", weight);
-
-                                    if (weight >= avg_weight) {
-
-                                        annotationArray.push({key: annotationsDictionary.get(key), value: null});
-
-                                        console.log(weight, ">=", avg_weight);
-                                    }
-                                });
-                            }
-
-                            //Caculate average price of all data we retreived.
-                            if(totalPrice > 0){
-                                factory.jsonTemplate.price_avg = totalPrice/priceCount;
-                            }
-
-
-                            $http.get(ENV.annotationsAPI, {
-                                params: {
-                                    query: queryString
-                                }
-                            }).success(function (data) {
-
-                                console.log('Amazon data', data);
-
-                                if(data.length) {
-
-                                    for (var k = 0; k < data.length; k++) {
-
-                                        var amazonAnnotation = data[k];
-
-                                        var key = amazonAnnotation.name;
-
-                                        if (annotationsDictionary.containsKey(key)) {
+                                        if (weight >= avg_weight) {
 
                                             annotationArray.push({key: annotationsDictionary.get(key), value: null});
 
+                                            console.log(weight, ">=", avg_weight);
                                         }
-                                    }
-
-                                    console.log("---------------------------");
-                                    console.log("done adding Amazon annotations!");
-                                    console.log("---------------------------");
-
-                                    factory.jsonTemplate.annotations = annotationArray;
-
+                                    });
                                 }
 
-                                console.log(factory.jsonTemplate);
-
-                            }).error(function (data){
-
-                            });
-
+                                //Caculate average price of all data we retreived.
+                                if (totalPrice > 0) {
+                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
+                                }
 
 
-                        } else {
-                            Notification.success({
-                                title: "Hrmmmmm",
-                                message: "Keep your hashtags simple."
-                            });
-                        }
+                                $http.get(ENV.annotationsAPI, {
+                                    params: {
+                                        query: queryString
+                                    }
+                                }).success(function (data) {
+
+                                    console.log('Amazon data', data);
+
+                                    if (data.length) {
+
+                                        for (var k = 0; k < data.length; k++) {
+
+                                            var amazonAnnotation = data[k];
+
+                                            var key = amazonAnnotation.name;
+
+                                            if (annotationsDictionary.containsKey(key)) {
+
+                                                annotationArray.push({
+                                                    key: annotationsDictionary.get(key),
+                                                    value: null
+                                                });
+
+                                            }
+                                        }
+
+                                        console.log("---------------------------");
+                                        console.log("done adding Amazon annotations!");
+                                        console.log("---------------------------");
+
+                                        factory.jsonTemplate.annotations = annotationArray;
+
+                                    }
+
+                                    console.log(factory.jsonTemplate);
+
+                                }).error(function (data) {
+
+                                });
+
+
+                            } else {
+                                Notification.success({
+                                    title: "Hrmmmmm",
+                                    message: "Keep your hashtags simple."
+                                });
+                            }
+                        });
                     });
-                });
-            } else {
-                Notification.success({
-                    title: "We need more info",
-                    message: "We could not intelligently determine what category of item you're selling.  Please add more hashtags to your description."
-                });
-            }
+                } else {
+                    Notification.success({
+                        title: "We need more info",
+                        message: "We could not intelligently determine what category of item you're selling.  Please add more hashtags to your description."
+                    });
+                }
 
-        }).error(function(data){
-            Notification.error({
-                title: 'Ooops.. Error',
-                message: data
+            }).error(function (data) {
+                Notification.error({
+                    title: 'Ooops.. Error',
+                    message: data
+                });
             });
-        });
+        } else {
+            this.jsonTemplate.annotations = [];
+            this.jsonTemplate.category = null;
+            this.jsonTemplate.category_name = null;
+            this.jsonTemplate.category_group = null;
+            this.jsonTemplate.category_group_name = null;
+        }
 
 
         deferred.resolve(factory.jsonTemplate);
@@ -4821,6 +4973,30 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
         return deferred.promise;
 
     };
+
+
+
+    factory.cleanModel = function (type, valueToRemove) {
+
+        if(type === "#") {
+
+            console.log('HASHTAG TO REMOVE: ', valueToRemove);
+
+            this.jsonTemplate.mentions.hashtags = _.without(this.jsonTemplate.mentions.hashtags, valueToRemove);
+
+            console.log(this.jsonTemplate);
+
+            factory.getProductMetaData();
+
+        } else if (type === "$") {
+            alert('remove cost');
+        } else if (type === "@") {
+            alert('remove location');
+        }
+    };
+
+
+
 
 
     //We use google maps as a service

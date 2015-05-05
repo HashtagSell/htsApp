@@ -78,7 +78,6 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
         if (city) {
             awesomeBarFactory.predictPlace(city).then(function (results) {
                 $scope.cities = results;
-                //console.log("Here is scope.cities", $scope.cities);
             });
         }
     };

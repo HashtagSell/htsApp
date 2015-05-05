@@ -29,7 +29,14 @@
             for <span  class="mention-highlighter-price" contenteditable="false" popover-placement="top" popover="$ your price" popover-trigger="show">$75</span>&nbsp;
             <span class="mention-highlighter-location" contenteditable="false" popover-placement="bottom" popover="@ your meeting location!" popover-trigger="show">@1234 Mulberry Street, New York, NY, United States</span>&nbsp;
         </div>
-        <div ng-class="jsonObj.annotations.length > 0 ? 'col-lg-2' : 'hidden-lg' " class="hts-annotations-container">
+
+        <div ng-class="{ 'predicted-category-container' : jsonObj.annotations.length}">
+            <div class="predicted-category text-center">
+                <h5 style="width: 148px; margin:0;">{{jsonObj.category_name}}</h5>
+            </div>
+        </div>
+
+        <div ng-class="{ 'hts-annotations-container' : jsonObj.annotations.length}">
             <div ng-repeat="annotation in jsonObj.annotations">
                 <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
             </div>

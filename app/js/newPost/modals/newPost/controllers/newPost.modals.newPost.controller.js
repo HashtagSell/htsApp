@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', '$window', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory, $window) {
 
     $scope.demoCleared = false;
 
@@ -117,6 +117,12 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             authModalFactory.signInModal();
 
         }
+    };
+
+
+    //Sellbox directive calls this to update model when a hash
+    $scope.cleanModel = function(type, mentionToRemove) {
+        mentionsFactory.cleanModel(type, mentionToRemove);
     };
 
 
