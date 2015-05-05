@@ -3,12 +3,12 @@
 var request = require("request");
 var path = require('path');
 
+var CategoryModel = require("../config/database/models/3tapsCategory.js");
+
 
 exports.categoryMetadata = function(req, res){
 
     var categoryCode = req.query.categoryCode;
-
-    var CategoryModel = require("../config/database/models/3TapsCategory.js");
 
     //Search our users collection by the username and update their user_settings object
     CategoryModel.findOne({ 'code': categoryCode }, function (err, codeMetaData) {
