@@ -1,12 +1,15 @@
 /**
  * Created by braddavis on 4/28/15.
  */
-htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', function($scope, feedbackFactory, $http, ENV, Notification) {
+htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, feedbackFactory, $http, ENV, Notification, Session) {
 
     $scope.feedback = feedbackFactory.feedback;
 
+    $scope.userObj = Session.userObj;
+
     $scope.submitFeedback = function() {
-        console.log($scope.feedback);
+
+        $scope.feedback.form.user = $scope.userObj.user_settings.name;
 
         $http.post(ENV.feedbackAPI, $scope.feedback).success(function(response) {
 

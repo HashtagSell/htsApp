@@ -2120,12 +2120,15 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 }]);;/**
  * Created by braddavis on 4/28/15.
  */
-htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', function($scope, feedbackFactory, $http, ENV, Notification) {
+htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, feedbackFactory, $http, ENV, Notification, Session) {
 
     $scope.feedback = feedbackFactory.feedback;
 
+    $scope.userObj = Session.userObj;
+
     $scope.submitFeedback = function() {
-        console.log($scope.feedback);
+
+        $scope.feedback.form.user = $scope.userObj.user_settings.name;
 
         $http.post(ENV.feedbackAPI, $scope.feedback).success(function(response) {
 
@@ -2157,19 +2160,19 @@ htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', '
 }]);;/**
  * Created by braddavis on 4/28/15.
  */
-htsApp.factory('feedbackFactory', ['Session', function (Session) {
+htsApp.factory('feedbackFactory', function () {
    var factory = {};
 
     factory.feedback = {
         form: {
-            user: Session.userObj.user_settings.name,
+            user: null,
             generalFeedback: null,
             visible: false
         }
     };
 
     return factory;
-}]);;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
+});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
