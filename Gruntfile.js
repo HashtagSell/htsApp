@@ -1,3 +1,6 @@
+/**
+ * Created by braddavis on 5/6/15.
+ */
 var fs = require("fs");
 
 module.exports = function(grunt) {
@@ -44,7 +47,7 @@ module.exports = function(grunt) {
                         htsAppUrl: 'https://staging.hashtagsell.com',
                         postingAPI: 'https://staging-posting-api.hashtagsell.com/v1/postings/',
                         userAPI: 'https://staging-posting-api.hashtagsell.com/v1/users/',
-                        feedbackAPI: 'https://staging-posting-api.hashtagsell.com/feedback',
+                        feedbackAPI: 'https://staging.hashtagsell.com/feedback',
                         realtimePostingAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/postings',
                         realtimeUserAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/users',
                         groupingsAPI: 'https://staging-posting-api.hashtagsell.com/v1/groupings/',
