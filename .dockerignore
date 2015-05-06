@@ -1,7 +1,13 @@
+.git
+.gitignore
+.jshintrc
+.dockerignore
+readme.md
+Dockerfile
 /reports/
 /config/
+/init/
 npm-debug.log
 bower_components
 node_modules
 .DS_Store
-dump*
