@@ -1,6 +1,3 @@
-/**
- * Created by braddavis on 5/6/15.
- */
 var fs = require("fs");
 
 module.exports = function(grunt) {
