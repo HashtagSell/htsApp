@@ -16,6 +16,9 @@ var fs = require("fs");
 // used to compile the email templates
 var ejs = require('ejs');
 
+var common   = require('../config/common.js');
+var config   = common.config();
+
 exports.id = function(req, res) {
 
     //Search our users collection for the user with the activation id in the url
@@ -89,7 +92,7 @@ exports.forgotPassword = function(req, res){
                 {
                     user:{
                         name: user.user_settings.name,
-                        activation: "https://"+req.headers.host+"/reset/"+user.local.resetPasswordToken+"/",
+                        activation: config.hts.appURL+"/reset/"+user.local.resetPasswordToken+"/",
                         email: email
                     },
                     images:{
@@ -107,7 +110,7 @@ exports.forgotPassword = function(req, res){
 
                 //Build the email message
                 var opts = {
-                    from: "HashtagSell <registration@hashtagsell.com>",
+                    from: "HashtagSell <no-reply@hashtagsell.com>",
                     to: email,
                     subject: "HashtagSell Password Reset",
                     html: compiled_html,
@@ -340,7 +343,7 @@ exports.signup = function(req, res) {
                                     {
                                         user:{
                                             name: newUser.user_settings.name,
-                                            activation: "https://"+req.headers.host+"/activate?id="+newUser.stats.activation_code,
+                                            activation: config.hts.appURL+"/activate?id="+newUser.stats.activation_code,
                                             keyToShare: keyToShare
                                         },
                                         images:{
@@ -358,7 +361,7 @@ exports.signup = function(req, res) {
 
                                     //Build the email message
                                     var opts = {
-                                        from: "HashtagSell <registration@hashtagsell.com>",
+                                        from: "HashtagSell <no-reply@hashtagsell.com>",
                                         to: newUser.local.email,
                                         subject: "Welcome to HashtagSell!",
                                         html: compiled_html,

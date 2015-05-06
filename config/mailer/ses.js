@@ -3,10 +3,13 @@ var sesTransport = require('nodemailer-ses-transport');
 var signer = require('nodemailer-dkim').signer;
 var fs = require("fs");
 
+var common   = require('../../config/common.js');
+var config   = common.config();
+
 
 var transporter = nodemailer.createTransport(sesTransport({
-    accessKeyId: "AKIAJEBBRHS2AU362L4Q",
-    secretAccessKey: "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"
+    accessKeyId: config.AWS_ACCESS_KEY,
+    secretAccessKey: config.AWS_SECRET_KEY
 }));
 
 
@@ -17,7 +20,7 @@ transporter.use('stream', require('nodemailer-dkim').signer({
 }));
 
 
-exports.sendMail = function (opts) {
+exports.sendMail = function (opts, callback) {
 
     // mailing options
     var mailOpts = {
@@ -33,9 +36,9 @@ exports.sendMail = function (opts) {
     // Send mail
     transporter.sendMail(mailOpts, function (error, response) {
         if (error) {
-            console.log(error);
+            callback(error, null);
         }else {
-            /* console.log('Message sent: ' + response.message); */
+            callback(null, response);
         }
         /* console.log('Closing Transport'); */
         transporter.close();

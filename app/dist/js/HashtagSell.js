@@ -950,7 +950,7 @@ htsApp.directive('htsFaveToggle', function () {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/v1/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/v1/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging-posting-api.hashtagsell.com/feedback',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/v1/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/v1/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
 
 ;;/**
  * Created by braddavis on 12/10/14.
@@ -2120,31 +2120,56 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 }]);;/**
  * Created by braddavis on 4/28/15.
  */
-htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', 'Session', function($scope, feedbackFactory, Session) {
+htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', function($scope, feedbackFactory, $http, ENV, Notification) {
 
     $scope.feedback = feedbackFactory.feedback;
 
-    $scope.userObj = Session.userObj;
-
     $scope.submitFeedback = function() {
         console.log($scope.feedback);
+
+        $http.post(ENV.feedbackAPI, $scope.feedback).success(function(response) {
+
+            if(response.success) {
+                $scope.feedback.form.visible = false;
+                $scope.feedback.form.generalFeedback = null;
+                Notification.success({
+                    title: "Feedback Sent!",
+                    message: "You'll receive an email shortly.",
+                    delay: 6000
+                });
+            } else if (response.error) {
+                Notification.error({
+                    title: "Could not submit your feedback",
+                    message: response.error,
+                    delay: 10000
+                });
+            }
+
+        }).error(function(err) {
+            Notification.error({
+                title: "Could not submit your feedback",
+                message: "Sorry! Something is big time wrong. Email us at feedback@hashtagsell.com.",
+                delay: 10000
+            });
+        });
     };
 
 }]);;/**
  * Created by braddavis on 4/28/15.
  */
-htsApp.factory('feedbackFactory', function () {
+htsApp.factory('feedbackFactory', ['Session', function (Session) {
    var factory = {};
 
     factory.feedback = {
         form: {
+            user: Session.userObj.user_settings.name,
             generalFeedback: null,
             visible: false
         }
     };
 
     return factory;
-});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
+}]);;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -6315,8 +6340,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     this.defaultUserObj = {
         loggedIn: false,
-        profile_photo: 'https://static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
-        banner_photo: 'https://static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
+        profile_photo: '//static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
+        banner_photo: '//static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
         safe_search: true,
         email_provider: [
             {

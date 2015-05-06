@@ -1,8 +1,4 @@
 //TODO: DELETE ME
-
-var request = require("request");
-var path = require('path');
-
 var CategoryModel = require("../config/database/models/3tapsCategory.js");
 
 

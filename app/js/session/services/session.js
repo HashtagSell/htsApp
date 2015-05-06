@@ -3,8 +3,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     this.defaultUserObj = {
         loggedIn: false,
-        profile_photo: 'https://static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
-        banner_photo: 'https://static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
+        profile_photo: '//static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
+        banner_photo: '//static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
         safe_search: true,
         email_provider: [
             {

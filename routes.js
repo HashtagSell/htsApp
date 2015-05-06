@@ -18,13 +18,6 @@ module.exports = function(app, passport) {
     });
 
 
-    // =====================================
-    // ========= SEARCH PROXY (RETIRE SOON) ONLY USED WHEN USER CREATES NEW POST ==============
-    // =====================================
-    var search_old = require('./api/search_api_old'); //Proxy between HTS and 3TAPS
-    app.get('/search_old', search_old.vendor);
-
-
 
     // =====================================
     // ========= USER FEED ================ (RETIRE SOON SINCE MOVING TO SOCKET.IO UPDATES)
@@ -39,6 +32,15 @@ module.exports = function(app, passport) {
     // =====================================
     var reference = require('./api/reference_api'); //Lookup 3taps formatted metro codes
     app.get('/search/categories', reference.categoryMetadata);
+
+
+
+
+    // =====================================
+    // Capture User Feedback ===============
+    // =====================================
+    var feedback = require('./api/feedback_api');
+    app.post('/feedback', feedback.submit);
 
 
 
@@ -225,7 +227,12 @@ module.exports = function(app, passport) {
     // PRIVATE BETA ADMIN ACCESS
     // =====================================
 
-    //Generate user and group keys for user's to signup with
+    //Generate group key that can be used an infinite amount of times.
+    //http://domain.com/generatekeys?type=group&key=_your_key_here
+
+    //Generate unique keys that can only be used once.
+    //http://domain.com/generatekeys?type=individual&quantity=5
+
     var admin = require('./api/admin/admin.js');
     app.get('/generatekeys', isAdmin, admin.generateKeys);
 

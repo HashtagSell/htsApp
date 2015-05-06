@@ -56,8 +56,8 @@ var userSchema = mongoose.Schema({
                 }
             ]
         },
-        profile_photo : { type: String, default: "/images/userMenu/user-placeholder.png" },
-        banner_photo : { type: String, default: "/images/userMenu/header-placeholder.png" },
+        profile_photo : { type: String, default: "//static.hashtagsell.com/htsApp/placeholders/user-placeholder.png" },
+        banner_photo : { type: String, default: "//static.hashtagsell.com/htsApp/placeholders/header-placeholder.png" },
         user_labels  : [],
         favorites    : [],
         feed_categories : {
