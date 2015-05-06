@@ -115,20 +115,18 @@ exports.forgotPassword = function(req, res){
                     subject: "HashtagSell Password Reset",
                     html: compiled_html,
                     text: plain_text
-                }
+                };
 
-                // Send Registration Email
+                // Send Forgot password email
                 mailer.sendMail(opts, function(error, info){
                     if(error){
                         console.log(error);
+                        return res.json({success: false, message: "Could not send forgot password email.  Please contact support."})
                     }else{
                         console.log('Message sent: ' + info.response);
+                        return res.json({success: true})
                     }
                 });
-
-
-
-                return res.json({success: true})
             }
         });
     });
@@ -366,10 +364,17 @@ exports.signup = function(req, res) {
                                         subject: "Welcome to HashtagSell!",
                                         html: compiled_html,
                                         text: plain_text
-                                    }
+                                    };
 
                                     // Send Registration Email
-                                    mailer.sendMail(opts);
+                                    mailer.sendMail(opts, function(err, info){
+                                        if(err){
+                                            return res.json({ success : false, message: "could not send activation email.  Please email support."});
+                                        }else{
+                                            console.log(info);
+                                            return res.json({ success : true});
+                                        }
+                                    });
 
                                     // Mark the OLD Secret Code as used
                                     if(access_key.secret.type_of_key == "individual") {
@@ -388,8 +393,6 @@ exports.signup = function(req, res) {
                                         access_key.save();
                                     }
 
-
-                                    return res.json({ success : true});
                                 }
                             });
                         }
