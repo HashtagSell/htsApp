@@ -409,7 +409,7 @@ exports.signup = function(req, res) {
 
 exports.getProfile = function(req, res){
 
-    var username = req.body.username;
+    var username = req.query.username;
 
     User.findOne({ 'user_settings.name' : username }, function (err, user) {
 
