@@ -45,9 +45,7 @@ app.use(function(req, res, next) {
         } else {
             next();
         }
-    } else if(host === "hashtagsell.com" || host === "www.hashtagsell.com" ) {
-
-        host = "www.hashtagsell.com";  //Force url to always contain www
+    } else if(host === "staging.hashtagsell.com") {
 
         if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //If not https
             res.redirect('https://' + host + req.url); //force https
