@@ -134,14 +134,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         //loop through the hashtags and formulate the heading of post
 
         newPost.heading = '';
-        for (i = 0; i < newPost.mentions.hashtags.length; i++) {
+        for (var i = 0; i < newPost.mentions.hashtags.length; i++) {
             if (i !== newPost.mentions.hashtags.length - 1) {
-                newPost.heading += newPost.mentions.hashtags[i].hashtag + " ";
+                newPost.heading += newPost.mentions.hashtags[i] + " ";
             } else {
-                newPost.heading += newPost.mentions.hashtags[i].hashtag;
+                newPost.heading += newPost.mentions.hashtags[i];
             }
 
-            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
+            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i]; //Remove all the info we used to gather meta-data
         }
 
         //Josh's posting API
