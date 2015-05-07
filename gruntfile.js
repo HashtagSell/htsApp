@@ -24,6 +24,7 @@ module.exports = function(grunt) {
                         postingAPI: 'http://localhost:4043/v1/postings/',
                         userAPI: 'http://localhost:4043/v1/users/',
                         feedbackAPI: 'http://localhost:8081/feedback',
+                        braintreeAPI: 'http://localhost:8081/payments',
                         realtimePostingAPI: 'http://localhost:4044/postings',
                         realtimeUserAPI: 'http://localhost:4044/users',
                         groupingsAPI: 'http://localhost:4043/v1/groupings/',
@@ -34,7 +35,8 @@ module.exports = function(grunt) {
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367471540085253'
-                    }
+                    },
+                    clientTokenPath: 'http://localhost:8081/payments/client_token'
                 }
             },
             stage: {
@@ -48,6 +50,7 @@ module.exports = function(grunt) {
                         postingAPI: 'https://staging-posting-api.hashtagsell.com/v1/postings/',
                         userAPI: 'https://staging-posting-api.hashtagsell.com/v1/users/',
                         feedbackAPI: 'https://staging.hashtagsell.com/feedback',
+                        braintreeAPI: 'https://staging.hashtagsell.com/payments',
                         realtimePostingAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/postings',
                         realtimeUserAPI: 'https://staging-realtime-svc.hashtagsell.com/v1/users',
                         groupingsAPI: 'https://staging-posting-api.hashtagsell.com/v1/groupings/',
@@ -58,7 +61,8 @@ module.exports = function(grunt) {
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367471540085253'
-                    }
+                    },
+                    clientTokenPath: 'https://staging.hashtagsell.com/payments/client_token'
                 }
             },
             prod: {
@@ -72,6 +76,7 @@ module.exports = function(grunt) {
                         postingAPI: 'https://www.hashtagsell.com/v1/postings/',
                         userAPI: 'https://www.hashtagsell.com/v1/users/',
                         feedbackAPI: 'https://www.hashtagsell.com/feedback',
+                        braintreeAPI: 'https://www.hashtagsell.com/payments',
                         realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
                         realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
                         groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
@@ -82,7 +87,8 @@ module.exports = function(grunt) {
                         ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367469320085475'
-                    }
+                    },
+                    clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
                 }
             }
         },

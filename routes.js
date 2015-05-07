@@ -207,6 +207,21 @@ module.exports = function(app, passport) {
 
 
     // =====================================
+    // BRAINTREE PAYMENT ROUTES ============
+    // =====================================
+    var braintree = require('./api/braintree_api.js');
+    app.get("/payments/client_token", function (req, res) {
+        braintree.getClientToken(req, res);
+    });
+
+    app.post("/payments/purchase", function (req, res) {
+        braintree.sendPayment(req, res);
+    });
+
+
+
+
+    // =====================================
     // USER API ============================
     // =====================================
 

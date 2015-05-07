@@ -9,9 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick']);
-
-
+var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick', 'braintree-angular']);
 
 //Forcing XHR requests via Angular $http (AJAX)
 htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$tooltipProvider', 'ivhTreeviewOptionsProvider', '$locationProvider', 'ezfbProvider', 'ENV', function ($httpProvider, $stateProvider, $urlRouterProvider, $tooltipProvider, ivhTreeviewOptionsProvider, $locationProvider, ezfbProvider, ENV) {
@@ -950,7 +948,9 @@ htsApp.directive('htsFaveToggle', function () {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/v1/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/v1/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',braintreeAPI:'https://staging.hashtagsell.com/payments',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/v1/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/v1/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+
+.constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
 ;;/**
  * Created by braddavis on 12/10/14.
