@@ -41,7 +41,12 @@
                             </td>
 
                             <td>
-                                <h4>{{::post.heading | cleanHeading}} - {{::post.askingPrice.value | currency : $ : 0}}</h4>
+                                <h4>
+                                    {{::post.heading | cleanHeading}} - {{::post.askingPrice.value | currency : $ : 0}}
+                                    <span class="label label-primary" ng-click="showFacebookPost(post); $event.stopPropagation();" tooltip="Open Facebook post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Facebook</span>
+                                    <span class="label label-info" ng-click="showTwitterPost(post); $event.stopPropagation();" tooltip="Open Twitter Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Twitter</span>
+                                    <span ng-show="post.ebay" class="label label-warning" ng-click="showEbayPost(post); $event.stopPropagation();" tooltip="Open Ebay Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Ebay</span>
+                                </h4>
 
                                 <!--<div ng-bind-html="post.body"/>-->
 
@@ -56,8 +61,8 @@
                                 </div>
 
                                 <div style="float: right;">
-                                    <i class="fa fa-minus-circle fa-2x" ng-click="deletePost(post); $event.stopPropagation();" style="color:red; margin-right: 20px;" popover="Delete post" popover-trigger="mouseenter" popover-placement="left"></i>
-                                    <i class="fa fa-pencil-square-o fa-2x" ng-click="editPost(post); $event.stopPropagation();" style="color:#494949; margin-right: 20px;" popover="Edit post" popover-trigger="mouseenter" popover-placement="left"></i>
+                                    <i class="fa fa-minus-circle fa-2x" ng-click="deletePost(post); $event.stopPropagation();" style="color:red; margin-right: 20px;" tooltip="Delete post" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
+                                    <i class="fa fa-pencil-square-o fa-2x" ng-click="editPost(post); $event.stopPropagation();" style="color:#494949; margin-right: 20px;" tooltip="Edit post" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
                                 </div>
                             </td>
                         </tr>

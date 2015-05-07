@@ -123,7 +123,7 @@ h1, h2, h3, h4, h5{
     border-top-right-radius: 4px;
     height: 90px;
     background-size : cover;
-    cursor: pointer;
+    /*cursor: pointer;*/
 }
 
 .bs-profile-nav .profile .profileCircle {

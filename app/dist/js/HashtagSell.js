@@ -622,72 +622,8 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                     console.log('setting backspace pressed to true');
                 }
 
-                //if(parseInt(e.which) === 8 && e.type === "keyup") {
-                //    backspacePressed = false;
-                //    console.log('setting backspace pressed to false');
-                //}
-
                 scope.$apply(read);
             });
-
-
-
-
-            //Watch the posting description as the user types.  If the user remove mentions #'s $'s OR @'s we update our model.
-            //scope.$watch('jsonObj.body', function(newValue, oldValue) {
-            //    //Load the js diff library
-            //    var jsDiff = $window.JsDiff;
-            //
-            //    //Strip the html from new and old values
-            //    var oldValueStripped = strip(oldValue);
-            //    var newValueStripped = strip(newValue);
-            //
-            //    console.log('===========HTML=========');
-            //    console.log(oldValue);
-            //    console.log(newValue);
-            //
-            //    console.log('===========Stripped=========');
-            //    console.log(oldValueStripped);
-            //    console.log(newValueStripped);
-            //
-            //    //Run a diff
-            //    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
-            //
-            //    if(diff.length) {
-            //
-            //        console.log(diff);
-            //
-            //        for (var i = 0; i < diff.length; i++){
-            //            var excerpt = diff[i];
-            //            if(excerpt.removed){
-            //                if(excerpt.value.indexOf('#') === 0) {
-            //                    console.log('hasshtag removed ', excerpt.value);
-            //
-            //                    var hashtagToRemove = excerpt.value.replace('#','');
-            //                    hashtagToRemove = hashtagToRemove.trim();
-            //
-            //                    mentionsFactory.removeProductHashtag(hashtagToRemove);
-            //                } else if (excerpt.value.indexOf('$') === 0) {
-            //                    console.log('dollar removed ', excerpt.value);
-            //
-            //                    var priceTagToRemove = excerpt.value.replace('$','');
-            //                    priceTagToRemove = priceTagToRemove.trim();
-            //
-            //                } else if (excerpt.value.indexOf('@') === 0) {
-            //                    console.log('@ removed ', excerpt.value);
-            //
-            //                    var atTagToRemove = excerpt.value.replace('@','');
-            //                    atTagToRemove = atTagToRemove.trim();
-            //                }
-            //            }
-            //        }
-            //    }
-            //});
-
-
-
-
-
 
             read(); // initialize
         }
@@ -945,6 +881,13 @@ htsApp.directive('htsFaveToggle', function () {
                 //$element[0].childNodes[0].blur();
             };
         }]
+    };
+});
+
+
+htsApp.filter('capitalize', function() {
+    return function(input, all) {
+        return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     };
 });
 ;angular.module('globalVars', [])
@@ -3121,7 +3064,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
 }]);;/**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -3302,6 +3245,40 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPosts
         splashFactory.result = post;
         console.log(splashFactory.result);
         $state.go('myposts.splash', { id: post.postingId });
+    };
+
+
+
+
+    //FACEBOOK MGMT
+    $scope.showFacebookPost = function (post) {
+        $window.open("http://facebook.com");
+    };
+
+    $scope.removeFacebookPost = function (post) {
+
+    };
+
+
+
+    //TWITTER MGMT
+    $scope.showTwitterPost = function (post) {
+        $window.open("http://twitter.com");
+    };
+
+    $scope.removeTwitterPost = function (post) {
+
+    };
+
+
+
+    //EBAY MGMT
+    $scope.showEbayPost = function (post) {
+        $window.open(post.ebay.url);
+    };
+
+    $scope.removeEbayPost = function (post) {
+
     };
 
 }]);;/**
@@ -4454,14 +4431,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         //loop through the hashtags and formulate the heading of post
 
         newPost.heading = '';
-        for (i = 0; i < newPost.mentions.hashtags.length; i++) {
+        for (var i = 0; i < newPost.mentions.hashtags.length; i++) {
             if (i !== newPost.mentions.hashtags.length - 1) {
-                newPost.heading += newPost.mentions.hashtags[i].hashtag + " ";
+                newPost.heading += newPost.mentions.hashtags[i] + " ";
             } else {
-                newPost.heading += newPost.mentions.hashtags[i].hashtag;
+                newPost.heading += newPost.mentions.hashtags[i];
             }
 
-            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i].hashtag; //Remove all the info we used to gather meta-data
+            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i]; //Remove all the info we used to gather meta-data
         }
 
         //Josh's posting API
@@ -4576,7 +4553,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 }]);;/**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, ENV, utilsFactory, Notification) {
+htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $filter, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
@@ -4786,7 +4763,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
             annotationsDictionary.put("CPU Type", "Processor Type");
             annotationsDictionary.put("Display Size", "Screen Size");
             annotationsDictionary.put("Operating System", "OS Version");
-            annotationsDictionary.put("Size", "Storage Capacity");
+            //annotationsDictionary.put("Size", "Storage Capacity");
             annotationsDictionary.put("System Memory Size", "Memory");
             annotationsDictionary.put("Department", "Department");
 
@@ -4805,16 +4782,15 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
                 if (popularCategories.length) {
                     //now that we have the popular category code get all the conical information about that category
                     //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
-                    $http.get('../search/categories', {
-                        params: {
-                            categoryCode: popularCategories[0].code
-                        }
-                    }).success(function (data, status) {
 
-                        factory.jsonTemplate.category = data.metadata.code;
-                        factory.jsonTemplate.category_name = data.metadata.name;
-                        factory.jsonTemplate.category_group = data.metadata.group_code;
-                        factory.jsonTemplate.category_group_name = data.metadata.group_name;
+                    var mostPopularCategory = popularCategories[0].code;
+
+                    $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
+
+                        factory.jsonTemplate.category = data.categories[0].code;
+                        factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
+                        factory.jsonTemplate.category_group = data.code;
+                        factory.jsonTemplate.category_group_name = data.name;
 
                         var annotationsHashTable = new Hashtable();
                         var annotationCount = 0;
@@ -4834,7 +4810,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
                                 },
                                 optional: {
                                     exact: {
-                                        categoryCode: [factory.jsonTemplate.category, ""]
+                                        categoryCode: [factory.jsonTemplate.category]
                                     }
                                 }
                             },

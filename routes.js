@@ -27,14 +27,6 @@ module.exports = function(app, passport) {
 
 
 
-    // =====================================
-    // Categories Metadata Lookup ========== (RETIRE SOON: USED TO FIND POPULAR CATEGORY WHEN USER SELLS THEIR #item_name_here)
-    // =====================================
-    var reference = require('./api/reference_api'); //Lookup 3taps formatted metro codes
-    app.get('/search/categories', reference.categoryMetadata);
-
-
-
 
     // =====================================
     // Capture User Feedback ===============
@@ -226,7 +218,9 @@ module.exports = function(app, passport) {
     // =====================================
 
     //Get all data associated with username
-    app.get('/getprofile', activate.getProfile);
+    app.get('/getprofile', function(req, res){
+        activate.getProfile(req, res);
+    });
 
     //Push updated user data to server (favorites, items for sale, labels, user settings, etc).
     var user_settings_api = require('./api/user_settings_api.js');

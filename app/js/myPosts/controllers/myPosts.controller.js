@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -182,6 +182,40 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', 'myPosts
         splashFactory.result = post;
         console.log(splashFactory.result);
         $state.go('myposts.splash', { id: post.postingId });
+    };
+
+
+
+
+    //FACEBOOK MGMT
+    $scope.showFacebookPost = function (post) {
+        $window.open("http://facebook.com");
+    };
+
+    $scope.removeFacebookPost = function (post) {
+
+    };
+
+
+
+    //TWITTER MGMT
+    $scope.showTwitterPost = function (post) {
+        $window.open("http://twitter.com");
+    };
+
+    $scope.removeTwitterPost = function (post) {
+
+    };
+
+
+
+    //EBAY MGMT
+    $scope.showEbayPost = function (post) {
+        $window.open(post.ebay.url);
+    };
+
+    $scope.removeEbayPost = function (post) {
+
     };
 
 }]);

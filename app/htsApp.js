@@ -622,72 +622,8 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                     console.log('setting backspace pressed to true');
                 }
 
-                //if(parseInt(e.which) === 8 && e.type === "keyup") {
-                //    backspacePressed = false;
-                //    console.log('setting backspace pressed to false');
-                //}
-
                 scope.$apply(read);
             });
-
-
-
-
-            //Watch the posting description as the user types.  If the user remove mentions #'s $'s OR @'s we update our model.
-            //scope.$watch('jsonObj.body', function(newValue, oldValue) {
-            //    //Load the js diff library
-            //    var jsDiff = $window.JsDiff;
-            //
-            //    //Strip the html from new and old values
-            //    var oldValueStripped = strip(oldValue);
-            //    var newValueStripped = strip(newValue);
-            //
-            //    console.log('===========HTML=========');
-            //    console.log(oldValue);
-            //    console.log(newValue);
-            //
-            //    console.log('===========Stripped=========');
-            //    console.log(oldValueStripped);
-            //    console.log(newValueStripped);
-            //
-            //    //Run a diff
-            //    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
-            //
-            //    if(diff.length) {
-            //
-            //        console.log(diff);
-            //
-            //        for (var i = 0; i < diff.length; i++){
-            //            var excerpt = diff[i];
-            //            if(excerpt.removed){
-            //                if(excerpt.value.indexOf('#') === 0) {
-            //                    console.log('hasshtag removed ', excerpt.value);
-            //
-            //                    var hashtagToRemove = excerpt.value.replace('#','');
-            //                    hashtagToRemove = hashtagToRemove.trim();
-            //
-            //                    mentionsFactory.removeProductHashtag(hashtagToRemove);
-            //                } else if (excerpt.value.indexOf('$') === 0) {
-            //                    console.log('dollar removed ', excerpt.value);
-            //
-            //                    var priceTagToRemove = excerpt.value.replace('$','');
-            //                    priceTagToRemove = priceTagToRemove.trim();
-            //
-            //                } else if (excerpt.value.indexOf('@') === 0) {
-            //                    console.log('@ removed ', excerpt.value);
-            //
-            //                    var atTagToRemove = excerpt.value.replace('@','');
-            //                    atTagToRemove = atTagToRemove.trim();
-            //                }
-            //            }
-            //        }
-            //    }
-            //});
-
-
-
-
-
 
             read(); // initialize
         }
@@ -945,5 +881,12 @@ htsApp.directive('htsFaveToggle', function () {
                 //$element[0].childNodes[0].blur();
             };
         }]
+    };
+});
+
+
+htsApp.filter('capitalize', function() {
+    return function(input, all) {
+        return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     };
 });

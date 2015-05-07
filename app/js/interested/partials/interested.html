@@ -67,17 +67,13 @@
                         <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
                     </td>
                     <td filter="{ 'heading': 'text' }" style="cursor: pointer;">
-                        <h4>{{::favorite.heading | cleanHeading}}</h4>
-                        <div>
-                            <small>
-                                <table ng-repeat="label in favorite.labels" class="hashtag-faves-label">
-                                    <tr>
-                                        <td>#{{label}}&nbsp;&nbsp;</td>
-                                        <td ng-click="removeIndividualLabel(); $event.stopPropagation();" style="cursor: pointer; z-index: 10;">x</td>
-                                    </tr>
-                                </table>
-                            </small>
-                        </div>
+
+                        <h4>{{::favorite.heading | cleanHeading}}
+                            <span ng-repeat="label in favorite.labels" class="label label-primary" style="font-weight: inherit; margin-right: 5px;">
+                                {{label}} | x
+                            </span>
+                        </h4>
+
                         <div>
                             <button class="btn btn-default" type="button" ui-sref="watchlist.questions({postingId: favorite.postingId})" ng-click="$event.stopPropagation();">
                                 Questions
@@ -95,7 +91,7 @@
                         <h4>No price</h4>
                     </td>
                     <td style="width:20px; vertical-align: middle;">
-                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;"></i>
+                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;" tooltip="Remove from watch list" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
                     </td>
                 </tr>
 

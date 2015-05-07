@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, ENV, utilsFactory, Notification) {
+htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $filter, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
@@ -211,7 +211,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
             annotationsDictionary.put("CPU Type", "Processor Type");
             annotationsDictionary.put("Display Size", "Screen Size");
             annotationsDictionary.put("Operating System", "OS Version");
-            annotationsDictionary.put("Size", "Storage Capacity");
+            //annotationsDictionary.put("Size", "Storage Capacity");
             annotationsDictionary.put("System Memory Size", "Memory");
             annotationsDictionary.put("Department", "Department");
 
@@ -230,16 +230,15 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
                 if (popularCategories.length) {
                     //now that we have the popular category code get all the conical information about that category
                     //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
-                    $http.get('../search/categories', {
-                        params: {
-                            categoryCode: popularCategories[0].code
-                        }
-                    }).success(function (data, status) {
 
-                        factory.jsonTemplate.category = data.metadata.code;
-                        factory.jsonTemplate.category_name = data.metadata.name;
-                        factory.jsonTemplate.category_group = data.metadata.group_code;
-                        factory.jsonTemplate.category_group_name = data.metadata.group_name;
+                    var mostPopularCategory = popularCategories[0].code;
+
+                    $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
+
+                        factory.jsonTemplate.category = data.categories[0].code;
+                        factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
+                        factory.jsonTemplate.category_group = data.code;
+                        factory.jsonTemplate.category_group_name = data.name;
 
                         var annotationsHashTable = new Hashtable();
                         var annotationCount = 0;
@@ -259,7 +258,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', 'ENV', 'utilsFactory', 'Notific
                                 },
                                 optional: {
                                     exact: {
-                                        categoryCode: [factory.jsonTemplate.category, ""]
+                                        categoryCode: [factory.jsonTemplate.category]
                                     }
                                 }
                             },

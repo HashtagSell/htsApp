@@ -6,28 +6,6 @@ li.label-list:hover span.delete-label{
     visibility: visible;
 }
 
-.hashtag-faves-label {
-    float: left;
-    margin-right:10px;
-
-}
-
-.hashtag-faves-label td{
-    padding: 0px 3px 0px 3px;
-    border: 1px solid indianred;
-    background-color: indianred !important;
-    color: white;
-}
-
-
-.labels-input {
-    margin: 0px 15px 0px 15px;
-}
-
-.table {
-    margin-bottom: 0 !important;
-}
-
 .ng-table-pager {
     display: none;
 }
