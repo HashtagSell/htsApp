@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                         ebayAuth: 'https://staging.hashtagsell.com/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '367471540085253'
+                        fbAppId: '459229800909426'
                     },
                     clientTokenPath: 'https://staging.hashtagsell.com/payments/client_token'
                 }
