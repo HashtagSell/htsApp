@@ -26,6 +26,8 @@ htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPo
 
                 myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
+                Notification.success({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+
             } else {
 
                 console.log(response);

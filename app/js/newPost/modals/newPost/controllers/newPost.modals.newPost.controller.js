@@ -90,7 +90,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     $scope.uploadProgress = progress;
                     $scope.$apply($scope.uploadProgress);
                     if(progress < 100) {
-                        $scope.uploadMessage = progress+'%';
+                        $scope.uploadMessage = Math.round(progress) + '%';
                         $scope.$apply($scope.uploadProgress);
                     } else if (progress === 100) {
                         $scope.uploadMessage = 'Preparing photos.. please wait.';

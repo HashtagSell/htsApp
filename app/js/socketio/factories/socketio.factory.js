@@ -216,21 +216,6 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
         //TODO: Need the offer object to include the sellers username
         if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their offer is sent
 
-            //favesFactory.addFave(emit.posting, function(){
-            //
-            //    var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
-            //
-            //    Notification.success({
-            //        title: '<a href=' + url + '>Meeting Request Sent!</a>',
-            //        message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
-            //        delay: 10000
-            //    });  //Send the webtoast
-            //
-            //});
-
-
-
-
             favesFactory.checkFave(emit.posting, function (favorited) {
 
                 if(favorited){ //The user sending the offer already has the item in their watchlist
@@ -286,7 +271,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
             favesFactory.updateFavorite(emit, function(){
 
-                var url = '"//wishlist/offers/' + emit.posting.postingId + '"';
+                var url = '"/wishlist/offers/' + emit.posting.postingId + '"';
 
                 Notification.success({
                     title: '<a href=' + url + '>Another user placed an offer on an item you\'re watching.</a>',
@@ -415,12 +400,21 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
     socketio.postingSocket.on('accept-offer', function (emit) {
         console.log('emitted offer acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who place the accepted offer
+        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted offer
 
             //TODO: open posting in splash screen.
             var url =  '"/watchlist/offers/' + emit.posting.postingId + '"';
 
             Notification.success({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Please meet at ' + emit.acceptedTime.where + ' on ' + emit.acceptedTime.when + '.  A reminder email will be sent containing the online payment URL.  Sincerely, HashtagSell Team.</a>', delay: 10000});  //Send the webtoast
+
+            //TODO: This should not be called by client but instad realtime-svc
+            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedOffer: emit}).error(function(data){
+                Notification.error({
+                    title: 'Meeting request email failed',
+                    message: "Stay tuned we're working on this.  Send you your email shortly.",
+                    delay: 10000
+                });  //Send the webtoast
+            });
 
         }
 

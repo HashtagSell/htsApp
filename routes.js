@@ -210,6 +210,38 @@ module.exports = function(app, passport) {
         braintree.sendPayment(req, res);
     });
 
+    //app.get("/payments", function (req, res) {
+    //    console.log('offerId', req.query.offerId);
+    //    console.log('postingId', req.query.postingId);
+    //    res.send('coming soon!');
+    //});
+
+
+
+    // =====================================
+    // EMAIL OFFER NOTIFICATIONS ===========
+    // =====================================
+    var transaction_notifications_api = require('./api/transaction_notification_api.js');
+
+    app.post("/email/meeting-accepted/instant-reminder", function(req, res) {
+        transaction_notifications_api.meetingAccepted.instantReminder(req, res);
+    });
+
+    app.post("/email/meeting-proposed/instant-reminder", function(req, res) {
+        transaction_notifications_api.meetingProposed.instantReminder(req, res);
+    });
+
+
+
+    // =====================================
+    // PEER REVIEW =========================
+    // =====================================
+    //
+    //app.get("/reviews", function (req, res) {
+    //    console.log('offerId', req.query.offerId);
+    //    console.log('postingId', req.query.postingId);
+    //    res.send('coming soon!');
+    //});
 
 
 

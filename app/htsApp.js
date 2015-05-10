@@ -125,6 +125,15 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             }
         }).
+        state('payment', {
+            url: "/payment/:postingId/:offerId",
+            views: {
+                'root': {
+                    controller: 'paymentController',
+                    templateUrl: 'js/payment/partials/payment.partial.html'
+                }
+            }
+        }).
         state('root', {
             url: "/",
             onEnter: function ($state) {

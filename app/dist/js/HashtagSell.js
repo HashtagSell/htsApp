@@ -125,6 +125,15 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             }
         }).
+        state('payment', {
+            url: "/payment/:postingId/:offerId",
+            views: {
+                'root': {
+                    controller: 'paymentController',
+                    templateUrl: 'js/payment/partials/payment.partial.html'
+                }
+            }
+        }).
         state('root', {
             url: "/",
             onEnter: function ($state) {
@@ -2996,24 +3005,6 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     }, true);
 
 }]);;/**
- * Created by braddavis on 2/24/15.
- */
-htsApp.factory('messagesFactory', function () {
-
-    var factory = {};
-
-    factory.newMessageNotification = function (message) {
-        console.log(
-            '%s said "%s" at %s in room %s',
-            message.username,
-            message.message,
-            message.timestamp,
-            message.recipient
-        );
-    };
-
-    return factory;
-});;/**
  * Created by braddavis on 4/22/15.
  */
 htsApp.controller('metaController', ['$scope', 'metaFactory', function ($scope, metaFactory) {
@@ -3577,6 +3568,8 @@ htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPo
                 }
 
                 myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+
+                Notification.success({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
 
             } else {
 
@@ -4387,7 +4380,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     $scope.uploadProgress = progress;
                     $scope.$apply($scope.uploadProgress);
                     if(progress < 100) {
-                        $scope.uploadMessage = progress+'%';
+                        $scope.uploadMessage = Math.round(progress) + '%';
                         $scope.$apply($scope.uploadProgress);
                     } else if (progress === 100) {
                         $scope.uploadMessage = 'Preparing photos.. please wait.';
@@ -5488,6 +5481,64 @@ htsApp.controller('notifications.controller', ['$scope', function ($scope) {
         }
         return res;
     }
+}]);;/**
+ * Created by braddavis on 5/9/15.
+ */
+htsApp.controller('paymentController', ['$scope', '$braintree', '$http', '$stateParams', 'ENV', function($scope, $braintree, $http, $stateParams, ENV) {
+
+    //Credit card angular form populates this obj
+    $scope.creditCard = {
+        cardholderName: null,
+        number: null,
+        expirationMonth: null,
+        expirationYear:  null,
+        cvv: null
+    };
+
+
+    var client;
+
+    //When the user clicks a payment method this function is kicked off.
+    $scope.selectPaymentMethod = function (paymentType) {
+
+
+        if(paymentType === 'creditCard'){
+
+            $braintree.getClientToken().success(function(token) {
+                client = new $braintree.api.Client({
+                    clientToken: token
+                });
+            });
+            $scope.selectedPaymentMethod = paymentType; //This hides all the payment choices and shows the credit card form.
+
+        } else if (paymentType === 'payPal') {
+
+            $scope.selectedPaymentMethod = paymentType; //This hides all the payment choices.. how do I get paypal button to show up?
+        }
+
+    };
+
+    //When the user clicks the submit button after entering their credit card credentials this kicks off.
+    $scope.runCreditCard = function() {
+
+        // - Validate $scope.creditCard
+        // - Make sure client is ready to use
+
+        client.tokenizeCard({
+            number: $scope.creditCard.number,
+            cardholderName: $scope.creditCard.cardholderName,
+            expirationMonth: $scope.creditCard.expirationMonth,
+            expirationYear: $scope.creditCard.expirationYear,
+            cvv: $scope.creditCard.cvv
+        }, function (err, nonce) {
+
+            // - Send nonce to your server (e.g. to make a transaction)
+            $http.post(ENV.braintreeAPI + '/purchase', {payment_method_nonce: nonce}).success(function(response){
+                console.log(response);
+            });
+
+        });
+    };
 }]);;/**
  * Created by braddavis on 4/5/15.
  */
@@ -7265,21 +7316,6 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
         //TODO: Need the offer object to include the sellers username
         if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their offer is sent
 
-            //favesFactory.addFave(emit.posting, function(){
-            //
-            //    var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
-            //
-            //    Notification.success({
-            //        title: '<a href=' + url + '>Meeting Request Sent!</a>',
-            //        message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
-            //        delay: 10000
-            //    });  //Send the webtoast
-            //
-            //});
-
-
-
-
             favesFactory.checkFave(emit.posting, function (favorited) {
 
                 if(favorited){ //The user sending the offer already has the item in their watchlist
@@ -7335,7 +7371,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
             favesFactory.updateFavorite(emit, function(){
 
-                var url = '"//wishlist/offers/' + emit.posting.postingId + '"';
+                var url = '"/wishlist/offers/' + emit.posting.postingId + '"';
 
                 Notification.success({
                     title: '<a href=' + url + '>Another user placed an offer on an item you\'re watching.</a>',
@@ -7464,12 +7500,21 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
     socketio.postingSocket.on('accept-offer', function (emit) {
         console.log('emitted offer acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who place the accepted offer
+        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted offer
 
             //TODO: open posting in splash screen.
             var url =  '"/watchlist/offers/' + emit.posting.postingId + '"';
 
             Notification.success({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Please meet at ' + emit.acceptedTime.where + ' on ' + emit.acceptedTime.when + '.  A reminder email will be sent containing the online payment URL.  Sincerely, HashtagSell Team.</a>', delay: 10000});  //Send the webtoast
+
+            //TODO: This should not be called by client but instad realtime-svc
+            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedOffer: emit}).error(function(data){
+                Notification.error({
+                    title: 'Meeting request email failed',
+                    message: "Stay tuned we're working on this.  Send you your email shortly.",
+                    delay: 10000
+                });  //Send the webtoast
+            });
 
         }
 

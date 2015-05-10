@@ -40,6 +40,7 @@
     "fb": "^0.7.0",
     "hashtable": "^0.4.3",
     "method-override": "^2.3.2",
+    "moment": "^2.10.2",
     "mongoose": "^4.0.2",
     "morgan": "^1.2.1",
     "multer": "~0.1.4",

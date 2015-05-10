@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+    <title>HashtagSell.com &middot; Feedback</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=320, target-densitydpi=device-dpi">
+</head>
+
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" id="background-table">
+    <tbody>
+    <tr>
+        <td align="center" bgcolor="#ECECEC">
+            <table  style="margin:0 10px;" width="550" cellpadding="0" cellspacing="0" border="0">
+                <tbody>
+                <tr>
+                    <td width="550" height="40"></td>
+                </tr>
+
+                <tr>
+                    <td width="550">
+                        <table id="top-bar" width="550" height="50px" cellpadding="0" cellspacing="0" border="0" bgcolor="#b74d4d">
+                            <tbody>
+                            <tr>
+                                <td><a href="https://twitter.com/hashtagsell"><img src="<%= emailObj.images.twitter_logo %>" height="18" style="float: left; margin-left:40px;"></a></td>
+
+                                <td><a href="https://www.facebook.com/hashtagsell"><img src="<%= emailObj.images.fb_logo %>" height="20" style="float: right; margin-right:40px;"></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td id="header" width="550" align="center" bgcolor="#FFFFFF">
+                        <table width="550" cellpadding="0" cellspacing="0" border="0">
+                            <tbody>
+                            <tr>
+                                <td width="500">
+                                    <div align="center" id="headline">
+                                        <p><strong><a href="https://www.hashtagsell.com"><img src="<%= emailObj.images.hts_logo %>" style="height:100px;"></a></strong></p>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+
+                <tr id="simple-content-row">
+                    <td width="550" bgcolor="#FFFFFF">
+                        <table width="550" cellpadding="0" cellspacing="0" border="0">
+                            <tbody>
+                            <tr>
+                                <td class="w30" width="30"></td>
+
+                                <td  width="500">
+                                    <table  width="500" cellpadding="0" cellspacing="0" border="0">
+                                        <tbody>
+                                        <tr>
+                                            <td  width="500">
+                                                <p align="left" class="article-title">Hi, <%= emailObj.offerObj.username %>,</p>
+                                                <div align="left" class="article-content">
+                                                    <%= emailObj.offerObj.posting.username %> has agreed to meet so you can view the <%= emailObj.offerObj.posting.heading %>.  Please be at <%= emailObj.offerObj.acceptedTime.where %> on <%= moment(emailObj.offerObj.acceptedTime.when).format('dddd, MMMM Do') %> at <%= moment(emailObj.offerObj.acceptedTime.when).format('h:mm a') %>.
+                                                    <br>
+                                                    <br>
+                                                    [Google Maps Thumbnail Here]
+                                                    <br>
+                                                    <br>
+                                                    You're welcome to bring $<%= emailObj.offerObj.posting.askingPrice.value %> cash, or use our safe and easy online payment option.
+                                                    <br>
+                                                    <div style="text-align: center;">
+                                                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= emailObj.buttons.payment.url %>" style="height:53px;v-text-anchor:middle;width:200px;" arcsize="8%" stroke="f" fill="t">
+                                                            <v:fill type="tile" src="http://imgur.com/5BIp9d0.gif" color="#49a9ce" />
+                                                            <w:anchorlock/>
+                                                            <center style="color:#ffffff;font-family:sans-serif;font-size:13px;font-weight:bold;">Pay Online</center>
+                                                        </v:roundrect>
+                                                        <a href="<%= emailObj.buttons.payment.url %>" style="background-color:#49a9ce;background-image:url(http://imgur.com/5BIp9d0.gif);border-radius:4px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:13px;font-weight:bold;line-height:53px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;mso-hide:all; margin: 0 auto;">
+                                                            Pay Online
+                                                        </a>
+                                                    </div>
+                                                    <br>
+                                                    We'll send you another reminder email 24 hours before your scheduled appointment.
+                                                    <br>
+                                                    <br>
+                                                    Happy buying!
+                                                    <br>
+                                                    <br>
+                                                    - The HashtagSell Team
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td  width="500" height="10"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td width="550">
+                        <table id="footer" width="550" cellpadding="0" cellspacing="0" border="0" bgcolor="#b74d4d">
+                            <tbody>
+                            <tr>
+                                <td class="hide w0" width="160" valign="top" height="50px"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td width="550" height="40"></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
