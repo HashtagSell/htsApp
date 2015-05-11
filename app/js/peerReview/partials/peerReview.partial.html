@@ -1,0 +1,87 @@
+<style>
+    .top-level {
+        height: 100%;
+    }
+
+    .body-main {
+        background: url("//static.hashtagsell.com/htsApp/backdrops/flyingPigeon_dark_compressed.jpg") no-repeat center center fixed;
+        background-size: cover;
+        height: 100%;
+        width: 100%;
+    }
+
+    .root {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .glyphicon-star, .glyphicon-star-empty {
+        font-size: 3em;
+        color: gold;
+    }
+
+    .peer-review-container {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 4px;
+        text-align: center;
+        font-weight: 100 !important;
+        padding: 20px 10px 20px 10px;
+        position: relative;
+        top: -40px;
+    }
+
+    .reviewee-photo-container{
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .reviewee-photo {
+        height: 80px;
+        border: 5px solid #fff;
+        display: inline-block;
+    }
+
+    .submit-button{
+        position: relative;
+        top: -30px;
+    }
+</style>
+
+
+<div class="review-container col-lg-4 col-lg-offset-4 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12" style="position: relative">
+
+    <div class="inner-review-container">
+
+        <div class="review-logo-container">
+            <img src="//static.hashtagsell.com/logos/hts/HTS_Logo_White_512w.png" class="payment-hts-logo">
+        </div>
+
+        <div class="reviewee-photo-container">
+            <img ng-show="reviewee.user.profile_photo" ng-src="{{reviewee.user.profile_photo}}" class="img-circle reviewee-photo">
+        </div>
+
+        <div ng-show="!alerts.length">
+            <form class="peer-review-container">
+
+                <h3>How was your experience?</h3>
+                <div ng-init="review.rating = 0">
+                    <rating ng-model="reviewForm.rating" max="5" state-on="'glyphicon-star'" state-off="'glyphicon-star-empty'"></rating>
+                </div>
+
+                <textarea ng-model="reviewForm.comment" class="form-control" rows="5" placeholder="Optional Feedback"></textarea>
+
+            </form>
+            <button type="submit" class="btn btn-lg btn-primary btn-block submit-button">Submit</button>
+        </div>
+
+    </div>
+
+</div>
