@@ -201,20 +201,15 @@ module.exports = function(app, passport) {
     // =====================================
     // BRAINTREE PAYMENT ROUTES ============
     // =====================================
-    var braintree = require('./api/braintree_api.js');
+    var payment = require('./api/payment_api.js');
     app.get("/payments/client_token", function (req, res) {
-        braintree.getClientToken(req, res);
+        payment.getClientToken(req, res);
     });
 
     app.post("/payments/purchase", function (req, res) {
-        braintree.sendPayment(req, res);
+        payment.sendPayment(req, res);
     });
 
-    //app.get("/payments", function (req, res) {
-    //    console.log('offerId', req.query.offerId);
-    //    console.log('postingId', req.query.postingId);
-    //    res.send('coming soon!');
-    //});
 
 
 
@@ -231,17 +226,6 @@ module.exports = function(app, passport) {
         transaction_notifications_api.meetingProposed.instantReminder(req, res);
     });
 
-
-
-    // =====================================
-    // PEER REVIEW =========================
-    // =====================================
-    //
-    //app.get("/reviews", function (req, res) {
-    //    console.log('offerId', req.query.offerId);
-    //    console.log('postingId', req.query.postingId);
-    //    res.send('coming soon!');
-    //});
 
 
 
