@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="htsApp">
+<html ng-app="htsApp" class="top-level">
 
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -62,8 +62,8 @@
     <base href="/">
 </head>
 
-<body ng-controller="mainController" ng-cloak class="container">
-    <div ui-view="root">
+<body ng-controller="mainController" ng-cloak class="container body-main">
+    <div class="root" ui-view="root">
         <div class="navbar navbar-default nav-links navbar-fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
@@ -246,9 +246,6 @@
                              class="panel panel-default feed-category-selector">
                         </div>
 
-                    </div>
-                    <div>
-                        Select the category of items you want to see in your feed.
                     </div>
                 </div>
             </div>

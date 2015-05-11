@@ -1,6 +1,5 @@
 body {
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 html, body {
@@ -788,3 +787,11 @@ div.img-div{
     -webkit-box-shadow: 0 0 0 1px #ea898f;
     font-weight: normal;
 }
+
+
+.payment-hts-logo {
+    width: 200px;
+    display: block;
+    margin: auto;
+}
+
