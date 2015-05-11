@@ -1,92 +1,73 @@
-<div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-xs-12">
+<style>
+    .top-level {
+        height: 100%;
+    }
 
-    <!--Payment selector-->
-    <div ng-show="!selectedPaymentMethod">
-        <button type="button" class="btn btn-default btn-lg btn-block" ng-click="selectPaymentMethod('creditCard')">
-            <i class="fa fa-credit-card"></i> Credit Card
-        </button>
+    .body-main {
+        background: url("//static.hashtagsell.com/htsApp/backdrops/flyingPigeon_dark_compressed.jpg") no-repeat center center fixed;
+        background-size: cover;
+        height: 100%;
+        width: 100%;
+    }
 
-        <button type="button" class="btn btn-default btn-lg btn-block" ng-click="selectPaymentMethod('payPal')">
-            <i class="fa fa-paypal"></i> PayPal
-        </button>
+    .root {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
 
-        <button type="button" class="btn btn-default btn-lg btn-block" ng-click="selectPaymentMethod('applePay')">
-            <i class="fa fa-apple"></i> Apple Pay
-        </button>
+
+<!--TODO: Test on iphone, handle if images are not present, overflow y scroll testing-->
+<div class="payment-container col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-xs-12" style="position: relative">
+
+    <div class="inner-payment-container">
+
+        <div class="payment-logo-container">
+            <img src="//static.hashtagsell.com/logos/hts/HTS_Logo_White_512w.png" class="payment-hts-logo">
+        </div>
+        <!--{{posting}}-->
+
+        <!--<h1>blah</h1>-->
+
+        <!--{{sellerProfile}}-->
+
+        <!--<h1>blah</h1>-->
+
+        <!--{{buyerProfile}}-->
+
+        <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;" ng-if="posting.images[0].thumbnail || posting.images[0].full">
+            <img ng-show="sellerProfile.user.profile_photo" ng-src="{{sellerProfile.user.profile_photo}}" class="img-circle" style="height: 80px; border: 5px solid #fff; display: inline-block; position: relative; right: -50px;">
+            <img ng-show="posting.images[0].thumbnail || posting.images[0].full" ng-src="{{posting.images[0].thumbnail || posting.images[0].full}}" class="img-thumbnail" style="max-height: 120px;">
+            <img ng-show="buyerProfile.user.profile_photo" ng-src="{{buyerProfile.user.profile_photo}}" class="img-circle" style="height: 80px; border: 5px solid #fff; display: inline-block; position: relative; left: -50px;">
+        </div>
+
+        <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;" ng-if="!posting.images[0].thumbnail || !posting.images[0].full">
+            <img ng-show="sellerProfile.user.profile_photo" ng-src="{{sellerProfile.user.profile_photo}}" class="img-circle" style="height: 80px; border: 5px solid #fff; display: inline-block;">
+            <div style="font-weight: 200!important; font-size: 36px; color: white">{{posting.heading}}</div>
+            <img ng-show="buyerProfile.user.profile_photo" ng-src="{{buyerProfile.user.profile_photo}}" class="img-circle" style="height: 80px; border: 5px solid #fff; display: inline-block;">
+        </div>
+
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">
+            <span ng-bind-html="alert.msg"></span>
+        </alert>
+
+        <form action="/payments/purchase" method="post" ng-show="!alerts.length">
+
+            <braintree-dropin options="dropinOptions">
+                Loading payment form...
+            </braintree-dropin>
+
+            <input type="hidden" name="token" value="{{posting.postingId}}"/>
+
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Send {{posting.askingPrice.value| currency : $}} to {{posting.username}}</button>
+
+        </form>
+
     </div>
-
-    <!--Credit card form-->
-    <form class="form-horizontal" role="form" ng-show="selectedPaymentMethod === 'creditCard'">
-        <fieldset>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="card-holder-name">Name on Card</label>
-                <div class="col-md-6 col-sm-9">
-                    <input type="text" class="form-control" name="card-holder-name" id="card-holder-name" ng-model="creditCard.cardholderName" placeholder="Card Holder's Name">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="card-number">Card Number</label>
-                <div class="col-md-6 col-sm-9">
-                    <input type="text" class="form-control" name="card-number" id="card-number" ng-model="creditCard.number" placeholder="Debit/Credit Card Number">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="expiry-month">Expiration Date</label>
-                <div class="col-sm-9">
-                    <div class="row">
-                        <div class="col-xs-3">
-                            <select class="form-control col-sm-2" name="expiry-month" id="expiry-month" ng-model="creditCard.expirationMonth" >
-                                <option>Month</option>
-                                <option value="01">Jan (01)</option>
-                                <option value="02">Feb (02)</option>
-                                <option value="03">Mar (03)</option>
-                                <option value="04">Apr (04)</option>
-                                <option value="05">May (05)</option>
-                                <option value="06">June (06)</option>
-                                <option value="07">July (07)</option>
-                                <option value="08">Aug (08)</option>
-                                <option value="09">Sep (09)</option>
-                                <option value="10">Oct (10)</option>
-                                <option value="11">Nov (11)</option>
-                                <option value="12">Dec (12)</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-3">
-                            <select class="form-control" name="expiry-year" ng-model="creditCard.expirationYear">
-                                <option value="13">2013</option>
-                                <option value="14">2014</option>
-                                <option value="15">2015</option>
-                                <option value="16">2016</option>
-                                <option value="17">2017</option>
-                                <option value="18">2018</option>
-                                <option value="19">2019</option>
-                                <option value="20">2020</option>
-                                <option value="21">2021</option>
-                                <option value="22">2022</option>
-                                <option value="23">2023</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-2 control-label" for="cvv">Card CVV</label>
-                <div class="col-sm-3">
-                    <input type="text" class="form-control" name="cvv" id="cvv" placeholder="Security Code" ng-model="creditCard.cvv">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-9">
-                    <button type="button" class="btn btn-success" ng-click="runCreditCard()">Save</button>
-                </div>
-            </div>
-        </fieldset>
-        Sandbox CC Number: 4111111111111111
-    </form>
-
-
-
-
-
 
 </div>
