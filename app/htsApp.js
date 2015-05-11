@@ -134,6 +134,15 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             }
         }).
+        state('review', {
+            url: "/review/:postingId/:offerId/:userId",
+            views: {
+                'root': {
+                    controller: 'peerReviewController',
+                    templateUrl: 'js/peerReview/partials/peerReview.partial.html'
+                }
+            }
+        }).
         state('root', {
             url: "/",
             onEnter: function ($state) {
