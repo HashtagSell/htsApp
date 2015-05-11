@@ -410,27 +410,54 @@ exports.signup = function(req, res) {
 exports.getProfile = function(req, res){
 
     var username = req.query.username;
+    var userId = req.query.userId;
 
-    User.findOne({ 'user_settings.name' : username }, function (err, user) {
+    if(username) {
+        User.findOne({'user_settings.name': username}, function (err, user) {
 
-        // if there are any errors, return the error before anything else
-        if (err)
-            return res.json({error: err});
+            // if there are any errors, return the error before anything else
+            if (err)
+                return res.json({error: err});
 
-        // if no user is found, return the message
-        if (!user)
-            return res.json({error: "No user found with that username."});
+            // if no user is found, return the message
+            if (!user)
+                return res.json({error: "No user found with that username."});
 
-        if(user)
+            if (user)
             //console.log(user);
-            return res.json(
-                {user: {
-                    'profile_photo': user.user_settings.profile_photo,
-                    'banner_photo': user.user_settings.banner_photo,
-                    'name': user.user_settings.name
+                return res.json(
+                    {
+                        user: {
+                            'profile_photo': user.user_settings.profile_photo,
+                            'banner_photo': user.user_settings.banner_photo,
+                            'name': user.user_settings.name
+                        }
                     }
-                }
-            );
-    });
+                );
+        });
+    } else if (userId) {
+        User.findOne({'_id': userId}, function (err, user) {
+
+            // if there are any errors, return the error before anything else
+            if (err)
+                return res.json({error: err});
+
+            // if no user is found, return the message
+            if (!user)
+                return res.json({error: "No user found with that Id."});
+
+            if (user)
+            //console.log(user);
+                return res.json(
+                    {
+                        user: {
+                            'profile_photo': user.user_settings.profile_photo,
+                            'banner_photo': user.user_settings.banner_photo,
+                            'name': user.user_settings.name
+                        }
+                    }
+                );
+        });
+    }
 
 };
