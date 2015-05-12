@@ -90,3 +90,11 @@ exports.sendPayment = function (req, res) {
         }
     });
 };
+
+
+
+
+
+exports.createSubMerchant = function(req, res) {
+    var masterMerchant = env.braintree.merchant_account_id;
+};

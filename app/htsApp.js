@@ -908,3 +908,49 @@ htsApp.filter('capitalize', function() {
         return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     };
 });
+
+
+
+htsApp.directive('subMerchant', function () {
+   return {
+       templateUrl: 'js/submerchant/partials/submerchant.partial.html',
+       controller: ['$scope', function ($scope) {
+
+           $scope.businessOptionsDropdown = [
+               { name: 'No', value: false},
+               { name: 'Yes', value: true}
+           ];
+
+           $scope.subMerchantForm = {
+               business: {
+                   isBusinessAccount: null,
+                   companyName: null,
+                   taxId: null,
+               },
+               firstName: null,
+               lastName: null,
+               email: null,
+               dob: null,
+               address: null,
+               destination: {
+                   bank:{
+                       disperseToBank: false,
+                       accountNumber: null,
+                       routingNumber: null
+                   },
+                   venmo: {
+                       disperseToVenmo: false,
+                       venmoEmail: null,
+                       venmoPhone: null
+                   }
+               }
+           };
+
+
+           $scope.submitSubMerchant = function () {
+               console.log($scope.subMerchantForm);
+           };
+
+       }]
+   };
+});

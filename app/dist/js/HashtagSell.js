@@ -908,9 +908,55 @@ htsApp.filter('capitalize', function() {
         return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     };
 });
+
+
+
+htsApp.directive('subMerchant', function () {
+   return {
+       templateUrl: 'js/submerchant/partials/submerchant.partial.html',
+       controller: ['$scope', function ($scope) {
+
+           $scope.businessOptionsDropdown = [
+               { name: 'No', value: false},
+               { name: 'Yes', value: true}
+           ];
+
+           $scope.subMerchantForm = {
+               business: {
+                   isBusinessAccount: null,
+                   companyName: null,
+                   taxId: null,
+               },
+               firstName: null,
+               lastName: null,
+               email: null,
+               dob: null,
+               address: null,
+               destination: {
+                   bank:{
+                       disperseToBank: false,
+                       accountNumber: null,
+                       routingNumber: null
+                   },
+                   venmo: {
+                       disperseToVenmo: false,
+                       venmoEmail: null,
+                       venmoPhone: null
+                   }
+               }
+           };
+
+
+           $scope.submitSubMerchant = function () {
+               console.log($scope.subMerchantForm);
+           };
+
+       }]
+   };
+});
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/v1/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/v1/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
