@@ -35,9 +35,6 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 //force HTTPS if request is coming from production or staging
 app.use(function(req, res, next) {
     var host = req.get('host');
-    console.log('host = ', host);
-
-    console.log('host.headers', req.headers.host);
 
     if(host === "hashtagsell.com" || host === "www.hashtagsell.com" ) {
 

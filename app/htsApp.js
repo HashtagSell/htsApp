@@ -847,7 +847,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
 htsApp.directive('htsFaveToggle', function () {
     return {
         restrict: 'E',
-        template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();" tooltip="{{tooltipMessage}}" tooltip-placement="right" tooltip-trigger="mouseenter"></span>',
+        template: '<span ng-class="{starHighlighted: favorited, star: !favorited}" ng-click="toggleFave(result); $event.stopPropagation();" tooltip="{{tooltipMessage}}" tooltip-placement="bottom" tooltip-trigger="mouseenter"></span>',
         controller: ['$scope', '$element', 'favesFactory', 'Session', 'authModalFactory', 'socketio', 'sideNavFactory', '$timeout', function ($scope, $element, favesFactory, Session, authModalFactory, socketio, sideNavFactory, $timeout) {
 
             //console.log(Session.userObj);

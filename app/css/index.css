@@ -795,3 +795,8 @@ div.img-div{
     margin: auto;
 }
 
+
+.tooltip-inner {
+    white-space: pre-wrap;
+    min-width: 120px;
+}
