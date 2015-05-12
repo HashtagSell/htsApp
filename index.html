@@ -127,7 +127,7 @@
                     </li>
                     <li class="hidden-sm hidden-xs">
                         <a ui-sref="watchlist">
-                            Watchlist
+                            Watch List
                         </a>
                     </li>
                     <li class="hidden-sm hidden-xs">
@@ -136,7 +136,7 @@
                         </a>
                     </li>
                     <li ng-controller="newPostController">
-                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
+                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
                     </li>
                     <li class="dropdown" dropdown ng-controller="userMenu">
                         <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
@@ -181,7 +181,7 @@
                         <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
                         <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();">#Sell it</button>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="right">#Sell it</button>
                 </div>
 
                 <!--SideNav-->

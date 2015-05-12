@@ -109,33 +109,33 @@
                             <!--SideNav-->
                             <div class="list-group splash-bs-side-nav ng-cloak">
                                 <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.source_account" ng-click="emailSeller(result)" style="cursor: pointer">
-                                    <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email Seller
+                                    <i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller
                                 </a>
                                 <a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(result)" style="cursor: pointer">
-                                    <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone Seller
+                                    <i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller
                                 </a>
                                 <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="placeOffer(result)" style="cursor: pointer">
-                                    <i class="fa fa-calendar-o fa-fw fa-lg"></i>&nbsp; Meet Seller
+                                    <i class="fa fa-calendar-o fa-fw fa-lg"></i>&nbsp; Request a meeting
                                 </a>
-                                <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="buyOnline(result)" style="cursor: pointer" =>
-                                    <i class="fa fa-paypal fa-fw fa-lg"></i>&nbsp; Payment & Shipping
-                                </a>
+                                <!--<a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="buyOnline(result)" style="cursor: pointer" =>-->
+                                    <!--<i class="fa fa-paypal fa-fw fa-lg"></i>&nbsp; Payment & Shipping-->
+                                <!--</a>-->
                                 <a class="list-group-item"  ng-if="result.external.source.code === 'E_BAY'" ng-click="placeBid(result)" style="cursor: pointer">
-                                    <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Place bid
+                                    <i class="fa fa-credit-card fa-fw fa-lg"></i>&nbsp; Bid on item
                                 </a>
                                 <a class="list-group-item" ng-click="toggleFave(result)" style="cursor: pointer">
                                     <span ng-show="favorited">
-                                        <span ng-show="favorited" ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Remove from Watchlist
+                                        <span ng-show="favorited" ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Remove from watch list
                                     </span>
                                     <span ng-show="!favorited">
-                                        <span ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Add to Watchlist
+                                        <span ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Add to watch list
                                     </span>
                                 </a>
                                 <!--<a class="list-group-item" onclick="alert('spam reporting feature soon')" style="cursor: pointer">-->
                                     <!--<i class="fa fa-flag fa-fw fa-lg"></i>&nbsp; Report-->
                                 <!--</a>-->
                                 <a class="list-group-item" ng-if="result.external.source.url && result.external.source.code != 'HSHTG'" ng-click="showOriginal(result)" style="cursor: pointer">
-                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Show original
+                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Show original post
                                 </a>
                             </div>
 

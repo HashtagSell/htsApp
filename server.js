@@ -35,11 +35,24 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 //force HTTPS if request is coming from production or staging
 app.use(function(req, res, next) {
     var host = req.get('host');
+    console.log('host = ', host);
 
-    if(host.indexOf("localhost") === -1) { //If the url does not container the string "localhost"
-        if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //the request is not secure
+    console.log('host.headers', req.headers.host);
+
+    if(host === "hashtagsell.com" || host === "www.hashtagsell.com" ) {
+
+        host = "www.hashtagsell.com";  //Force url to always contain www
+
+        if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //If not https
             res.redirect('https://' + host + req.url); //force https
-        } else { //Request is secure.. proceed
+        } else {
+            next();
+        }
+    } else if(host === "staging.hashtagsell.com" || host === "http://staging.hashtagsell.com" || host === "staging.hashtagsell.com/" || host === "http://staging.hashtagsell.com/") {
+
+        if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //If not https
+            res.redirect('https://' + host + req.url); //force https
+        } else {
             next();
         }
     } else  {

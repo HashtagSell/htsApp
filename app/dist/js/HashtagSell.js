@@ -859,9 +859,9 @@ htsApp.directive('htsFaveToggle', function () {
                     $scope.tooltipMessage = 'please wait';
 
                     if($scope.favorited){
-                        $scope.tooltipMessage = 'Remove from watchlist';
+                        $scope.tooltipMessage = 'Remove from watch list';
                     } else {
-                        $scope.tooltipMessage = 'Add to watchlist';
+                        $scope.tooltipMessage = 'Add to watch list';
                     }
                 });
             }

@@ -40,6 +40,6 @@
     </div>
 </div>
 <div class="col-xs-12">
-    <span ng-show="!post.offers.results.length">User offers associated with this item will appear here.</span>
-    <span ng-show="post.offers.results.length && userObj.user_settings.name !== post.offers.results[0].username">{{post.offers.results.length}} other users have placed offers on this item.</span>
+    <span ng-show="!post.offers.results.length">Keep track of how many users requested to view the {{post.heading}}</span>
+    <span ng-show="post.offers.results.length && userObj.user_settings.name !== post.offers.results[0].username">{{post.offers.results.length}} other users have request to view this item.</span>
 </div>

@@ -43,9 +43,9 @@
                             <td>
                                 <h4>
                                     {{::post.heading | cleanHeading}} - {{::post.askingPrice.value | currency : $ : 0}}
-                                    <span class="label label-primary" ng-click="showFacebookPost(post); $event.stopPropagation();" tooltip="Open Facebook post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Facebook</span>
-                                    <span class="label label-info" ng-click="showTwitterPost(post); $event.stopPropagation();" tooltip="Open Twitter Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Twitter</span>
-                                    <span ng-show="post.ebay" class="label label-warning" ng-click="showEbayPost(post); $event.stopPropagation();" tooltip="Open Ebay Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Ebay</span>
+                                    <span class="label label-primary" ng-click="showFacebookPost(post); $event.stopPropagation();" tooltip="Show Facebook post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Facebook</span>
+                                    <span class="label label-info" ng-click="showTwitterPost(post); $event.stopPropagation();" tooltip="Show Twitter Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Twitter</span>
+                                    <span ng-show="post.ebay" class="label label-warning" ng-click="showEbayPost(post); $event.stopPropagation();" tooltip="Show Ebay Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Ebay</span>
                                 </h4>
 
                                 <!--<div ng-bind-html="post.body"/>-->
@@ -56,7 +56,7 @@
                                     </button>
 
                                     <button class="btn btn-default" type="button" ui-sref="myposts.offers({postingId: post.postingId})" ng-init="unreadOffersCount = countUnreadOffers(post);" ng-click="$event.stopPropagation();">
-                                        Offers <span ng-if="unreadOffersCount > 0" class="badge">{{unreadOffersCount}}</span>
+                                        Meeting Requests <span ng-if="unreadOffersCount > 0" class="badge">{{unreadOffersCount}}</span>
                                     </button>
                                 </div>
 
