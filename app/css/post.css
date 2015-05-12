@@ -45,7 +45,7 @@
 	margin-right:0px;
 }
 
-.annotation-title{
+.annotation-title {
 	text-align: center;
 	font-size: 11.9px;
 	margin: 5px 0px 0px 0px;
@@ -55,6 +55,7 @@
 	color: grey;
 	text-rendering: optimizelegibility;
 }
+
 .annotation-elem{
 	text-align: center;
 	vertical-align: middle;
