@@ -22,7 +22,7 @@
                 <div class="controls">
                     <div class="input-group">
                         <span class="input-group-addon">@</span>
-                        <input class="form-control" type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9._@&-]*$/" placeholder="Username" required/>
+                        <input class="form-control" type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9]*$/" placeholder="Username" required/>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                 <br>
 
                 <div class="controls">
-                    <input class="form-control" type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[A-Za-z][A-Za-z0-9]*$/" placeholder="Password" required/>
+                    <input class="form-control" type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[a-zA-Z0-9.!@#$%&*~+=^-_]*$/" placeholder="Password" required/>
                 </div>
 
                 <br>
@@ -59,12 +59,12 @@
             </div>
             <div class="modal-footer">
                 <button id="submit-create-account" class="btn" ng-class="RegisterFormV2.$invalid ? 'btn-warning' : 'btn-success'" type="submit" ng-disabled="RegisterFormV2.$invalid">
-                    <span ng-show="RegisterFormV2.username.$error.minlength">Username is too short</span>
-                    <span ng-show="RegisterFormV2.username.$error.maxlength">Username is too long</span>
-                    <span ng-show="RegisterFormV2.username.$error.pattern">Remove special characters from username</span>
-                    <span ng-show="RegisterFormV2.password_verify.$error.match">Passwords do not match</span>
+                    <span ng-show="RegisterFormV2.username.$error.minlength">Username too short.</span>
+                    <span ng-show="RegisterFormV2.username.$error.maxlength">Username too long.</span>
+                    <span ng-show="RegisterFormV2.username.$error.pattern">No special chars in username.</span>
+                    <span ng-show="RegisterFormV2.password_verify.$error.match">Passwords do not match.</span>
                     <span ng-show="RegisterFormV2.password.$error.minlength">Password is too short.</span>
-                    <span ng-show="RegisterFormV2.password.$error.pattern">Remove spaces in password</span>
+                    <span ng-show="RegisterFormV2.password.$error.pattern">No spaces in password.</span>
                     <span ng-show="!RegisterFormV2.username.$error.minlength &&
                     !RegisterFormV2.username.$error.maxlength &&
                     !RegisterFormV2.username.$error.pattern &&
