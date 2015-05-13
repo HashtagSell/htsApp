@@ -1,12 +1,5 @@
 <div ui-view></div>
 
-<div ng-show="status.error.message" class="background-instructions">
-    <div class="inset-background-text" ng-bind-html="status.error.message">
-
-    </div>
-    {{status.error.trace}}
-</div>
-
 <div class="outer-container col-xs-12">
     <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
 

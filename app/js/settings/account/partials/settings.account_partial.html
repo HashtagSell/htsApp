@@ -5,59 +5,61 @@
     </div>
 </div>
 
-<form class="form-horizontal">
-    <div class="form-group has-feedback" ng-class="safeSearchUpdated ? 'has-success' : ''">
-        <label class="col-sm-2 control-label">Safe Search</label>
-        <div class="col-sm-2">
-            <select class="form-control" ng-model="safeSearch" ng-options="opt for opt in options.safeSearch" ng-change="setSafeSearch(safeSearch)"></select>
-            <span ng-show="safeSearchUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-            <!--<i ng-show="safeSearchUpdated" class="fa fa-check-circle fa-2x safeSearch-checkmark"></i>-->
-        </div>
-    </div>
-
-    <div class="form-group has-feedback" ng-class="defaultEmailUpdated ? 'has-success' : ''">
-        <label class="col-sm-2 control-label">Default Email</label>
-        <div class="col-sm-2">
-            <select class="form-control" ng-model="defaultEmail" ng-options="opt.value as opt.name for opt in options.defaultEmail" ng-change="setDefaultEmail(defaultEmail)"></select>
-            <span ng-show="defaultEmailUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
-            <!--<i ng-show="defaultEmailUpdated" class="fa fa-check-circle fa-2x defaultEmail-checkmark"></i>-->
-        </div>
-    </div>
-
-    <div class="form-group">
-
-        <label class="col-sm-2 control-label">Facebook</label>
-        <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.facebook.id">
-            <a href="/auth/facebook" target="_self" class="btn btn-primary btn-sm"><span class="fa fa-facebook"></span> Link Facebook</a>
-        </div>
-        <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.facebook.id">
-            <!--<img ng-src="http://graph.facebook.com/v2.3/{{userObj.user_settings.linkedAccounts.facebook.id}}/picture">-->
-            <a ng-click="disconnectFacebook()"><small>Disconnect my Facebook</small></a>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Twitter</label>
-        <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.twitter.id">
-            <a href="/auth/twitter" target="_self" class="btn btn-info btn-sm"><span class="fa fa-twitter"></span> Link Twitter</a>
-        </div>
-        <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.twitter.id">
-            <a ng-click="disconnectTwitter()"><small>Disconnect my Twitter</small></a>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label">eBay</label>
-        <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.ebay.eBayAuthToken">
-            <button ng-click="getEbaySessionID()" ng-disabled="ebay.sessionId" class="btn btn-info btn-sm">Step 1: Sign In</button>
-            <button ng-click="getEbayToken()" ng-disabled="!ebay.sessionId" class="btn btn-info btn-sm">Step 2: Link Accounts</button>
-            <div>
-                <small ng-show="ebay.err" class="text-danger">{{ebay.err}}</small>
+<div class="container">
+    <form class="form-horizontal">
+        <div class="form-group has-feedback" ng-class="safeSearchUpdated ? 'has-success' : ''">
+            <label class="col-sm-2 control-label">Safe Search</label>
+            <div class="col-sm-2">
+                <select class="form-control" ng-model="safeSearch" ng-options="opt for opt in options.safeSearch" ng-change="setSafeSearch(safeSearch)"></select>
+                <span ng-show="safeSearchUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                <!--<i ng-show="safeSearchUpdated" class="fa fa-check-circle fa-2x safeSearch-checkmark"></i>-->
             </div>
         </div>
-        <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.ebay.eBayAuthToken">
-            <a ng-click="disconnectEbay()"><small>Disconnect my eBay</small></a>
-        </div>
-    </div>
 
-</form>
+        <div class="form-group has-feedback" ng-class="defaultEmailUpdated ? 'has-success' : ''">
+            <label class="col-sm-2 control-label">Default Email</label>
+            <div class="col-sm-2">
+                <select class="form-control" ng-model="defaultEmail" ng-options="opt.value as opt.name for opt in options.defaultEmail" ng-change="setDefaultEmail(defaultEmail)"></select>
+                <span ng-show="defaultEmailUpdated" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                <!--<i ng-show="defaultEmailUpdated" class="fa fa-check-circle fa-2x defaultEmail-checkmark"></i>-->
+            </div>
+        </div>
+
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label">Facebook</label>
+            <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.facebook.id">
+                <a href="/auth/facebook" target="_self" class="btn btn-primary btn-sm"><span class="fa fa-facebook"></span> Link Facebook</a>
+            </div>
+            <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.facebook.id">
+                <!--<img ng-src="http://graph.facebook.com/v2.3/{{userObj.user_settings.linkedAccounts.facebook.id}}/picture">-->
+                <a ng-click="disconnectFacebook()"><small>Disconnect my Facebook</small></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Twitter</label>
+            <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.twitter.id">
+                <a href="/auth/twitter" target="_self" class="btn btn-info btn-sm"><span class="fa fa-twitter"></span> Link Twitter</a>
+            </div>
+            <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.twitter.id">
+                <a ng-click="disconnectTwitter()"><small>Disconnect my Twitter</small></a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">eBay</label>
+            <div class="col-sm-5" ng-show="!userObj.user_settings.linkedAccounts.ebay.eBayAuthToken">
+                <button ng-click="getEbaySessionID()" ng-disabled="ebay.sessionId" class="btn btn-info btn-sm">Step 1: Sign In</button>
+                <button ng-click="getEbayToken()" ng-disabled="!ebay.sessionId" class="btn btn-info btn-sm">Step 2: Link Accounts</button>
+                <div>
+                    <small ng-show="ebay.err" class="text-danger">{{ebay.err}}</small>
+                </div>
+            </div>
+            <div class="col-sm-5" ng-show="userObj.user_settings.linkedAccounts.ebay.eBayAuthToken">
+                <a ng-click="disconnectEbay()"><small>Disconnect my eBay</small></a>
+            </div>
+        </div>
+
+    </form>
+</div>

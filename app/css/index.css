@@ -224,6 +224,20 @@ h1, h2, h3, h4, h5{
     margin-top: 11px;
 }
 
+
+.advanced-search-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border: solid rgb(204, 204, 204);
+    border-width: 1px;
+    border-radius: 4px;
+}
+
+.advanced-search-container .advanced-search-city {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
 .navbar-brand {
     padding: 5px 22px;
 }

@@ -1,7 +1,5 @@
 htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    //$scope.awesomeText = "I'm searching for...";
-
     $scope.clearedPlaceholder = false;
     $scope.clearPlaceholder = function () {
         if (!$scope.clearedPlaceholder) {
@@ -12,15 +10,18 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
         }
     };
 
-
-
-
+    $scope.clearCity = function () {
+        $scope.queryObj.city = null;
+        $scope.queryObj.locationObj = null;
+    };
 
 
     $scope.queryObj = awesomeBarFactory.queryObj;
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
+
+        $scope.advancedSearch.visible = false; //Hide advanced search
 
         if($scope.queryObj.q) {
 
@@ -76,13 +77,21 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
     $scope.searchPlaces = function (city) {
         if (city) {
-            awesomeBarFactory.predictPlace(city).then(function (results) {
+            return awesomeBarFactory.predictPlace(city).then(function (results) {
+
                 $scope.cities = results;
+
+                return results.map(function(item){
+                    return item;
+                });
             });
         }
     };
 
+
     $scope.getCityMetaData = function (selectedCity) {
+
+        console.log('selected city: ', selectedCity);
         awesomeBarFactory.getCityMetaData(selectedCity).then(function (cityMetaData) {
 
             $scope.queryObj.city = selectedCity.description;
@@ -91,6 +100,11 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
         });
         return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedCity.description + '</span>';
+    };
+
+
+    $scope.advancedSearch = {
+        visible: false
     };
 
 }]);

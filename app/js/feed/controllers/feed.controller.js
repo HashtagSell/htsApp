@@ -5,12 +5,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     $scope.status = feedFactory.status;
 
-    $scope.testing = function (ev) {
-        console.log(ev);
-        //ev.stopPropagation();
-    };
-
-
     //updateFeed is triggered on interval and performs polling call to server for more items
     var updateFeed = function () {
 
@@ -110,6 +104,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
                     $scope.$on('$destroy', function () {
+                        console.log('pausing feed updates');
                         $interval.cancel(intervalUpdate);
                     });
 
@@ -170,12 +165,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         console.log(splashFactory.result);
         $state.go('feed.splash', { id: elems.result.postingId });
     };
-
-
-
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        feedFactory.resetFeedView();
-    });
 
 }]);
 

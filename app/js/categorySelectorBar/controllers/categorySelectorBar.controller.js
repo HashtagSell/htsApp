@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 5/1/15.
  */
-htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
+htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, $state, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
 
 
     //Any time the user moves to a different page this function is called.
@@ -156,7 +156,7 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'i
         } else {
             //TODO: Deselect the checked item cause user is not logged in.
             ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
-            authModalFactory.signInModal();
+            $state.go('signup');
         }
     };
 

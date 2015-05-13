@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/10/15.
  */
-htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
+htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
 
     var transactionFactory = {};
 
@@ -10,7 +10,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -50,7 +50,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -89,7 +89,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -102,7 +102,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -138,7 +138,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         } else {  //User is not logged in.
 
-            authModalFactory.signUpModal();
+            $state.go('signup');
 
         }
     };

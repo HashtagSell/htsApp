@@ -12,32 +12,6 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
 
     };
 
-    $scope.signIn = function (size) {
-
-        authModalFactory.signInModal();
-
-    };
-
-
-    $scope.signUp = function (size) {
-
-        authModalFactory.signUpModal();
-    };
-
-
-    $scope.checkEmail = function (size) {
-
-        authModalFactory.checkEmailModal();
-
-    };
-
-
-    $scope.forgotPassword = function (size) {
-
-        authModalFactory.forgotPasswordModal();
-    };
-
-
 
     $scope.newPost = function () {
 

@@ -1,31 +1,37 @@
-htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, newPostFactory, Session, authModalFactory) {
+htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
 
     $scope.userObj = Session.userObj;
 
     $scope.newPost = function () {
 
-        var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
-            controller: 'newPostModal',
-            size: 'lg',
-            keyboard: false,
-            backdrop: 'static',
-            resolve: {
-                mentionsFactory: function () {
-                    return newPostFactory;
+        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
+
+            var modalInstance = $modal.open({
+                templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
+                controller: 'newPostModal',
+                size: 'lg',
+                keyboard: false,
+                backdrop: 'static',
+                resolve: {
+                    mentionsFactory: function () {
+                        return newPostFactory;
+                    }
                 }
-            }
-        });
+            });
 
-        modalInstance.result.then(function (dismissObj) {
+            modalInstance.result.then(function (dismissObj) {
 
-        }, function (dismissObj) {
-            if(dismissObj.reason === "stageOneSuccess"){
+            }, function (dismissObj) {
+                if (dismissObj.reason === "stageOneSuccess") {
 
-                $scope.pushtoExternalService(dismissObj.post);
-            }
-            console.log('Modal dismissed at: ' + new Date());
-        });
+                    $scope.pushtoExternalService(dismissObj.post);
+                }
+                console.log('Modal dismissed at: ' + new Date());
+            });
+
+        } else {
+            $state.go('signup');
+        }
     };
 
 
@@ -74,18 +80,6 @@ htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'S
                 console.log('Modal dismissed at: ' + new Date());
             }
         });
-    };
-
-
-
-    $scope.signIn = function (size) {
-        authModalFactory.signInModal();
-
-    };
-
-
-    $scope.signUp = function (size) {
-        authModalFactory.signUpModal();
     };
 
 }]);

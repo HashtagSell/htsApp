@@ -72,7 +72,7 @@
                 <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
                     <i class="fa fa-bars fa-2x"></i>
                 </a>
-                <div class="col-lg-5 col-lg-offset-1 col-md-4 col-md-offset-0 col-sm-7 col-sm-offset-1 col-xs-5 awesomeBar" ng-controller="awesomeBarController">
+                <div class="col-lg-5 col-lg-offset-1 col-md-4 col-md-offset-0 col-sm-7 col-sm-offset-1 col-xs-10 awesomeBar" ng-controller="awesomeBarController">
                     <form role="search">
                         <div class="input-group">
                             <div id="awesomeBar"
@@ -91,15 +91,38 @@
 
                             <span class="input-group-btn">
                                 <!--TODO: Advanced drop down fields-->
-                                <!--<button type="button" class="btn btn-default">-->
-                                    <!--Austin <span class="caret"></span>-->
-                                <!--</button>-->
-                                <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()">
+                                <button type="button" class="btn btn-default" tooltip="Search in your area or advanced search" tooltip-trigger="mouseenter" tooltip-placement="bottom" ng-click="advancedSearch.visible = !advancedSearch.visible">
+                                    {{queryObj.city | awesomecity}} <span class="caret"></span>
+                                </button>
+                                <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()" ng-show="!advancedSearch.visible">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
                             </input>
                         </div>
                     </form>
+                    <div ng-show="advancedSearch.visible" class="advanced-search-container">
+
+                        <form class="form-inline">
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input class="form-control" type="text" placeholder="Min price" ng-model="queryObj.price.min"/>
+                            </div>
+
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input class="form-control" type="text" placeholder="Max price" ng-model="queryObj.price.max"/>
+                            </div>
+                        </form>
+
+                        <form>
+                            <input type="text" class="form-control advanced-search-city" placeholder="City" ng-model="advancedCity" typeahead="city.description for city in searchPlaces($viewValue)" typeahead-on-select='getCityMetaData($item)' ng-focus="clearCity()">
+                            <small class="help-block">Hint: Type @ symbol in main search bar to search in specific city.  It's magic!</small>
+
+                            <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()">
+                                <span class="glyphicon glyphicon-search"></span> Advanced Search
+                            </button>
+                        </form>
+                    </div>
 
                     <!--<div>{{queryObj.q}}</div>-->
 
@@ -114,7 +137,7 @@
 
 
                 </div>
-                <ul class="nav navbar-nav pull-right">
+                <ul class="nav navbar-nav pull-right hidden-xs">
                     <li class="hidden-sm hidden-xs">
                         <a ui-sref="feed">
                             Feed
@@ -143,8 +166,8 @@
                             <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38" height="38"/>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
-                            <li><a href ng-click="signIn()">Sign In</a></li>
-                            <li><a href ng-click="signUp()">Create Account</a></li>
+                            <li><a ui-sref="signin">Sign In</a></li>
+                            <li><a ui-sref="signup">Create Account</a></li>
                         </ul>
                         <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
                             <li><a ui-sref="settings.account">User Settings</a></li>
@@ -178,8 +201,8 @@
                 <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
                     <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
                     <div class="bs-username" ng-show="!userObj.user_settings.name">
-                        <a href ng-click="signIn(); $event.stopPropagation();">Sign In</a> /
-                        <a href ng-click="signUp(); $event.stopPropagation();">Create Account</a>
+                        <a ui-sref="signin">Sign In</a> /
+                        <a ui-sref="signup">Create Account</a>
                     </div>
                     <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
                 </div>

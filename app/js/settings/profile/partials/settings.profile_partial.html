@@ -5,51 +5,52 @@
     </div>
 </div>
 
-<form class="form-horizontal">
+<div class="container">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Profile Photo</label>
+            <div class="col-sm-5">
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Profile Photo</label>
-        <div class="col-sm-5">
+                <div ng-hide="bindingObj.currentlyUploadingProfilePhoto" style="cursor: pointer">
+                    <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
+                </div>
 
-            <div ng-hide="bindingObj.currentlyUploadingProfilePhoto">
-                <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
-            </div>
+                <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
 
-            <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
-
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label">Banner Photo</label>
-
-        <div class="col-sm-5">
-            <div ng-hide="bindingObj.currentlyUploadingBannerPhoto">
-                <img class='triggerBannerImageUpload' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
-            </div>
-
-            <div ng-show="bindingObj.currentlyUploadingBannerPhoto" id="bannerPreview" dropzone="bannerDropzoneConfig">
-
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label">About me</label>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Banner Photo</label>
 
-        <div class="col-sm-2">
-            <textarea class="form-control" ng-model="userObj.user_settings.biography" ng-change="requireUpdate()">{{userObj.user_settings.biography}}</textarea>
+            <div class="col-sm-5">
+                <div ng-hide="bindingObj.currentlyUploadingBannerPhoto" style="cursor: pointer">
+                    <img class='triggerBannerImageUpload img-rounded' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
+                </div>
+
+                <div ng-show="bindingObj.currentlyUploadingBannerPhoto" id="bannerPreview" dropzone="bannerDropzoneConfig">
+
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label class="col-sm-2 control-label"></label>
-        <div class="col-sm-5">
-            <button class="btn btn-success" ng-disabled="bindingObj.requireUpdate" ng-click="submitUpdatedProfile()">Submit Changes</button>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">About me</label>
+
+            <div class="col-sm-2">
+                <textarea class="form-control" ng-model="userObj.user_settings.biography" ng-change="requireUpdate()">{{userObj.user_settings.biography}}</textarea>
+            </div>
         </div>
-    </div>
-</form>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"></label>
+            <div class="col-sm-5">
+                <button class="btn btn-success" ng-disabled="bindingObj.requireUpdate" ng-click="submitUpdatedProfile()">Update About Me</button>
+            </div>
+        </div>
+    </form>
+</div>
 
 
 

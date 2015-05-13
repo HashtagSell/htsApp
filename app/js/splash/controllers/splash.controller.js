@@ -83,7 +83,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
                 }
             } else {
 
-                authModalFactory.signInModal();
+                $state.go('signup');
 
             }
         };
@@ -167,7 +167,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
                 });
 
             } else {
-                authModalFactory.signInModal();
+                $state.go('signup');
             }
         };
 

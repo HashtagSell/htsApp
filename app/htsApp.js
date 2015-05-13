@@ -193,7 +193,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
-            rresolve: {
+            resolve: {
                 loginRequired: loginRequired,
                 redirect: function () {
                     return 'notifications';
@@ -884,6 +884,12 @@ htsApp.directive('htsFaveToggle', function () {
                         });
                     } else { //toggle off favorite
                         favesFactory.removeFave(item, function () {
+                            sideNavFactory.defaultMenu[2].active = true;
+
+                            $timeout(function () {
+                                sideNavFactory.defaultMenu[2].active = false;
+                            }, 250);
+
                             $scope.favorited = false;
                             $scope.tooltipMessage = 'Add to watch list';
                             socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
@@ -895,8 +901,6 @@ htsApp.directive('htsFaveToggle', function () {
                     authModalFactory.signInModal();
 
                 }
-                //console.log('bluring element', $element);
-                //$element[0].childNodes[0].blur();
             };
         }]
     };
@@ -953,4 +957,23 @@ htsApp.directive('subMerchant', function () {
 
        }]
    };
+});
+
+
+
+//Google returns City, St, United States.  this function removes unnecessary united states from string for awesome bar
+htsApp.filter('awesomecity', function() {
+    return function(longCityName) {
+
+        var awesomeCity;
+
+        if(longCityName) {
+            // do some bounds checking here to ensure it has that index
+            awesomeCity = longCityName.replace(/,[^,]+$/, "");
+        } else {
+            awesomeCity = "Nearby";
+        }
+
+        return awesomeCity;
+    };
 });

@@ -1,144 +1,146 @@
-<form class="form-horizontal">
-    <fieldset>
+<div class="container">
+    <form class="form-horizontal">
+        <fieldset>
 
-        <!-- Select Basic -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="business">Are you a business?</label>
-            <div class="col-md-2">
-                <select id="business" name="business" class="form-control" ng-init="subMerchantForm.business.isBusinessAccount = businessOptionsDropdown[0]" ng-model="subMerchantForm.business.isBusinessAccount" ng-options="opt.name for opt in businessOptionsDropdown" required="">
+            <!-- Select Basic -->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="business">Are you a business?</label>
+                <div class="col-md-2">
+                    <select id="business" name="business" class="form-control" ng-init="subMerchantForm.business.isBusinessAccount = businessOptionsDropdown[0]" ng-model="subMerchantForm.business.isBusinessAccount" ng-options="opt.name for opt in businessOptionsDropdown" required="">
 
-                </select>
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="firstname">First Name</label>
-            <div class="col-md-5">
-                <input id="firstname" name="firstname" type="text" placeholder="First Name" ng-model="subMerchantForm.firstName" class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="lastname">Last Name</label>
-            <div class="col-md-5">
-                <input id="lastname" name="lastname" type="text" placeholder="Last Name" ng-model="subMerchantForm.lastName" class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="email">Email</label>
-            <div class="col-md-5">
-                <input id="email" name="email" type="text" placeholder="Email" ng-model="subMerchantForm.email" class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="dob">Date of birth</label>
-            <div class="col-md-4">
-                <input id="dob" name="dob" type="text" placeholder="Date of birth" ng-model="subMerchantForm.dob" class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-
-        <!-- Text input-->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="address">Address</label>
-            <div class="col-md-5">
-                <input id="address" name="address" type="text" placeholder="Address" ng-model="subMerchantForm.address" class="form-control input-md" required="">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
-            <label class="col-md-4 control-label" for="companyname">Company Name</label>
-            <div class="col-md-5">
-                <input id="companyname" name="companyname" type="text" placeholder="Company Name" ng-model="subMerchantForm.business.companyName" class="form-control input-md">
-
-            </div>
-        </div>
-
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
-            <label class="col-md-4 control-label" for="taxid">Tax Id</label>
-            <div class="col-md-4">
-                <input id="taxid" name="taxid" type="text" placeholder="Tax Id" ng-model="subMerchantForm.business.taxId" class="form-control input-md">
-
-            </div>
-        </div>
-
-        <!-- Multiple Radios -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="destination">Send funds to</label>
-            <div class="col-md-4">
-                <div class="radio">
-                    <label for="destination-0">
-                        <input type="checkbox" name="destination" id="destination-0" ng-model="subMerchantForm.destination.bank.disperseToBank">
-                        Bank Account
-                    </label>
-                </div>
-                <div class="radio">
-                    <label for="destination-1">
-                        <input type="checkbox" name="destination" id="destination-1" ng-model="subMerchantForm.destination.venmo.disperseToVenmo">
-                        Venmo Account
-                    </label>
+                    </select>
                 </div>
             </div>
-        </div>
 
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
-            <label class="col-md-4 control-label" for="accountnumber">Bank Account No.</label>
-            <div class="col-md-5">
-                <input id="accountnumber" name="accountnumber" type="text" placeholder="Bank Account No." ng-model="subMerchantForm.destination.bank.accountNumber" class="form-control input-md">
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="firstname">First Name</label>
+                <div class="col-md-4">
+                    <input id="firstname" name="firstname" type="text" placeholder="First Name" ng-model="subMerchantForm.firstName" class="form-control input-md" required="">
 
+                </div>
             </div>
-        </div>
 
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
-            <label class="col-md-4 control-label" for="routingnumber">Bank Routing No.</label>
-            <div class="col-md-5">
-                <input id="routingnumber" name="routingnumber" type="text" placeholder="Bank Routing No." ng-model="subMerchantForm.destination.bank.routingNumber" class="form-control input-md">
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="lastname">Last Name</label>
+                <div class="col-md-4">
+                    <input id="lastname" name="lastname" type="text" placeholder="Last Name" ng-model="subMerchantForm.lastName" class="form-control input-md" required="">
 
+                </div>
             </div>
-        </div>
 
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
-            <label class="col-md-4 control-label" for="venmophone">Venmo Phone</label>
-            <div class="col-md-5">
-                <input id="venmophone" name="venmophone" type="text" placeholder="Venmo Phone Number" ng-model="subMerchantForm.destination.venmo.venmoPhone" class="form-control input-md">
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="email">Email</label>
+                <div class="col-md-4">
+                    <input id="email" name="email" type="text" placeholder="Email" ng-model="subMerchantForm.email" class="form-control input-md" required="">
 
+                </div>
             </div>
-        </div>
 
-        <!-- Text input-->
-        <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
-            <label class="col-md-4 control-label" for="venmoemail">Venmo Email</label>
-            <div class="col-md-5">
-                <input id="venmoemail" name="venmoemail" type="text" placeholder="Venmo Email Address" ng-model="subMerchantForm.destination.venmo.venmoEmail" class="form-control input-md">
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="dob">Date of birth</label>
+                <div class="col-md-3">
+                    <input id="dob" name="dob" type="text" placeholder="Date of birth" ng-model="subMerchantForm.dob" class="form-control input-md" required="">
 
+                </div>
             </div>
-        </div>
 
-        <!-- Button -->
-        <div class="form-group">
-            <label class="col-md-4 control-label" for="submit"></label>
-            <div class="col-md-4">
-                <button id="submit" name="submit" class="btn btn-primary" ng-click="submitSubMerchant()">Submit</button>
+
+            <!-- Text input-->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="address">Address</label>
+                <div class="col-md-4">
+                    <input id="address" name="address" type="text" placeholder="Address" ng-model="subMerchantForm.address" class="form-control input-md" required="">
+
+                </div>
             </div>
-        </div>
 
-    </fieldset>
-</form>
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
+                <label class="col-md-2 control-label" for="companyname">Company Name</label>
+                <div class="col-md-4">
+                    <input id="companyname" name="companyname" type="text" placeholder="Company Name" ng-model="subMerchantForm.business.companyName" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
+                <label class="col-md-2 control-label" for="taxid">Tax Id</label>
+                <div class="col-md-3">
+                    <input id="taxid" name="taxid" type="text" placeholder="Tax Id" ng-model="subMerchantForm.business.taxId" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Multiple Radios -->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="destination">Send funds to</label>
+                <div class="col-md-3">
+                    <div class="radio">
+                        <label for="destination-0">
+                            <input type="checkbox" name="destination" id="destination-0" ng-model="subMerchantForm.destination.bank.disperseToBank">
+                            Bank Account
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label for="destination-1">
+                            <input type="checkbox" name="destination" id="destination-1" ng-model="subMerchantForm.destination.venmo.disperseToVenmo">
+                            Venmo Account
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
+                <label class="col-md-2 control-label" for="accountnumber">Bank Account No.</label>
+                <div class="col-md-4">
+                    <input id="accountnumber" name="accountnumber" type="text" placeholder="Bank Account No." ng-model="subMerchantForm.destination.bank.accountNumber" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
+                <label class="col-md-2 control-label" for="routingnumber">Bank Routing No.</label>
+                <div class="col-md-4">
+                    <input id="routingnumber" name="routingnumber" type="text" placeholder="Bank Routing No." ng-model="subMerchantForm.destination.bank.routingNumber" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
+                <label class="col-md-2 control-label" for="venmophone">Venmo Phone</label>
+                <div class="col-md-4">
+                    <input id="venmophone" name="venmophone" type="text" placeholder="Venmo Phone Number" ng-model="subMerchantForm.destination.venmo.venmoPhone" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Text input-->
+            <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
+                <label class="col-md-2 control-label" for="venmoemail">Venmo Email</label>
+                <div class="col-md-4">
+                    <input id="venmoemail" name="venmoemail" type="text" placeholder="Venmo Email Address" ng-model="subMerchantForm.destination.venmo.venmoEmail" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <!-- Button -->
+            <div class="form-group">
+                <label class="col-md-2 control-label" for="submit"></label>
+                <div class="col-md-3">
+                    <button id="submit" name="submit" class="btn btn-primary" ng-click="submitSubMerchant()">Submit</button>
+                </div>
+            </div>
+
+        </fieldset>
+    </form>
+</div>
 
 <!--{{subMerchantForm}}-->

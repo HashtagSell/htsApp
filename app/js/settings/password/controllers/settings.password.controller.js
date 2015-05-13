@@ -3,6 +3,13 @@
  */
 htsApp.controller('settings.password.controller', ['$scope', 'authFactory', function ($scope, authFactory) {
 
+    $scope.alerts = [];
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+
     $scope.updatePassword = function (isValid) {
         if (isValid) {
 
@@ -13,23 +20,25 @@ htsApp.controller('settings.password.controller', ['$scope', 'authFactory', func
 
                 if(response.error) {
 
-                    $scope.message = response.error;
+                    $scope.alerts.push({ type: 'danger', msg: response.error });
 
                 } else if(response.success) {
 
-                    //$scope.dismiss("success");
-
-                    alert('done!');
+                    $scope.alerts.push({ type: 'success', msg: 'Success! Password updated.' });
 
                 }
 
 
             }, function () {
 
-                alert("update password error");
+                $scope.alerts.push({ type: 'danger', msg: 'Whoops.. Try again or contact support.'});
 
             });
         }
+
+        $scope.currentPassword = null;
+        $scope.newPassword = null;
+        $scope.verifyNewPassword = null;
     };
 
 }]);

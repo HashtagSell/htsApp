@@ -7,7 +7,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
     factory.status = {
         pleaseWait: true,
-        error: {}
     };
 
     factory.queryParams = {};
@@ -84,13 +83,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             });
 
         return deferred.promise;
-    };
-
-
-
-    factory.resetFeedView = function () {
-
-        factory.status.error = {};
     };
 
 

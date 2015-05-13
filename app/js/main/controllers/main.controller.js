@@ -19,10 +19,16 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-        $rootScope.previousState = fromState.name;
+        $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
+
+
+        //Update the sidenav
+        sideNavFactory.updateSideNav(toState);
+        sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
+
 
         if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
             if ($rootScope.currentState === 'feed') {

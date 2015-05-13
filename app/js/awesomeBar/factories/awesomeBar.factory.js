@@ -9,7 +9,11 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
     factory.queryObj = {
         q: $stateParams.q || "I'm searching for...",
         city: null,
-        locationObj: null
+        locationObj: null,
+        price:{
+            min: null,
+            max: null
+        }
     };
 
 
@@ -27,8 +31,8 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
         //need to set bounds to cornwall/bodmin
         var locationRequest = {
             input: city,
-            bounds: defaultBounds,
-            componentRestrictions: {country: 'US'}
+            types: ['(cities)'],
+            componentRestrictions: {country: "us"}
         };
 
         var googlePlacesService = new google.maps.places.AutocompleteService();

@@ -193,7 +193,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
-            rresolve: {
+            resolve: {
                 loginRequired: loginRequired,
                 redirect: function () {
                     return 'notifications';
@@ -884,6 +884,12 @@ htsApp.directive('htsFaveToggle', function () {
                         });
                     } else { //toggle off favorite
                         favesFactory.removeFave(item, function () {
+                            sideNavFactory.defaultMenu[2].active = true;
+
+                            $timeout(function () {
+                                sideNavFactory.defaultMenu[2].active = false;
+                            }, 250);
+
                             $scope.favorited = false;
                             $scope.tooltipMessage = 'Add to watch list';
                             socketio.leavePostingRoom(item.postingId, 'inWatchList'); //Join the room of each posting the user owns.
@@ -895,8 +901,6 @@ htsApp.directive('htsFaveToggle', function () {
                     authModalFactory.signInModal();
 
                 }
-                //console.log('bluring element', $element);
-                //$element[0].childNodes[0].blur();
             };
         }]
     };
@@ -953,6 +957,25 @@ htsApp.directive('subMerchant', function () {
 
        }]
    };
+});
+
+
+
+//Google returns City, St, United States.  this function removes unnecessary united states from string for awesome bar
+htsApp.filter('awesomecity', function() {
+    return function(longCityName) {
+
+        var awesomeCity;
+
+        if(longCityName) {
+            // do some bounds checking here to ensure it has that index
+            awesomeCity = longCityName.replace(/,[^,]+$/, "");
+        } else {
+            awesomeCity = "Nearby";
+        }
+
+        return awesomeCity;
+    };
 });
 ;angular.module('globalVars', [])
 
@@ -1493,8 +1516,6 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     return factory;
 }]);;htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    //$scope.awesomeText = "I'm searching for...";
-
     $scope.clearedPlaceholder = false;
     $scope.clearPlaceholder = function () {
         if (!$scope.clearedPlaceholder) {
@@ -1505,15 +1526,18 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
         }
     };
 
-
-
-
+    $scope.clearCity = function () {
+        $scope.queryObj.city = null;
+        $scope.queryObj.locationObj = null;
+    };
 
 
     $scope.queryObj = awesomeBarFactory.queryObj;
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
+
+        $scope.advancedSearch.visible = false; //Hide advanced search
 
         if($scope.queryObj.q) {
 
@@ -1569,13 +1593,21 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
 
     $scope.searchPlaces = function (city) {
         if (city) {
-            awesomeBarFactory.predictPlace(city).then(function (results) {
+            return awesomeBarFactory.predictPlace(city).then(function (results) {
+
                 $scope.cities = results;
+
+                return results.map(function(item){
+                    return item;
+                });
             });
         }
     };
 
+
     $scope.getCityMetaData = function (selectedCity) {
+
+        console.log('selected city: ', selectedCity);
         awesomeBarFactory.getCityMetaData(selectedCity).then(function (cityMetaData) {
 
             $scope.queryObj.city = selectedCity.description;
@@ -1584,6 +1616,11 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
 
         });
         return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedCity.description + '</span>';
+    };
+
+
+    $scope.advancedSearch = {
+        visible: false
     };
 
 }]);
@@ -1598,7 +1635,11 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
     factory.queryObj = {
         q: $stateParams.q || "I'm searching for...",
         city: null,
-        locationObj: null
+        locationObj: null,
+        price:{
+            min: null,
+            max: null
+        }
     };
 
 
@@ -1616,8 +1657,8 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
         //need to set bounds to cornwall/bodmin
         var locationRequest = {
             input: city,
-            bounds: defaultBounds,
-            componentRestrictions: {country: 'US'}
+            types: ['(cities)'],
+            componentRestrictions: {country: "us"}
         };
 
         var googlePlacesService = new google.maps.places.AutocompleteService();
@@ -1660,7 +1701,7 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 }]);;/**
  * Created by braddavis on 5/1/15.
  */
-htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
+htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, $state, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
 
 
     //Any time the user moves to a different page this function is called.
@@ -1815,7 +1856,7 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'i
         } else {
             //TODO: Deselect the checked item cause user is not logged in.
             ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
-            authModalFactory.signInModal();
+            $state.go('signup');
         }
     };
 
@@ -1839,12 +1880,6 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', 'Session', 'i
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
 
     $scope.status = feedFactory.status;
-
-    $scope.testing = function (ev) {
-        console.log(ev);
-        //ev.stopPropagation();
-    };
-
 
     //updateFeed is triggered on interval and performs polling call to server for more items
     var updateFeed = function () {
@@ -1945,6 +1980,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
                     $scope.$on('$destroy', function () {
+                        console.log('pausing feed updates');
                         $interval.cancel(intervalUpdate);
                     });
 
@@ -2006,12 +2042,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         $state.go('feed.splash', { id: elems.result.postingId });
     };
 
-
-
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        feedFactory.resetFeedView();
-    });
-
 }]);
 
 
@@ -2036,7 +2066,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
     factory.status = {
         pleaseWait: true,
-        error: {}
     };
 
     factory.queryParams = {};
@@ -2113,13 +2142,6 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             });
 
         return deferred.promise;
-    };
-
-
-
-    factory.resetFeedView = function () {
-
-        factory.status.error = {};
     };
 
 
@@ -2923,10 +2945,16 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-        $rootScope.previousState = fromState.name;
+        $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
+
+
+        //Update the sidenav
+        sideNavFactory.updateSideNav(toState);
+        sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
+
 
         if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
             if ($rootScope.currentState === 'feed') {
@@ -4228,34 +4256,40 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
 
     return factory;
-}]);;htsApp.controller('newPostController', ['$scope', '$modal', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, newPostFactory, Session, authModalFactory) {
+}]);;htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
 
     $scope.userObj = Session.userObj;
 
     $scope.newPost = function () {
 
-        var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
-            controller: 'newPostModal',
-            size: 'lg',
-            keyboard: false,
-            backdrop: 'static',
-            resolve: {
-                mentionsFactory: function () {
-                    return newPostFactory;
+        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
+
+            var modalInstance = $modal.open({
+                templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
+                controller: 'newPostModal',
+                size: 'lg',
+                keyboard: false,
+                backdrop: 'static',
+                resolve: {
+                    mentionsFactory: function () {
+                        return newPostFactory;
+                    }
                 }
-            }
-        });
+            });
 
-        modalInstance.result.then(function (dismissObj) {
+            modalInstance.result.then(function (dismissObj) {
 
-        }, function (dismissObj) {
-            if(dismissObj.reason === "stageOneSuccess"){
+            }, function (dismissObj) {
+                if (dismissObj.reason === "stageOneSuccess") {
 
-                $scope.pushtoExternalService(dismissObj.post);
-            }
-            console.log('Modal dismissed at: ' + new Date());
-        });
+                    $scope.pushtoExternalService(dismissObj.post);
+                }
+                console.log('Modal dismissed at: ' + new Date());
+            });
+
+        } else {
+            $state.go('signup');
+        }
     };
 
 
@@ -4306,18 +4340,6 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
         });
     };
 
-
-
-    $scope.signIn = function (size) {
-        authModalFactory.signInModal();
-
-    };
-
-
-    $scope.signUp = function (size) {
-        authModalFactory.signUpModal();
-    };
-
 }]);
 ;/**
  * Created by braddavis on 2/25/15.
@@ -4346,7 +4368,7 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
 }]);;/**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', '$window', function ($scope, $http, $q, $modalInstance, $timeout, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory, $window) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', '$window', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory, $window) {
 
     $scope.demoCleared = false;
 
@@ -4459,7 +4481,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             }
         } else {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         }
     };
@@ -6826,6 +6848,13 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
  */
 htsApp.controller('settings.password.controller', ['$scope', 'authFactory', function ($scope, authFactory) {
 
+    $scope.alerts = [];
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+
     $scope.updatePassword = function (isValid) {
         if (isValid) {
 
@@ -6836,23 +6865,25 @@ htsApp.controller('settings.password.controller', ['$scope', 'authFactory', func
 
                 if(response.error) {
 
-                    $scope.message = response.error;
+                    $scope.alerts.push({ type: 'danger', msg: response.error });
 
                 } else if(response.success) {
 
-                    //$scope.dismiss("success");
-
-                    alert('done!');
+                    $scope.alerts.push({ type: 'success', msg: 'Success! Password updated.' });
 
                 }
 
 
             }, function () {
 
-                alert("update password error");
+                $scope.alerts.push({ type: 'danger', msg: 'Whoops.. Try again or contact support.'});
 
             });
         }
+
+        $scope.currentPassword = null;
+        $scope.newPassword = null;
+        $scope.verifyNewPassword = null;
     };
 
 }]);;/**
@@ -6965,30 +6996,16 @@ htsApp.controller('settings.profile.controller', ['$scope', 'Session', '$templat
         });
     };
 
-}]);;htsApp.controller('sideNav.controller', ['$scope', '$rootScope', 'sideNavFactory', 'splashFactory', function ($scope, $rootScope, sideNavFactory, splashFactory) {
+}]);;htsApp.controller('sideNav.controller', ['$scope', 'sideNavFactory', 'splashFactory', function ($scope, sideNavFactory, splashFactory) {
 
     $scope.sideNav = sideNavFactory;
 
     $scope.result = splashFactory.result;
 
-    //Any time the user moves to a different page this function is called.
-    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-
-        sideNavFactory.updateSideNav(toState);
-
-        //Captures the previous state and appends it to the 'back' button in the settings and splash sideNav
-        sideNavFactory.settingsMenu[0].link = fromState.name;
-    });
-
-
-    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        sideNavFactory.redirect = toState;
-    });
-
 }]);;/**
  * Created by braddavis on 11/29/14.
  */
-htsApp.factory('sideNavFactory', ['Session', function (Session) {
+htsApp.factory('sideNavFactory', function () {
 
     var factory = {};
 
@@ -7152,7 +7169,7 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     return factory;
 
-}]);;htsApp.controller('sideProfile', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
+});;htsApp.controller('sideProfile', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
 
     $scope.userObj = Session.userObj;
 
@@ -7763,7 +7780,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
                 }
             } else {
 
-                authModalFactory.signInModal();
+                $state.go('signup');
 
             }
         };
@@ -7847,7 +7864,7 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
                 });
 
             } else {
-                authModalFactory.signInModal();
+                $state.go('signup');
             }
         };
 
@@ -8268,7 +8285,7 @@ htsApp.directive('transactionButtons', function () {
 });;/**
  * Created by braddavis on 1/10/15.
  */
-htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
+htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
 
     var transactionFactory = {};
 
@@ -8277,7 +8294,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -8317,7 +8334,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -8356,7 +8373,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -8369,7 +8386,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.signInModal();
+            $state.go('signup');
 
         } else {
 
@@ -8405,7 +8422,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', 'authModalFac
 
         } else {  //User is not logged in.
 
-            authModalFactory.signUpModal();
+            $state.go('signup');
 
         }
     };
@@ -8666,32 +8683,6 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
         Session.destroy();
 
     };
-
-    $scope.signIn = function (size) {
-
-        authModalFactory.signInModal();
-
-    };
-
-
-    $scope.signUp = function (size) {
-
-        authModalFactory.signUpModal();
-    };
-
-
-    $scope.checkEmail = function (size) {
-
-        authModalFactory.checkEmailModal();
-
-    };
-
-
-    $scope.forgotPassword = function (size) {
-
-        authModalFactory.forgotPasswordModal();
-    };
-
 
 
     $scope.newPost = function () {

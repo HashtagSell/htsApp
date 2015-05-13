@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.factory('sideNavFactory', ['Session', function (Session) {
+htsApp.factory('sideNavFactory', function () {
 
     var factory = {};
 
@@ -165,4 +165,4 @@ htsApp.factory('sideNavFactory', ['Session', function (Session) {
 
     return factory;
 
-}]);
+});
