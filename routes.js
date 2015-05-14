@@ -210,6 +210,10 @@ module.exports = function(app, passport) {
         payment.sendPayment(req, res);
     });
 
+    app.post("/payments/submerchant", function (req, res) {
+        payment.createSubMerchant(req, res);
+    });
+
 
 
 

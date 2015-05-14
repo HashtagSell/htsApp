@@ -918,41 +918,162 @@ htsApp.filter('capitalize', function() {
 htsApp.directive('subMerchant', function () {
    return {
        templateUrl: 'js/submerchant/partials/submerchant.partial.html',
-       controller: ['$scope', function ($scope) {
-
-           $scope.businessOptionsDropdown = [
-               { name: 'No', value: false},
-               { name: 'Yes', value: true}
-           ];
+       controller: ['$scope', '$http', '$q', 'ENV', function ($scope, $http, $q, ENV) {
 
            $scope.subMerchantForm = {
                business: {
-                   isBusinessAccount: null,
-                   companyName: null,
-                   taxId: null,
+                   isbusinessAccount: null,
+                   businessOptionsDropdown: [
+                       {name: 'No', value: false},
+                       {name: 'Yes', value: true}
+                   ],
+                   addressLookup: null
                },
-               firstName: null,
-               lastName: null,
-               email: null,
-               dob: null,
-               address: null,
+               individual: {
+                   addressLookup: null
+               },
                destination: {
-                   bank:{
-                       disperseToBank: false,
-                       accountNumber: null,
-                       routingNumber: null
-                   },
-                   venmo: {
-                       disperseToVenmo: false,
-                       venmoEmail: null,
-                       venmoPhone: null
+                   disperseToBank: null,
+                   disperseToVenmo: null
+               }
+           };
+
+           $scope.subMerchant = {
+               business: {
+                   legal_name: null,
+                   tax_id: null,
+                   address: {
+                       street_address: null,
+                       locality: null,
+                       region: null,
+                       postal_code: null,
                    }
+               },
+               individual: {
+                   first_name: null,
+                   last_name: null,
+                   email: null,
+                   date_of_birth: null,
+                   address: {
+                       street_address: null,
+                       locality: null,
+                       region: null,
+                       postal_code: null
+                   },
+               },
+               funding: {
+                   destination: null,
+                   email: null,
+                   mobile_phone: null,
+                   account_number: null,
+                   routing_number: null
                }
            };
 
 
            $scope.submitSubMerchant = function () {
-               console.log($scope.subMerchantForm);
+               $http.post(ENV.paymentAPI + '/submerchant', {
+                   subMerchant: $scope.subMerchant
+               }).success(function(response){
+                    console.log(response);
+               }).error(function(err){
+                    console.log(err);
+               });
+           };
+
+
+
+
+            $scope.predictAddress = function (address) {
+
+                return $scope.predictPlace(address).then(function (results) {
+                    return results.map(function(item){
+                        return item;
+                    });
+                });
+
+            };
+
+
+
+
+
+           $scope.predictPlace = function (address) {
+
+               var defaultBounds = new google.maps.LatLngBounds(
+                   new google.maps.LatLng(37.79738, -122.52464),
+                   new google.maps.LatLng(37.68879, -122.36122)
+               );
+
+               //need to set bounds to cornwall/bodmin
+               var locationRequest = {
+                   input: address,
+                   bounds: defaultBounds,
+                   componentRestrictions: {country: 'US'}
+               };
+               var googlePlacesService = new google.maps.places.AutocompleteService();
+
+               var deferred = $q.defer();
+
+               //Get predictions from google
+               googlePlacesService.getPlacePredictions(locationRequest, function (predictions, status) {
+                   deferred.resolve(predictions);
+               });
+
+               return deferred.promise;
+           };
+
+
+
+           $scope.setAddressComponents = function (placesObj, type){
+               console.log(placesObj);
+               console.log(type);
+
+               var googleMaps = new google.maps.places.PlacesService(new google.maps.Map(document.createElement("map-canvas")));
+
+               //capture the place_id and send to google maps for metadata about the place
+               var request = {
+                   placeId: placesObj.place_id
+               };
+
+               googleMaps.getDetails(request, function (placeMetaData, status) {
+
+                   var street = '';
+                   var street_number = '';
+
+                   for(var i = 0; i < placeMetaData.address_components.length; i++){
+                       var component = placeMetaData.address_components[i];
+
+                       console.log(component);
+
+                       for(var j = 0; j < component.types.length; j++){
+                           var componentType = component.types[j];
+
+                           console.log($scope.subMerchant);
+
+                           if(componentType === "locality"){
+                               $scope.subMerchant[type].address.locality = component.long_name;
+                               break;
+                           } else if(componentType === "administrative_area_level_1"){
+                               $scope.subMerchant[type].address.region = component.short_name;
+                               break;
+                           } else if(componentType === "route") {
+                               street = component.long_name;
+                               break;
+                           } else if(componentType === "postal_code") {
+                               $scope.subMerchant[type].address.postal_code = component.long_name;
+                               break;
+                           } else if(componentType === "street_number") {
+                               street_number = component.long_name;
+                               break;
+                           }
+                       }
+                   }
+
+                   $scope.subMerchant[type].address.street_address = street_number + ' ' + street;
+
+               });
+
            };
 
        }]
@@ -1516,15 +1637,15 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     return factory;
 }]);;htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    $scope.clearedPlaceholder = false;
-    $scope.clearPlaceholder = function () {
-        if (!$scope.clearedPlaceholder) {
-            console.log("clearing placeholder");
-
-            $scope.queryObj.q = "";
-            $scope.clearedPlaceholder = true;
-        }
-    };
+    //$scope.clearedPlaceholder = false;
+    //$scope.clearPlaceholder = function () {
+    //    if (!$scope.clearedPlaceholder) {
+    //        console.log("clearing placeholder");
+    //
+    //        $scope.queryObj.q = "";
+    //        $scope.clearedPlaceholder = true;
+    //    }
+    //};
 
     $scope.clearCity = function () {
         $scope.queryObj.city = null;
@@ -1648,11 +1769,6 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 
 
     factory.predictPlace = function (city) {
-
-        var defaultBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(37.79738, -122.52464),
-            new google.maps.LatLng(37.68879, -122.36122)
-        );
 
         //need to set bounds to cornwall/bodmin
         var locationRequest = {

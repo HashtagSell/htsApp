@@ -1,14 +1,14 @@
 htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    $scope.clearedPlaceholder = false;
-    $scope.clearPlaceholder = function () {
-        if (!$scope.clearedPlaceholder) {
-            console.log("clearing placeholder");
-
-            $scope.queryObj.q = "";
-            $scope.clearedPlaceholder = true;
-        }
-    };
+    //$scope.clearedPlaceholder = false;
+    //$scope.clearPlaceholder = function () {
+    //    if (!$scope.clearedPlaceholder) {
+    //        console.log("clearing placeholder");
+    //
+    //        $scope.queryObj.q = "";
+    //        $scope.clearedPlaceholder = true;
+    //    }
+    //};
 
     $scope.clearCity = function () {
         $scope.queryObj.city = null;

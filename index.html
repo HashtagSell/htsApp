@@ -76,10 +76,10 @@
                     <form role="search">
                         <div class="input-group">
                             <div id="awesomeBar"
-                                 contenteditable
+                                 contenteditable="true"
                                  awesomebar
+                                 data-ph="I'm looking for..."
                                  class="form-control"
-                                 ng-focus="clearPlaceholder()"
                                  ng-change="validateQueryObj()"
                                  ng-model="queryObj.q"
                                  mentio
@@ -87,7 +87,7 @@
                                  mentio-macros="macros"
                                  mentio-id="'awesomePlace'"
                                  mentio-typed-term="city"
-                                 style="background-color: #EAEAEA">I'm searching for...</div>
+                                 style="background-color: #EAEAEA"></div>
 
                             <span class="input-group-btn">
                                 <!--TODO: Advanced drop down fields-->
@@ -290,7 +290,7 @@
                     </div>
 
                     <div class="col-sm-4 col-xs-12 text-center feedback-link">
-                        <a ng-click="feedback.form.visible = !feedback.form.visible">Provide Feedback</a>
+                        <a ng-click="feedback.form.visible = !feedback.form.visible" tooltip="Tell us what you want! We'll build it." tooltip-trigger="mouseenter" tooltip-placement="top">Provide Feedback</a>
                     </div>
 
                     <div class="col-sm-4 hidden-xs pull-right">

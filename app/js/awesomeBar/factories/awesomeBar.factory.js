@@ -23,11 +23,6 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 
     factory.predictPlace = function (city) {
 
-        var defaultBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(37.79738, -122.52464),
-            new google.maps.LatLng(37.68879, -122.36122)
-        );
-
         //need to set bounds to cornwall/bodmin
         var locationRequest = {
             input: city,

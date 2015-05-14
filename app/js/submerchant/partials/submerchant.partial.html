@@ -6,7 +6,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="business">Are you a business?</label>
                 <div class="col-md-2">
-                    <select id="business" name="business" class="form-control" ng-init="subMerchantForm.business.isBusinessAccount = businessOptionsDropdown[0]" ng-model="subMerchantForm.business.isBusinessAccount" ng-options="opt.name for opt in businessOptionsDropdown" required="">
+                    <select id="business" name="business" class="form-control" ng-init="subMerchantForm.business.isBusinessAccount = subMerchantForm.business.businessOptionsDropdown[0]" ng-model="subMerchantForm.business.isBusinessAccount" ng-options="opt.name for opt in subMerchantForm.business.businessOptionsDropdown" required="">
 
                     </select>
                 </div>
@@ -16,7 +16,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="firstname">First Name</label>
                 <div class="col-md-4">
-                    <input id="firstname" name="firstname" type="text" placeholder="First Name" ng-model="subMerchantForm.firstName" class="form-control input-md" required="">
+                    <input id="firstname" name="firstname" type="text" placeholder="First Name" ng-model="subMerchant.individual.first_name" class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -25,7 +25,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="lastname">Last Name</label>
                 <div class="col-md-4">
-                    <input id="lastname" name="lastname" type="text" placeholder="Last Name" ng-model="subMerchantForm.lastName" class="form-control input-md" required="">
+                    <input id="lastname" name="lastname" type="text" placeholder="Last Name" ng-model="subMerchant.individual.last_name" class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -34,7 +34,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="email">Email</label>
                 <div class="col-md-4">
-                    <input id="email" name="email" type="text" placeholder="Email" ng-model="subMerchantForm.email" class="form-control input-md" required="">
+                    <input id="email" name="email" type="text" placeholder="Email" ng-model="subMerchant.individual.email" class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -43,7 +43,7 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="dob">Date of birth</label>
                 <div class="col-md-3">
-                    <input id="dob" name="dob" type="text" placeholder="Date of birth" ng-model="subMerchantForm.dob" class="form-control input-md" required="">
+                    <input id="dob" name="dob" type="text" placeholder="Date of birth" ng-model="subMerchant.individual.date_of_birth" class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -51,9 +51,9 @@
 
             <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-2 control-label" for="address">Address</label>
+                <label class="col-md-2 control-label" for="individualaddress">Address</label>
                 <div class="col-md-4">
-                    <input id="address" name="address" type="text" placeholder="Address" ng-model="subMerchantForm.address" class="form-control input-md" required="">
+                    <input id="individualaddress" name="individualaddress" type="text" placeholder="Address" ng-model="subMerchantForm.individual.addressLookup" typeahead="city.description for city in predictAddress($viewValue)" typeahead-on-select='setAddressComponents($item, "individual")' class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -62,7 +62,15 @@
             <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
                 <label class="col-md-2 control-label" for="companyname">Company Name</label>
                 <div class="col-md-4">
-                    <input id="companyname" name="companyname" type="text" placeholder="Company Name" ng-model="subMerchantForm.business.companyName" class="form-control input-md">
+                    <input id="companyname" name="companyname" type="text" placeholder="Company Name" ng-model="subMerchant.business.legal_name" class="form-control input-md">
+
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
+                <label class="col-md-2 control-label" for="businessaddress">Address</label>
+                <div class="col-md-4">
+                    <input id="businessaddress" name="business" type="text" placeholder="Business address" ng-model="subMerchantForm.business.addressLookup" typeahead="city.description for city in predictAddress($viewValue)" typeahead-on-select='setAddressComponents($item, "business")' class="form-control input-md" required="">
 
                 </div>
             </div>
@@ -71,7 +79,7 @@
             <div class="form-group" ng-show="subMerchantForm.business.isBusinessAccount.value">
                 <label class="col-md-2 control-label" for="taxid">Tax Id</label>
                 <div class="col-md-3">
-                    <input id="taxid" name="taxid" type="text" placeholder="Tax Id" ng-model="subMerchantForm.business.taxId" class="form-control input-md">
+                    <input id="taxid" name="taxid" type="text" placeholder="Tax Id" ng-model="subMerchant.business.tax_id" class="form-control input-md">
 
                 </div>
             </div>
@@ -82,13 +90,13 @@
                 <div class="col-md-3">
                     <div class="radio">
                         <label for="destination-0">
-                            <input type="checkbox" name="destination" id="destination-0" ng-model="subMerchantForm.destination.bank.disperseToBank">
+                            <input type="checkbox" name="destination" id="destination-0" ng-model="subMerchantForm.destination.disperseToBank">
                             Bank Account
                         </label>
                     </div>
                     <div class="radio">
                         <label for="destination-1">
-                            <input type="checkbox" name="destination" id="destination-1" ng-model="subMerchantForm.destination.venmo.disperseToVenmo">
+                            <input type="checkbox" name="destination" id="destination-1" ng-model="subMerchantForm.destination.disperseToVenmo">
                             Venmo Account
                         </label>
                     </div>
@@ -96,37 +104,37 @@
             </div>
 
             <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
+            <div class="form-group" ng-show="subMerchantForm.destination.disperseToBank">
                 <label class="col-md-2 control-label" for="accountnumber">Bank Account No.</label>
                 <div class="col-md-4">
-                    <input id="accountnumber" name="accountnumber" type="text" placeholder="Bank Account No." ng-model="subMerchantForm.destination.bank.accountNumber" class="form-control input-md">
+                    <input id="accountnumber" name="accountnumber" type="text" placeholder="Bank Account No." ng-model="subMerchant.funding.account_number" class="form-control input-md">
 
                 </div>
             </div>
 
             <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.bank.disperseToBank">
+            <div class="form-group" ng-show="subMerchantForm.destination.disperseToBank">
                 <label class="col-md-2 control-label" for="routingnumber">Bank Routing No.</label>
                 <div class="col-md-4">
-                    <input id="routingnumber" name="routingnumber" type="text" placeholder="Bank Routing No." ng-model="subMerchantForm.destination.bank.routingNumber" class="form-control input-md">
+                    <input id="routingnumber" name="routingnumber" type="text" placeholder="Bank Routing No." ng-model="subMerchant.funding.routing_number" class="form-control input-md">
 
                 </div>
             </div>
 
             <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
+            <div class="form-group" ng-show="subMerchantForm.destination.disperseToVenmo">
                 <label class="col-md-2 control-label" for="venmophone">Venmo Phone</label>
                 <div class="col-md-4">
-                    <input id="venmophone" name="venmophone" type="text" placeholder="Venmo Phone Number" ng-model="subMerchantForm.destination.venmo.venmoPhone" class="form-control input-md">
+                    <input id="venmophone" name="venmophone" type="text" placeholder="Venmo Phone Number" ng-model="subMerchant.funding.mobile_phone" class="form-control input-md">
 
                 </div>
             </div>
 
             <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.venmo.disperseToVenmo">
+            <div class="form-group" ng-show="subMerchantForm.destination.disperseToVenmo">
                 <label class="col-md-2 control-label" for="venmoemail">Venmo Email</label>
                 <div class="col-md-4">
-                    <input id="venmoemail" name="venmoemail" type="text" placeholder="Venmo Email Address" ng-model="subMerchantForm.destination.venmo.venmoEmail" class="form-control input-md">
+                    <input id="venmoemail" name="venmoemail" type="text" placeholder="Venmo Email Address" ng-model="subMerchant.funding.email" class="form-control input-md">
 
                 </div>
             </div>
