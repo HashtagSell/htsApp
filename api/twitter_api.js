@@ -7,8 +7,6 @@ var Twitter = require('twitter');
 var common   = require('../config/common.js');
 var configAuth  = common.config();
 
-var oauth = require('oauth');
-
 
 var client = new Twitter({
     consumer_key: configAuth.twitterAuth.consumerKey,
