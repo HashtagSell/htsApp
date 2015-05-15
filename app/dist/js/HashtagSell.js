@@ -1100,7 +1100,7 @@ htsApp.filter('awesomecity', function() {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'http://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
@@ -4627,6 +4627,13 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 console.log("-----Post Complete----");
                 console.log(posting);
                 $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
+
+                //Submit for precaching
+                $http.post(ENV.precacheAPI, {posting: posting}).success(function(response){
+                    console.log('precache success', response);
+                }).error(function(err){
+                    console.log('precaceh error:', err);
+                });
 
             }).
             error(function(data, status, headers, config) {

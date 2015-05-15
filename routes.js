@@ -106,6 +106,15 @@ module.exports = function(app, passport) {
 
 
 
+    // =====================================
+    // PRECACHING ================
+    // =====================================
+    var precache = require('./api/precache_api.js');
+    app.post('/precache', function(req, res){
+        precache.recache(req,res);
+    });
+
+
 
 
     // =====================================

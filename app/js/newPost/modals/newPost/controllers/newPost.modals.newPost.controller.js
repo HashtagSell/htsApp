@@ -151,6 +151,13 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 console.log(posting);
                 $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
 
+                //Submit for precaching
+                $http.post(ENV.precacheAPI, {posting: posting}).success(function(response){
+                    console.log('precache success', response);
+                }).error(function(err){
+                    console.log('precaceh error:', err);
+                });
+
             }).
             error(function(data, status, headers, config) {
                 alert('post failed');
