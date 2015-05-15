@@ -279,12 +279,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onEnter: joinRoom,
             onExit: leaveRoom
         }).
-        state('twitter', {
-            url: "/tw/:id",
-            controller: 'splashController'
-        }).
-        state('facebook', {
-            url: "/fb/:id",
+        state('externalSplash', {
+            url: "/ext/:id",
             controller: 'splashController'
         }).
         state('ebay', {
@@ -1100,7 +1096,7 @@ htsApp.filter('awesomecity', function() {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'http://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
@@ -9188,8 +9184,8 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             ezfb.api('/me/feed', 'post',
                 {
-                    message: ENV.htsAppUrl + '/fb/' + newPost.postingId,
-                    link: ENV.htsAppUrl + '/fb/' + newPost.postingId,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 },
                 function (response) {
@@ -9265,8 +9261,8 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                             ezfb.api('/me/feed', 'post',  //Post to facebook
                                 {
-                                    message: ENV.htsAppUrl + '/fb/' + newPost.postingId,
-                                    link: ENV.htsAppUrl + '/fb/' + newPost.postingId,
+                                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                                     access_token: facebookCreds.token
                                 },
                                 function (response) {
@@ -9381,7 +9377,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                 method: 'POST',
                 url: ENV.htsAppUrl + '/publishTweet',
                 data: {
-                    'status' : ENV.htsAppUrl + '/tw/' + newPost.postingId,
+                    'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     'token': twitter.token,
                     'tokenSecret': twitter.tokenSecret
                 }
@@ -9448,7 +9444,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                             method: 'POST',
                             url: ENV.htsAppUrl + '/publishTweet',
                             data: {
-                                'status' : ENV.htsAppUrl + '/tw/' + newPost.postingId,
+                                'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
                                 'token': response.user_settings.linkedAccounts.twitter.token,
                                 'tokenSecret': response.user_settings.linkedAccounts.twitter.tokenSecret
                             }
