@@ -3228,24 +3228,15 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell Online Classifieds",
             image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             site_name: "HashtagSell.com",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            url: ENV.htsAppUrl
+            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com."
         },
         twitter: {
-            card: "summary",
-            domain: "hashtagsell.com",
+            card: "summary_large_image",
             site: "@hashtagsell",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             title: "HashtagSell.com - Rethinking Online Classifieds",
-            url: ENV.htsAppUrl,
-            creator: "",
+            creator: "@hashtagsell",
             image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
-            appIdiPhone: "",
-            appIdiPad: "",
-            appIdGooglePlay: "",
-            appUrliPhone: "",
-            appUrliPad: "",
-            appUrlGooglePlay: ""
         }
     };
 
@@ -7852,7 +7843,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
             metaFactory.metatags.twitter.description = plainTextBody;
         }
 
-        if($scope.result.images.length.length) {
+        if($scope.result.images.length) {
             metaFactory.metatags.facebook.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
             metaFactory.metatags.twitter.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
         }

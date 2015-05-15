@@ -31,7 +31,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
             metaFactory.metatags.twitter.description = plainTextBody;
         }
 
-        if($scope.result.images.length.length) {
+        if($scope.result.images.length) {
             metaFactory.metatags.facebook.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
             metaFactory.metatags.twitter.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
         }
