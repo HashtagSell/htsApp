@@ -29,54 +29,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
-    $scope.publishToEbay = function () {
-
-        var deferred = $q.defer();
-
-        if(_.contains($scope.sourceSelections, 'eBay')) {
-
-            ebayFactory.publishToEbay(newPost).then(function (response) {
-
-                Notification.success({
-                    message: "eBay publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
-
-                deferred.resolve();
-
-            }, function (errResponse) {
-
-                console.log('ebay err', errResponse);
-
-                try {
-
-                    Notification.error({
-                        title: 'eBay ' + errResponse.name,
-                        message: errResponse.sourceError.details[0].LongMessage[0],
-                        delay: 10000
-                    });  //Send the webtoast
-
-                }
-                catch (err) {
-
-                    Notification.error({
-                        title: 'eBay ' + errResponse.name,
-                        message: errResponse.message || "Please contact support",
-                        delay: 10000
-                    });  //Send the webtoast
-                }
-
-                deferred.resolve();
-
-            });
-        } else {
-            deferred.resolve();
-        }
-
-        return deferred.promise;
-    };
-
-
 
     $scope.publishToFacebook = function () {
 
@@ -85,6 +37,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if(_.contains($scope.sourceSelections, 'Facebook')) {
 
             facebookFactory.publishToWall(newPost).then(function (response) {
+
+                newPost = response;
 
                 Notification.success({
                     message: "Facebook publishing success!",
@@ -119,6 +73,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if(_.contains($scope.sourceSelections, 'Twitter')) {
 
             twitterFactory.publishToTwitter(newPost).then(function (response) {
+
+                newPost = response;
 
                 Notification.success({
                     message: "Twitter publishing success!",
@@ -165,6 +121,58 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         return deferred.promise;
     };
+
+
+
+    $scope.publishToEbay = function () {
+
+        var deferred = $q.defer();
+
+        if(_.contains($scope.sourceSelections, 'eBay')) {
+
+            ebayFactory.publishToEbay(newPost).then(function (response) {
+
+                newPost = response;
+
+                Notification.success({
+                    message: "eBay publishing success!",
+                    delay: 10000
+                });  //Send the webtoast
+
+                deferred.resolve();
+
+            }, function (errResponse) {
+
+                console.log('ebay err', errResponse);
+
+                try {
+
+                    Notification.error({
+                        title: 'eBay ' + errResponse.name,
+                        message: errResponse.sourceError.details[0].LongMessage[0],
+                        delay: 10000
+                    });  //Send the webtoast
+
+                }
+                catch (err) {
+
+                    Notification.error({
+                        title: 'eBay ' + errResponse.name,
+                        message: errResponse.message || "Please contact support",
+                        delay: 10000
+                    });  //Send the webtoast
+                }
+
+                deferred.resolve();
+
+            });
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    };
+
 
 
     $scope.publishToCraigslist = function () {
