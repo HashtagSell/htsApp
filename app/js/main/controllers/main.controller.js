@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/24/15.
  */
-htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory) {
+htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', 'metaFactory', '$window', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, metaFactory, $window) {
 
     $scope.userObj = Session.userObj;
 
@@ -15,14 +15,16 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     };
 
 
-
-
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
         $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
+
+        $timeout(function(){
+            metaFactory.metatags.facebook.url = $window.location.href;
+        }, 50);
 
 
         //Update the sidenav

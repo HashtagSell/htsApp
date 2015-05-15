@@ -3043,7 +3043,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
 }]);;/**
  * Created by braddavis on 1/24/15.
  */
-htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory) {
+htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', 'metaFactory', '$window', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, metaFactory, $window) {
 
     $scope.userObj = Session.userObj;
 
@@ -3057,14 +3057,16 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     };
 
 
-
-
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
         $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
         console.log('Previous state:' + $rootScope.previousState);
         console.log('Current state:' + $rootScope.currentState);
+
+        $timeout(function(){
+            metaFactory.metatags.facebook.url = $window.location.href;
+        }, 50);
 
 
         //Update the sidenav
@@ -3213,7 +3215,7 @@ htsApp.controller('metaController', ['$scope', 'metaFactory', function ($scope, 
 }]);;/**
  * Created by braddavis on 4/22/15.
  */
-htsApp.factory('metaFactory', ['ENV', function (ENV) {
+htsApp.factory('metaFactory', function () {
     var factory = {};
 
 
@@ -3228,7 +3230,8 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell Online Classifieds",
             image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             site_name: "HashtagSell.com",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com."
+            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            url: null
         },
         twitter: {
             card: "summary_large_image",
@@ -3242,7 +3245,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
 
 
     return factory;
-}]);;/**
+});;/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {

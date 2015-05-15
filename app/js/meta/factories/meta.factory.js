@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 4/22/15.
  */
-htsApp.factory('metaFactory', ['ENV', function (ENV) {
+htsApp.factory('metaFactory', function () {
     var factory = {};
 
 
@@ -16,7 +16,8 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell Online Classifieds",
             image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             site_name: "HashtagSell.com",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com."
+            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            url: null
         },
         twitter: {
             card: "summary_large_image",
@@ -30,4 +31,4 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
 
 
     return factory;
-}]);
+});
