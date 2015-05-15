@@ -7,18 +7,38 @@ var env  = common.config();
 var request = require('request');
 
 
+request.debug = true;
+
 exports.recache = function (req, res) {
+
 
     var postingId = req.body.posting.postingId;
 
-    request.post(env.prerender_io.url + '/recache', {prerenderToken: env.prerender_io.token, url: env.hts.appURL + 'ext/' + postingId}, function callback(err, httpResponse, body) {
-        if (err) {
-            return console.error('precache failed:', err);
-            res.send({success: false, data: err});
+    var recacheUrl = env.prerender_io.url + 'recache';
+    var prerenderToken = env.prerender_io.token;
+    var urlToPrerender = env.hts.appURL + '/ext/' + postingId;
+
+    console.log('prerender token:', prerenderToken);
+    console.log('urlToPrerender', urlToPrerender);
+
+    var options = {
+        uri: recacheUrl,
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({
+            "prerenderToken": prerenderToken,
+            "url": urlToPrerender
+        })
+    };
+
+    request.post(options, function callback(err, httpResponse, body) {
+            if (err) {
+                return console.error('precache failed:', err);
+                res.send({success: false, data: err});
+            }
+            console.log('precache success', body);
+            res.send({success: true, data: body});
         }
-        console.log('precache success', body);
-        res.send({success: true, data: body});
-    });
+    );
 
 
 };

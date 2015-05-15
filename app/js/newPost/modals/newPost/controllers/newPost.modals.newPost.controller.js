@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'authModalFactory', '$window', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, authModalFactory, $window) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
     $scope.demoCleared = false;
 
@@ -151,6 +151,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 console.log(posting);
                 $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
 
+                mentionsFactory.resetJsonTemplate();
+
                 //Submit for precaching
                 $http.post(ENV.precacheAPI, {posting: posting}).success(function(response){
                     console.log('precache success', response);
@@ -160,7 +162,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
             }).
             error(function(data, status, headers, config) {
-                alert('post failed');
+
+                console.log(data);
+
+                Notification.error({
+                    title: data.name,
+                    message: data.message,
+                    delay: 10000
+                });  //Send the webtoast
             });
     };
 
