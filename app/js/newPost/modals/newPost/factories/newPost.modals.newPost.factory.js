@@ -228,9 +228,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                 var popularCategories = data;
 
                 if (popularCategories.length) {
-                    //now that we have the popular category code get all the conical information about that category
-                    //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
 
+                    //now that we have the popular category code get all the conical information about that category
                     var mostPopularCategory = popularCategories[0].code;
 
                     $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
@@ -258,7 +257,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                 },
                                 optional: {
                                     exact: {
-                                        categoryCode: [factory.jsonTemplate.category]
+                                        categoryCode: [factory.jsonTemplate.category, '']
                                     }
                                 }
                             },

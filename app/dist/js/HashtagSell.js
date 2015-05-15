@@ -4972,9 +4972,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                 var popularCategories = data;
 
                 if (popularCategories.length) {
-                    //now that we have the popular category code get all the conical information about that category
-                    //TODO: Follow bug here so we can uses josh's posting api instead of brads janky one: https://github.com/HashtagSell/posting-api/issues/46
 
+                    //now that we have the popular category code get all the conical information about that category
                     var mostPopularCategory = popularCategories[0].code;
 
                     $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
@@ -5002,7 +5001,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                 },
                                 optional: {
                                     exact: {
-                                        categoryCode: [factory.jsonTemplate.category]
+                                        categoryCode: [factory.jsonTemplate.category, '']
                                     }
                                 }
                             },
@@ -6100,20 +6099,40 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         var avg = (total / response.data.length);
 
+                        console.log('total: ', total, ' divided by number of categories: ', response.data.length, ' equals: ', avg);
+
                         for (var j = 0; j < response.data.length; j++) {
 
                             var secondCategory = response.data[j];
 
-                            if (secondCategory.count >= avg) {
+                            console.log('total number of items: ', total);
+                            console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                            var percentage = (secondCategory.count/total) * 100;
+                            console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+
+
+                            if (percentage >= 10) {
                                 winningCategories.push(secondCategory.code);
                             }
 
                         }
 
-                        if (winningCategories.length) {
+                        if (winningCategories.length > 1) {
                             factory.defaultParams.filters.optional = {
                                 exact: {
                                     categoryCode: winningCategories.join(",")
+                                }
+                            };
+                        } else if (winningCategories.length === 1) {
+                            factory.defaultParams.filters.optional = {
+                                exact: {
+                                    categoryCode: [winningCategories[0], '']
+                                }
+                            };
+                        } else if (!winningCategories.length && response.data.length){
+                            factory.defaultParams.filters.optional = {
+                                exact: {
+                                    categoryCode: [response.data[0].code, '']
                                 }
                             };
                         }
