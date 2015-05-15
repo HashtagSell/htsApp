@@ -24,7 +24,36 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                 }
             }).then(function (response) {
 
-                deferred.resolve(response);
+                var payload = {
+                    twitter: {
+                        id: response.data.id
+                    }
+                };
+
+                if (newPost.facebook) {
+                    payload.facebook = newPost.facebook;
+                }
+
+                if (newPost.amazon) {
+                    payload.amazon = newPost.amazon;
+                }
+
+                if (newPost.ebay) {
+                    payload.ebay = newPost.ebay;
+                }
+
+                if (newPost.craigslist) {
+                    payload.craigslist = newPost.craigslist;
+                }
+
+                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                    deferred.resolve(response);
+
+                }).error(function (response) {
+
+                    deferred.reject(response);
+                });
 
             }, function (err) {
 
@@ -62,7 +91,36 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                             }
                         }).then(function (response) {
 
-                            deferred.resolve(response);
+                            var payload = {
+                                twitter: {
+                                    id: response.data.id
+                                }
+                            };
+
+                            if (newPost.facebook) {
+                                payload.facebook = newPost.facebook;
+                            }
+
+                            if (newPost.amazon) {
+                                payload.amazon = newPost.amazon;
+                            }
+
+                            if (newPost.ebay) {
+                                payload.ebay = newPost.ebay;
+                            }
+
+                            if (newPost.craigslist) {
+                                payload.craigslist = newPost.craigslist;
+                            }
+
+                            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                deferred.resolve(response);
+
+                            }).error(function (response) {
+
+                                deferred.reject(response);
+                            });
 
                         }, function (err) {
 

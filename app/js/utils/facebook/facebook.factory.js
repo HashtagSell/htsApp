@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 4/23/15.
  */
-htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q, ENV, Session, ezfb) {
+htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', function ($q, ENV, $http, Session, ezfb) {
 
     var factory = {};
 
@@ -33,7 +33,35 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q,
 
                     } else {
 
-                        deferred.resolve(response);
+
+                        var payload = {
+                            facebook: response
+                        };
+
+                        if (newPost.twitter) {
+                            payload.twitter = newPost.twitter;
+                        }
+
+                        if (newPost.amazon) {
+                            payload.amazon = newPost.amazon;
+                        }
+
+                        if (newPost.ebay) {
+                            payload.ebay = newPost.ebay;
+                        }
+
+                        if (newPost.craigslist) {
+                            payload.craigslist = newPost.craigslist;
+                        }
+
+                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                deferred.resolve(response);
+
+                        }).error(function (response) {
+
+                                deferred.reject(response);
+                        });
 
                     }
                 }
@@ -82,7 +110,34 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q,
 
                                     } else {
 
-                                        deferred.resolve(response);
+                                        var payload = {
+                                            facebook: response
+                                        };
+
+                                        if (newPost.twitter) {
+                                            payload.twitter = newPost.twitter;
+                                        }
+
+                                        if (newPost.amazon) {
+                                            payload.amazon = newPost.amazon;
+                                        }
+
+                                        if (newPost.ebay) {
+                                            payload.ebay = newPost.ebay;
+                                        }
+
+                                        if (newPost.craigslist) {
+                                            payload.craigslist = newPost.craigslist;
+                                        }
+
+                                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                            deferred.resolve(response);
+
+                                        }).error(function (response) {
+
+                                            deferred.reject(response);
+                                        });
 
                                     }
                                 }

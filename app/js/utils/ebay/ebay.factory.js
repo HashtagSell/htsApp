@@ -16,6 +16,23 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             "ebay": true
         };
 
+        if (newPost.facebook) {
+            payload.facebook = newPost.facebook;
+        }
+
+        if (newPost.twitter) {
+            payload.twitter = newPost.twitter;
+        }
+
+        if (newPost.amazon) {
+            payload.amazon = newPost.amazon;
+        }
+
+        if (newPost.craigslist) {
+            payload.craigslist = newPost.craigslist;
+        }
+
+
         //We already have ebay token for user.. just push to ebay
         if(!factory.isEmpty(ebay)) {
 
