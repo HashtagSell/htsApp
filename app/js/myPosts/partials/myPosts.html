@@ -43,8 +43,8 @@
                             <td>
                                 <h4>
                                     {{::post.heading | cleanHeading}} - {{::post.askingPrice.value | currency : $ : 0}}
-                                    <span class="label label-primary" ng-click="showFacebookPost(post); $event.stopPropagation();" tooltip="Show Facebook post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Facebook</span>
-                                    <span class="label label-info" ng-click="showTwitterPost(post); $event.stopPropagation();" tooltip="Show Twitter Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Twitter</span>
+                                    <span ng-show="!post.facebook" class="label label-primary" ng-click="showFacebookPost(post); $event.stopPropagation();" tooltip="Show Facebook post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Facebook</span>
+                                    <span ng-show="!post.twitter" class="label label-info" ng-click="showTwitterPost(post); $event.stopPropagation();" tooltip="Show Twitter Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Twitter</span>
                                     <span ng-show="post.ebay" class="label label-warning" ng-click="showEbayPost(post); $event.stopPropagation();" tooltip="Show Ebay Post" tooltip-trigger="mouseenter" tooltip-placement="bottom" style="font-weight: inherit;">Ebay</span>
                                 </h4>
 

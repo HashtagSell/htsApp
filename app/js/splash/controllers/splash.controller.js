@@ -1,12 +1,40 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $rootScope, $sce, $state, $modal, splashFactory, Session, socketio) {
+htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $modal, $state, splashFactory, metaFactory) {
 
-    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', 'authModalFactory', 'favesFactory', 'qaFactory', 'transactionFactory', function ($scope, sideNavFactory, uiGmapGoogleMapApi, authModalFactory, favesFactory, qaFactory, transactionFactory) {
+    var metaCache = angular.copy(metaFactory.metatags);
+    console.log(metaCache);
+
+    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
+
+
+        function strip(html){
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        if($scope.result.heading) {
+            metaFactory.metatags.page.title = $scope.result.heading;
+            metaFactory.metatags.facebook.title = $scope.result.heading;
+            metaFactory.metatags.twitter.title = $scope.result.heading;
+        }
+
+        if($scope.result.body) {
+            var plainTextBody = strip($scope.result.body);
+            metaFactory.metatags.page.description = plainTextBody;
+            metaFactory.metatags.facebook.description = plainTextBody;
+            metaFactory.metatags.twitter.description = plainTextBody;
+        }
+
+        if($scope.result.images.length.length) {
+            metaFactory.metatags.facebook.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
+            metaFactory.metatags.twitter.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
+        }
 
 
         $scope.toggles = {
@@ -228,6 +256,11 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
         //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+
+            metaFactory.metatags.page = metaCache.page;
+            metaFactory.metatags.facebook = metaCache.facebook;
+            metaFactory.metatags.twitter = metaCache.twitter;
+
             splashInstance.dismiss('direct');
         });
     };

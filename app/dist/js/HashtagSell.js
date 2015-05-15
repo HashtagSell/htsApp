@@ -3226,7 +3226,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
         },
         facebook: {
             title: "HashtagSell Online Classifieds",
-            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             site_name: "HashtagSell.com",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             url: ENV.htsAppUrl
@@ -3239,7 +3239,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell.com - Rethinking Online Classifieds",
             url: ENV.htsAppUrl,
             creator: "",
-            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             appIdiPhone: "",
             appIdiPad: "",
             appIdGooglePlay: "",
@@ -5446,54 +5446,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
-    $scope.publishToEbay = function () {
-
-        var deferred = $q.defer();
-
-        if(_.contains($scope.sourceSelections, 'eBay')) {
-
-            ebayFactory.publishToEbay(newPost).then(function (response) {
-
-                Notification.success({
-                    message: "eBay publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
-
-                deferred.resolve();
-
-            }, function (errResponse) {
-
-                console.log('ebay err', errResponse);
-
-                try {
-
-                    Notification.error({
-                        title: 'eBay ' + errResponse.name,
-                        message: errResponse.sourceError.details[0].LongMessage[0],
-                        delay: 10000
-                    });  //Send the webtoast
-
-                }
-                catch (err) {
-
-                    Notification.error({
-                        title: 'eBay ' + errResponse.name,
-                        message: errResponse.message || "Please contact support",
-                        delay: 10000
-                    });  //Send the webtoast
-                }
-
-                deferred.resolve();
-
-            });
-        } else {
-            deferred.resolve();
-        }
-
-        return deferred.promise;
-    };
-
-
 
     $scope.publishToFacebook = function () {
 
@@ -5502,6 +5454,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if(_.contains($scope.sourceSelections, 'Facebook')) {
 
             facebookFactory.publishToWall(newPost).then(function (response) {
+
+                newPost = response;
 
                 Notification.success({
                     message: "Facebook publishing success!",
@@ -5536,6 +5490,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if(_.contains($scope.sourceSelections, 'Twitter')) {
 
             twitterFactory.publishToTwitter(newPost).then(function (response) {
+
+                newPost = response;
 
                 Notification.success({
                     message: "Twitter publishing success!",
@@ -5582,6 +5538,58 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         return deferred.promise;
     };
+
+
+
+    $scope.publishToEbay = function () {
+
+        var deferred = $q.defer();
+
+        if(_.contains($scope.sourceSelections, 'eBay')) {
+
+            ebayFactory.publishToEbay(newPost).then(function (response) {
+
+                newPost = response;
+
+                Notification.success({
+                    message: "eBay publishing success!",
+                    delay: 10000
+                });  //Send the webtoast
+
+                deferred.resolve();
+
+            }, function (errResponse) {
+
+                console.log('ebay err', errResponse);
+
+                try {
+
+                    Notification.error({
+                        title: 'eBay ' + errResponse.name,
+                        message: errResponse.sourceError.details[0].LongMessage[0],
+                        delay: 10000
+                    });  //Send the webtoast
+
+                }
+                catch (err) {
+
+                    Notification.error({
+                        title: 'eBay ' + errResponse.name,
+                        message: errResponse.message || "Please contact support",
+                        delay: 10000
+                    });  //Send the webtoast
+                }
+
+                deferred.resolve();
+
+            });
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    };
+
 
 
     $scope.publishToCraigslist = function () {
@@ -7814,12 +7822,40 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 }]);;/**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state', '$modal', 'splashFactory', 'Session', 'socketio', function ($scope, $rootScope, $sce, $state, $modal, splashFactory, Session, socketio) {
+htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $modal, $state, splashFactory, metaFactory) {
 
-    var splashInstanceCtrl = ['$scope', 'sideNavFactory', 'uiGmapGoogleMapApi', 'authModalFactory', 'favesFactory', 'qaFactory', 'transactionFactory', function ($scope, sideNavFactory, uiGmapGoogleMapApi, authModalFactory, favesFactory, qaFactory, transactionFactory) {
+    var metaCache = angular.copy(metaFactory.metatags);
+    console.log(metaCache);
+
+    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
+
+
+        function strip(html){
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        if($scope.result.heading) {
+            metaFactory.metatags.page.title = $scope.result.heading;
+            metaFactory.metatags.facebook.title = $scope.result.heading;
+            metaFactory.metatags.twitter.title = $scope.result.heading;
+        }
+
+        if($scope.result.body) {
+            var plainTextBody = strip($scope.result.body);
+            metaFactory.metatags.page.description = plainTextBody;
+            metaFactory.metatags.facebook.description = plainTextBody;
+            metaFactory.metatags.twitter.description = plainTextBody;
+        }
+
+        if($scope.result.images.length.length) {
+            metaFactory.metatags.facebook.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
+            metaFactory.metatags.twitter.image = $scope.result.images[0].full || $scope.result.images[0].thumb || $scope.result.images[0].images;
+        }
 
 
         $scope.toggles = {
@@ -8041,6 +8077,11 @@ htsApp.controller('splashController', ['$scope', '$rootScope', '$sce', '$state',
 
         //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
         $scope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+
+            metaFactory.metatags.page = metaCache.page;
+            metaFactory.metatags.facebook = metaCache.facebook;
+            metaFactory.metatags.twitter = metaCache.twitter;
+
             splashInstance.dismiss('direct');
         });
     };
@@ -8940,6 +8981,23 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             "ebay": true
         };
 
+        if (newPost.facebook) {
+            payload.facebook = newPost.facebook;
+        }
+
+        if (newPost.twitter) {
+            payload.twitter = newPost.twitter;
+        }
+
+        if (newPost.amazon) {
+            payload.amazon = newPost.amazon;
+        }
+
+        if (newPost.craigslist) {
+            payload.craigslist = newPost.craigslist;
+        }
+
+
         //We already have ebay token for user.. just push to ebay
         if(!factory.isEmpty(ebay)) {
 
@@ -9109,7 +9167,7 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 }]);;/**
  * Created by braddavis on 4/23/15.
  */
-htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q, ENV, Session, ezfb) {
+htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', function ($q, ENV, $http, Session, ezfb) {
 
     var factory = {};
 
@@ -9141,7 +9199,35 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q,
 
                     } else {
 
-                        deferred.resolve(response);
+
+                        var payload = {
+                            facebook: response
+                        };
+
+                        if (newPost.twitter) {
+                            payload.twitter = newPost.twitter;
+                        }
+
+                        if (newPost.amazon) {
+                            payload.amazon = newPost.amazon;
+                        }
+
+                        if (newPost.ebay) {
+                            payload.ebay = newPost.ebay;
+                        }
+
+                        if (newPost.craigslist) {
+                            payload.craigslist = newPost.craigslist;
+                        }
+
+                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                deferred.resolve(response);
+
+                        }).error(function (response) {
+
+                                deferred.reject(response);
+                        });
 
                     }
                 }
@@ -9190,7 +9276,34 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', 'Session', 'ezfb', function ($q,
 
                                     } else {
 
-                                        deferred.resolve(response);
+                                        var payload = {
+                                            facebook: response
+                                        };
+
+                                        if (newPost.twitter) {
+                                            payload.twitter = newPost.twitter;
+                                        }
+
+                                        if (newPost.amazon) {
+                                            payload.amazon = newPost.amazon;
+                                        }
+
+                                        if (newPost.ebay) {
+                                            payload.ebay = newPost.ebay;
+                                        }
+
+                                        if (newPost.craigslist) {
+                                            payload.craigslist = newPost.craigslist;
+                                        }
+
+                                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                            deferred.resolve(response);
+
+                                        }).error(function (response) {
+
+                                            deferred.reject(response);
+                                        });
 
                                     }
                                 }
@@ -9273,7 +9386,36 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                 }
             }).then(function (response) {
 
-                deferred.resolve(response);
+                var payload = {
+                    twitter: {
+                        id: response.data.id
+                    }
+                };
+
+                if (newPost.facebook) {
+                    payload.facebook = newPost.facebook;
+                }
+
+                if (newPost.amazon) {
+                    payload.amazon = newPost.amazon;
+                }
+
+                if (newPost.ebay) {
+                    payload.ebay = newPost.ebay;
+                }
+
+                if (newPost.craigslist) {
+                    payload.craigslist = newPost.craigslist;
+                }
+
+                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                    deferred.resolve(response);
+
+                }).error(function (response) {
+
+                    deferred.reject(response);
+                });
 
             }, function (err) {
 
@@ -9311,7 +9453,36 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                             }
                         }).then(function (response) {
 
-                            deferred.resolve(response);
+                            var payload = {
+                                twitter: {
+                                    id: response.data.id
+                                }
+                            };
+
+                            if (newPost.facebook) {
+                                payload.facebook = newPost.facebook;
+                            }
+
+                            if (newPost.amazon) {
+                                payload.amazon = newPost.amazon;
+                            }
+
+                            if (newPost.ebay) {
+                                payload.ebay = newPost.ebay;
+                            }
+
+                            if (newPost.craigslist) {
+                                payload.craigslist = newPost.craigslist;
+                            }
+
+                            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                deferred.resolve(response);
+
+                            }).error(function (response) {
+
+                                deferred.reject(response);
+                            });
 
                         }, function (err) {
 

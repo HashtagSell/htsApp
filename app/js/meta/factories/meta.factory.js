@@ -14,7 +14,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
         },
         facebook: {
             title: "HashtagSell Online Classifieds",
-            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             site_name: "HashtagSell.com",
             description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
             url: ENV.htsAppUrl
@@ -27,7 +27,7 @@ htsApp.factory('metaFactory', ['ENV', function (ENV) {
             title: "HashtagSell.com - Rethinking Online Classifieds",
             url: ENV.htsAppUrl,
             creator: "",
-            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.svg",
+            image: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png",
             appIdiPhone: "",
             appIdiPad: "",
             appIdGooglePlay: "",
