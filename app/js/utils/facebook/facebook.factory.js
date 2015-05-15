@@ -13,59 +13,84 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         console.log('facebook tokens', facebook);
 
+
+        //Strips HTML from string.
+        function strip(html){
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        newPost.plainTextBody = strip(newPost.body);
+
+
         var currentDate = new Date();
 
         //WE already have facebook token for user.. just post to facebook.
         //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
         if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
 
-            ezfb.api('/me/feed', 'post',
-                {
-                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+            var fbPost = null;
+
+            if(newPost.images.length) {
+                fbPost = {
+                    message: newPost.plainTextBody,
+                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
-                },
-                function (response) {
+                };
+            } else {
+                fbPost = {
+                    message: newPost.plainTextBody,
+                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    access_token: facebook.token
+                };
+            }
 
-                    if (response.error) {
-
-                        deferred.reject(response);
-
-                    } else {
+            console.log('here is our fb post object: ', fbPost);
 
 
-                        var payload = {
-                            facebook: response
-                        };
+            ezfb.api('/me/feed', 'post', fbPost, function (response) {
 
-                        if (newPost.twitter) {
-                            payload.twitter = newPost.twitter;
-                        }
+                if (response.error) {
 
-                        if (newPost.amazon) {
-                            payload.amazon = newPost.amazon;
-                        }
+                    deferred.reject(response);
 
-                        if (newPost.ebay) {
-                            payload.ebay = newPost.ebay;
-                        }
+                } else {
 
-                        if (newPost.craigslist) {
-                            payload.craigslist = newPost.craigslist;
-                        }
+                    console.log('here is our facebook success response: ', response);
 
-                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+                    var payload = {
+                        facebook: response
+                    };
 
-                                deferred.resolve(response);
-
-                        }).error(function (response) {
-
-                                deferred.reject(response);
-                        });
-
+                    if (newPost.twitter) {
+                        payload.twitter = newPost.twitter;
                     }
+
+                    if (newPost.amazon) {
+                        payload.amazon = newPost.amazon;
+                    }
+
+                    if (newPost.ebay) {
+                        payload.ebay = newPost.ebay;
+                    }
+
+                    if (newPost.craigslist) {
+                        payload.craigslist = newPost.craigslist;
+                    }
+
+                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                            deferred.resolve(response);
+
+                    }).error(function (response) {
+
+                            deferred.reject(response);
+                    });
+
                 }
-            );
+            });
 
         } else { //No facebook token for user.
 
@@ -96,52 +121,65 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                         Session.setSessionValue('facebook', facebookCreds, function () {  //persist the facebook token in database so we don't have to do this again
 
-                            ezfb.api('/me/feed', 'post',  //Post to facebook
-                                {
-                                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+
+
+                            var fbPost = null;
+
+                            if(newPost.images.length) {
+                                fbPost = {
+                                    message: newPost.plainTextBody,
+                                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
                                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                                     access_token: facebookCreds.token
-                                },
-                                function (response) {
+                                };
+                            } else {
+                                fbPost = {
+                                    message: newPost.plainTextBody,
+                                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                    access_token: facebookCreds.token
+                                };
+                            }
 
-                                    if (response.error) {
+
+                            ezfb.api('/me/feed', 'post', fbPost, function (response) {
+
+                                if (response.error) {
+
+                                    deferred.reject(response);
+
+                                } else {
+
+                                    var payload = {
+                                        facebook: response
+                                    };
+
+                                    if (newPost.twitter) {
+                                        payload.twitter = newPost.twitter;
+                                    }
+
+                                    if (newPost.amazon) {
+                                        payload.amazon = newPost.amazon;
+                                    }
+
+                                    if (newPost.ebay) {
+                                        payload.ebay = newPost.ebay;
+                                    }
+
+                                    if (newPost.craigslist) {
+                                        payload.craigslist = newPost.craigslist;
+                                    }
+
+                                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                                        deferred.resolve(response);
+
+                                    }).error(function (response) {
 
                                         deferred.reject(response);
+                                    });
 
-                                    } else {
-
-                                        var payload = {
-                                            facebook: response
-                                        };
-
-                                        if (newPost.twitter) {
-                                            payload.twitter = newPost.twitter;
-                                        }
-
-                                        if (newPost.amazon) {
-                                            payload.amazon = newPost.amazon;
-                                        }
-
-                                        if (newPost.ebay) {
-                                            payload.ebay = newPost.ebay;
-                                        }
-
-                                        if (newPost.craigslist) {
-                                            payload.craigslist = newPost.craigslist;
-                                        }
-
-                                        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                                            deferred.resolve(response);
-
-                                        }).error(function (response) {
-
-                                            deferred.reject(response);
-                                        });
-
-                                    }
                                 }
-                            );
+                            });
 
                         });
 

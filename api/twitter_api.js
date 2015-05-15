@@ -7,6 +7,8 @@ var Twitter = require('twitter');
 var common   = require('../config/common.js');
 var configAuth  = common.config();
 
+var oauth = require('oauth');
+
 
 var client = new Twitter({
     consumer_key: configAuth.twitterAuth.consumerKey,
@@ -25,14 +27,59 @@ exports.publishToTwitter = function (req, res) {
         access_token_secret: req.body.tokenSecret
     });
 
+    var posting = req.body.posting;
 
-    client.post('statuses/update', {status: req.body.status},  function(error, tweet, response){
-        if(error) {
-            res.send(error);
-        } else {
-            res.send(tweet);
-        }
-    });
+    if(posting.images.length){
+
+        var postingImg = posting.images[0].full;
+
+        var request = require('request').defaults({ encoding: null });
+
+        request.get(postingImg, function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+
+                client.post('media/upload', {media: body}, function callback(error, media, response) {
+                        if (error) {
+                            res.send({success: false, data: error});
+                        } else {
+
+                            console.log(media);
+
+                            var tweetWithPhoto = {
+                                status: posting.plainTextBody,
+                                media_ids: media.media_id_string
+                            };
+
+
+                            client.post('statuses/update', tweetWithPhoto, function (error, tweet, response) {
+                                if (error) {
+                                    res.send(error);
+                                } else {
+                                    res.send(tweet);
+                                }
+                            });
+                        }
+                    }
+                );
+            } else {
+                res.send({success: false, data: error});
+            }
+        });
+
+    } else {
+
+        var tweet = {
+            status: posting.plainTextBody
+        };
+
+        client.post('statuses/update', tweet,  function(error, tweet, response){
+            if(error) {
+                res.send(error);
+            } else {
+                res.send(tweet);
+            }
+        });
+    }
 };
 
 

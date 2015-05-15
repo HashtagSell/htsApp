@@ -6,9 +6,6 @@ var env  = common.config();
 
 var request = require('request');
 
-
-request.debug = true;
-
 exports.recache = function (req, res) {
 
 

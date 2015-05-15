@@ -11,6 +11,15 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
         var twitter = Session.getSessionValue('twitter');
 
+        //Strips HTML from string.
+        function strip(html){
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        newPost.plainTextBody = strip(newPost.body);
+
         //We already have twitter token for user.. just post to twitter.
         if(!factory.isEmpty(twitter)) {
 
@@ -18,7 +27,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                 method: 'POST',
                 url: ENV.htsAppUrl + '/publishTweet',
                 data: {
-                    'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    'posting': newPost,
                     'token': twitter.token,
                     'tokenSecret': twitter.tokenSecret
                 }
@@ -85,7 +94,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                             method: 'POST',
                             url: ENV.htsAppUrl + '/publishTweet',
                             data: {
-                                'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                'posting': newPost,
                                 'token': response.user_settings.linkedAccounts.twitter.token,
                                 'tokenSecret': response.user_settings.linkedAccounts.twitter.tokenSecret
                             }
