@@ -18,7 +18,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                 method: 'POST',
                 url: ENV.htsAppUrl + '/publishTweet',
                 data: {
-                    'status' : ENV.htsAppUrl + '/tw/' + newPost.postingId,
+                    'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     'token': twitter.token,
                     'tokenSecret': twitter.tokenSecret
                 }
@@ -85,7 +85,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                             method: 'POST',
                             url: ENV.htsAppUrl + '/publishTweet',
                             data: {
-                                'status' : ENV.htsAppUrl + '/tw/' + newPost.postingId,
+                                'status' : ENV.htsAppUrl + '/ext/' + newPost.postingId,
                                 'token': response.user_settings.linkedAccounts.twitter.token,
                                 'tokenSecret': response.user_settings.linkedAccounts.twitter.tokenSecret
                             }

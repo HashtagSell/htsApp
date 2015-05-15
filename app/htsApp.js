@@ -279,12 +279,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onEnter: joinRoom,
             onExit: leaveRoom
         }).
-        state('twitter', {
-            url: "/tw/:id",
-            controller: 'splashController'
-        }).
-        state('facebook', {
-            url: "/fb/:id",
+        state('externalSplash', {
+            url: "/ext/:id",
             controller: 'splashController'
         }).
         state('ebay', {

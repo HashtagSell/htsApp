@@ -21,8 +21,8 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             ezfb.api('/me/feed', 'post',
                 {
-                    message: ENV.htsAppUrl + '/fb/' + newPost.postingId,
-                    link: ENV.htsAppUrl + '/fb/' + newPost.postingId,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 },
                 function (response) {
@@ -98,8 +98,8 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                             ezfb.api('/me/feed', 'post',  //Post to facebook
                                 {
-                                    message: ENV.htsAppUrl + '/fb/' + newPost.postingId,
-                                    link: ENV.htsAppUrl + '/fb/' + newPost.postingId,
+                                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                                     access_token: facebookCreds.token
                                 },
                                 function (response) {
