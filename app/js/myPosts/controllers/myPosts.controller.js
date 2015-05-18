@@ -5,6 +5,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window
 
     $scope.userPosts = myPostsFactory.userPosts;
 
+    $scope.userObj = Session.userObj;
+
     console.log($scope.userPosts);
 
 
@@ -57,22 +59,34 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window
 
     $scope.newPost = function () {
 
-        var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/newPost/partials/newpost.html',
-            controller: 'newPostModal',
-            size: 'lg',
-            resolve: {
-                mentionsFactory: function () {
-                    return newPostFactory;
-                }
-            }
-        });
+        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
 
-        modalInstance.result.then(function (selectedItem) {
-            $scope.modalContent.selected = selectedItem;
-        }, function () {
-            console.log('Modal dismissed at: ' + new Date());
-        });
+            var modalInstance = $modal.open({
+                templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
+                controller: 'newPostModal',
+                size: 'lg',
+                keyboard: false,
+                backdrop: 'static',
+                resolve: {
+                    mentionsFactory: function () {
+                        return newPostFactory;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (dismissObj) {
+
+            }, function (dismissObj) {
+                if (dismissObj.reason === "stageOneSuccess") {
+
+                    $scope.pushtoExternalService(dismissObj.post);
+                }
+                console.log('Modal dismissed at: ' + new Date());
+            });
+
+        } else {
+            $state.go('signup');
+        }
     };
 
 
