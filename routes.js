@@ -210,7 +210,7 @@ module.exports = function(app, passport) {
     // =====================================
     // BRAINTREE PAYMENT ROUTES ============
     // =====================================
-    var payment = require('./api/payment_api.js');
+    var payment = require('./api/braintree_api.js');
     app.get("/payments/client_token", function (req, res) {
         payment.getClientToken(req, res);
     });
@@ -224,7 +224,17 @@ module.exports = function(app, passport) {
     });
 
 
+    // =====================================
+    // BRAINTREE WEBHOOKS ============
+    // =====================================
+    var btWebHook = require('./api/braintree_webhooks_api.js');
+    app.get("/btwebhook", function (req, res) {
+        btWebHook.verify(req, res);
+    });
 
+    app.post("/btwebhook", function (req, res) {
+        btWebHook.digest(req, res);
+    });
 
     // =====================================
     // EMAIL OFFER NOTIFICATIONS ===========

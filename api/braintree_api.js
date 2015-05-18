@@ -10,6 +10,9 @@ var env  = common.config();
 var request = require('request');
 
 var transaction_notification_api = require('./transaction_notification_api.js');
+var braintree_webhook = require('./braintree_webhooks_api.js');
+
+var User = require('../config/database/models/user.js');
 
 //Braintree config
 var gateway = braintree.connect({
@@ -96,7 +99,65 @@ exports.sendPayment = function (req, res) {
 
 
 exports.createSubMerchant = function(req, res) {
-    var subMerchant = req.body.subMerchant;
-    console.log(subMerchant);
-    res.send('boom');
+
+    var subMerchantParams = req.body.subMerchant;
+    subMerchantParams.masterMerchantAccountId = env.braintree.master_merchant_account_id;
+
+    gateway.merchantAccount.create(subMerchantParams, function (err, result) {
+        if(!err){
+
+            User.findOne({'_id': req.user._id}, function (err, user) {
+
+                // if there are any errors, return the error before anything else
+                if (err)
+                    return res.json({error: err});
+
+                // if no user is found, return the message
+                if (!user)
+                    return res.json({error: "No user found with that Id."});
+
+                if (user)
+
+                    user.merchantAccount = result.merchantAccount;
+
+                    user.save(function(err) {
+                        if (err) {
+                            throw err;
+                        } else {
+
+                            res.send(result);
+
+                            //Simulate webook from braintree if running in dev.
+                            if(process.env.NODE_ENV === "DEVELOPMENT"){
+
+                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountApproved', result.merchantAccount.id);
+
+                                braintree_webhook.digest(sampleSubMerchantApproved);
+                            }
+                        }
+                    });
+            });
+
+        } else {
+            console.log(err);
+            res.send(err);
+        }
+    });
+};
+
+
+
+exports.subMerchantApproved = function(webhookNotification){
+
+    console.log('boom', webhookNotification);
+
+    // true
+    webhookNotification.merchantAccount.status;
+    // "active"
+    webhookNotification.merchantAccount.id;
+    // "blueLaddersStore"
+    webhookNotification.merchantAccount.masterMerchantAccount.id;
+    // "14laddersMarketplace"
+    //notification.merchantAccount.masterMerchantAccount.status;
+    // "active"
 };

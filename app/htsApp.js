@@ -914,7 +914,40 @@ htsApp.filter('capitalize', function() {
 htsApp.directive('subMerchant', function () {
    return {
        templateUrl: 'js/submerchant/partials/submerchant.partial.html',
-       controller: ['$scope', '$http', '$q', 'ENV', function ($scope, $http, $q, ENV) {
+       controller: ['$scope', '$http', '$q', '$timeout', '$filter', 'ENV', function ($scope, $http, $q, $timeout, $filter, ENV) {
+
+
+           $scope.alerts = [];
+           $scope.closeAlert = function(index) {
+               $scope.alerts.splice(index, 1);
+           };
+
+           $scope.$watch('subMerchForm.dob.$viewValue', function(newValue, oldValue){
+                console.log(newValue);
+               if (newValue && oldValue) {
+                   if (oldValue.length == 1 || oldValue.length == 4) {
+                       if (newValue.length == 2 || newValue.length == 5) {
+                           $scope.subMerchantForm.individual.dateOfBirth = $scope.subMerchForm.dob.$viewValue + '/';
+                       }
+                   }
+               }
+
+           });
+
+
+
+
+           $scope.$watch('subMerchantForm.destination.disperseType', function(newValue, oldValue){
+
+               if (newValue === "bank") {
+                   $scope.subMerchant.funding.destination = 'bank';
+               } else if (newValue === "venmo") {
+                   $scope.subMerchant.funding.destination = 'email';
+               }
+
+           });
+
+
 
            $scope.subMerchantForm = {
                business: {
@@ -926,7 +959,8 @@ htsApp.directive('subMerchant', function () {
                    addressLookup: null
                },
                individual: {
-                   addressLookup: null
+                   addressLookup: null,
+                   dateOfBirth: null,
                },
                destination: {
                    disperseToBank: null,
@@ -936,45 +970,89 @@ htsApp.directive('subMerchant', function () {
 
            $scope.subMerchant = {
                business: {
-                   legal_name: null,
-                   tax_id: null,
+                   legalName: null,
+                   taxId: null,
                    address: {
                        street_address: null,
                        locality: null,
                        region: null,
-                       postal_code: null,
+                       postalCode: null,
                    }
                },
                individual: {
-                   first_name: null,
-                   last_name: null,
+                   firstName: null,
+                   lastName: null,
                    email: null,
-                   date_of_birth: null,
+                   dateOfBirth: null,
                    address: {
-                       street_address: null,
+                       streetAddress: null,
                        locality: null,
                        region: null,
-                       postal_code: null
+                       postalCode: null
                    },
                },
                funding: {
                    destination: null,
                    email: null,
-                   mobile_phone: null,
-                   account_number: null,
-                   routing_number: null
-               }
+                   mobilePhone: null,
+                   accountNumber: null,
+                   routingNumber: null
+               },
+               tosAccepted: true
            };
 
 
            $scope.submitSubMerchant = function () {
+
+               $scope.subMerchant.individual.dateOfBirth = $scope.convertIndividualDob($scope.subMerchantForm.individual.dateOfBirth, 'dashes');
+
                $http.post(ENV.paymentAPI + '/submerchant', {
                    subMerchant: $scope.subMerchant
                }).success(function(response){
-                    console.log(response);
+
+                   if(!response.success){
+                       $scope.alerts.push({msg: response.message, type: 'danger'});
+                   } else {
+                       if(response.merchantAccount.status === "pending") {
+                           $scope.alerts.push({msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.', type: 'success'});
+                       }
+                   }
                }).error(function(err){
-                    console.log(err);
+                   $scope.alerts.push({msg: err.message, type: 'danger'});
                });
+           };
+
+           $scope.convertIndividualDob = function (dob, type){
+
+               var dobParts = '';
+               var month = '';
+               var day = '';
+               var year = '';
+               var convertedDate = '';
+
+               if (type === "dashes"){
+
+                   dobParts = dob.split("/");
+
+                   month = dobParts[0];
+                   day = dobParts[1];
+                   year = dobParts[2];
+
+                   convertedDate = year + '-' + month + '-' + day;
+
+               } else if (type === "slashes") {
+
+                   dobParts = dob.split("-");
+
+                   year = dobParts[0];
+                   month = dobParts[1];
+                   day = dobParts[2];
+
+                   convertedDate = month + '/' + day + '/' + year;
+
+               }
+
+               return convertedDate;
            };
 
 
@@ -1057,7 +1135,7 @@ htsApp.directive('subMerchant', function () {
                                street = component.long_name;
                                break;
                            } else if(componentType === "postal_code") {
-                               $scope.subMerchant[type].address.postal_code = component.long_name;
+                               $scope.subMerchant[type].address.postalCode = component.long_name;
                                break;
                            } else if(componentType === "street_number") {
                                street_number = component.long_name;
@@ -1066,7 +1144,7 @@ htsApp.directive('subMerchant', function () {
                        }
                    }
 
-                   $scope.subMerchant[type].address.street_address = street_number + ' ' + street;
+                   $scope.subMerchant[type].address.streetAddress = street_number + ' ' + street;
 
                });
 
@@ -1092,5 +1170,29 @@ htsApp.filter('awesomecity', function() {
         }
 
         return awesomeCity;
+    };
+});
+
+
+
+htsApp.directive('onlyDigits', function () {
+    return {
+        require: 'ngModel',
+        restrict: 'A',
+        link: function (scope, element, attr, ctrl) {
+            function inputValue(val) {
+                if (val) {
+                    var digits = val.replace(/\/[^0-9]/g, '');
+
+                    if (digits !== val) {
+                        ctrl.$setViewValue(digits);
+                        ctrl.$render();
+                    }
+                    return parseInt(digits,10);
+                }
+                return undefined;
+            }
+            ctrl.$parsers.push(inputValue);
+        }
     };
 });

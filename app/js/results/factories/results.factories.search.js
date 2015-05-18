@@ -217,17 +217,6 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
     };
 
-    //get lat long manually
-    (function () {
-        console.log('querying fgp at: ', ENV.freeGeoIp);
-
-        $http.get(ENV.freeGeoIp).success(function (response) {
-            console.log('freegeoip success: ', response);
-        }).error(function (err){
-            console.log('freegeoipo fail', err);
-        });
-
-    })();
 
     factory.defaultParams = {
         start: 0,
