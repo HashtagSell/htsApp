@@ -12,7 +12,18 @@ var userSchema = mongoose.Schema({
         resetPasswordExpires: Date,
         role         : String
     },
-    merchantAccount: {},
+    merchantAccount: {
+        id: String,
+        status: String,
+        currencyIsoCode: String,
+        subMerchantAccount: Boolean,
+        masterMerchantAccount: {
+            id: String,
+            status: String,
+            currencyIsoCode: String,
+            subMerchantAccount: Boolean
+        }
+    },
     user_settings    : {
         name         : String,
         biography    : { type: String, default: "Add a profile description" },

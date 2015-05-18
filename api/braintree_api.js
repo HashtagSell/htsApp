@@ -14,6 +14,15 @@ var braintree_webhook = require('./braintree_webhooks_api.js');
 
 var User = require('../config/database/models/user.js');
 
+// used to read in email template files
+var fs = require("fs");
+
+// used to compile the email templates
+var ejs = require('ejs');
+
+//Nodemail used to send email via Amazon SES
+var mailer = require('../config/mailer/ses.js');
+
 //Braintree config
 var gateway = braintree.connect({
     environment: braintree.Environment.Sandbox,
@@ -118,7 +127,18 @@ exports.createSubMerchant = function(req, res) {
 
                 if (user)
 
-                    user.merchantAccount = result.merchantAccount;
+                    user.merchantAccount = {
+                        id: result.merchantAccount.id,
+                        status: result.merchantAccount.status,
+                        currencyIsoCode: result.merchantAccount.currencyIsoCode,
+                        subMerchantAccount: result.merchantAccount.subMerchantAccount,
+                        masterMerchantAccount: {
+                            id: result.merchantAccount.masterMerchantAccount.id,
+                            status: result.merchantAccount.masterMerchantAccount.status,
+                            currencyIsoCode: result.merchantAccount.masterMerchantAccount.currencyIsoCode,
+                            subMerchantAccount: result.merchantAccount.masterMerchantAccount.subMerchantAccount
+                        }
+                    };
 
                     user.save(function(err) {
                         if (err) {
@@ -130,7 +150,7 @@ exports.createSubMerchant = function(req, res) {
                             //Simulate webook from braintree if running in dev.
                             if(process.env.NODE_ENV === "DEVELOPMENT"){
 
-                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountApproved', result.merchantAccount.id);
+                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountDeclined', result.merchantAccount.id);
 
                                 braintree_webhook.digest(sampleSubMerchantApproved);
                             }
@@ -149,15 +169,122 @@ exports.createSubMerchant = function(req, res) {
 
 exports.subMerchantApproved = function(webhookNotification){
 
-    console.log('boom', webhookNotification);
+    User.findOne({'merchantAccount.id': webhookNotification.subscription.id}, function (err, user) {
 
-    // true
-    webhookNotification.merchantAccount.status;
-    // "active"
-    webhookNotification.merchantAccount.id;
-    // "blueLaddersStore"
-    webhookNotification.merchantAccount.masterMerchantAccount.id;
-    // "14laddersMarketplace"
-    //notification.merchantAccount.masterMerchantAccount.status;
-    // "active"
+        if (user) {
+
+            user.merchantAccount.status = 'active';
+
+            user.save(function (err) {
+                if (err) {
+                    throw err;
+                } else {
+                    //Get the ejs template for submerchant acceptance
+                    var subMerchAccepted_template = fs.readFileSync(__dirname + '/../config/mailer/email_templates/subMerchant_accepted_email_template.ejs', "utf8");
+
+                    //Variables for EJS to inject into template
+                    var emailObj =
+                    {
+                        user:{
+                            name: user.user_settings.name,
+                        },
+                        images:{
+                            fb_logo: "https://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                            twitter_logo: "https://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                            hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
+                        }
+                    };
+
+                    //Merge the template
+                    var compiled_html = ejs.render(subMerchAccepted_template, emailObj);
+
+                    //Setup plain text email in case user cannot view Rich text emails
+                    var plain_text = "Congratulations, you're an approved HashtagSeller!";
+
+                    //Build the email message
+                    var opts = {
+                        from: "HashtagSell <no-reply@hashtagsell.com>",
+                        to: user.local.email,
+                        subject: "Account approval",
+                        html: compiled_html,
+                        text: plain_text
+                    };
+
+                    // Send Forgot password email
+                    mailer.sendMail(opts, function(error, info){
+                        if(error){
+                            console.log(error);
+                        }else{
+                            console.log('Message sent: ' + info.response);
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+
+};
+
+
+exports.subMerchantDeclined = function(webhookNotification){
+
+    console.log('declined', webhookNotification);
+
+
+    User.findOne({'merchantAccount.id': webhookNotification.subscription.id}, function (err, user) {
+
+        if (user) {
+
+            user.merchantAccount.status = 'declined';
+
+            user.save(function (err) {
+                if (err) {
+                    throw err;
+                } else {
+                    //Get the ejs template for submerchant acceptance
+                    var subMerchAccepted_template = fs.readFileSync(__dirname + '/../config/mailer/email_templates/subMerchant_declined_email_template.ejs', "utf8");
+
+                    //Variables for EJS to inject into template
+                    var emailObj =
+                    {
+                        user:{
+                            name: user.user_settings.name,
+                        },
+                        images:{
+                            fb_logo: "https://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                            twitter_logo: "https://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                            hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
+                        }
+                    };
+
+                    //Merge the template
+                    var compiled_html = ejs.render(subMerchAccepted_template, emailObj);
+
+                    //Setup plain text email in case user cannot view Rich text emails
+                    var plain_text = "We apologize for the inconvenience, but you payment gateway partner could not approve your request to be a HashtagSeller.";
+
+                    //Build the email message
+                    var opts = {
+                        from: "HashtagSell <no-reply@hashtagsell.com>",
+                        to: user.local.email,
+                        subject: "Account not approved",
+                        html: compiled_html,
+                        text: plain_text
+                    };
+
+                    // Send Forgot password email
+                    mailer.sendMail(opts, function(error, info){
+                        if(error){
+                            console.log(error);
+                        }else{
+                            console.log('Message sent: ' + info.response);
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+
 };
