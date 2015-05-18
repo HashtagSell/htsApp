@@ -63,10 +63,8 @@ exports.sendPayment = function (req, res) {
             //If the item has a price and that price is greater than 0
             if(posting.askingPrice && posting.askingPrice.value > 0) {
                 gateway.transaction.sale({
-                    merchantAccountId: posting.username,
                     amount: posting.askingPrice.value,
-                    paymentMethodNonce: nonce,
-                    serviceFeeAmount: "1.00"
+                    paymentMethodNonce: nonce
                 }, function (err, braintreeResponse) {
                     if (err) {
                         res.send({success: false, message: err});
