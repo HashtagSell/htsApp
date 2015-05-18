@@ -16,19 +16,16 @@ htsApp.factory('externalSourcesSelection', ['$http', function ($http) {
     //    ]
     //};
 
+    //{"name": "Amazon", "class": "amazon", selected: false},
+    //{"name": "Craigslist", "class": "craigslist", selected: false},
 
     factory.sources = {
         marketplaces: [
             {"name": "eBay", "class": "ebay", selected: false},
-            {"name": "Amazon", "class": "amazon", selected: false},
-            {"name": "Craigslist", "class": "craigslist", selected: false},
             {"name": "Facebook", "class": "facebook", selected: false},
             {"name": "Twitter", "class": "twitter", selected: false}
         ]
     };
-
-
-    //TODO: return the successfully saved hts post JSON and join the socket.io room.
 
 
 

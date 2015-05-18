@@ -36,7 +36,6 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
                 fbPost = {
                     message: newPost.plainTextBody,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 };
             } else {

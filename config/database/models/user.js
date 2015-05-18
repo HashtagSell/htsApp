@@ -12,18 +12,6 @@ var userSchema = mongoose.Schema({
         resetPasswordExpires: Date,
         role         : String
     },
-    merchantAccount: {
-        id: String,
-        status: String,
-        currencyIsoCode: String,
-        subMerchantAccount: Boolean,
-        masterMerchantAccount: {
-            id: String,
-            status: String,
-            currencyIsoCode: String,
-            subMerchantAccount: Boolean
-        }
-    },
     user_settings    : {
         name         : String,
         biography    : { type: String, default: "Add a profile description" },
@@ -56,6 +44,53 @@ var userSchema = mongoose.Schema({
                 token        : String,
                 email        : String,
                 name         : String
+            }
+        },
+        merchantAccount: {
+            details: {
+                business: {
+                    legalName: String,
+                    taxId: String,
+                    address: {
+                        street_address: String,
+                        locality: String,
+                        region: String,
+                        postalCode: String,
+                    }
+                },
+                individual: {
+                    firstName: String,
+                    lastName: String,
+                    email: String,
+                    dateOfBirth: String,
+                    address: {
+                        streetAddress: String,
+                        locality: String,
+                        region: String,
+                        postalCode: String
+                    },
+                },
+                funding: {
+                    destination: String,
+                    email: String,
+                    mobilePhone: String,
+                    accountNumber: String,
+                    routingNumber: String
+                },
+                tosAccepted: Boolean,
+                id: String
+            },
+            response: {
+                id: String,
+                status: String,
+                currencyIsoCode: String,
+                subMerchantAccount: Boolean,
+                masterMerchantAccount: {
+                    id: String,
+                    status: String,
+                    currencyIsoCode: String,
+                    subMerchantAccount: Boolean
+                }
             }
         },
         safe_search  : { type: Boolean, default: true },

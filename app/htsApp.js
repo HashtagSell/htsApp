@@ -914,13 +914,13 @@ htsApp.filter('capitalize', function() {
 htsApp.directive('subMerchant', function () {
    return {
        templateUrl: 'js/submerchant/partials/submerchant.partial.html',
-       controller: ['$scope', '$http', '$q', '$timeout', '$filter', 'ENV', function ($scope, $http, $q, $timeout, $filter, ENV) {
-
+       controller: ['$scope', '$http', '$q', '$timeout', '$filter', 'Session', 'ENV', function ($scope, $http, $q, $timeout, $filter, Session, ENV) {
 
            $scope.alerts = [];
            $scope.closeAlert = function(index) {
                $scope.alerts.splice(index, 1);
            };
+
 
            $scope.$watch('subMerchForm.dob.$viewValue', function(newValue, oldValue){
                 console.log(newValue);
@@ -933,8 +933,6 @@ htsApp.directive('subMerchant', function () {
                }
 
            });
-
-
 
 
            $scope.$watch('subMerchantForm.destination.disperseType', function(newValue, oldValue){
@@ -965,7 +963,8 @@ htsApp.directive('subMerchant', function () {
                destination: {
                    disperseToBank: null,
                    disperseToVenmo: null
-               }
+               },
+               update: null
            };
 
            $scope.subMerchant = {
@@ -1002,26 +1001,6 @@ htsApp.directive('subMerchant', function () {
            };
 
 
-           $scope.submitSubMerchant = function () {
-
-               $scope.subMerchant.individual.dateOfBirth = $scope.convertIndividualDob($scope.subMerchantForm.individual.dateOfBirth, 'dashes');
-
-               $http.post(ENV.paymentAPI + '/submerchant', {
-                   subMerchant: $scope.subMerchant
-               }).success(function(response){
-
-                   if(!response.success){
-                       $scope.alerts.push({msg: response.message, type: 'danger'});
-                   } else {
-                       if(response.merchantAccount.status === "pending") {
-                           $scope.alerts.push({msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.', type: 'success'});
-                       }
-                   }
-               }).error(function(err){
-                   $scope.alerts.push({msg: err.message, type: 'danger'});
-               });
-           };
-
            $scope.convertIndividualDob = function (dob, type){
 
                var dobParts = '';
@@ -1053,6 +1032,56 @@ htsApp.directive('subMerchant', function () {
                }
 
                return convertedDate;
+           };
+
+
+
+           (function(){
+               $scope.recoveredMerchantAccount = Session.getSessionValue('merchantAccount');
+                console.log($scope.recoveredMerchantAccount);
+               if($scope.recoveredMerchantAccount.response.status) {
+                   if ($scope.recoveredMerchantAccount.response.status === "pending") {
+                       $scope.alerts.push({msg: "This account is currently pending approval.", type: 'warning'});
+                   } else if ($scope.recoveredMerchantAccount.response.status === "declined") {
+                       $scope.alerts.push({msg: "This account is currently declined.", type: 'danger'});
+                   }
+
+                   if($scope.recoveredMerchantAccount.details.id) {
+                       $scope.subMerchantForm.individual.dateOfBirth = $scope.convertIndividualDob($scope.recoveredMerchantAccount.details.individual.dateOfBirth, 'slashes');
+                       console.log($scope.recoveredMerchantAccount.details);
+                       $scope.subMerchant = $scope.recoveredMerchantAccount.details;
+                   }
+               }
+           })();
+
+
+
+
+           $scope.submitSubMerchant = function () {
+
+               $scope.alerts = [];
+
+                $scope.subMerchant.individual.dateOfBirth = $scope.convertIndividualDob($scope.subMerchantForm.individual.dateOfBirth, 'dashes');
+                console.log('hello');
+
+                $http.post(ENV.paymentAPI + '/submerchant', {
+                    subMerchant: $scope.subMerchant,
+                    existingSubMerchant: $scope.recoveredMerchantAccount.response.id
+                }).success(function (response) {
+
+                    if (!response.success) {
+                        $scope.alerts.push({msg: response.message, type: 'danger'});
+                    } else {
+                        if (response.merchantAccount.status === "pending") {
+                            $scope.alerts.push({
+                                msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.',
+                                type: 'success'
+                            });
+                        }
+                    }
+                }).error(function (err) {
+                    $scope.alerts.push({msg: err.message, type: 'danger'});
+                });
            };
 
 
@@ -1194,5 +1223,21 @@ htsApp.directive('onlyDigits', function () {
             }
             ctrl.$parsers.push(inputValue);
         }
+    };
+});
+
+
+
+htsApp.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
     };
 });

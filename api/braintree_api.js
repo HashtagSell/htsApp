@@ -63,8 +63,10 @@ exports.sendPayment = function (req, res) {
             //If the item has a price and that price is greater than 0
             if(posting.askingPrice && posting.askingPrice.value > 0) {
                 gateway.transaction.sale({
+                    merchantAccountId: posting.username,
                     amount: posting.askingPrice.value,
-                    paymentMethodNonce: nonce
+                    paymentMethodNonce: nonce,
+                    serviceFeeAmount: "1.00"
                 }, function (err, braintreeResponse) {
                     if (err) {
                         res.send({success: false, message: err});
@@ -109,26 +111,27 @@ exports.sendPayment = function (req, res) {
 
 exports.createSubMerchant = function(req, res) {
 
-    var subMerchantParams = req.body.subMerchant;
-    subMerchantParams.masterMerchantAccountId = env.braintree.master_merchant_account_id;
-    subMerchantParams.id = req.user._id;
+    var callback = function (err, result) {
 
-    gateway.merchantAccount.create(subMerchantParams, function (err, result) {
+        console.log(result);
+
         if(!err){
+            if(result.success) {
+                User.findOne({'_id': req.user._id}, function (err, user) {
 
-            User.findOne({'_id': req.user._id}, function (err, user) {
+                    // if there are any errors, return the error before anything else
+                    if (err)
+                        return res.json({error: err});
 
-                // if there are any errors, return the error before anything else
-                if (err)
-                    return res.json({error: err});
+                    // if no user is found, return the message
+                    if (!user)
+                        return res.json({error: "No user found with that Id."});
 
-                // if no user is found, return the message
-                if (!user)
-                    return res.json({error: "No user found with that Id."});
+                    if (user)
 
-                if (user)
+                        user.user_settings.merchantAccount.details = subMerchantParams;
 
-                    user.merchantAccount = {
+                    user.user_settings.merchantAccount.response = {
                         id: result.merchantAccount.id,
                         status: result.merchantAccount.status,
                         currencyIsoCode: result.merchantAccount.currencyIsoCode,
@@ -141,7 +144,7 @@ exports.createSubMerchant = function(req, res) {
                         }
                     };
 
-                    user.save(function(err) {
+                    user.save(function (err) {
                         if (err) {
                             throw err;
                         } else {
@@ -149,32 +152,53 @@ exports.createSubMerchant = function(req, res) {
                             res.send(result);
 
                             //Simulate webook from braintree if running in dev.
-                            if(process.env.NODE_ENV === "DEVELOPMENT"  || process.env.NODE_ENV === "STAGING"){
+                            if (process.env.NODE_ENV === "DEVELOPMENT" || process.env.NODE_ENV === "STAGING") {
 
-                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountAccepted', result.merchantAccount.id);
+                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountApproved', result.merchantAccount.id);
 
                                 braintree_webhook.digest(sampleSubMerchantApproved);
                             }
                         }
                     });
-            });
+                });
+            } else {
+                res.send(result);
+            }
 
         } else {
+            console.log('here is our error');
             console.log(err);
             res.send(err);
         }
-    });
+    };
+
+
+
+
+
+    var subMerchantParams = req.body.subMerchant;
+    subMerchantParams.masterMerchantAccountId = env.braintree.master_merchant_account_id;
+    subMerchantParams.id = req.user.user_settings.name;
+
+    var existingBraintreeSubMerchantId = req.body.existingSubMerchant;
+
+
+    if(!existingBraintreeSubMerchantId) {
+        gateway.merchantAccount.create(subMerchantParams, callback);
+    } else {
+        gateway.merchantAccount.update(existingBraintreeSubMerchantId, subMerchantParams, callback);
+    }
 };
 
 
 
 exports.subMerchantApproved = function(webhookNotification){
 
-    User.findOne({'merchantAccount.id': webhookNotification.subscription.id}, function (err, user) {
+    User.findOne({'user_settings.merchantAccount.response.id': webhookNotification.subscription.id}, function (err, user) {
 
         if (user) {
 
-            user.merchantAccount.status = 'active';
+            user.user_settings.merchantAccount.response.status = 'active';
 
             user.save(function (err) {
                 if (err) {
@@ -233,11 +257,11 @@ exports.subMerchantDeclined = function(webhookNotification){
     console.log('declined', webhookNotification);
 
 
-    User.findOne({'merchantAccount.id': webhookNotification.subscription.id}, function (err, user) {
+    User.findOne({'user_settings.merchantAccount.response.id': webhookNotification.subscription.id}, function (err, user) {
 
         if (user) {
 
-            user.merchantAccount.status = 'declined';
+            user.user_settings.merchantAccount.response.status = 'declined';
 
             user.save(function (err) {
                 if (err) {

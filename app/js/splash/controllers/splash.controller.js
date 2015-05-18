@@ -173,6 +173,10 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
 
         };
 
+        $scope.qamodule = {
+            question: ''
+        };
+
         $scope.submitQuestion = function(question) {
 
             var loggedIn = $scope.userObj.user_settings.loggedIn;
@@ -187,6 +191,8 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                     qaFactory.submitQuestion(question, post, username).then(function (response) {
 
                         console.log(response);
+
+                        $scope.qamodule.question = '';
 
                     }, function (err) {
                         console.log(err);
@@ -248,9 +254,10 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         splashInstance.result.then(function (selectedItem) {
             //console.log(selectedItem);
         }, function (direct) {
-            if(!direct) {
+            //if(!direct) {
+            //    alert('not direct');
                 $state.go('^');
-            }
+            //}
         });
 
 

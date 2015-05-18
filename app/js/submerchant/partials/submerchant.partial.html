@@ -139,9 +139,16 @@
             <div class="form-group">
                 <label class="col-md-2 control-label" for="submit"></label>
                 <div class="col-md-3">
-                    <button id="submit" name="submit" class="btn btn-primary">Submit</button>
+                    <button id="submit" name="submit" class="btn btn-warning" ng-show="recoveredMerchantAccount.response.status === 'active'">Change Payment Settings</button>
+                    <button id="submit" name="submit" class="btn btn-primary" ng-show="recoveredMerchantAccount.response.status === 'declined'">Re-Submit</button>
+                    <button id="submit" name="submit" class="btn btn-primary" ng-show="recoveredMerchantAccount.response.status === 'pending'" ng-disabled="true">Pending approval</button>
+                    <button id="submit" name="submit" class="btn btn-primary" ng-show="!recoveredMerchantAccount.response.status">Submit</button>
                 </div>
             </div>
+
+            <!--{{subMerchant}}-->
+
+            <!--{{recoveredMerchantAccount}}-->
 
         </fieldset>
     </form>

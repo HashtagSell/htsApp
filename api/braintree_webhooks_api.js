@@ -29,6 +29,9 @@ exports.verify = function (req, res) {
 
 
 exports.digest = function (req, res) {
+
+    console.log(req);
+
     var bt_signature = '';
     var bt_payload = '';
 
@@ -45,6 +48,7 @@ exports.digest = function (req, res) {
 
         console.log("[Webhook Received " + webhookNotification.timestamp + "] | Kind: " + webhookNotification.kind + " | Subscription: " + webhookNotification.subscription.id);
 
+        console.log(webhookNotification);
 
         if(webhookNotification.kind === 'WebhookNotification.Kind.SubMerchantAccountApproved') {
             braintree_api.subMerchantApproved(webhookNotification);

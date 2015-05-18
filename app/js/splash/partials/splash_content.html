@@ -142,7 +142,7 @@
 
                             <div ng-if="result.external.source.code === 'HSHTG'" ng-init="getPostingIdQuestions()">
                                 <p class="input-group">
-                                    <input class="form-control" ng-model="qamodule.question" placeholder="Ask the seller a question" />
+                                    <input class="form-control" ng-model="qamodule.question" placeholder="Ask the seller a question" ng-enter="submitQuestion(qamodule.question)"/>
                                     <span class="input-group-btn">
                                         <button type="button" class="btn btn-primary" ng-click="submitQuestion(qamodule.question)">Ask</button>
                                     </span>
