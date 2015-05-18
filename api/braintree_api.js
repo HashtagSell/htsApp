@@ -111,6 +111,7 @@ exports.createSubMerchant = function(req, res) {
 
     var subMerchantParams = req.body.subMerchant;
     subMerchantParams.masterMerchantAccountId = env.braintree.master_merchant_account_id;
+    subMerchantParams.id = req.user._id;
 
     gateway.merchantAccount.create(subMerchantParams, function (err, result) {
         if(!err){
@@ -148,9 +149,9 @@ exports.createSubMerchant = function(req, res) {
                             res.send(result);
 
                             //Simulate webook from braintree if running in dev.
-                            if(process.env.NODE_ENV === "DEVELOPMENT"){
+                            if(process.env.NODE_ENV === "DEVELOPMENT"  || process.env.NODE_ENV === "STAGING"){
 
-                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountDeclined', result.merchantAccount.id);
+                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountAccepted', result.merchantAccount.id);
 
                                 braintree_webhook.digest(sampleSubMerchantApproved);
                             }
