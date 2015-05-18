@@ -48,10 +48,10 @@ exports.digest = function (req, res) {
 
         if(webhookNotification.kind === 'WebhookNotification.Kind.SubMerchantAccountApproved') {
             braintree_api.subMerchantApproved(webhookNotification);
+            res.send(200);
         }
 
 
         //TODO: Catch all other webhooks here.
-
     });
 };
