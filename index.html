@@ -277,20 +277,25 @@
             <div class="footer container">
                 <div class="row">
 
-                    <div class="col-sm-4 hidden-xs">
-                        <span id="copyright" ng-show="!feedback.form.visible">©2015 HashtagSell, Inc</span>
+                    <div class="col-sm-2 hidden-xs" ng-show="!feedback.form.visible">
+                        <span id="copyright">©2015 HashtagSell, Inc</span>
                     </div>
 
-                    <div class="col-sm-4 col-xs-12 text-center feedback-link">
-                        <a ng-click="feedback.form.visible = !feedback.form.visible" tooltip="Tell us what you want! We'll build it." tooltip-trigger="mouseenter" tooltip-placement="top">Provide Feedback</a>
+                    <div class="col-sm-2 hidden-xs" ng-show="!feedback.form.visible">
+                        <a href="http://www.facebook.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-facebook"></i></a>
+                        <a href="http://www.twitter.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-twitter"></i></a>
                     </div>
 
-                    <div class="col-sm-4 hidden-xs pull-right">
-                        <div ng-show="!feedback.form.visible">
-                            <a href="http://www.facebook.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-facebook"></i></a>
-                            <a href="http://www.twitter.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-twitter"></i></a>
-                            <a class="pull-right" href="http://blog.hashtagsell.com" target="_blank">HashtagBlog</a>
-                        </div>
+                    <div class="text-center feedback-link" ng-class="feedback.form.visible ? 'col-xs-12' : 'col-sm-4 col-xs-6'">
+                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="!feedback.form.visible" tooltip="Tell us what you want! We'll build it." tooltip-trigger="mouseenter" tooltip-placement="top">Provide Feedback</a>
+                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="feedback.form.visible">Close Feedback</a>
+                    </div>
+
+
+                    <div class="col-sm-4 col-xs-6" ng-show="!feedback.form.visible">
+                        <a ui-sref="privacyPolicy" target="_blank">Privacy Policy</a> |
+                        <a class="hidden-xs" ui-sref="termsOfService" target="_blank">Terms of Service</a>
+                        <a class="hidden-sm hidden-md hidden-lg" ui-sref="termsOfService" target="_blank">TOS</a>
                     </div>
 
                 </div>
