@@ -8,12 +8,12 @@
 
         <form name="RegisterFormV2" id="RegisterFormV2" class="form-horizontal" ng-submit="signupPassport(RegisterFormV2.$valid)" novalidate>
             <div class="modal-header">
-                <h3 style="text-align: center;">Join <img src="//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg" style="top: -5px; position: relative;"/><sup>Beta</sup></h3>
+                <h3 style="text-align: center; font-weight: 100 !important">Join <img src="//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg" style="top: -5px; position: relative;"/> Beta</h3>
             </div>
             <div class="modal-body">
 
                 <div class="controls">
-                    <input class="form-control" type="email" id="email" name="email" ng-model="email" placeholder="Email" required/>
+                    <input class="form-control" type="email" id="email" name="email" ng-model="email" placeholder="Email" required="true"/>
                 </div>
 
                 <br>
@@ -22,7 +22,7 @@
                 <div class="controls">
                     <div class="input-group">
                         <span class="input-group-addon">@</span>
-                        <input class="form-control" type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9]*$/" placeholder="Username" required/>
+                        <input class="form-control" type="text" id="username" name="username" ng-model="name" ng-minlength="3" ng-maxlength="22" ng-pattern="/^[a-zA-Z0-9]*$/" placeholder="Username" required="true"/>
                     </div>
                 </div>
 
@@ -30,26 +30,31 @@
                 <br>
 
                 <div class="controls">
-                    <input class="form-control" type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[a-zA-Z0-9.!@#$%&*~+=^-_]*$/" placeholder="Password" required/>
+                    <input class="form-control" type="password" id="password" name="password" ng-model="password" ng-minlength="4" ng-maxlength="30" ng-pattern="/^[a-zA-Z0-9.!@#$%&*~+=^-_]*$/" placeholder="Password" required="true"/>
                 </div>
 
                 <br>
 
-                <!--<div class="controls">-->
-                    <!--<input class="form-control" type="password" id="password_verify" name="password_verify" ng-model="password_verify" matchinput="password" placeholder="Repeat Password" required/>-->
-                <!--</div>-->
-
-                <!--<br>-->
-
                 <div class="controls">
-                    <input class="form-control" type="text" id="secret" placeholder="Early Access Code" name="secret" required/>
+                    <input class="form-control" type="text" id="secret" placeholder="Early Access Code" name="secret" required="true"/>
                     <span>
-                        <a href ng-click="dismiss('subscribe')">
-                            <small>Send me an access code!</small>
+                        <a href ng-click="dismiss('subscribe')" style="position: relative; top: 3px;">
+                            <small>I don't have an access code</small>
                         </a>
                     </span>
+                </div>
+
+                <br/>
+
+                <div class="controls">
+                    <small>
+                        <input id="betaAgreement" name="betaAgreement" type="checkbox" ng-model="betaAgreement" required="true"> I agree to
+                        <a ui-sref="betaAgreement" target="_blank" required>Beta Agreement</a>
+                    </small>
+                    <br>
                     <small class="text-danger">{{message}}</small>
                 </div>
+
 
             </div>
             <div class="modal-footer">
@@ -65,12 +70,12 @@
                     </small>
                 </span>
                 <button id="submit-create-account" class="btn" ng-class="RegisterFormV2.$invalid ? 'btn-warning' : 'btn-success'" type="submit" ng-disabled="RegisterFormV2.$invalid">
-                    <span ng-show="RegisterFormV2.username.$error.minlength">Username too short.</span>
-                    <span ng-show="RegisterFormV2.username.$error.maxlength">Username too long.</span>
-                    <span ng-show="RegisterFormV2.username.$error.pattern">No special chars in username.</span>
-                    <span ng-show="RegisterFormV2.password_verify.$error.match">Passwords do not match.</span>
-                    <span ng-show="RegisterFormV2.password.$error.minlength">Password is too short.</span>
-                    <span ng-show="RegisterFormV2.password.$error.pattern">No spaces in password.</span>
+                    <span ng-show="RegisterFormV2.username.$error.minlength">Username too short</span>
+                    <span ng-show="RegisterFormV2.username.$error.maxlength">Username too long</span>
+                    <span ng-show="RegisterFormV2.username.$error.pattern">Remove special chars in username</span>
+                    <span ng-show="RegisterFormV2.password_verify.$error.match">Passwords do not match</span>
+                    <span ng-show="RegisterFormV2.password.$error.minlength">Password too short</span>
+                    <span ng-show="RegisterFormV2.password.$error.pattern">Remove spaces in password</span>
                     <span ng-show="!RegisterFormV2.username.$error.minlength &&
                     !RegisterFormV2.username.$error.maxlength &&
                     !RegisterFormV2.username.$error.pattern &&
