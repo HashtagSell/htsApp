@@ -1,10 +1,10 @@
 //Controller catches the create account process from the create account modal and passes it to our authFactory
-htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', function ($scope, $modalInstance, authFactory) {
+htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
     $scope.signupPassport = function (isValid) {
 
         if (isValid) {
             var email = $scope.email;
-            var password = $scope.password_verify;
+            var password = $scope.password;
             var name = $scope.name;
 
             //Private Beta
@@ -26,7 +26,10 @@ htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFact
 
             }, function () {
 
-                alert("signup error");
+                Notification.error({
+                    message: "Appears we're having sign up issues.  Please check back soon.",
+                    delay: 10000
+                });  //Send the webtoast
 
             });
 

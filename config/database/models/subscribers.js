@@ -2,11 +2,7 @@
 var mongoose = require('mongoose');
 
 var SubscribersSchema = mongoose.Schema({
-
-    user    : {
-        email   : String,
-        name  : String
-    }
+    email   : String
 });
 
 // create the model for users and expose it to our app

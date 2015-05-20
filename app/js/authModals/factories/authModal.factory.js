@@ -68,6 +68,38 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
                 $state.go('forgot', {'redirect': params.redirect});
             } else if (reason === "signIn") {
                 $state.go('signin', {'redirect': params.redirect});
+            } else if (reason === "subscribe") {
+                $state.go('subscribe', {'redirect': params.redirect});
+            }
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+    };
+
+
+
+
+    // =====================================
+    // Spawns Early Subscriber Modal =======
+    // =====================================
+    factory.subscribeModal = function (params) {
+
+        var modalInstance = $modal.open({
+            templateUrl: '/js/authModals/modals/subscribeModal/partials/subscribe.html',
+            controller: 'subscribeModalController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static'
+        });
+
+        modalInstance.result.then(function (reason) {
+
+        }, function (reason) {
+            if(reason === "success"){
+                $state.go('checkemail');
+            } else if (reason === "signUp") {
+                $state.go('signup', {'redirect': params.redirect});
+            } else if (reason === "signIn") {
+                $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });

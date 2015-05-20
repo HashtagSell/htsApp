@@ -329,6 +329,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 authModalFactory.signUpModal($state.params);
             }
         }).
+        state('subscribe', {
+            url: '/subscribe',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.subscribeModal($state.params);
+            }
+        }).
         state('termsOfService', {
             url: "/terms-of-service",
             views: {
@@ -1345,6 +1352,38 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
                 $state.go('forgot', {'redirect': params.redirect});
             } else if (reason === "signIn") {
                 $state.go('signin', {'redirect': params.redirect});
+            } else if (reason === "subscribe") {
+                $state.go('subscribe', {'redirect': params.redirect});
+            }
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+    };
+
+
+
+
+    // =====================================
+    // Spawns Early Subscriber Modal =======
+    // =====================================
+    factory.subscribeModal = function (params) {
+
+        var modalInstance = $modal.open({
+            templateUrl: '/js/authModals/modals/subscribeModal/partials/subscribe.html',
+            controller: 'subscribeModalController',
+            size: 'sm',
+            keyboard: false,
+            backdrop: 'static'
+        });
+
+        modalInstance.result.then(function (reason) {
+
+        }, function (reason) {
+            if(reason === "success"){
+                $state.go('checkemail');
+            } else if (reason === "signUp") {
+                $state.go('signup', {'redirect': params.redirect});
+            } else if (reason === "signIn") {
+                $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1610,12 +1649,12 @@ htsApp.controller('signInModalController', ['$scope', '$modalInstance', '$window
 
 
 }]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
-htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', function ($scope, $modalInstance, authFactory) {
+htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
     $scope.signupPassport = function (isValid) {
 
         if (isValid) {
             var email = $scope.email;
-            var password = $scope.password_verify;
+            var password = $scope.password;
             var name = $scope.name;
 
             //Private Beta
@@ -1637,7 +1676,58 @@ htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFact
 
             }, function () {
 
-                alert("signup error");
+                Notification.error({
+                    message: "Appears we're having sign up issues.  Please check back soon.",
+                    delay: 10000
+                });  //Send the webtoast
+
+            });
+
+        }
+    };
+
+
+    $scope.dismiss = function (reason) {
+        $modalInstance.dismiss(reason);
+    };
+
+
+}]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
+htsApp.controller('subscribeModalController', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
+
+
+    $scope.alerts = [];
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    $scope.subscribe = function (isValid) {
+
+        if (isValid) {
+
+            var email = $scope.email;
+
+            authFactory.subscribe(email).then(function (response) {
+
+                console.log(response);
+
+                if(!response.success) {
+
+                    $scope.alerts.push({ type: 'danger', msg: response.message });
+
+                } else if(response.success) {
+
+                    $scope.alerts.push({ type: 'success', msg: response.message });
+
+                }
+
+            }, function () {
+
+                Notification.error({
+                    message: "Whoops.. Can't take new subscribers right meow.. We're working on this.",
+                    delay: 10000
+                });  //Send the webtoast
 
             });
 
@@ -1721,6 +1811,41 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
         return deferred.promise;
 
     };
+
+
+
+
+    // =====================================
+    // EARLY ACCESS SUBSCRIBER =============
+    // =====================================
+    factory.subscribe = function (email) {
+
+        var deferred = $q.defer();
+
+        $http.post("/subscribe", { "email": email})
+
+            //success
+            .then(function (passportResponse) {
+
+                if (passportResponse.data) { //Successful registration
+
+                    deferred.resolve(passportResponse.data);
+
+                }
+
+            },
+            //error
+            function (data, status, headers, config) {
+                deferred.reject();
+
+            });
+
+        return deferred.promise;
+
+    };
+
+
+
 
 
     // =====================================

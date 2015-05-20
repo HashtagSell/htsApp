@@ -19,6 +19,7 @@ var ejs = require('ejs');
 var common   = require('../config/common.js');
 var config   = common.config();
 
+
 exports.id = function(req, res) {
 
     //Search our users collection for the user with the activation id in the url
@@ -487,5 +488,44 @@ exports.getProfile = function(req, res){
                 );
         });
     }
+
+};
+
+
+
+
+exports.subscribe = function(req, res) {
+
+    var subscriberEmail = req.body.email.toLowerCase();
+
+    //Search our users collection for the user with the activation id in the url
+    Subscriber.findOne({'email': subscriberEmail}, function (err, result) {
+
+        if (err) { //systematic error. Redirect to page so user can report error.
+            return res.json({success: false, message: "Sorry " + subscriberEmail + ", something went wrong.  Please try again in a few minutes."});
+            throw error;
+
+
+        } else if (result) { // if no user is found, then this is a bad activation id
+            return res.json({success: true, message: subscriberEmail + " is already on our list.  Hang tight!"});
+
+
+        } else if (!result) { // found user that needs activation
+
+            var newSubscriber = Subscriber();
+
+            newSubscriber.email = subscriberEmail;
+
+            newSubscriber.save(function (err) {
+                if (err) {
+                    return res.json({success: false, message: "Sorry " + subscriberEmail + ", something went wrong.  Please try again in a few minutes."});
+                    throw err;
+                } else {
+                    return res.json({success: true, message: "Alrighty!  We'll send you an access code shortly.  Currently we're operating on a first-come first-serve basis, so hang tight!"});
+                }
+            });
+
+        }
+    });
 
 };

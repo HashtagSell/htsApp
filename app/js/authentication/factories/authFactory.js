@@ -71,6 +71,41 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     };
 
 
+
+
+    // =====================================
+    // EARLY ACCESS SUBSCRIBER =============
+    // =====================================
+    factory.subscribe = function (email) {
+
+        var deferred = $q.defer();
+
+        $http.post("/subscribe", { "email": email})
+
+            //success
+            .then(function (passportResponse) {
+
+                if (passportResponse.data) { //Successful registration
+
+                    deferred.resolve(passportResponse.data);
+
+                }
+
+            },
+            //error
+            function (data, status, headers, config) {
+                deferred.reject();
+
+            });
+
+        return deferred.promise;
+
+    };
+
+
+
+
+
     // =====================================
     // FORGOT PASSWORD =====================
     // =====================================

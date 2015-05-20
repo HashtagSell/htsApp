@@ -104,6 +104,9 @@ module.exports = function(app, passport) {
     //Local auth reset password
     app.post('/reset', activate.reset);
 
+    //early access subscriber
+    app.post('/subscribe', activate.subscribe);
+
 
 
     // =====================================

@@ -8,7 +8,7 @@
 
         <form name="RegisterFormV2" id="RegisterFormV2" class="form-horizontal" ng-submit="signupPassport(RegisterFormV2.$valid)" novalidate>
             <div class="modal-header">
-                <h3>Join HashtagSell!</h3>
+                <h3 style="text-align: center;">Join <img src="//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg" style="top: -5px; position: relative;"/><sup>Beta</sup></h3>
             </div>
             <div class="modal-body">
 
@@ -35,29 +35,35 @@
 
                 <br>
 
+                <!--<div class="controls">-->
+                    <!--<input class="form-control" type="password" id="password_verify" name="password_verify" ng-model="password_verify" matchinput="password" placeholder="Repeat Password" required/>-->
+                <!--</div>-->
+
+                <!--<br>-->
+
                 <div class="controls">
-                    <input class="form-control" type="password" id="password_verify" name="password_verify" ng-model="password_verify" matchinput="password" placeholder="Repeat Password" required/>
-                </div>
-
-                <br>
-
-                <div class="controls">
-                    <input class="form-control" type="text" id="secret" placeholder="Beta Access Code" name="secret" ng-model="secret" required/>
-
+                    <input class="form-control" type="text" id="secret" placeholder="Early Access Code" name="secret" required/>
+                    <span>
+                        <a href ng-click="dismiss('subscribe')">
+                            <small>Send me an access code!</small>
+                        </a>
+                    </span>
                     <small class="text-danger">{{message}}</small>
-
-                    <br>
-                    <a href ng-click="dismiss('signIn')">
-                        <small>Sign In</small>
-                    </a>
-                    <small> | </small>
-                    <a href ng-click="dismiss('forgot')">
-                        <small>Forgot Your Password?</small>
-                    </a>
                 </div>
 
             </div>
             <div class="modal-footer">
+                <span class="pull-left">
+                    <small>
+                        <a href ng-click="dismiss('signIn')">
+                            Sign In
+                        </a>
+                         |
+                        <a href ng-click="dismiss('forgot')">
+                            Forgot Password
+                        </a>
+                    </small>
+                </span>
                 <button id="submit-create-account" class="btn" ng-class="RegisterFormV2.$invalid ? 'btn-warning' : 'btn-success'" type="submit" ng-disabled="RegisterFormV2.$invalid">
                     <span ng-show="RegisterFormV2.username.$error.minlength">Username too short.</span>
                     <span ng-show="RegisterFormV2.username.$error.maxlength">Username too long.</span>

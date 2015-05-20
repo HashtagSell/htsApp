@@ -329,6 +329,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 authModalFactory.signUpModal($state.params);
             }
         }).
+        state('subscribe', {
+            url: '/subscribe',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.subscribeModal($state.params);
+            }
+        }).
         state('termsOfService', {
             url: "/terms-of-service",
             views: {
