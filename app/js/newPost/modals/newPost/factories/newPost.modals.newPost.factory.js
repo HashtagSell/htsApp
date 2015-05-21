@@ -93,7 +93,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                     products.length = 7; // prune suggestions list to only 6 items because we add the usersTyped word to top of list
                 }
             } else {
-                console.log("nothing found");
+                //console.log("nothing found");
                 products.push(userTypedText);
             }
 
@@ -230,11 +230,55 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                 if (popularCategories.length) {
 
                     //now that we have the popular category code get all the conical information about that category
-                    var mostPopularCategory = popularCategories[0].code;
+                    //var mostPopularCategory = popularCategories[0].code;
 
-                    $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
 
-                        factory.jsonTemplate.category = data.categories[0].code;
+
+
+
+                    var winningCategories = [];
+                    var total = 0;
+
+                    for (var i = 0; i < popularCategories.length; i++) {
+
+                        var firstCategory = data[i];
+
+                        total = total + firstCategory.count;
+
+                    }
+
+                    var avg = (total / popularCategories.length);
+
+                    console.log('total: ', total, ' divided by number of categories: ', popularCategories.length, ' equals: ', avg);
+
+                    for (var j = 0; j < popularCategories.length; j++) {
+
+                        var secondCategory = popularCategories[j];
+
+                        console.log('total number of items: ', total);
+                        console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                        var percentage = (secondCategory.count/total) * 100;
+                        console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+
+
+                        if (percentage >= 10) {
+                            winningCategories.push(secondCategory.code);
+                        }
+
+                    }
+
+                    if (winningCategories.length > 1) {
+                        factory.jsonTemplate.category = winningCategories;
+                    } else if (winningCategories.length === 1) {
+                        factory.jsonTemplate.category = [winningCategories[0], ''];
+                    } else if (!winningCategories.length && popularCategories.length){
+                        factory.jsonTemplate.category = [popularCategories.categories[0].code, ''];
+                    }
+
+
+
+                    $http.get(ENV.groupingsAPI + winningCategories[0]).success(function (data, status) {
+
                         factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
                         factory.jsonTemplate.category_group = data.code;
                         factory.jsonTemplate.category_group_name = data.name;
@@ -318,6 +362,11 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                     }
                                 }
 
+                                //Caculate average price of all data we retreived.
+                                if (totalPrice > 0) {
+                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
+                                }
+
 
                                 if (annotationsHashTable.size() > 0) {
 
@@ -341,53 +390,54 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                             console.log(weight, ">=", avg_weight);
                                         }
                                     });
-                                }
-
-                                //Caculate average price of all data we retreived.
-                                if (totalPrice > 0) {
-                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
-                                }
 
 
-                                $http.get(ENV.annotationsAPI, {
-                                    params: {
-                                        query: queryString
-                                    }
-                                }).success(function (data) {
+                                    $http.get(ENV.annotationsAPI, {
+                                        params: {
+                                            query: queryString
+                                        }
+                                    }).success(function (data) {
 
-                                    console.log('Amazon data', data);
+                                        console.log('Amazon data', data);
 
-                                    if (data.length) {
+                                        if (data.length) {
 
-                                        for (var k = 0; k < data.length; k++) {
+                                            for (var k = 0; k < data.length; k++) {
 
-                                            var amazonAnnotation = data[k];
+                                                var amazonAnnotation = data[k];
 
-                                            var key = amazonAnnotation.name;
+                                                var key = amazonAnnotation.name;
 
-                                            if (annotationsDictionary.containsKey(key)) {
+                                                if (annotationsDictionary.containsKey(key)) {
 
-                                                annotationArray.push({
-                                                    key: annotationsDictionary.get(key),
-                                                    value: null
-                                                });
+                                                    annotationArray.push({
+                                                        key: annotationsDictionary.get(key),
+                                                        value: null
+                                                    });
 
+                                                }
                                             }
+
+                                            console.log("---------------------------");
+                                            console.log("done adding Amazon annotations!");
+                                            console.log("---------------------------");
+
+                                            factory.jsonTemplate.annotations = annotationArray;
+
                                         }
 
-                                        console.log("---------------------------");
-                                        console.log("done adding Amazon annotations!");
-                                        console.log("---------------------------");
+                                        console.log(factory.jsonTemplate);
 
-                                        factory.jsonTemplate.annotations = annotationArray;
+                                    }).error(function (data) {
 
-                                    }
+                                    });
 
-                                    console.log(factory.jsonTemplate);
-
-                                }).error(function (data) {
-
-                                });
+                                } else {
+                                    Notification.success({
+                                        title: "We need more info",
+                                        message: "We could not determine what further questions to ask about your " + queryString + ".  Please add more hashtags to your description."
+                                    });
+                                }
 
 
                             } else {

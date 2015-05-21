@@ -9,7 +9,7 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick', 'braintree-angular']);
+var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick', 'braintree-angular', 'ui.select']);
 
 
 //Forcing XHR requests via Angular $http (AJAX)
@@ -613,8 +613,6 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
 
             scope.$watch('jsonObj.body', function(newValue, oldValue){
-
-                console.log(backspacePressed);
 
                 if(backspacePressed) {
                     backspacePressed = false;
@@ -4836,6 +4834,529 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.jsonObj = mentionsFactory.jsonTemplate;
 
+    $scope.allCategories = [
+        {
+            "code": "AAAA",
+            "name": "animals",
+            "categories": [
+                {
+                    "code": "APET",
+                    "name": "pets"
+                },
+                {
+                    "code": "ASUP",
+                    "name": "supplies"
+                },
+                {
+                    "code": "AOTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "CCCC",
+            "name": "community",
+            "categories": [
+                {
+                    "code": "CCNW",
+                    "name": "classes and workshops"
+                },
+                {
+                    "code": "COMM",
+                    "name": "events"
+                },
+                {
+                    "code": "CGRP",
+                    "name": "groups"
+                },
+                {
+                    "code": "CLNF",
+                    "name": "lost and found"
+                },
+                {
+                    "code": "CRID",
+                    "name": "rideshares"
+                },
+                {
+                    "code": "CVOL",
+                    "name": "volunteers"
+                },
+                {
+                    "code": "COTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "SSSS",
+            "name": "for sale",
+            "categories": [
+                {
+                    "code": "SANT",
+                    "name": "antiques"
+                },
+                {
+                    "code": "SAPP",
+                    "name": "apparel"
+                },
+                {
+                    "code": "SAPL",
+                    "name": "appliances"
+                },
+                {
+                    "code": "SANC",
+                    "name": "art and crafts"
+                },
+                {
+                    "code": "SKID",
+                    "name": "babies and kids"
+                },
+                {
+                    "code": "SBAR",
+                    "name": "barters"
+                },
+                {
+                    "code": "SBIK",
+                    "name": "bicycles"
+                },
+                {
+                    "code": "SBIZ",
+                    "name": "businesses"
+                },
+                {
+                    "code": "SCOL",
+                    "name": "collections"
+                },
+                {
+                    "code": "SEDU",
+                    "name": "educational"
+                },
+                {
+                    "code": "SELE",
+                    "name": "electronics and photo"
+                },
+                {
+                    "code": "SFNB",
+                    "name": "food and beverage"
+                },
+                {
+                    "code": "SFUR",
+                    "name": "furniture"
+                },
+                {
+                    "code": "SGAR",
+                    "name": "garage sales"
+                },
+                {
+                    "code": "SGFT",
+                    "name": "gift cards"
+                },
+                {
+                    "code": "SHNB",
+                    "name": "health and beauty"
+                },
+                {
+                    "code": "SHNG",
+                    "name": "home and garden"
+                },
+                {
+                    "code": "SIND",
+                    "name": "industrial"
+                },
+                {
+                    "code": "SJWL",
+                    "name": "jewelry"
+                },
+                {
+                    "code": "SLIT",
+                    "name": "literature"
+                },
+                {
+                    "code": "SMNM",
+                    "name": "movies and music"
+                },
+                {
+                    "code": "SMUS",
+                    "name": "musical instruments"
+                },
+                {
+                    "code": "SRES",
+                    "name": "restaurants"
+                },
+                {
+                    "code": "SSNF",
+                    "name": "sports and fitness"
+                },
+                {
+                    "code": "STIX",
+                    "name": "tickets"
+                },
+                {
+                    "code": "STOO",
+                    "name": "tools"
+                },
+                {
+                    "code": "STOY",
+                    "name": "toys and hobbies"
+                },
+                {
+                    "code": "STVL",
+                    "name": "travel"
+                },
+                {
+                    "code": "SWNT",
+                    "name": "wanted"
+                },
+                {
+                    "code": "SOTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "RRRR",
+            "name": "real estate",
+            "categories": [
+                {
+                    "code": "RCRE",
+                    "name": "commercial real estate"
+                },
+                {
+                    "code": "RHFR",
+                    "name": "housing for rent"
+                },
+                {
+                    "code": "RHFS",
+                    "name": "housing for sale"
+                },
+                {
+                    "code": "RSUB",
+                    "name": "housing sublets"
+                },
+                {
+                    "code": "RSWP",
+                    "name": "housing swaps"
+                },
+                {
+                    "code": "RLOT",
+                    "name": "lots and land"
+                },
+                {
+                    "code": "RPNS",
+                    "name": "parking and storage"
+                },
+                {
+                    "code": "RSHR",
+                    "name": "room shares"
+                },
+                {
+                    "code": "RVAC",
+                    "name": "vacation properties"
+                },
+                {
+                    "code": "RWNT",
+                    "name": "want housing"
+                },
+                {
+                    "code": "ROTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "SVCS",
+            "name": "services",
+            "categories": [
+                {
+                    "code": "SVCC",
+                    "name": "creative"
+                },
+                {
+                    "code": "SVCE",
+                    "name": "education"
+                },
+                {
+                    "code": "SVCF",
+                    "name": "financial"
+                },
+                {
+                    "code": "SVCM",
+                    "name": "health"
+                },
+                {
+                    "code": "SVCH",
+                    "name": "household"
+                },
+                {
+                    "code": "SVCP",
+                    "name": "professional"
+                },
+                {
+                    "code": "SVCO",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "ZZZZ",
+            "name": "uncategorized",
+            "categories": [
+                {
+                    "code": "ZOTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "VVVV",
+            "name": "vehicles",
+            "categories": [
+                {
+                    "code": "VAUT",
+                    "name": "autos"
+                },
+                {
+                    "code": "VMOT",
+                    "name": "motorcycles"
+                },
+                {
+                    "code": "VMPT",
+                    "name": "motorcycle parts"
+                },
+                {
+                    "code": "VPAR",
+                    "name": "parts"
+                },
+                {
+                    "code": "VOTH",
+                    "name": "other"
+                }
+            ]
+        },
+        {
+            "code": "JJJJ",
+            "name": "jobs",
+            "categories": [
+                {
+                    "code": "JACC",
+                    "name": "accounting"
+                },
+                {
+                    "code": "JADM",
+                    "name": "administrative"
+                },
+                {
+                    "code": "JAER",
+                    "name": "aerospace and defense"
+                },
+                {
+                    "code": "JANL",
+                    "name": "analyst"
+                },
+                {
+                    "code": "JANA",
+                    "name": "animals and agriculture"
+                },
+                {
+                    "code": "JARC",
+                    "name": "architecture"
+                },
+                {
+                    "code": "JART",
+                    "name": "art"
+                },
+                {
+                    "code": "JAUT",
+                    "name": "automobile"
+                },
+                {
+                    "code": "JBEA",
+                    "name": "beauty"
+                },
+                {
+                    "code": "JBIZ",
+                    "name": "business development"
+                },
+                {
+                    "code": "JWEB",
+                    "name": "computer and web"
+                },
+                {
+                    "code": "JCST",
+                    "name": "construction and facilities"
+                },
+                {
+                    "code": "JCON",
+                    "name": "consulting"
+                },
+                {
+                    "code": "JCUS",
+                    "name": "customer service"
+                },
+                {
+                    "code": "JDES",
+                    "name": "design"
+                },
+                {
+                    "code": "JEDU",
+                    "name": "education"
+                },
+                {
+                    "code": "JENE",
+                    "name": "energy"
+                },
+                {
+                    "code": "JENG",
+                    "name": "engineering"
+                },
+                {
+                    "code": "JENT",
+                    "name": "entertainment and media"
+                },
+                {
+                    "code": "JEVE",
+                    "name": "events"
+                },
+                {
+                    "code": "JFIN",
+                    "name": "finance"
+                },
+                {
+                    "code": "JFNB",
+                    "name": "food and beverage"
+                },
+                {
+                    "code": "JGIG",
+                    "name": "gigs"
+                },
+                {
+                    "code": "JGOV",
+                    "name": "government"
+                },
+                {
+                    "code": "JHEA",
+                    "name": "healthcare"
+                },
+                {
+                    "code": "JHOS",
+                    "name": "hospitality and travel"
+                },
+                {
+                    "code": "JHUM",
+                    "name": "human resources"
+                },
+                {
+                    "code": "JMNT",
+                    "name": "installation, maintenance and repair"
+                },
+                {
+                    "code": "JINS",
+                    "name": "insurance"
+                },
+                {
+                    "code": "JINT",
+                    "name": "international"
+                },
+                {
+                    "code": "JLAW",
+                    "name": "law enforcement"
+                },
+                {
+                    "code": "JLEG",
+                    "name": "legal"
+                },
+                {
+                    "code": "JMAN",
+                    "name": "management and directorship"
+                },
+                {
+                    "code": "JMFT",
+                    "name": "manufacturing and mechanical"
+                },
+                {
+                    "code": "JMAR",
+                    "name": "marketing, advertising and public relations"
+                },
+                {
+                    "code": "JNON",
+                    "name": "non-profit"
+                },
+                {
+                    "code": "JOPS",
+                    "name": "operations and logistics"
+                },
+                {
+                    "code": "JPHA",
+                    "name": "pharmaceutical"
+                },
+                {
+                    "code": "JPRO",
+                    "name": "product, project and program management"
+                },
+                {
+                    "code": "JPUR",
+                    "name": "purchasing"
+                },
+                {
+                    "code": "JQUA",
+                    "name": "quality assurance"
+                },
+                {
+                    "code": "JREA",
+                    "name": "real estate"
+                },
+                {
+                    "code": "JREC",
+                    "name": "recreation"
+                },
+                {
+                    "code": "JRES",
+                    "name": "resumes"
+                },
+                {
+                    "code": "JRNW",
+                    "name": "retail and wholesale"
+                },
+                {
+                    "code": "JSAL",
+                    "name": "sales"
+                },
+                {
+                    "code": "JSCI",
+                    "name": "science"
+                },
+                {
+                    "code": "JSEC",
+                    "name": "security"
+                },
+                {
+                    "code": "JSKL",
+                    "name": "skilled trade and general labor"
+                },
+                {
+                    "code": "JTEL",
+                    "name": "telecommunications"
+                },
+                {
+                    "code": "JTRA",
+                    "name": "transportation"
+                },
+                {
+                    "code": "JVOL",
+                    "name": "volunteer"
+                },
+                {
+                    "code": "JWNP",
+                    "name": "writing and publishing"
+                },
+                {
+                    "code": "JOTH",
+                    "name": "other"
+                }
+            ]
+        }
+    ];
+
     $scope.formatted_jsonObj = function () {
         return JSON.stringify($scope.jsonObj, null, 4);
     };
@@ -4996,7 +5517,6 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     //========= # Products =========
     $scope.searchProducts = function (term) {
-        console.log(term);
         if (term) {
             mentionsFactory.predictProduct(term).then(function (results) {
                 $scope.products = results;
@@ -5185,7 +5705,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                     products.length = 7; // prune suggestions list to only 6 items because we add the usersTyped word to top of list
                 }
             } else {
-                console.log("nothing found");
+                //console.log("nothing found");
                 products.push(userTypedText);
             }
 
@@ -5322,11 +5842,55 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                 if (popularCategories.length) {
 
                     //now that we have the popular category code get all the conical information about that category
-                    var mostPopularCategory = popularCategories[0].code;
+                    //var mostPopularCategory = popularCategories[0].code;
 
-                    $http.get(ENV.groupingsAPI + mostPopularCategory).success(function (data, status) {
 
-                        factory.jsonTemplate.category = data.categories[0].code;
+
+
+
+                    var winningCategories = [];
+                    var total = 0;
+
+                    for (var i = 0; i < popularCategories.length; i++) {
+
+                        var firstCategory = data[i];
+
+                        total = total + firstCategory.count;
+
+                    }
+
+                    var avg = (total / popularCategories.length);
+
+                    console.log('total: ', total, ' divided by number of categories: ', popularCategories.length, ' equals: ', avg);
+
+                    for (var j = 0; j < popularCategories.length; j++) {
+
+                        var secondCategory = popularCategories[j];
+
+                        console.log('total number of items: ', total);
+                        console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                        var percentage = (secondCategory.count/total) * 100;
+                        console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+
+
+                        if (percentage >= 10) {
+                            winningCategories.push(secondCategory.code);
+                        }
+
+                    }
+
+                    if (winningCategories.length > 1) {
+                        factory.jsonTemplate.category = winningCategories;
+                    } else if (winningCategories.length === 1) {
+                        factory.jsonTemplate.category = [winningCategories[0], ''];
+                    } else if (!winningCategories.length && popularCategories.length){
+                        factory.jsonTemplate.category = [popularCategories.categories[0].code, ''];
+                    }
+
+
+
+                    $http.get(ENV.groupingsAPI + winningCategories[0]).success(function (data, status) {
+
                         factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
                         factory.jsonTemplate.category_group = data.code;
                         factory.jsonTemplate.category_group_name = data.name;
@@ -5410,6 +5974,11 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                     }
                                 }
 
+                                //Caculate average price of all data we retreived.
+                                if (totalPrice > 0) {
+                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
+                                }
+
 
                                 if (annotationsHashTable.size() > 0) {
 
@@ -5433,53 +6002,54 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
                                             console.log(weight, ">=", avg_weight);
                                         }
                                     });
-                                }
-
-                                //Caculate average price of all data we retreived.
-                                if (totalPrice > 0) {
-                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
-                                }
 
 
-                                $http.get(ENV.annotationsAPI, {
-                                    params: {
-                                        query: queryString
-                                    }
-                                }).success(function (data) {
+                                    $http.get(ENV.annotationsAPI, {
+                                        params: {
+                                            query: queryString
+                                        }
+                                    }).success(function (data) {
 
-                                    console.log('Amazon data', data);
+                                        console.log('Amazon data', data);
 
-                                    if (data.length) {
+                                        if (data.length) {
 
-                                        for (var k = 0; k < data.length; k++) {
+                                            for (var k = 0; k < data.length; k++) {
 
-                                            var amazonAnnotation = data[k];
+                                                var amazonAnnotation = data[k];
 
-                                            var key = amazonAnnotation.name;
+                                                var key = amazonAnnotation.name;
 
-                                            if (annotationsDictionary.containsKey(key)) {
+                                                if (annotationsDictionary.containsKey(key)) {
 
-                                                annotationArray.push({
-                                                    key: annotationsDictionary.get(key),
-                                                    value: null
-                                                });
+                                                    annotationArray.push({
+                                                        key: annotationsDictionary.get(key),
+                                                        value: null
+                                                    });
 
+                                                }
                                             }
+
+                                            console.log("---------------------------");
+                                            console.log("done adding Amazon annotations!");
+                                            console.log("---------------------------");
+
+                                            factory.jsonTemplate.annotations = annotationArray;
+
                                         }
 
-                                        console.log("---------------------------");
-                                        console.log("done adding Amazon annotations!");
-                                        console.log("---------------------------");
+                                        console.log(factory.jsonTemplate);
 
-                                        factory.jsonTemplate.annotations = annotationArray;
+                                    }).error(function (data) {
 
-                                    }
+                                    });
 
-                                    console.log(factory.jsonTemplate);
-
-                                }).error(function (data) {
-
-                                });
+                                } else {
+                                    Notification.success({
+                                        title: "We need more info",
+                                        message: "We could not determine what further questions to ask about your " + queryString + ".  Please add more hashtags to your description."
+                                    });
+                                }
 
 
                             } else {
