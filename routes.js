@@ -56,7 +56,7 @@ module.exports = function(app, passport) {
             user_settings_api.updateUserPhotos(req, res);
 
         } else { // user is uploading photos appended to post
-            posting_api.upload(req, res);
+            posting_api.newUpload(req, res);
         }
     });
 

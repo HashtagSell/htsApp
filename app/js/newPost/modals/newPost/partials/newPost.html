@@ -2,15 +2,18 @@
     <!--<span class="pull-left hover-pointer" ng-click="alert('fullscreen zen editor soon.')">-->
         <!--<i class="fa fa-arrows-alt"></i>-->
     <!--</span>-->
-    <span>{{jsonObj.category_name || 'Create New Post'}}</span>
-    <!--<select class="form-control">-->
-        <!--<optgroup ng-repeat="category in allCategories" label="{{category.name}}">-->
-            <!--<option ng-repeat="childCategory in category.categories" value="{{childCategory.code}}">{{childCategory.name}}</option>-->
-        <!--</optgroup>-->
-    <!--</select>-->
+    <span ng-show="!jsonObj.category_name">Create New Post</span>
+    <select ng-show="jsonObj.category_name" class="btn btn-mini" ng-model="categoryTitlePicker.code">
+        <optgroup ng-repeat="category in allCategories" label="{{category.name}}">
+            <option ng-repeat="childCategory in category.categories" value="{{childCategory.code}}">{{childCategory.name}}</option>
+        </optgroup>
+    </select>
+    <span class="drop-down-caret">
+        <i class="fa fa-angle-left"></i>
+    </span>
 
-    <span class="pull-right hover-pointer" ng-click="dismiss('cancel post')">
-        <i class="fa fa-close"></i>
+    <span class="close-sell-box" ng-click="dismiss('cancel post')">
+        <i class="fa fa-close" style="font-size: 1.5em;"></i>
     </span>
 </div>
 <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">

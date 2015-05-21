@@ -1658,7 +1658,11 @@ htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFact
             //Private Beta
             var secret = $scope.secret;
 
-            authFactory.signUp(email, password, name, secret).then(function (response) {
+            var betaAgreement = $scope.betaAgreement;
+
+            console.log(email, password, secret, name, betaAgreement);
+
+            authFactory.signUp(email, password, name, secret, betaAgreement).then(function (response) {
 
                 console.log(response);
 
@@ -4834,6 +4838,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.jsonObj = mentionsFactory.jsonTemplate;
 
+    $scope.categoryTitlePicker = mentionsFactory.categoryTitlePicker;
+
     $scope.allCategories = [
         {
             "code": "AAAA",
@@ -5640,6 +5646,11 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
     };
 
 
+    factory.categoryTitlePicker = {
+        code: null
+    };
+
+
     factory.resetJsonTemplate = function () {
         factory.jsonTemplate = {
             "annotations": [],
@@ -5848,49 +5859,51 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
 
 
 
-                    var winningCategories = [];
-                    var total = 0;
+                    //var winningCategories = [];
+                    //var total = 0;
+                    //
+                    //for (var i = 0; i < popularCategories.length; i++) {
+                    //
+                    //    var firstCategory = data[i];
+                    //
+                    //    total = total + firstCategory.count;
+                    //
+                    //}
+                    //
+                    //var avg = (total / popularCategories.length);
+                    //
+                    //console.log('total: ', total, ' divided by number of categories: ', popularCategories.length, ' equals: ', avg);
+                    //
+                    //for (var j = 0; j < popularCategories.length; j++) {
+                    //
+                    //    var secondCategory = popularCategories[j];
+                    //
+                    //    console.log('total number of items: ', total);
+                    //    console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                    //    var percentage = (secondCategory.count/total) * 100;
+                    //    console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+                    //
+                    //
+                    //    if (percentage >= 10) {
+                    //        winningCategories.push(secondCategory.code);
+                    //    }
+                    //
+                    //}
+                    //
+                    //if (winningCategories.length > 1) {
+                    //    factory.jsonTemplate.category = winningCategories;
+                    //} else if (winningCategories.length === 1) {
+                    //    factory.jsonTemplate.category = [winningCategories[0], ''];
+                    //} else if (!winningCategories.length && popularCategories.length){
+                    //
+                    //}
+                    console.log(popularCategories);
+                    factory.categoryTitlePicker.code = popularCategories[0].code;
 
-                    for (var i = 0; i < popularCategories.length; i++) {
 
-                        var firstCategory = data[i];
+                    $http.get(ENV.groupingsAPI + popularCategories[0].code).success(function (data, status) {
 
-                        total = total + firstCategory.count;
-
-                    }
-
-                    var avg = (total / popularCategories.length);
-
-                    console.log('total: ', total, ' divided by number of categories: ', popularCategories.length, ' equals: ', avg);
-
-                    for (var j = 0; j < popularCategories.length; j++) {
-
-                        var secondCategory = popularCategories[j];
-
-                        console.log('total number of items: ', total);
-                        console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
-                        var percentage = (secondCategory.count/total) * 100;
-                        console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
-
-
-                        if (percentage >= 10) {
-                            winningCategories.push(secondCategory.code);
-                        }
-
-                    }
-
-                    if (winningCategories.length > 1) {
-                        factory.jsonTemplate.category = winningCategories;
-                    } else if (winningCategories.length === 1) {
-                        factory.jsonTemplate.category = [winningCategories[0], ''];
-                    } else if (!winningCategories.length && popularCategories.length){
-                        factory.jsonTemplate.category = [popularCategories.categories[0].code, ''];
-                    }
-
-
-
-                    $http.get(ENV.groupingsAPI + winningCategories[0]).success(function (data, status) {
-
+                        factory.jsonTemplate.category = popularCategories[0].code;
                         factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
                         factory.jsonTemplate.category_group = data.code;
                         factory.jsonTemplate.category_group_name = data.name;
@@ -6255,61 +6268,11 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
 
             }
 
+            factory.jsonTemplate.location = locationObj;
 
-            //TODO: GET THE CITY-CODE DATA FROM MONGODB COLLECTION
-            if (city && state) {
-                $http.get('../search/locations?', {
-                    params: {
-                        level: "city",
-                        city: city + ", " + state
-                    }
-                }).success(function (data, status) {
-                    if (data.success) {
+            factory.jsonTemplate.geo = geo;
 
-                        if (data.metadata.bounds_max_lat) {
-                            locationObj.bounds_max_lat = data.metadata.bounds_max_lat;
-                        }
-
-                        if (data.metadata.bounds_max_long) {
-                            locationObj.bounds_max_long = data.metadata.bounds_max_long;
-                        }
-
-                        if (data.metadata.bounds_min_lat) {
-                            locationObj.bounds_min_lat = data.metadata.bounds_min_lat;
-                        }
-
-                        if (data.metadata.bounds_min_long) {
-                            locationObj.bounds_min_long = data.metadata.bounds_min_long;
-                        }
-
-                        if (data.metadata.code) {
-                            locationObj.city = data.metadata.code;
-                        }
-
-                        if (data.metadata.full_name) {
-                            locationObj.long_name = data.metadata.full_name;
-                        }
-
-
-                    } else {
-                        console.log("Could not lookup metro code with api");
-                    }
-                });
-
-                //evaluate accuracy
-                if (locationObj.lat && locationObj.long) {
-                    locationObj.accuracy = 0;
-                } else if (locationObj.formatted_address) {
-                    factory.jsonTemplate.location.accuracy = 1;
-                }
-                //TODO: Determine accuracy be evaluating lat lon boundaries
-
-                factory.jsonTemplate.location = locationObj;
-
-                factory.jsonTemplate.geo = geo;
-
-                deferred.resolve(factory.jsonTemplate);
-            }
+            deferred.resolve(factory.jsonTemplate);
         });
 
         return deferred.promise;

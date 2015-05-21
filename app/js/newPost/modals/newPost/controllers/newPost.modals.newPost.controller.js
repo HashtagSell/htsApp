@@ -15,6 +15,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.jsonObj = mentionsFactory.jsonTemplate;
 
+    $scope.categoryTitlePicker = mentionsFactory.categoryTitlePicker;
+
     $scope.allCategories = [
         {
             "code": "AAAA",

@@ -267,8 +267,9 @@ exports.signup = function(req, res) {
     var password = req.body.password;
     var secret = req.body.secret;
     var username = req.body.name.toLowerCase();
+    var betaAgreement = req.body.betaAgreement;
 
-    console.log(email, password, secret, username);
+    console.log(email, password, secret, username, betaAgreement);
 
 
     Early_Access_Keys.findOne({ 'secret.key' : secret }, function(err, access_key){
@@ -316,6 +317,7 @@ exports.signup = function(req, res) {
                             newUser.local.email    = email;
                             newUser.local.password = newUser.generateHash(password);
                             newUser.user_settings.name = username;
+                            newUser.stats.readBetaAgreement = betaAgreement;
 
 
                             //Link the staging users account to all the appropriate staging environment accounts.

@@ -127,6 +127,7 @@ var userSchema = mongoose.Schema({
     },
     stats            : {
         activated    : { type: Boolean, default: false },
+        readBetaAgreement: { type: Boolean, default: false },
         activation_code: { type: String, default: randomString() },
         creation_date: { type: Date, default: Date.now },
         login_count  : { type: Number, default: 0 }
