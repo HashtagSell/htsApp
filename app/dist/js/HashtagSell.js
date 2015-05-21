@@ -663,7 +663,7 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
-
+                //console.log('omit this');
                 if(parseInt(e.which) === 8 && e.type === "keydown") {
                     backspacePressed = true;
                     console.log('setting backspace pressed to true');
