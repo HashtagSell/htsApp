@@ -10,12 +10,6 @@ var async = require('async');
 
 var s3 = new AWS.S3();
 
-AWS.config.update({
-    accessKeyId: config.AWS_ACCESS_KEY,
-    secretAccessKey: config.AWS_SECRET_KEY
-});
-
-
 exports.newUpload = function(req, res) {
 
     var numPhotos = Object.keys(req.files).length;
@@ -211,7 +205,7 @@ exports.newUpload = function(req, res) {
 
             return res.json(
                 {
-                    sucess: false,
+                    success: false,
                     error: err
                 }
             );
