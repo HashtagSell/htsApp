@@ -318,17 +318,11 @@
     top: 23px;
 }
 
-.category-title-selector {
-    width: 50%;
-    margin: 0 auto;
-}
-
-
 select.btn {
     -webkit-appearance: button;
     -moz-appearance: button;
     appearance: button;
-    width: auto;
+    width: 25%;
 }
 
 select.btn-mini {

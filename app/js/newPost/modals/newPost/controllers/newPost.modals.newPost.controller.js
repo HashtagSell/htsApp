@@ -3,8 +3,6 @@
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.demoCleared = false;
-
     $scope.clearDemo = function () {
         console.log("clearing contents");
         if (!$scope.demoCleared) {
@@ -13,9 +11,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
     };
 
-    $scope.jsonObj = mentionsFactory.jsonTemplate;
+    $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
 
-    $scope.categoryTitlePicker = mentionsFactory.categoryTitlePicker;
+    $scope.jsonObj = mentionsFactory.setJsonTemplate();
 
     $scope.allCategories = [
         {
@@ -540,17 +538,23 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
     ];
 
-    $scope.formatted_jsonObj = function () {
-        return JSON.stringify($scope.jsonObj, null, 4);
-    };
 
     //TODO: Handle auctions
-    //$scope.macros = {
-    //    'obo': '*Or Best Offer*'
-    //};
+    $scope.macros = {
+        'obo': '*Or Best Offer*'
+    };
+
+    $scope.isEmpty = function isEmpty(obj) {
+        for(var prop in obj) {
+            if(obj.hasOwnProperty(prop))
+                return false;
+        }
+
+        return true;
+    };
 
     $scope.dismiss = function (reason) {
-        mentionsFactory.resetJsonTemplate();
+        mentionsFactory.setJsonTemplate();
         $modalInstance.dismiss(reason);
     };
 
@@ -628,6 +632,45 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     });
 
 
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    $scope.validatePost = function () {
+
+        $scope.alerts = [];
+
+        var newPost = $scope.jsonObj;
+
+        if (newPost.hashtags.length) {
+            if (newPost.category) {
+                if (!$scope.isEmpty(newPost.location)) {
+                    $scope.processPost();
+                } else {
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: 'Use the @ symbol in your post to specify where the buyer should pickup the item.'
+                    });
+                }
+            } else {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: 'Add more #\'s to describe your item for sale, or manually specify a category.'
+                });
+
+                $scope.jsonObj.category_name = "other";
+                $scope.jsonObj.category = "ZOTH";
+            }
+        } else {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'Use the # symbol in your post to describe the item you\'re selling.  Hint: You can add more than one hashtag if you want.'
+            });
+        }
+
+    };
+
+
     $scope.processPost = function () {
 
         if(Session.userObj.user_settings.loggedIn) {
@@ -657,16 +700,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         newPost.username = Session.userObj.user_settings.name;
 
         //loop through the hashtags and formulate the heading of post
-
         newPost.heading = '';
-        for (var i = 0; i < newPost.mentions.hashtags.length; i++) {
-            if (i !== newPost.mentions.hashtags.length - 1) {
-                newPost.heading += newPost.mentions.hashtags[i] + " ";
+        for (var i = 0; i < newPost.hashtags.length; i++) {
+            if (i !== newPost.hashtags.length - 1) {
+                newPost.heading += newPost.hashtags[i] + " ";
             } else {
-                newPost.heading += newPost.mentions.hashtags[i];
+                newPost.heading += newPost.hashtags[i];
             }
-
-            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i]; //Remove all the info we used to gather meta-data
+            newPost.hashtags[i] = newPost.hashtags[i]; //Remove all the info we used to gather meta-data
         }
 
         //Josh's posting API
@@ -676,15 +717,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 console.log(posting);
                 $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
 
-                mentionsFactory.resetJsonTemplate();
-
                 //Submit for precaching
                 $http.post(ENV.precacheAPI, {posting: posting}).success(function(response){
                     console.log('precache success', response);
                 }).error(function(err){
-                    console.log('precaceh error:', err);
+                    console.log('precache error:', err);
                 });
 
+                mentionsFactory.setJsonTemplate();
             }).
             error(function(data, status, headers, config) {
 
@@ -712,6 +752,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
             //console.log(jsonTemplate);
             //console.log("done");
+        }, function (err) {
+            console.log(err);
         });
         return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
     };
@@ -721,30 +763,34 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.map = mentionsFactory.googleMap;
 
     $scope.searchPlaces = function (term) {
-        console.log(term);
+
         if (term) {
-            mentionsFactory.predictPlace(term).then(function (results) {
-                $scope.places = results;
-                console.log("Here is scope.places", $scope.places);
-            });
+
+            if($scope.isEmpty($scope.jsonObj.location)) {
+                mentionsFactory.predictPlace(term).then(function (results) {
+                    $scope.places = results;
+                    //console.log("Here is scope.places", $scope.places);
+                });
+            }
         }
     };
 
     $scope.getPlacesTextRaw = function (selectedPlace) {
         mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
             console.log(jsonTemplate);
-            console.log("done");
+            //console.log("done");
         });
-        console.log("updated ui");
+
         return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
     };
 
     //========= $ Prices =========
     $scope.searchPrice = function (term) {
-        console.log(term);
         if (term) {
-            $scope.prices = mentionsFactory.predictPrice(term);
-            console.log("here is scope.prices", $scope.prices);
+            if($scope.isEmpty($scope.jsonObj.price)) {
+                $scope.prices = mentionsFactory.predictPrice(term);
+                //console.log("here is scope.prices", $scope.prices);
+            }
         }
     };
 

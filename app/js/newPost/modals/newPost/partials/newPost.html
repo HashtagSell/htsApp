@@ -2,23 +2,29 @@
     <!--<span class="pull-left hover-pointer" ng-click="alert('fullscreen zen editor soon.')">-->
         <!--<i class="fa fa-arrows-alt"></i>-->
     <!--</span>-->
-    <span ng-show="!jsonObj.category_name">Create New Post</span>
-    <select ng-show="jsonObj.category_name" class="btn btn-mini" ng-model="categoryTitlePicker.code">
+    <span ng-show="!jsonObj.category_name  && !manualCategorySelect.show">Create New Post</span>
+    <select ng-show="jsonObj.category_name || manualCategorySelect.show" ng-change="manualCategorySelect.init()" class="btn btn-mini category-select" ng-model="jsonObj.category" tooltip-placement="bottom" tooltip="{{manualCategorySelect.tooltip}}" tooltip-trigger="show">
         <optgroup ng-repeat="category in allCategories" label="{{category.name}}">
-            <option ng-repeat="childCategory in category.categories" value="{{childCategory.code}}">{{childCategory.name}}</option>
+            <option ng-repeat="childCategory in category.categories" value="{{childCategory.code}}">{{childCategory.name | capitalize}}</option>
         </optgroup>
     </select>
-    <span class="drop-down-caret">
-        <i class="fa fa-angle-left"></i>
+    <span ng-show="jsonObj.category_name" class="drop-down-caret">
+        <i class="fa fa-angle-down"></i>
     </span>
 
     <span class="close-sell-box" ng-click="dismiss('cancel post')">
         <i class="fa fa-close" style="font-size: 1.5em;"></i>
     </span>
+
+    <!--{{manualCategorySelect}}-->
+
 </div>
 <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
 
     <div class="row remove-row-margins">
+
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
         <div class="hts-input-container">
             <div id="htsPost"
                  ng-class="jsonObj.category_name ? 'col-md-10' : 'col-md-12' "
@@ -38,12 +44,6 @@
                 for <span  class="mention-highlighter-price" contenteditable="false" popover-placement="top" popover="$ your price" popover-trigger="show">$75</span>&nbsp;
                 <span class="mention-highlighter-location" contenteditable="false" popover-placement="bottom" popover="@ your meeting location!" popover-trigger="show">@1234 Mulberry Street, New York, NY, United States</span>&nbsp;
             </div>
-
-            <!--<div ng-class="{ 'predicted-category-container' : jsonObj.annotations.length}">-->
-                <!--<div class="predicted-category text-center">-->
-                    <!--<h5 style="width: 148px; margin:0;">{{jsonObj.category_name}}</h5>-->
-                <!--</div>-->
-            <!--</div>-->
 
             <div ng-class="{ 'hts-annotations-container' : jsonObj.category_name}">
                 <div ng-show="jsonObj.annotations.length" ng-repeat="annotation in jsonObj.annotations">
@@ -73,7 +73,7 @@
                 <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container progress-striped active">{{uploadMessage}}</progressbar>
 
                 <div style="position: absolute; right: 15px; bottom: 15px;" class="sellModalButton" popover-placement="left" popover="Publish on Amazon, eBay, Craigslist, and HashtagSell!" popover-trigger="show">
-                    <button class="btn btn-primary" ng-click="processPost()" style="height: 45px; border-radius: 0px 0px 4px 0px;">
+                    <button class="btn btn-primary" ng-click="validatePost()" style="height: 45px; border-radius: 0px 0px 4px 0px;">
                         <i class="fa fa-slack">Sell It</i>
                     </button>
                 </div>

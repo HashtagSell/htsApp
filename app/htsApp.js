@@ -596,9 +596,6 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                 }
             };
 
-            var oldValue = '';
-
-
             //Strips HTML from string.
             function strip(html){
                 var tmp = document.createElement("DIV");
@@ -613,6 +610,8 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
 
             scope.$watch('jsonObj.body', function(newValue, oldValue){
+
+                scope.alerts = [];
 
                 if(backspacePressed) {
                     backspacePressed = false;
@@ -647,11 +646,14 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                                     var priceTagToRemove = excerpt.value.replace('$', '');
                                     priceTagToRemove = priceTagToRemove.trim();
 
+                                    scope.cleanModel("$", priceTagToRemove);
                                 } else if (excerpt.value.indexOf('@') !== -1) {
                                     console.log('@ removed ', excerpt.value);
 
                                     var atTagToRemove = excerpt.value.replace('@', '');
                                     atTagToRemove = atTagToRemove.trim();
+
+                                    scope.cleanModel("@", atTagToRemove);
                                 }
                             }
                         }

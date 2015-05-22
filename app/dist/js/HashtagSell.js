@@ -596,9 +596,6 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                 }
             };
 
-            var oldValue = '';
-
-
             //Strips HTML from string.
             function strip(html){
                 var tmp = document.createElement("DIV");
@@ -613,6 +610,8 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
 
             scope.$watch('jsonObj.body', function(newValue, oldValue){
+
+                scope.alerts = [];
 
                 if(backspacePressed) {
                     backspacePressed = false;
@@ -647,11 +646,14 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                                     var priceTagToRemove = excerpt.value.replace('$', '');
                                     priceTagToRemove = priceTagToRemove.trim();
 
+                                    scope.cleanModel("$", priceTagToRemove);
                                 } else if (excerpt.value.indexOf('@') !== -1) {
                                     console.log('@ removed ', excerpt.value);
 
                                     var atTagToRemove = excerpt.value.replace('@', '');
                                     atTagToRemove = atTagToRemove.trim();
+
+                                    scope.cleanModel("@", atTagToRemove);
                                 }
                             }
                         }
@@ -4826,8 +4828,6 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.demoCleared = false;
-
     $scope.clearDemo = function () {
         console.log("clearing contents");
         if (!$scope.demoCleared) {
@@ -4836,9 +4836,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
     };
 
-    $scope.jsonObj = mentionsFactory.jsonTemplate;
+    $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
 
-    $scope.categoryTitlePicker = mentionsFactory.categoryTitlePicker;
+    $scope.jsonObj = mentionsFactory.setJsonTemplate();
 
     $scope.allCategories = [
         {
@@ -5363,17 +5363,23 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
     ];
 
-    $scope.formatted_jsonObj = function () {
-        return JSON.stringify($scope.jsonObj, null, 4);
-    };
 
     //TODO: Handle auctions
-    //$scope.macros = {
-    //    'obo': '*Or Best Offer*'
-    //};
+    $scope.macros = {
+        'obo': '*Or Best Offer*'
+    };
+
+    $scope.isEmpty = function isEmpty(obj) {
+        for(var prop in obj) {
+            if(obj.hasOwnProperty(prop))
+                return false;
+        }
+
+        return true;
+    };
 
     $scope.dismiss = function (reason) {
-        mentionsFactory.resetJsonTemplate();
+        mentionsFactory.setJsonTemplate();
         $modalInstance.dismiss(reason);
     };
 
@@ -5451,6 +5457,45 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     });
 
 
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    $scope.validatePost = function () {
+
+        $scope.alerts = [];
+
+        var newPost = $scope.jsonObj;
+
+        if (newPost.hashtags.length) {
+            if (newPost.category) {
+                if (!$scope.isEmpty(newPost.location)) {
+                    $scope.processPost();
+                } else {
+                    $scope.alerts.push({
+                        type: 'danger',
+                        msg: 'Use the @ symbol in your post to specify where the buyer should pickup the item.'
+                    });
+                }
+            } else {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: 'Add more #\'s to describe your item for sale, or manually specify a category.'
+                });
+
+                $scope.jsonObj.category_name = "other";
+                $scope.jsonObj.category = "ZOTH";
+            }
+        } else {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'Use the # symbol in your post to describe the item you\'re selling.  Hint: You can add more than one hashtag if you want.'
+            });
+        }
+
+    };
+
+
     $scope.processPost = function () {
 
         if(Session.userObj.user_settings.loggedIn) {
@@ -5480,16 +5525,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         newPost.username = Session.userObj.user_settings.name;
 
         //loop through the hashtags and formulate the heading of post
-
         newPost.heading = '';
-        for (var i = 0; i < newPost.mentions.hashtags.length; i++) {
-            if (i !== newPost.mentions.hashtags.length - 1) {
-                newPost.heading += newPost.mentions.hashtags[i] + " ";
+        for (var i = 0; i < newPost.hashtags.length; i++) {
+            if (i !== newPost.hashtags.length - 1) {
+                newPost.heading += newPost.hashtags[i] + " ";
             } else {
-                newPost.heading += newPost.mentions.hashtags[i];
+                newPost.heading += newPost.hashtags[i];
             }
-
-            newPost.mentions.hashtags[i] = newPost.mentions.hashtags[i]; //Remove all the info we used to gather meta-data
+            newPost.hashtags[i] = newPost.hashtags[i]; //Remove all the info we used to gather meta-data
         }
 
         //Josh's posting API
@@ -5499,15 +5542,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 console.log(posting);
                 $modalInstance.dismiss({reason: "stageOneSuccess", post: posting});
 
-                mentionsFactory.resetJsonTemplate();
-
                 //Submit for precaching
                 $http.post(ENV.precacheAPI, {posting: posting}).success(function(response){
                     console.log('precache success', response);
                 }).error(function(err){
-                    console.log('precaceh error:', err);
+                    console.log('precache error:', err);
                 });
 
+                mentionsFactory.setJsonTemplate();
             }).
             error(function(data, status, headers, config) {
 
@@ -5535,6 +5577,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
             //console.log(jsonTemplate);
             //console.log("done");
+        }, function (err) {
+            console.log(err);
         });
         return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
     };
@@ -5544,30 +5588,34 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.map = mentionsFactory.googleMap;
 
     $scope.searchPlaces = function (term) {
-        console.log(term);
+
         if (term) {
-            mentionsFactory.predictPlace(term).then(function (results) {
-                $scope.places = results;
-                console.log("Here is scope.places", $scope.places);
-            });
+
+            if($scope.isEmpty($scope.jsonObj.location)) {
+                mentionsFactory.predictPlace(term).then(function (results) {
+                    $scope.places = results;
+                    //console.log("Here is scope.places", $scope.places);
+                });
+            }
         }
     };
 
     $scope.getPlacesTextRaw = function (selectedPlace) {
         mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
             console.log(jsonTemplate);
-            console.log("done");
+            //console.log("done");
         });
-        console.log("updated ui");
+
         return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
     };
 
     //========= $ Prices =========
     $scope.searchPrice = function (term) {
-        console.log(term);
         if (term) {
-            $scope.prices = mentionsFactory.predictPrice(term);
-            console.log("here is scope.prices", $scope.prices);
+            if($scope.isEmpty($scope.jsonObj.price)) {
+                $scope.prices = mentionsFactory.predictPrice(term);
+                //console.log("here is scope.prices", $scope.prices);
+            }
         }
     };
 
@@ -5619,60 +5667,110 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 }]);;/**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $filter, ENV, utilsFactory, Notification) {
+htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
-    factory.jsonTemplate = {
+    var tempDiv = document.createElement("DIV"); //Used for stripping html from strings
+
+    factory.defaultJson = {
         "annotations": [],
         "category": null,
         "category_name": null,
         "category_group": null,
         "category_group_name": null,
-        "heading": null,
         "body": null,
         "images": [],
         "location": {},
-        "mentions": {
-            "hashtags": [],
-            "atTags": [],
-            "priceTag": []
-        },
+        "hashtags": [],
         "price": null,
         "price_avg": null,
         "price_type": null,
         "source": "HSHTG",
-        "username": null
     };
 
 
-    factory.categoryTitlePicker = {
-        code: null
+    factory.setJsonTemplate = function () {
+        factory.jsonTemplate = angular.copy(factory.defaultJson);
+        return factory.jsonTemplate;
     };
 
 
-    factory.resetJsonTemplate = function () {
-        factory.jsonTemplate = {
-            "annotations": [],
-            "category": null,
-            "category_name": null,
-            "category_group": null,
-            "category_group_name": null,
-            "heading": null,
-            "body": null,
-            "images": [],
-            "location": {},
-            "mentions": {
-                "hashtags": [],
-                "atTags": [],
-                "priceTag": []
-            },
-            "price": null,
-            "price_avg": null,
-            "price_type": null,
-            "source": "HSHTG",
-            "username": null
-        };
+
+    factory.annotationsDictionary = new Hashtable();
+    factory.annotationsDictionary.put("year", "Year");
+    factory.annotationsDictionary.put("condition", "Condition");
+    factory.annotationsDictionary.put("make", "Make");
+    factory.annotationsDictionary.put("title_status", "Title");
+    factory.annotationsDictionary.put("model", "Model");
+    factory.annotationsDictionary.put("mileage", "Mileage");
+    factory.annotationsDictionary.put("transmission", "Transmission");
+    factory.annotationsDictionary.put("drive", "Drive");
+    factory.annotationsDictionary.put("paint_color", "Paint");
+    factory.annotationsDictionary.put("type", "Type");
+    factory.annotationsDictionary.put("fuel", "Fuel");
+    factory.annotationsDictionary.put("size", "Size");
+    factory.annotationsDictionary.put("bathrooms", "Bath");
+    factory.annotationsDictionary.put("no_smoking", "Smoking");
+    factory.annotationsDictionary.put("bedrooms", "Rooms");
+    factory.annotationsDictionary.put("dogs", "Dogs");
+    factory.annotationsDictionary.put("cats", "Cats");
+    factory.annotationsDictionary.put("attached_garage", "Garage");
+    factory.annotationsDictionary.put("laundry_on_site", "Laundry");
+    factory.annotationsDictionary.put("sqft", "Sq Ft");
+    factory.annotationsDictionary.put("size_dimensions", "Dimensions");
+
+    //ebay motors annotations
+    factory.annotationsDictionary.put("body_type", "Body Type");
+    factory.annotationsDictionary.put("drive_type", "Drive Type");
+    factory.annotationsDictionary.put("engine", "Engine");
+    factory.annotationsDictionary.put("exterior_color", "Exterior Color");
+    factory.annotationsDictionary.put("for_sale_by", "Seller Type");
+    factory.annotationsDictionary.put("interior_color", "Interior Color");
+    factory.annotationsDictionary.put("fuel_type", "Fuel Type");
+    factory.annotationsDictionary.put("listing_type", "Listing Type");
+    factory.annotationsDictionary.put("number_of_cylinders", "Cylinders");
+    factory.annotationsDictionary.put("options", "Options");
+    factory.annotationsDictionary.put("power_options", "Power Options");
+    factory.annotationsDictionary.put("safety_features", "Safety");
+    factory.annotationsDictionary.put("ship_to_location", "Ship To");
+    factory.annotationsDictionary.put("trim", "Trim");
+    factory.annotationsDictionary.put("vehicle_title", "Title");
+    factory.annotationsDictionary.put("vin", "Vin");
+    factory.annotationsDictionary.put("warranty", "Warranty");
+
+    //autotrader annotations
+    factory.annotationsDictionary.put("bodyStyle", "Body Type");
+    factory.annotationsDictionary.put("drivetrain", "Drive Train");
+    factory.annotationsDictionary.put("exteriorColor", "Exterior Color");
+    factory.annotationsDictionary.put("interiorColor", "Interior Color");
+
+
+    //amazon annotations
+    factory.annotationsDictionary.put("Color", "Color");
+    factory.annotationsDictionary.put("Brand", "Brand");
+    factory.annotationsDictionary.put("Material Type", "Material Type");
+    factory.annotationsDictionary.put("Model", "Model");
+    //factory.annotationsDictionary.put("Part Number", "Part Number");
+    factory.annotationsDictionary.put("Warranty", "Warranty");
+    factory.annotationsDictionary.put("CPU Speed", "Processor Speed");
+    factory.annotationsDictionary.put("CPU Type", "Processor Type");
+    factory.annotationsDictionary.put("Display Size", "Screen Size");
+    factory.annotationsDictionary.put("Operating System", "OS Version");
+    //factory.annotationsDictionary.put("Size", "Storage Capacity");
+    factory.annotationsDictionary.put("System Memory Size", "Memory");
+    factory.annotationsDictionary.put("Department", "Department");
+
+
+    factory.manualCategorySelect = {
+        code: null,
+        show: false,
+        tooltip: "message",
+        init: function () {
+            alert(factory.jsonTemplate.category);
+            this.code = factory.jsonTemplate.category;
+            factory.getProductMetaData();
+        }
     };
 
     factory.predictProduct = function (term) {
@@ -5702,19 +5800,20 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
 
                 angular.forEach(data[1], function (val, key) {
 
-                    var tmp = document.createElement("DIV");
-                    tmp.innerHTML = val[0];
-                    var strippedHtml = tmp.textContent || tmp.innerText || "";
-
+                    tempDiv.innerHTML = val[0];
+                    var strippedHtml = tempDiv.textContent || tempDiv.innerText || "";
 
                     products.push({"value": strippedHtml});
                 });
+
                 if (products[0].value !== userTypedText.value) {
                     products.splice(0, 0, userTypedText);
                 }
+
                 if (products.length > 7) {
                     products.length = 7; // prune suggestions list to only 6 items because we add the usersTyped word to top of list
                 }
+
             } else {
                 //console.log("nothing found");
                 products.push(userTypedText);
@@ -5724,35 +5823,9 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
         });
 
         return deferred.promise;
-        // TODO: Wait for promise from http and update the highlighted mentioned text with appropriate metadata
-        //        http://completion.amazon.com/search/complete?q=apar&search-alias=aps&mkt=1
-        //        $http.jsonp('http://completion.amazon.com/search/complete', {
-        //            params: {
-        //                method: "completion",
-        //                'search-alias': "aps",
-        //                jsonp: "JSON_CALLBACK",
-        //                q: term,
-        //                mkt: 1
-        //            }
-        //        })
-        //            .success(function (data,status) {
-        //                console.log(data);
-        //
-        //                angular.forEach(data[1], function(val, key) {
-        //
-        //                    var tmp = document.createElement("DIV");
-        //                    tmp.innerHTML = val[0];
-        //                    var strippedHtml = tmp.textContent || tmp.innerText || "";
-        //
-        //                    products.push({"value":strippedHtml});
-        //                });
-        //
-        //                products.length = 10; // prune suggestions list to only 5 items
-        //
-        //                $scope.products = products
-        //                return products;
-        //            });
     };
+
+
 
 
     factory.getProductMetaData = function (selectedProduct) {
@@ -5760,87 +5833,118 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
         var deferred = $q.defer();
 
         if(selectedProduct) {
-            this.jsonTemplate.mentions.hashtags.push(selectedProduct.value);
+            this.jsonTemplate.hashtags.push(selectedProduct.value);
         }
 
-        //TODO: Omit Adult Categories if Safe_Search is on
-        //        if(!Session.getLoginStatus() || Session.getSessionValue("safe_search")){
-        //            console.log("Safe Search is on!");
-        //            POPULAR_CATEGORY_HASH_TABLESearchString+="~PPPP|~PMSM|~PMSW|~PWSM|~PWSW|~POTH|~MMMM|~MESC|~MFET|~MJOB|~MMSG|~MPNW|~MSTR|~MOTH";
-        //        } else {
-        //            POPULAR_CATEGORY_HASH_TABLESearchString = POPULAR_CATEGORY_HASH_TABLESearchString.substring(0, POPULAR_CATEGORY_HASH_TABLESearchString.length - 1);
-        //        }
+        if(this.jsonTemplate.hashtags.length) {
 
-        if(this.jsonTemplate.mentions.hashtags.length) {
+            var queryString = this.jsonTemplate.hashtags.join(" ");
 
-            //These are the only potential annotations we will ask the user for today.
-            var annotationsDictionary = new Hashtable();
-            annotationsDictionary.put("year", "Year");
-            annotationsDictionary.put("condition", "Condition");
-            annotationsDictionary.put("make", "Make");
-            annotationsDictionary.put("title_status", "Title");
-            annotationsDictionary.put("model", "Model");
-            annotationsDictionary.put("mileage", "Mileage");
-            annotationsDictionary.put("transmission", "Transmission");
-            annotationsDictionary.put("drive", "Drive");
-            annotationsDictionary.put("paint_color", "Paint");
-            annotationsDictionary.put("type", "Type");
-            annotationsDictionary.put("fuel", "Fuel");
-            annotationsDictionary.put("size", "Size");
-            annotationsDictionary.put("bathrooms", "Bath");
-            annotationsDictionary.put("no_smoking", "Smoking");
-            annotationsDictionary.put("bedrooms", "Rooms");
-            annotationsDictionary.put("dogs", "Dogs");
-            annotationsDictionary.put("cats", "Cats");
-            annotationsDictionary.put("attached_garage", "Garage");
-            annotationsDictionary.put("laundry_on_site", "Laundry");
-            annotationsDictionary.put("sqft", "Sq Ft");
-            annotationsDictionary.put("size_dimensions", "Dimensions");
+            factory.getPopularCategory(queryString).then(function(popularCategoryCode){
 
-            //ebay motors annotations
-            annotationsDictionary.put("body_type", "Body Type");
-            annotationsDictionary.put("drive_type", "Drive Type");
-            annotationsDictionary.put("engine", "Engine");
-            annotationsDictionary.put("exterior_color", "Exterior Color");
-            annotationsDictionary.put("for_sale_by", "Seller Type");
-            annotationsDictionary.put("interior_color", "Interior Color");
-            annotationsDictionary.put("fuel_type", "Fuel Type");
-            annotationsDictionary.put("listing_type", "Listing Type");
-            annotationsDictionary.put("number_of_cylinders", "Cylinders");
-            annotationsDictionary.put("options", "Options");
-            annotationsDictionary.put("power_options", "Power Options");
-            annotationsDictionary.put("safety_features", "Safety");
-            annotationsDictionary.put("ship_to_location", "Ship To");
-            annotationsDictionary.put("trim", "Trim");
-            annotationsDictionary.put("vehicle_title", "Title");
-            annotationsDictionary.put("vin", "Vin");
-            annotationsDictionary.put("warranty", "Warranty");
+                factory.jsonTemplate.category = popularCategoryCode;
 
-            //autotrader annotations
-            annotationsDictionary.put("bodyStyle", "Body Type");
-            annotationsDictionary.put("drivetrain", "Drive Train");
-            annotationsDictionary.put("exteriorColor", "Exterior Color");
-            annotationsDictionary.put("interiorColor", "Interior Color");
+                factory.getCategoryMetadata(popularCategoryCode).then(function(data){
+
+                    factory.manualCategorySelect.code = null;
+                    factory.manualCategorySelect.show = false;
+
+                    factory.jsonTemplate.category_name = data.categories[0].name;
+                    factory.jsonTemplate.category_group = data.code;
+                    factory.jsonTemplate.category_group_name = data.name;
+
+                    factory.getInternalAnnotations(queryString).then(function(annotationArray){
+
+                        factory.getAmazonAnnotations(queryString, annotationArray).then(function (annotationArray) {
+
+                            if(annotationArray.length) {
+
+                                factory.jsonTemplate.annotations = annotationArray;
+
+                            } else {
+
+                                Notification.success({
+                                    title: "Hrmmmmm",
+                                    message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
+                                });
+
+                            }
+
+                            deferred.resolve(factory.jsonTemplate);
+
+                        }, function (err) { //failed to lookup Amazon annotations
+
+                            Notification.error({
+                                title: "Ooops",
+                                message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                            });
+
+                            deferred.reject(err);
+
+                        });
+
+                    }, function (err) {  //failed to lookup internal annotations
+
+                        Notification.error({
+                            title: "Ooops",
+                            message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                        });
+
+                    });
+
+                }, function (err) { //failed to lookup category metadata
+
+                    Notification.error({
+                        title: "Cannot lookup cateogry metadata",
+                        message: err.message
+                    });
+
+                });
+
+            }, function () { //Could not determine popular category
+
+                factory.manualCategorySelect.tooltip = "Add more hashtags to your post, or manually select the category";
+                factory.manualCategorySelect.show = true;
+
+                factory.jsonTemplate.category = "ZOTH";
+
+                $timeout(function () {
+                    $(".category-select").triggerHandler('show');
+
+                    $timeout(function () {
+                        $(".category-select").triggerHandler('hide');
+                    }, 4000);
+
+                }, 50);
+
+                deferred.reject();
+
+            });
+
+        } else { //User must have deleted hashtag from post while editing.
+            factory.manualCategorySelect.show = false;
+            this.jsonTemplate.annotations = [];
+            this.jsonTemplate.category = null;
+            this.jsonTemplate.category_name = null;
+            this.jsonTemplate.category_group = null;
+            this.jsonTemplate.category_group_name = null;
+
+            deferred.resolve(factory.jsonTemplate);
+        }
+
+        return deferred.promise;
+
+    };
 
 
-            //amazon annotations
-            annotationsDictionary.put("Color", "Color");
-            annotationsDictionary.put("Brand", "Brand");
-            annotationsDictionary.put("Material Type", "Material Type");
-            annotationsDictionary.put("Model", "Model");
-            //annotationsDictionary.put("Part Number", "Part Number");
-            annotationsDictionary.put("Warranty", "Warranty");
-            annotationsDictionary.put("CPU Speed", "Processor Speed");
-            annotationsDictionary.put("CPU Type", "Processor Type");
-            annotationsDictionary.put("Display Size", "Screen Size");
-            annotationsDictionary.put("Operating System", "OS Version");
-            //annotationsDictionary.put("Size", "Storage Capacity");
-            annotationsDictionary.put("System Memory Size", "Memory");
-            annotationsDictionary.put("Department", "Department");
 
 
-            var queryString = this.jsonTemplate.mentions.hashtags.join(" ");
 
+    factory.getPopularCategory = function (queryString) {
+
+        var deferred = $q.defer();
+
+        if(!factory.manualCategorySelect.code) {
 
             $http.get(ENV.groupingsAPI + 'popular', {
                 params: {
@@ -5852,254 +5956,230 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
 
                 if (popularCategories.length) {
 
-                    //now that we have the popular category code get all the conical information about that category
-                    //var mostPopularCategory = popularCategories[0].code;
+                    deferred.resolve(popularCategories[0].code);
 
-
-
-
-
-                    //var winningCategories = [];
-                    //var total = 0;
-                    //
-                    //for (var i = 0; i < popularCategories.length; i++) {
-                    //
-                    //    var firstCategory = data[i];
-                    //
-                    //    total = total + firstCategory.count;
-                    //
-                    //}
-                    //
-                    //var avg = (total / popularCategories.length);
-                    //
-                    //console.log('total: ', total, ' divided by number of categories: ', popularCategories.length, ' equals: ', avg);
-                    //
-                    //for (var j = 0; j < popularCategories.length; j++) {
-                    //
-                    //    var secondCategory = popularCategories[j];
-                    //
-                    //    console.log('total number of items: ', total);
-                    //    console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
-                    //    var percentage = (secondCategory.count/total) * 100;
-                    //    console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
-                    //
-                    //
-                    //    if (percentage >= 10) {
-                    //        winningCategories.push(secondCategory.code);
-                    //    }
-                    //
-                    //}
-                    //
-                    //if (winningCategories.length > 1) {
-                    //    factory.jsonTemplate.category = winningCategories;
-                    //} else if (winningCategories.length === 1) {
-                    //    factory.jsonTemplate.category = [winningCategories[0], ''];
-                    //} else if (!winningCategories.length && popularCategories.length){
-                    //
-                    //}
-                    console.log(popularCategories);
-                    factory.categoryTitlePicker.code = popularCategories[0].code;
-
-
-                    $http.get(ENV.groupingsAPI + popularCategories[0].code).success(function (data, status) {
-
-                        factory.jsonTemplate.category = popularCategories[0].code;
-                        factory.jsonTemplate.category_name = $filter('capitalize')(data.categories[0].name);
-                        factory.jsonTemplate.category_group = data.code;
-                        factory.jsonTemplate.category_group_name = data.name;
-
-                        var annotationsHashTable = new Hashtable();
-                        var annotationCount = 0;
-
-                        var priceCount = 0;
-                        var totalPrice = 0;
-
-                        //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
-                        var defaultParams = {
-                            start: 0,
-                            count: 500,
-                            filters: {
-                                mandatory: {
-                                    contains: {
-                                        heading: queryString
-                                    }
-                                },
-                                optional: {
-                                    exact: {
-                                        categoryCode: [factory.jsonTemplate.category, '']
-                                    }
-                                }
-                            },
-                            geo: {
-                                coords: ['-122.431297', '37.773972'],
-                                "min": 0,
-                                "max": 100000
-                            }
-                        };
-
-                        var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
-
-
-                        //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
-                        $http({
-                            method: 'GET',
-                            url: ENV.postingAPI + bracketURL
-                        }).success(function (data) {
-
-                            console.log("ANNOTATION Query response: ", data);
-
-                            if (data.results.length) {
-
-                                for (var i = 0; i < data.results.length; i++) {
-
-                                    var posting = data.results[i];
-
-                                    if (posting.annotations) {
-
-                                        var annotationObj = posting.annotations;
-
-                                        //console.log(i, annotationObj);
-                                        for (var key in annotationObj) {
-                                            if (annotationsDictionary.containsKey(key)) {
-                                                annotationCount++;
-                                                if (annotationsHashTable.containsKey(key)) {
-                                                    var currentCount = annotationsHashTable.get(key);
-                                                    var plusOne = currentCount + 1;
-                                                    annotationsHashTable.put(key, plusOne);
-                                                } else {
-                                                    annotationsHashTable.put(key, 1);
-                                                }
-                                            } else {
-                                                //console.log("omitting cause", key, "is not in our dictionary");
-                                            }
-                                        }
-                                    } else {
-                                        //console.log("does not have annotation object", results[i]);
-                                    }
-
-                                    if (posting.askingPrice) {
-                                        if (posting.askingPrice.value !== undefined) {
-                                            //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
-                                            priceCount++;
-                                            totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
-                                            //console.log(totalPrice);
-                                        }
-                                    }
-                                }
-
-                                //Caculate average price of all data we retreived.
-                                if (totalPrice > 0) {
-                                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
-                                }
-
-
-                                if (annotationsHashTable.size() > 0) {
-
-                                    //Gather our popular annotations
-                                    console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
-                                    var annotationArray = [];
-                                    var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
-
-                                    console.log("Annotations should weigh more than: ", avg_weight);
-
-                                    annotationsHashTable.each(function (key) {
-
-                                        var weight = Math.abs(annotationsHashTable.get(key));
-
-                                        console.log(key, " has weight of", weight);
-
-                                        if (weight >= avg_weight) {
-
-                                            annotationArray.push({key: annotationsDictionary.get(key), value: null});
-
-                                            console.log(weight, ">=", avg_weight);
-                                        }
-                                    });
-
-
-                                    $http.get(ENV.annotationsAPI, {
-                                        params: {
-                                            query: queryString
-                                        }
-                                    }).success(function (data) {
-
-                                        console.log('Amazon data', data);
-
-                                        if (data.length) {
-
-                                            for (var k = 0; k < data.length; k++) {
-
-                                                var amazonAnnotation = data[k];
-
-                                                var key = amazonAnnotation.name;
-
-                                                if (annotationsDictionary.containsKey(key)) {
-
-                                                    annotationArray.push({
-                                                        key: annotationsDictionary.get(key),
-                                                        value: null
-                                                    });
-
-                                                }
-                                            }
-
-                                            console.log("---------------------------");
-                                            console.log("done adding Amazon annotations!");
-                                            console.log("---------------------------");
-
-                                            factory.jsonTemplate.annotations = annotationArray;
-
-                                        }
-
-                                        console.log(factory.jsonTemplate);
-
-                                    }).error(function (data) {
-
-                                    });
-
-                                } else {
-                                    Notification.success({
-                                        title: "We need more info",
-                                        message: "We could not determine what further questions to ask about your " + queryString + ".  Please add more hashtags to your description."
-                                    });
-                                }
-
-
-                            } else {
-                                Notification.success({
-                                    title: "Hrmmmmm",
-                                    message: "Keep your hashtags simple."
-                                });
-                            }
-                        });
-                    });
                 } else {
-                    Notification.success({
-                        title: "We need more info",
-                        message: "We could not intelligently determine what category of item you're selling.  Please add more hashtags to your description."
-                    });
+
+                    deferred.reject();
+
                 }
 
-            }).error(function (data) {
-                Notification.error({
-                    title: 'Ooops.. Error',
-                    message: data
-                });
             });
+
         } else {
-            this.jsonTemplate.annotations = [];
-            this.jsonTemplate.category = null;
-            this.jsonTemplate.category_name = null;
-            this.jsonTemplate.category_group = null;
-            this.jsonTemplate.category_group_name = null;
+
+            deferred.resolve(factory.manualCategorySelect.code);
+
         }
-
-
-        deferred.resolve(factory.jsonTemplate);
 
         return deferred.promise;
 
     };
+
+
+
+    factory.getCategoryMetadata = function (popularCategory) {
+
+        var deferred = $q.defer();
+
+        $http.get(ENV.groupingsAPI + popularCategory).success(function (data, status) {
+
+            deferred.resolve(data);
+
+        }).error(function(err){
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+
+    factory.getInternalAnnotations = function (queryString) {
+
+        var deferred = $q.defer();
+
+        var annotationsHashTable = new Hashtable();
+        var annotationCount = 0;
+
+        var priceCount = 0;
+        var totalPrice = 0;
+
+        //TODO: Follow bug here to remove the comma in future: https://github.com/HashtagSell/posting-api/issues/45
+        var defaultParams = {
+            start: 0,
+            count: 500,
+            filters: {
+                mandatory: {
+                    contains: {
+                        heading: queryString
+                    }
+                },
+                optional: {
+                    exact: {
+                        categoryCode: [factory.jsonTemplate.category, '']
+                    }
+                }
+            },
+            geo: {
+                coords: ['-122.431297', '37.773972'],
+                "min": 0,
+                "max": 100000
+            }
+        };
+
+        var bracketURL = utilsFactory.bracketNotationURL(defaultParams);
+
+
+        //FIRST GET ANNOTATIONS FROM OUR INTERNAL DATABASE.
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + bracketURL
+        }).success(function (data) {
+
+            console.log("ANNOTATION Query response: ", data);
+
+            var annotationArray = [];
+
+            if (data.results.length) {
+
+                for (var i = 0; i < data.results.length; i++) {
+
+                    var posting = data.results[i];
+
+                    if (posting.annotations) {
+
+                        var annotationObj = posting.annotations;
+
+                        //console.log(i, annotationObj);
+                        for (var key in annotationObj) {
+                            if (factory.annotationsDictionary.containsKey(key)) {
+                                annotationCount++;
+                                if (annotationsHashTable.containsKey(key)) {
+                                    var currentCount = annotationsHashTable.get(key);
+                                    var plusOne = currentCount + 1;
+                                    annotationsHashTable.put(key, plusOne);
+                                } else {
+                                    annotationsHashTable.put(key, 1);
+                                }
+                            } else {
+                                //console.log("omitting cause", key, "is not in our dictionary");
+                            }
+                        }
+                    } else {
+                        //console.log("does not have annotation object", results[i]);
+                    }
+
+                    if (posting.askingPrice) {
+                        if (posting.askingPrice.value !== undefined) {
+                            //console.log(posting.askingPrice.value, ' + ', totalPrice, ' =');
+                            priceCount++;
+                            totalPrice = parseInt(totalPrice) + parseInt(posting.askingPrice.value);
+                            //console.log(totalPrice);
+                        }
+                    }
+                }
+
+                //Caculate average price of all data we retreived.
+                if (totalPrice > 0) {
+                    factory.jsonTemplate.price_avg = totalPrice / priceCount;
+                }
+
+                if (annotationsHashTable.size() > 0) {
+
+                    //Gather our popular annotations
+                    console.log("We have ", annotationsHashTable.size(), "unique annotations in : ", annotationCount, "results");
+                    var avg_weight = Math.abs(annotationCount / annotationsHashTable.size());
+
+                    console.log("Annotations should weigh more than: ", avg_weight);
+
+                    annotationsHashTable.each(function (key) {
+
+                        var weight = Math.abs(annotationsHashTable.get(key));
+
+                        console.log(key, " has weight of", weight);
+
+                        if (weight >= avg_weight) {
+
+                            annotationArray.push({key: factory.annotationsDictionary.get(key), value: null});
+
+                            console.log(weight, ">=", avg_weight);
+                        }
+                    });
+
+                    deferred.resolve(annotationArray);
+
+                } else {
+
+
+                    deferred.resolve(annotationArray);
+                }
+
+
+            } else {
+
+                deferred.resolve(annotationArray);
+            }
+        });
+
+
+        return deferred.promise;
+    };
+
+
+    factory.getAmazonAnnotations = function (queryString, annotationArray) {
+        var deferred = $q.defer();
+
+        $http.get(ENV.annotationsAPI, {
+            params: {
+                query: queryString
+            }
+        }).success(function (data) {
+
+            console.log('Amazon data', data);
+
+            if (data.length) {
+
+                for (var k = 0; k < data.length; k++) {
+
+                    var amazonAnnotation = data[k];
+
+                    var key = amazonAnnotation.name;
+
+                    if (factory.annotationsDictionary.containsKey(key)) {
+
+                        annotationArray.push({
+                            key: factory.annotationsDictionary.get(key),
+                            value: null
+                        });
+
+                    }
+                }
+
+                console.log("---------------------------");
+                console.log("done adding Amazon annotations!");
+                console.log("---------------------------");
+
+                deferred.resolve(annotationArray);
+
+            }
+
+        }).error(function (data) {
+
+            deferred.reject();
+
+        });
+
+        return deferred.promise;
+    };
+
+
+
+
+
+
 
 
 
@@ -6109,18 +6189,39 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
 
             console.log('HASHTAG TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.mentions.hashtags = _.without(this.jsonTemplate.mentions.hashtags, valueToRemove);
+            this.jsonTemplate.hashtags = _.without(this.jsonTemplate.hashtags, valueToRemove);
 
             console.log(this.jsonTemplate);
 
             factory.getProductMetaData();
 
         } else if (type === "$") {
-            alert('remove cost');
+
+            console.log('PRICE TO REMOVE: ', valueToRemove);
+
+            this.jsonTemplate.price = null;
+            this.jsonTemplate.price_avg = null;
+            this.jsonTemplate.price_type = null;
+
+            console.log(this.jsonTemplate);
+
         } else if (type === "@") {
-            alert('remove location');
+
+            console.log('LOCATION TO REMOVE: ', valueToRemove);
+
+            this.jsonTemplate.location = {};
+
+            console.log(this.jsonTemplate);
+
         }
     };
+
+
+
+
+
+
+
 
 
 
@@ -6157,9 +6258,14 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
     };
 
 
-    factory.getPlaceMetaData = function (selectedPlace) {
 
-        this.jsonTemplate.mentions.atTags.push(selectedPlace.description);
+
+
+
+
+
+
+    factory.getPlaceMetaData = function (selectedPlace) {
 
         var googleMaps = new google.maps.places.PlacesService(factory.googleMap);
 
@@ -6279,6 +6385,12 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
     };
 
 
+
+
+
+
+
+
     factory.predictPrice = function (term) {
 
         var priceSuggestionArray = [];
@@ -6292,10 +6404,12 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$filter', 'ENV', 'utilsFactory
         return priceSuggestionArray;
     };
 
-    factory.getPriceMetaData = function (selectedPrice) {
 
+
+
+
+    factory.getPriceMetaData = function (selectedPrice) {
         this.jsonTemplate.price = selectedPrice.value;
-        this.jsonTemplate.mentions.priceTag.push(selectedPrice.suggestion);
         this.jsonTemplate.price_type = selectedPrice.rate;
     };
 
