@@ -10,8 +10,6 @@ var async = require('async');
 
 var s3 = new AWS.S3();
 
-AWS.config.region = 'us-west-2';
-
 AWS.config.update({
     accessKeyId: config.AWS_ACCESS_KEY,
     secretAccessKey: config.AWS_SECRET_KEY
@@ -214,9 +212,7 @@ exports.newUpload = function(req, res) {
             return res.json(
                 {
                     sucess: false,
-                    error: err,
-                    accesskey: config.AWS_ACCESS_KEY,
-                    secretkey: config.AWS_SECRET_KEY
+                    error: err
                 }
             );
             throw err;
