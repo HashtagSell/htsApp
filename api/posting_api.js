@@ -234,7 +234,14 @@ exports.newUpload = function(req, res) {
                 imageUploadResponse.push(tmpObj);
             }
 
-            return res.json({success: true, images: imageUploadResponse});
+            return res.json(
+                {
+                    success: true,
+                    images: imageUploadResponse,
+                    accesskey: config.AWS_ACCESS_KEY,
+                    secretkey: config.AWS_SECRET_KEY
+                }
+            );
         }
     });
 
