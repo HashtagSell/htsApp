@@ -211,7 +211,14 @@ exports.newUpload = function(req, res) {
     ], function(err, imgsToUpload) {
         if (err) {
 
-            return res.json({sucess: false, error: err});
+            return res.json(
+                {
+                    sucess: false,
+                    error: err,
+                    accesskey: config.AWS_ACCESS_KEY,
+                    secretkey: config.AWS_SECRET_KEY
+                }
+            );
             throw err;
 
         } else {
@@ -237,9 +244,7 @@ exports.newUpload = function(req, res) {
             return res.json(
                 {
                     success: true,
-                    images: imageUploadResponse,
-                    accesskey: config.AWS_ACCESS_KEY,
-                    secretkey: config.AWS_SECRET_KEY
+                    images: imageUploadResponse
                 }
             );
         }
