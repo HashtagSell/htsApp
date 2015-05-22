@@ -8,7 +8,6 @@ Dockerfile
 npm-debug.log
 readme.md
 ./bower_components
-./config
 ./node_modules
 ./reports
 ./shell-scripts
