@@ -13,7 +13,10 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
 
-    $scope.jsonObj = mentionsFactory.setJsonTemplate();
+    $scope.resetAll = function () {
+        $scope.jsonObj = mentionsFactory.setJsonTemplate();
+    };
+    $scope.resetAll();
 
     $scope.allCategories = [
         {
@@ -554,7 +557,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     $scope.dismiss = function (reason) {
-        mentionsFactory.setJsonTemplate();
+        $scope.resetAll();
         $modalInstance.dismiss(reason);
     };
 
@@ -724,7 +727,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     console.log('precache error:', err);
                 });
 
-                mentionsFactory.setJsonTemplate();
+                $scope.resetAll();
             }).
             error(function(data, status, headers, config) {
 

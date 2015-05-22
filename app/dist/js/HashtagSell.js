@@ -623,40 +623,44 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                     console.log('Old Stripped', oldValueStripped);
                     console.log('New Stripped', newValueStripped);
 
-                    //Run a diff
-                    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+                    if(newValueStripped) {
+                        //Run a diff
+                        var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
 
-                    if (diff.length) {
+                        if (diff.length) {
 
-                        console.log(diff);
+                            console.log(diff);
 
-                        for (var i = 0; i < diff.length; i++) {
-                            var excerpt = diff[i];
-                            if (excerpt.removed) {
-                                if (excerpt.value.indexOf('#') !== -1) {
-                                    console.log('hasshtag removed ', excerpt.value);
+                            for (var i = 0; i < diff.length; i++) {
+                                var excerpt = diff[i];
+                                if (excerpt.removed) {
+                                    if (excerpt.value.indexOf('#') !== -1) {
+                                        console.log('hasshtag removed ', excerpt.value);
 
-                                    var hashtagToRemove = excerpt.value.replace('#', '');
-                                    hashtagToRemove = hashtagToRemove.trim();
+                                        var hashtagToRemove = excerpt.value.replace('#', '');
+                                        hashtagToRemove = hashtagToRemove.trim();
 
-                                    scope.cleanModel("#", hashtagToRemove);
-                                } else if (excerpt.value.indexOf('$') !== -1) {
-                                    console.log('dollar removed ', excerpt.value);
+                                        scope.cleanModel("#", hashtagToRemove);
+                                    } else if (excerpt.value.indexOf('$') !== -1) {
+                                        console.log('dollar removed ', excerpt.value);
 
-                                    var priceTagToRemove = excerpt.value.replace('$', '');
-                                    priceTagToRemove = priceTagToRemove.trim();
+                                        var priceTagToRemove = excerpt.value.replace('$', '');
+                                        priceTagToRemove = priceTagToRemove.trim();
 
-                                    scope.cleanModel("$", priceTagToRemove);
-                                } else if (excerpt.value.indexOf('@') !== -1) {
-                                    console.log('@ removed ', excerpt.value);
+                                        scope.cleanModel("$", priceTagToRemove);
+                                    } else if (excerpt.value.indexOf('@') !== -1) {
+                                        console.log('@ removed ', excerpt.value);
 
-                                    var atTagToRemove = excerpt.value.replace('@', '');
-                                    atTagToRemove = atTagToRemove.trim();
+                                        var atTagToRemove = excerpt.value.replace('@', '');
+                                        atTagToRemove = atTagToRemove.trim();
 
-                                    scope.cleanModel("@", atTagToRemove);
+                                        scope.cleanModel("@", atTagToRemove);
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        scope.resetAll();
                     }
                 }
 
@@ -1278,9 +1282,9 @@ htsApp.directive('ngEnter', function () {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',freeGeoIp:'https://staging-freegeoip.hashtagsell.com/json/',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',feedbackAPI:'http://localhost:8081/feedback',freeGeoIp:'http://localhost:8080/json/',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
 
-.constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
+.constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
 ;;/**
  * Created by braddavis on 12/10/14.
@@ -4838,7 +4842,10 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
 
-    $scope.jsonObj = mentionsFactory.setJsonTemplate();
+    $scope.resetAll = function () {
+        $scope.jsonObj = mentionsFactory.setJsonTemplate();
+    };
+    $scope.resetAll();
 
     $scope.allCategories = [
         {
@@ -5379,7 +5386,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     $scope.dismiss = function (reason) {
-        mentionsFactory.setJsonTemplate();
+        $scope.resetAll();
         $modalInstance.dismiss(reason);
     };
 
@@ -5549,7 +5556,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     console.log('precache error:', err);
                 });
 
-                mentionsFactory.setJsonTemplate();
+                $scope.resetAll();
             }).
             error(function(data, status, headers, config) {
 
@@ -5767,7 +5774,6 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
         show: false,
         tooltip: "message",
         init: function () {
-            alert(factory.jsonTemplate.category);
             this.code = factory.jsonTemplate.category;
             factory.getProductMetaData();
         }
@@ -6418,40 +6424,43 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 }]);;/**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'externalSourcesSelection', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, externalSourcesSelection, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
 
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
     $scope.dismiss = function (reason) {
-
-        if($scope.sourceSelections.length) {
-
-            $scope.publishToFacebook().then(function(){
-                $scope.publishToTwitter().then(function(){
-                    $scope.publishToAmazon().then(function(){
-                       $scope.publishToEbay().then(function(){
-                           $scope.publishToCraigslist().then(function(){
-                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
-                           });
+        $scope.publishToFacebook().then(function(){
+            $scope.publishToTwitter().then(function(){
+                $scope.publishToAmazon().then(function(){
+                   $scope.publishToEbay().then(function(){
+                       $scope.publishToCraigslist().then(function(){
+                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
                        });
-                    });
+                   });
                 });
             });
-
-        } else {
-
-            $modalInstance.dismiss({reason: reason, post: newPost});
-
-        }
+        });
     };
 
+
+    $scope.shareToggles = {
+        facebook : false,
+        twitter: false,
+        ebay: false,
+        amazon: false,
+        craigslist: false
+    };
+
+    $scope.onlinePayment = {
+        allow: false
+    };
 
 
     $scope.publishToFacebook = function () {
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Facebook')) {
+        if($scope.shareToggles.facebook) {
 
             facebookFactory.publishToWall(newPost).then(function (response) {
 
@@ -6487,7 +6496,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Twitter')) {
+        if($scope.shareToggles.twitter) {
 
             twitterFactory.publishToTwitter(newPost).then(function (response) {
 
@@ -6523,7 +6532,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Amazon')) {
+        if($scope.shareToggles.amazon) {
 
             Notification.error({
                 title: "Amazon publishing error",
@@ -6545,7 +6554,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'eBay')) {
+        if($scope.shareToggles.ebay) {
 
             ebayFactory.publishToEbay(newPost).then(function (response) {
 
@@ -6596,7 +6605,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Craigslist')) {
+        if($scope.shareToggles.craigslist) {
 
             Notification.error({
                 title: "Craigslist publishing error",
@@ -6612,54 +6621,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         return deferred.promise;
     };
 
-
-
-    $scope.sources = externalSourcesSelection.sources;
-
-    $scope.sourceSelections = [];
-
-    // watch fruits for changes
-    $scope.$watch('sources.marketplaces|filter:{selected:true}', function (newValue) {
-
-        $scope.sourceSelections = newValue.map(function (source) {
-            return source.name;
-        });
-
-    }, true);
-
-
-}]);;/**
- * Created by braddavis on 2/27/15.
- */
-htsApp.factory('externalSourcesSelection', ['$http', function ($http) {
-    var factory = {};
-
-    //factory.sources = {
-    //    marketplaces: [
-    //        {"name": "eBay", "icon": "<i class='fa fa-facebook-square'></i>", selected: false},
-    //        {"name": "Amazon", "icon": "<i class='fa fa-facebook-square'></i>", selected: false},
-    //        {"name": "Craigslist", "icon": "<i class='fa fa-facebook-square'></i>", selected: false}
-    //    ],
-    //    socialNetworks: [
-    //        {"name": "Facebook", "icon": "<i class='fa fa-facebook-square'></i>", selected: false},
-    //        {"name": "Twitter", "icon": "<i class='fa fa-twitter-square'></i>", selected: false}
-    //    ]
-    //};
-
-    //{"name": "Amazon", "class": "amazon", selected: false},
-    //{"name": "Craigslist", "class": "craigslist", selected: false},
-
-    factory.sources = {
-        marketplaces: [
-            {"name": "eBay", "class": "ebay", selected: false},
-            {"name": "Facebook", "class": "facebook", selected: false},
-            {"name": "Twitter", "class": "twitter", selected: false}
-        ]
-    };
-
-
-
-    return factory;
 }]);;/**
  * Created by braddavis on 1/21/15.
  */

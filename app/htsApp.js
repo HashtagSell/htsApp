@@ -623,40 +623,44 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                     console.log('Old Stripped', oldValueStripped);
                     console.log('New Stripped', newValueStripped);
 
-                    //Run a diff
-                    var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
+                    if(newValueStripped) {
+                        //Run a diff
+                        var diff = jsDiff.diffWords(oldValueStripped, newValueStripped);
 
-                    if (diff.length) {
+                        if (diff.length) {
 
-                        console.log(diff);
+                            console.log(diff);
 
-                        for (var i = 0; i < diff.length; i++) {
-                            var excerpt = diff[i];
-                            if (excerpt.removed) {
-                                if (excerpt.value.indexOf('#') !== -1) {
-                                    console.log('hasshtag removed ', excerpt.value);
+                            for (var i = 0; i < diff.length; i++) {
+                                var excerpt = diff[i];
+                                if (excerpt.removed) {
+                                    if (excerpt.value.indexOf('#') !== -1) {
+                                        console.log('hasshtag removed ', excerpt.value);
 
-                                    var hashtagToRemove = excerpt.value.replace('#', '');
-                                    hashtagToRemove = hashtagToRemove.trim();
+                                        var hashtagToRemove = excerpt.value.replace('#', '');
+                                        hashtagToRemove = hashtagToRemove.trim();
 
-                                    scope.cleanModel("#", hashtagToRemove);
-                                } else if (excerpt.value.indexOf('$') !== -1) {
-                                    console.log('dollar removed ', excerpt.value);
+                                        scope.cleanModel("#", hashtagToRemove);
+                                    } else if (excerpt.value.indexOf('$') !== -1) {
+                                        console.log('dollar removed ', excerpt.value);
 
-                                    var priceTagToRemove = excerpt.value.replace('$', '');
-                                    priceTagToRemove = priceTagToRemove.trim();
+                                        var priceTagToRemove = excerpt.value.replace('$', '');
+                                        priceTagToRemove = priceTagToRemove.trim();
 
-                                    scope.cleanModel("$", priceTagToRemove);
-                                } else if (excerpt.value.indexOf('@') !== -1) {
-                                    console.log('@ removed ', excerpt.value);
+                                        scope.cleanModel("$", priceTagToRemove);
+                                    } else if (excerpt.value.indexOf('@') !== -1) {
+                                        console.log('@ removed ', excerpt.value);
 
-                                    var atTagToRemove = excerpt.value.replace('@', '');
-                                    atTagToRemove = atTagToRemove.trim();
+                                        var atTagToRemove = excerpt.value.replace('@', '');
+                                        atTagToRemove = atTagToRemove.trim();
 
-                                    scope.cleanModel("@", atTagToRemove);
+                                        scope.cleanModel("@", atTagToRemove);
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        scope.resetAll();
                     }
                 }
 

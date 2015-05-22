@@ -101,7 +101,6 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
         show: false,
         tooltip: "message",
         init: function () {
-            alert(factory.jsonTemplate.category);
             this.code = factory.jsonTemplate.category;
             factory.getProductMetaData();
         }

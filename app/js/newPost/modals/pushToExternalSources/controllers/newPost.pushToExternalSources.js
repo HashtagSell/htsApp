@@ -1,40 +1,43 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'externalSourcesSelection', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, externalSourcesSelection, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
 
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
     $scope.dismiss = function (reason) {
-
-        if($scope.sourceSelections.length) {
-
-            $scope.publishToFacebook().then(function(){
-                $scope.publishToTwitter().then(function(){
-                    $scope.publishToAmazon().then(function(){
-                       $scope.publishToEbay().then(function(){
-                           $scope.publishToCraigslist().then(function(){
-                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
-                           });
+        $scope.publishToFacebook().then(function(){
+            $scope.publishToTwitter().then(function(){
+                $scope.publishToAmazon().then(function(){
+                   $scope.publishToEbay().then(function(){
+                       $scope.publishToCraigslist().then(function(){
+                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
                        });
-                    });
+                   });
                 });
             });
-
-        } else {
-
-            $modalInstance.dismiss({reason: reason, post: newPost});
-
-        }
+        });
     };
 
+
+    $scope.shareToggles = {
+        facebook : false,
+        twitter: false,
+        ebay: false,
+        amazon: false,
+        craigslist: false
+    };
+
+    $scope.onlinePayment = {
+        allow: false
+    };
 
 
     $scope.publishToFacebook = function () {
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Facebook')) {
+        if($scope.shareToggles.facebook) {
 
             facebookFactory.publishToWall(newPost).then(function (response) {
 
@@ -70,7 +73,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Twitter')) {
+        if($scope.shareToggles.twitter) {
 
             twitterFactory.publishToTwitter(newPost).then(function (response) {
 
@@ -106,7 +109,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Amazon')) {
+        if($scope.shareToggles.amazon) {
 
             Notification.error({
                 title: "Amazon publishing error",
@@ -128,7 +131,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'eBay')) {
+        if($scope.shareToggles.ebay) {
 
             ebayFactory.publishToEbay(newPost).then(function (response) {
 
@@ -179,7 +182,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         var deferred = $q.defer();
 
-        if(_.contains($scope.sourceSelections, 'Craigslist')) {
+        if($scope.shareToggles.craigslist) {
 
             Notification.error({
                 title: "Craigslist publishing error",
@@ -194,21 +197,5 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         return deferred.promise;
     };
-
-
-
-    $scope.sources = externalSourcesSelection.sources;
-
-    $scope.sourceSelections = [];
-
-    // watch fruits for changes
-    $scope.$watch('sources.marketplaces|filter:{selected:true}', function (newValue) {
-
-        $scope.sourceSelections = newValue.map(function (source) {
-            return source.name;
-        });
-
-    }, true);
-
 
 }]);
