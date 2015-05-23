@@ -3,12 +3,14 @@ var AWS = require('aws-sdk');
 var common   = require('../config/common.js');
 var config   = common.config();
 var mongoose = require("mongoose");
-
 var easyimg = require('easyimage');
-
 var async = require('async');
 
-var s3 = new AWS.S3();
+AWS.config.region = 'us-west-2';
+AWS.config.update({
+    accessKeyId: config.AWS_ACCESS_KEY,
+    secretAccessKey: config.AWS_SECRET_KEY
+});
 
 exports.newUpload = function(req, res) {
 
@@ -89,6 +91,8 @@ exports.newUpload = function(req, res) {
         },
 
         function(imgsToUpload, done) {
+
+            var s3 = new AWS.S3();
 
             var uploadPhotos = function (index) {
 
