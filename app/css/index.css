@@ -271,6 +271,11 @@ h1, h2, h3, h4, h5{
     right: 0px;
 }
 
+.translucent-modal-backdrop {
+    filter: alpha(opacity=50) !important;
+    opacity: .1 !important;
+}
+
 
 .splash-content-container {
     position: absolute;

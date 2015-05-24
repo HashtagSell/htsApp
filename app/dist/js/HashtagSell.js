@@ -43,7 +43,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
 
     //function assigned to routes that can only be accessed when user logged in
-    var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', function ($q, Session, $state, $timeout, redirect) {
+    var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', 'authModalFactory', function ($q, Session, $state, $timeout, redirect, authModalFactory) {
         var deferred = $q.defer();
 
         console.log('checking login!', Session.userObj);
@@ -51,11 +51,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $timeout(function() {
-                $state.go('signup', { 'redirect': redirect });
-            });
+            //$timeout(function() {
+            //    $state.go('signup', { 'redirect': redirect });
+            //});
 
-            deferred.reject();
+            authModalFactory.signUpModal($state.params);
+
+            deferred.resolve();
 
         } else {
             deferred.resolve();
@@ -1344,7 +1346,8 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'signupModalContainer',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {
@@ -10184,13 +10187,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             if(newPost.images.length) {
                 fbPost = {
-                    message: newPost.plainTextBody,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                    access_token: facebook.token
+                    access_token: facebook.token,
                 };
             } else {
                 fbPost = {
-                    message: newPost.plainTextBody,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 };

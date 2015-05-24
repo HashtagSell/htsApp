@@ -56,7 +56,8 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'signupModalContainer',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {

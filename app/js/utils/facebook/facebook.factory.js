@@ -34,13 +34,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             if(newPost.images.length) {
                 fbPost = {
-                    message: newPost.plainTextBody,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                    access_token: facebook.token
+                    access_token: facebook.token,
                 };
             } else {
                 fbPost = {
-                    message: newPost.plainTextBody,
+                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 };

@@ -44,7 +44,7 @@ exports.publishToTwitter = function (req, res) {
                             console.log(media);
 
                             var tweetWithPhoto = {
-                                status: posting.plainTextBody,
+                                status: configAuth.hts.appURL + '/ext/' + posting.postingId + ' ' + posting.plainTextBody.substring(0, 118),
                                 media_ids: media.media_id_string
                             };
 

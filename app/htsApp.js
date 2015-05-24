@@ -43,7 +43,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
 
     //function assigned to routes that can only be accessed when user logged in
-    var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', function ($q, Session, $state, $timeout, redirect) {
+    var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', 'authModalFactory', function ($q, Session, $state, $timeout, redirect, authModalFactory) {
         var deferred = $q.defer();
 
         console.log('checking login!', Session.userObj);
@@ -51,11 +51,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $timeout(function() {
-                $state.go('signup', { 'redirect': redirect });
-            });
+            //$timeout(function() {
+            //    $state.go('signup', { 'redirect': redirect });
+            //});
 
-            deferred.reject();
+            authModalFactory.signUpModal($state.params);
+
+            deferred.resolve();
 
         } else {
             deferred.resolve();
