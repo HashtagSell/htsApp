@@ -1103,7 +1103,6 @@ htsApp.directive('subMerchant', function () {
                $scope.alerts = [];
 
                 $scope.subMerchant.individual.dateOfBirth = $scope.convertIndividualDob($scope.subMerchantForm.individual.dateOfBirth, 'dashes');
-                console.log('hello');
 
                 $http.post(ENV.paymentAPI + '/submerchant', {
                     subMerchant: $scope.subMerchant,
@@ -1118,6 +1117,17 @@ htsApp.directive('subMerchant', function () {
                                 msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.',
                                 type: 'success'
                             });
+
+
+                            if($scope.$dismiss){ //This directive is loaded in a modal and we need to close that modal.
+                                $scope.$dismiss("subMerchantModalSuccess", response);
+                            }
+
+                            //Update browser session since user now has submerchant account.
+                            Session.getUserFromServer().then(function (response) {
+                                Session.create(response);
+                            });
+
                         }
                     }
                 }).error(function (err) {
@@ -6427,7 +6437,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 }]);;/**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
 
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
@@ -6437,7 +6447,9 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
                 $scope.publishToAmazon().then(function(){
                    $scope.publishToEbay().then(function(){
                        $scope.publishToCraigslist().then(function(){
-                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
+                           $scope.setupOnlinePayment().then(function() {
+                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
+                           });
                        });
                    });
                 });
@@ -6622,6 +6634,34 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
+    };
+
+
+    $scope.setupOnlinePayment = function () {
+
+        var deferred = $q.defer();
+
+        if($scope.onlinePayment.allow) {
+
+            subMerchantFactory.validateSubMerchant(newPost).then(function(response){
+
+                console.log('success', response);
+
+                deferred.resolve();
+
+            }, function (err) {
+
+                console.log('error', err);
+
+                deferred.resolve();
+            });
+
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+
     };
 
 }]);;/**
@@ -9387,6 +9427,64 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
 
     return factory;
 }]);;/**
+ * Created by braddavis on 5/24/15.
+ */
+htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'Session', function ($q, $http, $modal, $log, ENV, Session) {
+
+    var factory = {};
+
+    factory.validateSubMerchant = function (newPost) {
+
+        var deferred = $q.defer();
+
+        var merchantAccount = Session.getSessionValue('merchantAccount');
+
+        console.log('here is merchant account info', merchantAccount);
+
+        if(merchantAccount.response.status === 'active') {
+
+            deferred.resolve(merchantAccount);
+
+        } else { //Sub-merchant account is not active .. open modal and get sub-merchant details.
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/submerchant/modals/partials/submerchant.modal.partial.html'
+            });
+
+            modalInstance.result.then(function (reason, subMerchantResponse) {
+
+            }, function (reason, subMerchantResponse) {
+                if(reason === "subMerchantModalSuccess") {
+                    console.log('successful merchant setup.  here is response', subMerchantResponse);
+                    deferred.resolve(subMerchantResponse);
+                } else if (reason === "abortSubMerchantModal"){
+                    console.log('use clicked close button');
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+
+
+        }
+
+        return deferred.promise;
+    };
+
+
+
+    factory.registerPostForOnlinePayment = function (newPost) {
+
+        var deferred = $q.defer();
+
+
+
+        return deferred.promise;
+
+    };
+
+
+    return factory;
+
+}]);;/**
  * Created by braddavis on 1/3/15.
  */
 htsApp.directive('transactionButtons', function () {
@@ -10166,7 +10264,6 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         console.log('facebook tokens', facebook);
 
-
         //Strips HTML from string.
         function strip(html){
             var tmp = document.createElement("DIV");
@@ -10250,9 +10347,11 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
              * Calling FB.login with required permissions specified
              * https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0
              */
+
             ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
+                console.log('res AuthResponse', res);
+
                 if (res.authResponse) {
-                    console.log('res AuthResponse', res);
 
                     var t = new Date();
                     t.setSeconds(res.authResponse.expiresIn);
@@ -10337,6 +10436,14 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                     });
 
+                } else {
+                    deferred.reject(
+                        {
+                            error: {
+                                message: 'Could not login to Facebook Account'
+                            }
+                        }
+                    );
                 }
             }, {scope: 'email, publish_actions'});
 

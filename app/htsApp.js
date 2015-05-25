@@ -1103,7 +1103,6 @@ htsApp.directive('subMerchant', function () {
                $scope.alerts = [];
 
                 $scope.subMerchant.individual.dateOfBirth = $scope.convertIndividualDob($scope.subMerchantForm.individual.dateOfBirth, 'dashes');
-                console.log('hello');
 
                 $http.post(ENV.paymentAPI + '/submerchant', {
                     subMerchant: $scope.subMerchant,
@@ -1118,6 +1117,17 @@ htsApp.directive('subMerchant', function () {
                                 msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.',
                                 type: 'success'
                             });
+
+
+                            if($scope.$dismiss){ //This directive is loaded in a modal and we need to close that modal.
+                                $scope.$dismiss("subMerchantModalSuccess", response);
+                            }
+
+                            //Update browser session since user now has submerchant account.
+                            Session.getUserFromServer().then(function (response) {
+                                Session.create(response);
+                            });
+
                         }
                     }
                 }).error(function (err) {

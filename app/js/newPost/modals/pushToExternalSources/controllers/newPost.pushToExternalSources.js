@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
 
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
@@ -11,7 +11,9 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
                 $scope.publishToAmazon().then(function(){
                    $scope.publishToEbay().then(function(){
                        $scope.publishToCraigslist().then(function(){
-                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
+                           $scope.setupOnlinePayment().then(function() {
+                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
+                           });
                        });
                    });
                 });
@@ -196,6 +198,34 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
+    };
+
+
+    $scope.setupOnlinePayment = function () {
+
+        var deferred = $q.defer();
+
+        if($scope.onlinePayment.allow) {
+
+            subMerchantFactory.validateSubMerchant(newPost).then(function(response){
+
+                console.log('success', response);
+
+                deferred.resolve();
+
+            }, function (err) {
+
+                console.log('error', err);
+
+                deferred.resolve();
+            });
+
+        } else {
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+
     };
 
 }]);

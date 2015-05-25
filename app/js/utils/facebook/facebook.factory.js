@@ -13,7 +13,6 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         console.log('facebook tokens', facebook);
 
-
         //Strips HTML from string.
         function strip(html){
             var tmp = document.createElement("DIV");
@@ -97,9 +96,11 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
              * Calling FB.login with required permissions specified
              * https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0
              */
+
             ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
+                console.log('res AuthResponse', res);
+
                 if (res.authResponse) {
-                    console.log('res AuthResponse', res);
 
                     var t = new Date();
                     t.setSeconds(res.authResponse.expiresIn);
@@ -184,6 +185,14 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                     });
 
+                } else {
+                    deferred.reject(
+                        {
+                            error: {
+                                message: 'Could not login to Facebook Account'
+                            }
+                        }
+                    );
                 }
             }, {scope: 'email, publish_actions'});
 
