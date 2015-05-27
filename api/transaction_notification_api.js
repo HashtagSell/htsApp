@@ -133,7 +133,7 @@ exports.questionAsked = {
 
                     //systematic error. Redirect to page so user can report error.
                     if (err) {
-                        console.log("errors");
+                        console.log("error");
                         done(err);
 
                         // if no user is found, then this is a bad activation id
