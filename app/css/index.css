@@ -20,8 +20,8 @@ h1, h2, h3, h4, h5{
     position: absolute;
     top:0;
     right:0;
-    bottom:0;
-    left:280px;
+    bottom: 10px;
+    left: 280px;
 }
 
 
@@ -64,6 +64,7 @@ h1, h2, h3, h4, h5{
 .inner-container {
     max-height: 100%;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
 }
 
@@ -780,6 +781,11 @@ div.img-div{
     display: table-cell;
     vertical-align: middle;
     text-align: center;
+}
+
+
+#mentioMenu {
+    z-index:9999 !important;
 }
 
 

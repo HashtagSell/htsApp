@@ -18,20 +18,9 @@ ul.ivh-treeview .ivh-treeview-toggle {
     width: 200px;
 }
 
-
-.feed-inner-container {
-    max-height: 400px;
-    margin-top: 12px;
-    max-height: 400px;
-    margin-bottom: 20px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
 .feed-category-selector {
     margin-bottom:0px;
 }
-
 
 
 .feed-category-container {

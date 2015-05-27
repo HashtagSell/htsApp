@@ -99,16 +99,19 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
                     sanitizedAnnotationsObj[validatedKey] = value;
                 }
             } else {  //TODO: Fix me, HSHTG items format annotation differently
-                console.log(value);
+                console.log('hashtag annotaion', value);
 
                 var hshtgAnnotation = value;
 
-                var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+                if(hshtgAnnotation.value) {
 
-                if (hshtgvalidatedKey) {
+                    var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
 
-                    sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
+                    if (hshtgvalidatedKey) {
 
+                        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
+
+                    }
                 }
 
             }
