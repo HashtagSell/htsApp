@@ -28,10 +28,6 @@
                             <input type="radio" ng-model="offer.response" value="Sorry, I'm not available during these times.  Please, submit some other times that may work for you.">
                             I'm not available during these times.
                         </div>
-                        <!--<div>-->
-                            <!--<input type="radio" ng-model="offer.response" value="not interested">-->
-                            <!--I'm not interested in meeting this buyer.-->
-                        <!--</div>-->
                     </div>
                 </div>
             </div>
@@ -41,11 +37,11 @@
                     <input class="col-md-7 col-xs-12 form-control" height="32" style="position: relative; top: 8px;" placeholder="Include message.  (Optional)" ng-model="offer.message"/>
                 </div>
                 <div style="display: inline-block; position: relative;" ng-show="offer.response && !offer.response.when">
-                    <button class="btn btn-danger" ng-click="declineOffer(offer)">Decline meeting request</button>
+                    <button class="btn btn-danger" ng-click="declineOffer(offer, post)">Decline meeting request</button>
                 </div>
 
                 <div style="display: inline-block; position: relative;" ng-show="offer.response.when">
-                    <button class="btn btn-primary" ng-click="acceptOffer(offer)">Accept meeting request</button>
+                    <button class="btn btn-primary" ng-click="acceptOffer(offer, post)">Accept meeting request</button>
                 </div>
             </div>
         </div>
@@ -118,11 +114,11 @@
                         <input class="col-md-7 col-xs-12 form-control" height="32" style="position: relative; top: 8px;" placeholder="Include message.  (Optional)" ng-model="offer.message"/>
                     </div>
                     <div style="display: inline-block; position: relative;" ng-show="offer.response && !offer.response.when">
-                        <button class="btn btn-danger" ng-click="declineOffer(offer)">Decline meeting request</button>
+                        <button class="btn btn-danger" ng-click="declineOffer(offer, post)">Decline meeting request</button>
                     </div>
 
                     <div style="display: inline-block; position: relative;" ng-show="offer.response.when">
-                        <button class="btn btn-success" ng-click="acceptOffer(offer)">Update meeting request</button>
+                        <button class="btn btn-success" ng-click="acceptOffer(offer, post)">Update meeting request</button>
                     </div>
                 </div>
             </span>

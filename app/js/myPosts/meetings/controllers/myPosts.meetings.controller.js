@@ -5,9 +5,9 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
     $scope.userObj = Session.userObj;
 
-    $scope.acceptOffer = function (offer) {
+    $scope.acceptOffer = function (offer, post) {
 
-        meetingsFactory.acceptOffer(offer).then(function (response) {
+        meetingsFactory.acceptOffer(offer, post).then(function (response) {
 
             if (response.status === 201) {
 
@@ -42,13 +42,9 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
 
 
-    $scope.declineOffer = function (offer) {
+    $scope.declineOffer = function (offer, post) {
 
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-        //var payload = $scope.offer.response;
-
-        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
+        meetingsFactory.deleteOffer(offer, post).then(function (response) {
 
             console.log(response);
 

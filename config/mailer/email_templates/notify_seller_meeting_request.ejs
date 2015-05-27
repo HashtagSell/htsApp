@@ -64,7 +64,7 @@
                                             <td  width="500">
                                                 <p align="left" class="article-title">Hi <%= emailObj.sellerUserObj.user_settings.name %>,</p>
                                                 <div align="left" class="article-content">
-                                                    <%= emailObj.meetingRequest.username %> would like to meet to view your item for sale.
+                                                    <%= emailObj.meetingRequest.username %> would like to meet to view your <%= emailObj.post.heading %>.
                                                     <br>
                                                     <br>
                                                     <a href="<%=emailObj.meetingUrl%>">Click here to answer the meeting request.</a>

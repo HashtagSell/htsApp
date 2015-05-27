@@ -62,12 +62,15 @@
                                         <tbody>
                                         <tr>
                                             <td  width="500">
-                                                <p align="left" class="article-title">Hi, <%= emailObj.buyerUserObj.user_settings.name %>,</p>
+                                                <p align="left" class="article-title">Hi <%= emailObj.buyerUserObj.user_settings.name %>,</p>
                                                 <div align="left" class="article-content">
-                                                    <%= emailObj.sellerUserObj.user_settings.name %> has agreed to meet so you can view the.
+                                                    <%= emailObj.sellerUserObj.user_settings.name %> has agreed to have your view their <%= emailObj.post.heading %>
                                                     <br>
                                                     <br>
-                                                    [Google Maps Thumbnail Here]
+                                                    <b>When:</b> <%= moment(emailObj.offer.response.when).format('dddd, MMMM Do') %> at <%= moment(emailObj.offer.response.when).format('h:mm a') %>
+                                                    <br>
+                                                    <br>
+                                                    <b>Where:</b> <%= emailObj.offer.response.where %>
                                                     <br>
                                                     <br>
                                                     You're welcome to pay with cash, or use our safe and easy online payment option.

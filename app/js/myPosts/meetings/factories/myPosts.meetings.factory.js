@@ -66,14 +66,15 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
     };
 
 
-    factory.acceptOffer = function (offer) {
+    factory.acceptOffer = function (offer, post) {
 
         var deferred = $q.defer();
 
         console.log('HERES THE ACCEPTED OFFER', offer);
+        console.log('HEREs THE ACCEPTED POST', post);
 
         var emailObj = {
-            postingOwner: Session.userObj.user_settings.name,
+            post: post,
             offer: offer
         };
 
@@ -107,15 +108,15 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
 
 
-    factory.deleteOffer = function (postingId, offerId) {
+    factory.deleteOffer = function (offer, post) {
 
-        console.log('Deleting offer', postingId, offerId);
+        console.log('Deleting offer', post.postingId, offer.offerId);
 
         var deferred = $q.defer();
 
         $http({
             method: 'DELETE',
-            url: ENV.postingAPI + postingId + "/offers/" + offerId
+            url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId
         }).then(function (response, status, headers, config) {
 
             deferred.resolve(response);

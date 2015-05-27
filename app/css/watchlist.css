@@ -51,3 +51,11 @@ li.label-list:hover span.delete-label{
     }
 
 }
+
+.watchlist-noImage-Placeholder {
+    height: 70px;
+    background-image: url('https://static.hashtagsell.com/htsApp/placeholders/img_placeholder.gif');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}

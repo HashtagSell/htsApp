@@ -71,8 +71,13 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
                 console.log('question response', response.data);
 
+                var questionObj = {
+                    question: response.data,
+                    post: post
+                };
+
                 //Send email to owner of posting and user potential buyer
-                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: response.data}).success(function(response){
+                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: questionObj}).success(function(response){
 
 
                 }).error(function(data){

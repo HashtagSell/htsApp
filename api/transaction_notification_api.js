@@ -68,6 +68,7 @@ exports.meetingProposed = {
                         hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
                     },
                     meetingRequest: proposedMeeting.offer,
+                    post: proposedMeeting.post,
                     sellerUserObj: sellerUserObj,
                     meetingUrl : env.hts.appURL + '/myposts/meetings/' + proposedMeeting.post.postingId
                 };
@@ -91,7 +92,7 @@ exports.meetingProposed = {
                 var sellerInstantReminder = {
                     from: "HashtagSell <no-reply@hashtagsell.com>",
                     to: sellerUserObj.local.email,
-                    subject: "Meeting Requested",
+                    subject: "You have an interested buyer!",
                     html: compiled_html_seller,
                     text: plain_text_seller
                 };
@@ -114,9 +115,6 @@ exports.meetingProposed = {
                 res.json({success: true});
             }
         });
-
-
-
     }
 };
 
@@ -125,9 +123,87 @@ exports.meetingProposed = {
 
 exports.questionAsked = {
     instantReminder: function (req, res) {
-        var questionsAsked = req.body.questionAsked;
+        var questionAsked = req.body.questionAsked;
 
-        console.log(questionsAsked);
+        async.waterfall([
+
+            function(done) {
+                //Search our users collection by the username to get the sellers email address
+                User.findOne({ 'user_settings.name': questionAsked.post.username }, function (err, sellerUserObj) {
+
+                    //systematic error. Redirect to page so user can report error.
+                    if (err) {
+                        console.log("error");
+                        done(err);
+
+                        // if no user is found, then this is a bad activation id
+                    } else if (!sellerUserObj) {
+                        var err = "seller account could not be found";
+                        done(err);
+
+                        // found user that provided feedback
+                    } else if (sellerUserObj) {
+                        done(null, sellerUserObj);
+                    }
+                });
+            },
+
+            function (sellerUserObj, done) {
+
+                var emailObj = {
+                    images: {
+                        fb_logo: "http://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                        twitter_logo: "http://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                        hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
+                    },
+                    question: questionAsked.question,
+                    post: questionAsked.post,
+                    sellerUserObj: sellerUserObj,
+                    questionUrl : env.hts.appURL + '/myposts/questions/' + questionAsked.post.postingId
+                };
+
+
+                //Get the ejs template for feedback email
+                var instant_reminder_seller_question = fs.readFileSync(__dirname + '/../config/mailer/email_templates/notify_seller_new_question.ejs', "utf8");
+
+                //Merge the template
+                var compiled_html_seller = ejs.render(instant_reminder_seller_question, {emailObj: emailObj, moment: moment});
+
+                //Setup plain text email in case user cannot view Rich text emails
+                var plain_text_seller = questionAsked.question.username + 'asked a question about your item for sale.' + '-- "' + questionAsked.question.value + '"';
+
+                done(null, sellerUserObj, compiled_html_seller, plain_text_seller);
+            },
+
+            function (sellerUserObj, compiled_html_seller, plain_text_seller, done) {
+
+                //Build the seller email message
+                var sellerInstantReminder = {
+                    from: "HashtagSell <no-reply@hashtagsell.com>",
+                    to: sellerUserObj.local.email,
+                    subject: "Question on your item for sale",
+                    html: compiled_html_seller,
+                    text: plain_text_seller
+                };
+
+                // Send seller instant reminder Email
+                mailer.sendMail(sellerInstantReminder, function(err, info){
+                    if(err){
+                        done(err);
+                    }else{
+                        console.log(info);
+                        done(null);
+                    }
+                });
+            }
+
+        ], function(err) {
+            if (err) {
+                res.json({error: err});
+            } else {
+                res.json({success: true});
+            }
+        });
     }
 };
 
@@ -142,13 +218,13 @@ exports.meetingAccepted = {
     instantReminder: function (req, res) {
 
         //This is the object that realtime-svc emitted to client.
-        var offerObj = req.body.acceptedMeeting;
+        var acceptedMeeting = req.body.acceptedMeeting;
 
         async.waterfall([
 
             function(done) {
                 //Search our users collection by the username to get the buyers email address
-                User.findOne({ 'user_settings.name': offerObj.offer.username }, function (err, buyerUserObj) {
+                User.findOne({ 'user_settings.name': acceptedMeeting.offer.username }, function (err, buyerUserObj) {
 
                     //systematic error. Redirect to page so user can report error.
                     if (err) {
@@ -169,7 +245,7 @@ exports.meetingAccepted = {
 
             function(buyerUserObj, done) {
                 //Search our users collection by the username to get the buyers email address
-                User.findOne({ 'user_settings.name': offerObj.postingOwner }, function (err, sellerUserObj) {
+                User.findOne({ 'user_settings.name': acceptedMeeting.post.username }, function (err, sellerUserObj) {
 
                     //systematic error. Redirect to page so user can report error.
                     if (err) {
@@ -198,12 +274,14 @@ exports.meetingAccepted = {
                     },
                     buyerUserObj: buyerUserObj,
                     sellerUserObj: sellerUserObj,
+                    post: acceptedMeeting.post,
+                    offer: acceptedMeeting.offer,
                     buttons: {
                         payment: {
-                            url : env.hts.appURL + '/payment/' + offerObj.offer.postingId + '/' + offerObj.offer.offerId
+                            url : env.hts.appURL + '/payment/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId
                         },
                         review: {
-                            buyerReviewUrl: env.hts.appURL + '/review/' + offerObj.offer.postingId + '/' + offerObj.offer.offerId + '/' + buyerUserObj._id
+                            buyerReviewUrl: env.hts.appURL + '/review/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId + '/' + buyerUserObj._id
                         }
                     }
                 };

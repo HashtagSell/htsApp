@@ -3525,9 +3525,9 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
     $scope.userObj = Session.userObj;
 
-    $scope.acceptOffer = function (offer) {
+    $scope.acceptOffer = function (offer, post) {
 
-        meetingsFactory.acceptOffer(offer).then(function (response) {
+        meetingsFactory.acceptOffer(offer, post).then(function (response) {
 
             if (response.status === 201) {
 
@@ -3562,13 +3562,9 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
 
 
-    $scope.declineOffer = function (offer) {
+    $scope.declineOffer = function (offer, post) {
 
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-        //var payload = $scope.offer.response;
-
-        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
+        meetingsFactory.deleteOffer(offer, post).then(function (response) {
 
             console.log(response);
 
@@ -3684,14 +3680,15 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
     };
 
 
-    factory.acceptOffer = function (offer) {
+    factory.acceptOffer = function (offer, post) {
 
         var deferred = $q.defer();
 
         console.log('HERES THE ACCEPTED OFFER', offer);
+        console.log('HEREs THE ACCEPTED POST', post);
 
         var emailObj = {
-            postingOwner: Session.userObj.user_settings.name,
+            post: post,
             offer: offer
         };
 
@@ -3725,15 +3722,15 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
 
 
-    factory.deleteOffer = function (postingId, offerId) {
+    factory.deleteOffer = function (offer, post) {
 
-        console.log('Deleting offer', postingId, offerId);
+        console.log('Deleting offer', post.postingId, offer.offerId);
 
         var deferred = $q.defer();
 
         $http({
             method: 'DELETE',
-            url: ENV.postingAPI + postingId + "/offers/" + offerId
+            url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId
         }).then(function (response, status, headers, config) {
 
             deferred.resolve(response);
@@ -3928,8 +3925,13 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
                 console.log('question response', response.data);
 
+                var questionObj = {
+                    question: response.data,
+                    post: post
+                };
+
                 //Send email to owner of posting and user potential buyer
-                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: response.data}).success(function(response){
+                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: questionObj}).success(function(response){
 
 
                 }).error(function(data){

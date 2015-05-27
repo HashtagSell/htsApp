@@ -64,7 +64,8 @@
                         <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" ng-click="$event.stopPropagation();"/>
                     </td>
                     <td style="width:70px; cursor: pointer;">
-                        <img ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
+                        <img ng-show="favorite.images.length" ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
+                        <div ng-show="!favorite.images.length" class="watchlist-noImage-Placeholder"></div>
                     </td>
                     <td filter="{ 'heading': 'text' }" style="cursor: pointer;">
 
