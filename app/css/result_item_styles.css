@@ -82,7 +82,8 @@
 
 /*Feed item with one image*/
 .singleImage-Image {
-    height: 200px;
+    max-width: 100%;
+    max-height: 220px;
     margin: auto;
     margin-top: 20px;
     display: block;
