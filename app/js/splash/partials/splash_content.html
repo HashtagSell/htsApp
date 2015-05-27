@@ -156,15 +156,15 @@
                                         </span>
                                         <div class="questions-and-answers">
                                             <div class="question">
-                                                {{question.value}}
+                                                <b>Q:</b> {{question.value}}
                                             </div>
                                             <div ng-repeat="answer in question.answers">
-                                                <div class="answer" ng-if="answer.value">{{answer.value}}</div>
+                                                <div class="answer" ng-if="answer.value"><b>A:</b> {{answer.value}}</div>
                                             </div>
-                                            <div ng-if="question.username !== userObj.user_settings.name && !question.answers.length || !userObj.user_settings.loggedIn && !question.answers.length">
-                                                <a class="answer" ui-sref="mailbox.inbox.questions.question({postingId: question.postingId, questionId: question.questionId})">Click here to answer.</a>
+                                            <div ng-if="result.username === userObj.user_settings.name && !question.answers.length">
+                                                <a class="answer" ui-sref="myposts.questions({postingId: question.postingId})">Click here to answer.</a>
                                             </div>
-                                            <div ng-if="question.username === userObj.user_settings.name && !question.answers.length">
+                                            <div ng-if="result.username !== userObj.user_settings.name && !question.answers.length">
                                                 <a class="answer">The seller has been notified.</a>
                                             </div>
                                         </div>

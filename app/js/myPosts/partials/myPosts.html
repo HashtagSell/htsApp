@@ -51,12 +51,12 @@
                                 <!--<div ng-bind-html="post.body"/>-->
 
                                 <div style="float: left;">
-                                    <button class="btn btn-default" type="button" ui-sref="myposts.questions({postingId: post.postingId})" ng-init="unreadQuestionsCount = countUnreadQuestions(post);" ng-click="$event.stopPropagation();">
-                                        Questions <span ng-if="unreadQuestionsCount > 0" class="badge">{{unreadQuestionsCount}}</span>
+                                    <button class="btn btn-default" type="button" ng-init="unreadQuestionsCount = countUnreadQuestions(post);" ng-click="expandCollapseQuestions($event, post)">
+                                        <i class="fa" ng-class="post.currentlyViewing.questions ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Questions <span ng-if="unreadQuestionsCount > 0" class="badge">{{unreadQuestionsCount}}</span>
                                     </button>
 
-                                    <button class="btn btn-default" type="button" ui-sref="myposts.offers({postingId: post.postingId})" ng-init="unreadOffersCount = countUnreadOffers(post);" ng-click="$event.stopPropagation();">
-                                        Meeting Requests <span ng-if="unreadOffersCount > 0" class="badge">{{unreadOffersCount}}</span>
+                                    <button class="btn btn-default" type="button" ng-init="unreadOffersCount = countUnreadOffers(post);" ng-click="expandCollapseMeetingRequests($event, post)">
+                                        <i class="fa" ng-class="post.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Meeting Requests <span ng-if="unreadOffersCount > 0" class="badge">{{unreadOffersCount}}</span>
                                     </button>
                                 </div>
 
@@ -73,9 +73,9 @@
                             </td>
                         </tr>
 
-                        <tr ng-repeat-end ng-show="currentState === 'myposts.offers' && expandedPostingId === post.postingId" style="background-color: rgb(253, 253, 253);">
+                        <tr ng-repeat-end ng-show="currentState === 'myposts.meetings' && expandedPostingId === post.postingId" style="background-color: rgb(253, 253, 253);">
                             <td colspan="2" style="background-color: rgb(253, 253, 253);">
-                                <owner-offers-more-info post="post"></owner-offers-more-info>
+                                <owner-meetings-more-info post="post"></owner-meetings-more-info>
                             </td>
                         </tr>
                     </tbody>

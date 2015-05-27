@@ -1,13 +1,9 @@
 /**
  * Created by braddavis on 10/29/14.
  */
-htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $window, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
+htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
-
-    if($scope.currentFaves.length === 0) {
-        $scope.noItems = true;
-    }
 
     favesFactory.tableParams = new ngTableParams({
         page: 1,            // show first page
@@ -164,16 +160,50 @@ htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'sp
     $scope.selected_labels = []; //Stores which labels are checked or not
     $scope.preselected = {name : []};  //Labels that should be pre-checked when user drops down labels menu
 
-    $scope.removeIndividualLabel = function($event){
-        event.stopPropagation();
-        alert("Quick remove label feature soon.  Please check the item and remove the label for now.");
-    };
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view
     $scope.openSplash = function(favorite){
         splashFactory.result = favorite;
         console.log(splashFactory.result);
         $state.go('watchlist.splash', { id: favorite.postingId });
+    };
+
+
+    $scope.expandCollapseQuestions = function ($event, post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'watchlist.questions') {
+            post.currentlyViewing = {
+                questions: true,
+                meetings: false
+            };
+            $state.go('watchlist.questions', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
+
+
+    $scope.expandCollapseMeetingRequests = function ($event,  post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'watchlist.meetings') {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: true
+            };
+            $state.go('watchlist.meetings', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
     };
 
 }]);

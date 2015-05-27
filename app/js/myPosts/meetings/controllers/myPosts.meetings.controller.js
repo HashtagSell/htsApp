@@ -1,32 +1,25 @@
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, offersFactory, myPostsFactory, socketio, $state, Session, Notification) {
+htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification) {
 
     $scope.userObj = Session.userObj;
 
-
     $scope.acceptOffer = function (offer) {
 
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-        var payload = offer.response;
-
-        offersFactory.acceptOffer(postingId, offerId, payload).then(function (response) {
+        meetingsFactory.acceptOffer(offer).then(function (response) {
 
             if (response.status === 201) {
 
-                var recipient = offer.username;
-
-                if (!isBlank(offer.message)) {
-
-                    socketio.sendMessage(recipient, offer.message);
-
-                }
-
                 myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
-                Notification.success({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+                Notification.primary({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+
+
+                //Send private message if appended to offer acceptance.
+                if (!isBlank(offer.message)) {
+                    socketio.sendMessage(recipient, offer.message);
+                }
 
             } else {
 
@@ -55,7 +48,7 @@ htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPo
         var offerId = offer.offerId;
         //var payload = $scope.offer.response;
 
-        offersFactory.deleteOffer(postingId, offerId).then(function (response) {
+        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
 
             console.log(response);
 

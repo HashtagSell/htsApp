@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -90,7 +90,42 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window
     };
 
 
+    $scope.expandCollapseQuestions = function ($event, post) {
+        $event.stopPropagation();
 
+        if($rootScope.currentState !== 'myposts.questions') {
+            post.currentlyViewing = {
+                questions: true,
+                meetings: false
+            };
+            $state.go('myposts.questions', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
+
+
+    $scope.expandCollapseMeetingRequests = function ($event,  post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'myposts.meetings') {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: true
+            };
+            $state.go('myposts.meetings', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
 
 
 

@@ -196,7 +196,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                             } else {
 
-                                Notification.success({
+                                Notification.primary({
                                     title: "Hrmmmmm",
                                     message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
                                 });

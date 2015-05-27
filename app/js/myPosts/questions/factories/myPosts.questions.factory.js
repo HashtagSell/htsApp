@@ -69,6 +69,18 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
                 factory.questions.store.unshift(response.data);
 
+                console.log('question response', response.data);
+
+                //Send email to owner of posting and user potential buyer
+                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: response.data}).success(function(response){
+
+
+                }).error(function(data){
+
+
+                });
+
+
                 deferred.resolve(response);
 
             } else {

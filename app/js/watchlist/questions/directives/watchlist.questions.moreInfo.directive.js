@@ -5,7 +5,7 @@ htsApp.directive("senderQuestionsMoreInfo", function() {
     return {
         restrict: "E",
         scope: { post: '=' },
-        templateUrl: "js/interested/questions/partials/watchlist.questions.html",
+        templateUrl: "js/watchlist/questions/partials/watchlist.questions.html",
         controller: "watchlist.questions.controller"
     };
 });

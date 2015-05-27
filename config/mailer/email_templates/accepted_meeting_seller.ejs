@@ -62,12 +62,12 @@
                                         <tbody>
                                         <tr>
                                             <td  width="500">
-                                                <p align="left" class="article-title">Hi, <%= emailObj.offerObj.posting.username %>,</p>
+                                                <p align="left" class="article-title">Hi, <%= emailObj.sellerUserObj.user_settings.name %>,</p>
                                                 <div align="left" class="article-content">
-                                                    <%= emailObj.offerObj.username %> will meet you at <%= emailObj.offerObj.acceptedTime.where %> on <%= moment(emailObj.offerObj.acceptedTime.when).format('dddd, MMMM Do') %> at <%= moment(emailObj.offerObj.acceptedTime.when).format('h:mm a') %> to view your <%= emailObj.offerObj.posting.heading %>.
+                                                    <%= emailObj.buyerUserObj.user_settings.name %> will meet you at.
                                                     <br>
                                                     <br>
-                                                    If the buyer chooses to buy your item with cash please remember to provide a quick review of your experience so we know you sold your item.
+                                                    Please be sure to provide a review of your experience after your item is sold.
                                                     <br>
                                                     <div style="text-align: center;">
                                                         <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%= emailObj.buttons.review.url %>" style="height:53px;v-text-anchor:middle;width:200px;" arcsize="8%" stroke="f" fill="t">
@@ -79,8 +79,6 @@
                                                             Rate Buyer
                                                         </a>
                                                     </div>
-                                                    <br>
-                                                    Otherwise, for everyone's safety and convenience please consider using our online payment system.  It's free!
                                                     <br>
                                                     <br>
                                                     We'll send you another reminder email 24 hours before your scheduled appointment.

@@ -50,7 +50,8 @@
     font-size: 17px;
     color: #555;
     border-radius: 4px 4px 0px 0px;
-    /*height: auto;*/
+    border: solid 1px;
+    border-color: rgb(156, 156, 157);
     min-height: 221px;
     margin-bottom: 45px;
     display:block;
@@ -89,7 +90,7 @@
 .hts-post-modal-body{
     position: relative;
     /*border:2px solid green;*/
-    background-color: rgba(250, 117, 113, 0.96) !important;
+    background-color: #C4CCD7;
 }
 
 

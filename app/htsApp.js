@@ -177,8 +177,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('myposts.questions', {
             url: "/questions/:postingId"
         }).
-        state('myposts.offers', {
-            url: "/offers/:postingId"
+        state('myposts.meetings', {
+            url: "/meetings/:postingId"
         }).
         state('myposts.splash', {
             url: "/:id",
@@ -349,8 +349,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('watchlist', {
             url: "/watchlist",
-            templateUrl: "js/interested/partials/interested.html",
-            controller: 'myFavesController',
+            templateUrl: "js/watchlist/partials/watchlist.html",
+            controller: 'watchlistController',
             resolve: {
                 loginRequired: loginRequired,
                 redirect: function () {
@@ -361,8 +361,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('watchlist.questions', {
             url: "/questions/:postingId"
         }).
-        state('watchlist.offers', {
-            url: "/offers/:postingId"
+        state('watchlist.meetings', {
+            url: "/meetings/:postingId"
         }).
         state('watchlist.splash', {
             url: "/:id",
@@ -964,12 +964,36 @@ htsApp.directive('subMerchant', function () {
 
 
            $scope.$watch('subMerchForm.dob.$viewValue', function(newValue, oldValue){
-                console.log(newValue);
-               if (newValue && oldValue) {
-                   if (oldValue.length == 1 || oldValue.length == 4) {
-                       if (newValue.length == 2 || newValue.length == 5) {
-                           $scope.subMerchantForm.individual.dateOfBirth = $scope.subMerchForm.dob.$viewValue + '/';
+
+               if(newValue) {
+                   if(newValue.length <= 10) {
+                       var lastChar = newValue.slice(-1);
+                       var isNumber = !isNaN(lastChar);
+                       console.log('is last char', lastChar, ' a number? ', isNumber);
+                       if (isNumber) {
+                           if (newValue && oldValue) {
+                               if (oldValue.length == 1 || oldValue.length == 4) {
+                                   if (newValue.length == 2 || newValue.length == 5) {
+                                       $scope.subMerchantForm.individual.dateOfBirth = $scope.subMerchForm.dob.$viewValue + '/';
+                                   }
+                               }
+                           }
+                       } else {
+                           if (lastChar === "/") {
+                               if (newValue.length == 3 || newValue.length == 6) {
+                                   console.log('This forward slash inserted by system.  okay.');
+                               } else {
+                                   console.log('forward slashed in wrong place');
+                                   $scope.subMerchantForm.individual.dateOfBirth = oldValue;
+                               }
+                           } else {
+                               console.log('user inserted invalid character');
+                               $scope.subMerchantForm.individual.dateOfBirth = oldValue;
+                           }
                        }
+                   } else {
+                       console.log('user inserted more than 10 chars');
+                       $scope.subMerchantForm.individual.dateOfBirth = oldValue;
                    }
                }
 

@@ -57,3 +57,25 @@
     background-repeat: no-repeat;
     background-position: center;
 }
+
+.unread-question {
+    padding: 10px;
+    background-color: rgba(244, 164, 96, 0.75);
+    color: #ffffff;
+}
+
+.unread-meeting {
+    padding: 10px;
+    background-color: rgba(244, 164, 96, 0.75);
+    color: #ffffff;
+}
+
+.read-question {
+    padding: 10px;
+    background-color: whitesmoke;
+}
+
+.read-meeting {
+    padding: 10px;
+    background-color: whitesmoke;
+}

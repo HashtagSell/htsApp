@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/25/15.
  */
-htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, $http, myPostsFactory, Notification, favesFactory) {
+htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, myPostsFactory, Notification, favesFactory) {
 
     var socketio = {
         postingSocket: io(ENV.realtimePostingAPI),
@@ -204,27 +204,27 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
         console.log('emitted private message', pm);
 
-        Notification.success({title: 'New message from @' + pm.username, message: pm.message, delay: 10000});  //Send the webtoast
+        Notification.primary({title: 'New message from @' + pm.username, message: pm.message, delay: 10000});  //Send the webtoast
     });
 
 
-    // listen for offers
+    // listen for meeting requests
     socketio.postingSocket.on('make-offer', function (emit) {
 
-        console.log('emitted make-offer', emit);
+        console.log('emitted meeting request', emit);
 
         //TODO: Need the offer object to include the sellers username
-        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their offer is sent
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
 
             favesFactory.checkFave(emit.posting, function (favorited) {
 
-                if(favorited){ //The user sending the offer already has the item in their watchlist
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
 
                     favesFactory.updateFavorite(emit, function(){
 
-                        var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Meeting Request Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -232,13 +232,13 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                     });
 
-                } else { //The user sending the offer does not have this item in their watchlist.
+                } else { //The user sending the meeting request does not have this item in their watchlist.
 
                     favesFactory.addFave(emit.posting, function(){
 
-                        var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Meeting Request Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -252,15 +252,15 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
 
 
-        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the offer was placed on
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
 
-            //Update owners offers and notify them.
-            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, offers, etc etc.  The owner app view updates realtime.
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
 
-                var url = '"/myposts/offers/' + emit.posting.postingId + '"';
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
-                Notification.success({
-                    title: '<a href=' + url + '>New Offer</a>',
+                Notification.primary({
+                    title: '<a href=' + url + '>New Meeting Request</a>',
                     message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
                     delay: 10000
                 });  //Send the webtoast
@@ -271,11 +271,11 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
             favesFactory.updateFavorite(emit, function(){
 
-                var url = '"/wishlist/offers/' + emit.posting.postingId + '"';
+                var url = '"/wishlist/meetings/' + emit.posting.postingId + '"';
 
-                Notification.success({
-                    title: '<a href=' + url + '>Another user placed an offer on an item you\'re watching.</a>',
-                    message: '<a href=' + url + '>'+  emit.posting.heading +' may go fast!  We\'re just letting you know!</a>',
+                Notification.primary({
+                    title: '<a href=' + url + '>'+  emit.posting.heading +' may go fast!</a>',
+                    message: '<a href=' + url + '>Just letting you know other people are interested in an item you\'re watching. *wink *wink</a>',
                     delay: 10000
                 });  //Send the webtoast
 
@@ -308,7 +308,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                         var url = '"/watchlist/questions/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Question Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -322,7 +322,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                         var url = '"/watchlist/questions/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Question Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -338,11 +338,11 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
         } else if (emit.posting.username === socketio.cachedUsername) { //if currently logged in users owns the posting the emitted question relates to
 
             //Update owners questions and notify them
-            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated quesiotns, offers, etc etc.  The owner app view updates realtime.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
 
                 var url = '"/myposts/questions/' + emit.question.postingId + '"';
 
-                Notification.success({
+                Notification.primary({
                     title: '<a href=' + url + '>New Question</a>',
                     message: '<a href=' + url + '>' + emit.question.value + '</a>',
                     delay: 10000
@@ -374,17 +374,21 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
         //TODO: Updates qaFactory.questions.store which causes splash to update.
 
-        if(emit.posting.username !== socketio.cachedUsername){
+        if(emit.username === socketio.cachedUsername){ //If the user who asked this question is logged in then notify them
 
 
             favesFactory.updateFavorite(emit, function(){
 
-                //TODO: open posting in splash screen.
                 var url =  '"/watchlist/questions/' + emit.posting.postingId + '"';
-                Notification.success({title: '<a href=' + url + '>Question has been answered</a>', message: '<a href=' + url + '>' + emit.answer.value + '</a>', delay: 10000});  //Send the webtoast
+                Notification.primary({title: '<a href=' + url + '>Question has been answered</a>', message: '<a href=' + url + '>' + emit.answer.value + '</a>', delay: 10000});  //Send the webtoast
 
             });
 
+        } else if (emit.username !== emit.posting.username){ //if the owner of the posting is not the same person who asked the question (aka all the other people with this item in their watchlist). then update.
+
+            favesFactory.updateFavorite(emit, function(){
+
+            });
         }
 
         console.log(
@@ -398,32 +402,121 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
 
     socketio.postingSocket.on('accept-offer', function (emit) {
-        console.log('emitted offer acceptance', emit);
+        console.log('emitted meeting acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted offer
+        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
+
+            favesFactory.updateFavorite(emit, function(){
+                console.log('silently updated watchlist');
+            });
 
             //TODO: open posting in splash screen.
-            var url =  '"/watchlist/offers/' + emit.posting.postingId + '"';
+            var url =  '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-            Notification.success({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Please meet at ' + emit.acceptedTime.where + ' on ' + emit.acceptedTime.when + '.  A reminder email will be sent containing the online payment URL.  Sincerely, HashtagSell Team.</a>', delay: 10000});  //Send the webtoast
+            Notification.primary({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>', delay: 10000});  //Send the webtoast
 
-            //TODO: This should not be called by client but instad realtime-svc
-            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedOffer: emit}).error(function(data){
-                Notification.error({
-                    title: 'Meeting request email failed',
-                    message: "Stay tuned we're working on this.  Send you your email shortly.",
+        }
+
+        console.log(
+            '%s accepted meeting request on postingId %s : "%s"',
+            emit.posting.username,
+            emit.posting.postingId,
+            emit.acceptedTime.when
+        );
+
+    });
+
+
+    socketio.postingSocket.on('decline-offer', function (emit) {
+
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Meeting Cancelled!</a>',
+                            message: '<a href=' + url + '>The seller has been notified</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                }
+
+            });
+
+
+
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
+
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>Meeting Cancelled</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' Had to cancel their meeting.  We apologize for the inconvenience</a>',
                     delay: 10000
                 });  //Send the webtoast
+
+            });
+
+        } else { //update all the users who have the item in their wishlist
+
+            favesFactory.updateFavorite(emit, function(){
+
             });
 
         }
 
         console.log(
-            '%s accepted offer on postingId %s : "%s"',
-            emit.posting.username,
-            emit.posting.postingId,
-            emit.acceptedTime.when
+            '%s cancelled %s regarding postingId: "%s"',
+            emit.username,
+            emit.proposedTimes,
+            emit.posting.postingId
         );
+    });
+
+
+    socketio.postingSocket.on('delete-question', function (emit) {
+
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them their message will be sent
+
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //This user asking the question already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                    });
+
+                }
+
+            });
+
+
+        } else if (emit.posting.username === socketio.cachedUsername) { //if currently logged in users owns the posting the emitted question relates to
+
+            //Update owners questions and notify them
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+            });
+
+
+        } else {  //This user is ALSO watching the same item but did not ask the question itself and does the own the item they are watching.. THEREFORE, silently update their watchlist.
+
+            favesFactory.updateFavorite(emit, function(){
+                console.log('silently updated watchlist');
+            });
+        }
 
     });
 

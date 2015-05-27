@@ -45,7 +45,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
+                Notification.primary({
                     message: "Facebook publishing success!",
                     delay: 10000
                 });  //Send the webtoast
@@ -81,7 +81,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
+                Notification.primary({
                     message: "Twitter publishing success!",
                     delay: 10000
                 });  //Send the webtoast
@@ -139,8 +139,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
-                    message: "eBay publishing success!",
+                Notification.primary({
+                    message: "Ebay publishing success!",
                     delay: 10000
                 });  //Send the webtoast
 

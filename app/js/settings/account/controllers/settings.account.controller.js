@@ -126,7 +126,7 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
             //}
 
             Session.setSessionValue('ebay', response.data.ebay, function () {
-                Notification.success({
+                Notification.primary({
                     message: 'Successfully linked to eBay!',
                     delay: 10000
                 });  //Send the webtoast

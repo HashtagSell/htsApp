@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.offers.controller', ['$scope', 'Session', 'offersFactory', 'Notification', function ($scope, Session, offersFactory, Notification) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -16,7 +16,7 @@ htsApp.controller('watchlist.offers.controller', ['$scope', 'Session', 'offersFa
         var postingId = offer.postingId;
         var offerId = offer.offerId;
 
-        offersFactory.deleteOffer(postingId, offerId).then(function (response) {
+        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
 
             console.log(response);
 

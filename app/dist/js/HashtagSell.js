@@ -177,8 +177,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('myposts.questions', {
             url: "/questions/:postingId"
         }).
-        state('myposts.offers', {
-            url: "/offers/:postingId"
+        state('myposts.meetings', {
+            url: "/meetings/:postingId"
         }).
         state('myposts.splash', {
             url: "/:id",
@@ -349,8 +349,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('watchlist', {
             url: "/watchlist",
-            templateUrl: "js/interested/partials/interested.html",
-            controller: 'myFavesController',
+            templateUrl: "js/watchlist/partials/watchlist.html",
+            controller: 'watchlistController',
             resolve: {
                 loginRequired: loginRequired,
                 redirect: function () {
@@ -361,8 +361,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('watchlist.questions', {
             url: "/questions/:postingId"
         }).
-        state('watchlist.offers', {
-            url: "/offers/:postingId"
+        state('watchlist.meetings', {
+            url: "/meetings/:postingId"
         }).
         state('watchlist.splash', {
             url: "/:id",
@@ -964,12 +964,36 @@ htsApp.directive('subMerchant', function () {
 
 
            $scope.$watch('subMerchForm.dob.$viewValue', function(newValue, oldValue){
-                console.log(newValue);
-               if (newValue && oldValue) {
-                   if (oldValue.length == 1 || oldValue.length == 4) {
-                       if (newValue.length == 2 || newValue.length == 5) {
-                           $scope.subMerchantForm.individual.dateOfBirth = $scope.subMerchForm.dob.$viewValue + '/';
+
+               if(newValue) {
+                   if(newValue.length <= 10) {
+                       var lastChar = newValue.slice(-1);
+                       var isNumber = !isNaN(lastChar);
+                       console.log('is last char', lastChar, ' a number? ', isNumber);
+                       if (isNumber) {
+                           if (newValue && oldValue) {
+                               if (oldValue.length == 1 || oldValue.length == 4) {
+                                   if (newValue.length == 2 || newValue.length == 5) {
+                                       $scope.subMerchantForm.individual.dateOfBirth = $scope.subMerchForm.dob.$viewValue + '/';
+                                   }
+                               }
+                           }
+                       } else {
+                           if (lastChar === "/") {
+                               if (newValue.length == 3 || newValue.length == 6) {
+                                   console.log('This forward slash inserted by system.  okay.');
+                               } else {
+                                   console.log('forward slashed in wrong place');
+                                   $scope.subMerchantForm.individual.dateOfBirth = oldValue;
+                               }
+                           } else {
+                               console.log('user inserted invalid character');
+                               $scope.subMerchantForm.individual.dateOfBirth = oldValue;
+                           }
                        }
+                   } else {
+                       console.log('user inserted more than 10 chars');
+                       $scope.subMerchantForm.individual.dateOfBirth = oldValue;
                    }
                }
 
@@ -2598,7 +2622,7 @@ htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', '
             if(response.success) {
                 $scope.feedback.form.visible = false;
                 $scope.feedback.form.generalFeedback = null;
-                Notification.success({
+                Notification.primary({
                     title: "Feedback Sent!",
                     message: "You'll receive an email shortly.",
                     delay: 6000
@@ -2709,655 +2733,6 @@ htsApp.factory('feedbackFactory', function () {
 
 
 }]);;/**
- * Created by braddavis on 10/29/14.
- */
-htsApp.controller('myFavesController', ['$scope', '$window', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $window, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
-
-    $scope.currentFaves = Session.userObj.user_settings.favorites;
-
-    if($scope.currentFaves.length === 0) {
-        $scope.noItems = true;
-    }
-
-    favesFactory.tableParams = new ngTableParams({
-        page: 1,            // show first page
-        count: 2000, // include all favorites on page one
-        filter: {},         // initial filter
-        sorting: {}         // initial sort
-    }, {
-        counts: [], //hides page sizes
-        total: $scope.currentFaves.length, // length of data
-        getData: function($defer, params) {
-            // use build-in angular filter
-            var filteredData = $filter('filter')($scope.currentFaves, favesFactory.filterString);
-            var orderedData = params.sorting() ?
-                $filter('orderBy')(filteredData, params.orderBy()) :
-                filteredData;
-
-            params.total(orderedData.length); // set total for recalc pagination
-            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-        }
-    });
-
-    //Sets up ng-table params
-    $scope.tableParams = favesFactory.tableParams;
-
-    // Ugh... http://stackoverflow.com/questions/22892908/ng-table-typeerror-cannot-set-property-data-of-null
-    $scope.tableParams.settings().$scope = $scope;
-
-
-    //More info directives evaluate these values and display sent offers and questions about items
-    $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-        $scope.currentState = toState.name;
-        $scope.expandedPostingId = toParams.postingId;
-    });
-
-
-
-    //Called when user clicks on remove button next to favorite
-    $scope.removeFave = function(item){
-        favesFactory.removeFave(item, function () {
-            favesFactory.refreshTable();
-        });
-    };
-
-    //Uncheck all the checkboxes by default
-    $scope.checkboxes = { checked : false, items: {} };
-
-
-    // watch for data checkboxes
-    $scope.$watch('checkboxes.items', function(values) {
-        if (!$scope.currentFaves) {
-            return;
-        }
-        var checked = 0, unchecked = 0;
-        totalFaves = $scope.currentFaves.length;
-        angular.forEach($scope.currentFaves, function(favorite) {
-            checked   +=  ($scope.checkboxes.items[favorite.postingId]) || 0;
-            unchecked += (!$scope.checkboxes.items[favorite.postingId]) || 0;
-        });
-
-        console.log("checked: ", checked, "unchecked: ", unchecked);
-
-        if ((unchecked === 0) && totalFaves !== 0 || (checked === 0) && totalFaves !== 0) {
-            $scope.checkboxes.masterCheck = (checked == totalFaves);
-        }
-        if(checked === 0 || totalFaves === 0){
-            $scope.checkboxes.checked = false;
-        } else {
-            $scope.checkboxes.checked = true;
-        }
-        angular.element(document.getElementById("select_all")).prop("indeterminate", (checked !== 0 && unchecked !== 0));
-    }, true);
-
-    // watch for master checkbox
-    $scope.$watch('checkboxes.masterCheck', function(value) {
-        angular.forEach($scope.currentFaves, function(favorite) {
-            if (angular.isDefined(favorite.postingId)) {
-                $scope.checkboxes.items[favorite.postingId] = value;
-            }
-        });
-    });
-
-    //Declaring filters var so it can be attached to ng-table
-    $scope.filters = {
-        $: ''
-    };
-
-    //Filtering by all fields in table http://plnkr.co/edit/llb5k6?p=preview
-    $scope.$watch("filters.$", function (value) {
-        favesFactory.filterString = value;
-        console.log(favesFactory.filterString);
-        $scope.tableParams.reload();
-//        favesFactory.tableParams.page(1);
-    });
-
-
-    //Takes a list of all the selected items and removes them from user favorites
-    $scope.batchRemoveFaves = function(checkedItems) {
-        favesFactory.batchRemoveFaves(checkedItems);
-        $scope.checkboxes = { checked : false, items: {} }; //Uncheck all the favorites
-    };
-
-    //Takes a list of all the selected items and creates and email with address in BCC field
-    $scope.batchEmail = function(checkedItems) {
-
-
-        var currentFavorites = $scope.currentFaves;
-
-        var results = [];
-
-        angular.forEach(checkedItems.items, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
-            if(selectedStatus) {  //Make sure the favorite is checked
-                console.log('this item selected', selectedStatus, id);
-                for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
-                    if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
-                        results.push(currentFavorites[i]);
-                    }
-                }
-            }
-        });
-
-        console.log(results);
-
-
-        if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
-
-            var modalInstance = $modal.open({
-                templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
-                controller: 'quickComposeController',
-                resolve: {
-                    result: function () {
-                        return results;
-                    }
-                }
-            });
-
-            modalInstance.result.then(function (reason) {
-
-            }, function (reason) {
-                console.log(reason);
-                if (reason === "signUp") {
-                    authModalFactory.signUpModal();
-                }
-                $log.info('Modal dismissed at: ' + new Date());
-            });
-
-        } else {  //User already set their default email provider
-
-            quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, results);
-
-        }
-    };
-
-    $scope.UserLabels = favesFactory.getUserLabels(); //Gets all the users custom labels for the labels dropdown
-    $scope.selected_labels = []; //Stores which labels are checked or not
-    $scope.preselected = {name : []};  //Labels that should be pre-checked when user drops down labels menu
-
-    $scope.removeIndividualLabel = function($event){
-        event.stopPropagation();
-        alert("Quick remove label feature soon.  Please check the item and remove the label for now.");
-    };
-
-    //passes properties associated with clicked DOM element to splashFactory for detailed view
-    $scope.openSplash = function(favorite){
-        splashFactory.result = favorite;
-        console.log(splashFactory.result);
-        $state.go('watchlist.splash', { id: favorite.postingId });
-    };
-
-}]);;htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
-
-    //Init favesFactory Object
-    var favesFactory = {};
-
-    //Get the users current favorites
-    favesFactory.currentFavorites = Session.userObj.user_settings.favorites;
-
-
-    //Takes in a item and adds it to users favorites list or removes if already there
-    favesFactory.addFave = function (item, callback) {
-
-        var alreadyFavorited = _.some(Session.userObj.user_settings.favorites, function (favorite) {
-                return (favorite.postingId === item.postingId);
-            });
-
-
-        if(!alreadyFavorited) { //check to make sure the item is not already favorited.
-
-            if(item.external.source.code === "HSHTG") {
-
-                myPostsFactory.getPostingIdQuestionsAndOffers(item.postingId).then(function (response) {
-
-                    var postWithQuestionOfferAndProfile = response.data;
-
-                    Session.userObj.user_settings.favorites.push(postWithQuestionOfferAndProfile);
-
-                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
-
-                });
-
-            } else {
-
-                Session.userObj.user_settings.favorites.push(item);
-
-                Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
-
-            }
-
-        }
-
-    };
-
-
-    favesFactory.removeFave = function (item, callback) {
-        var currentFavorites = Session.userObj.user_settings.favorites;
-
-        //We use this array to store index of items that user may have ALREADY favorited
-        var matchingIndexes = [];
-
-        //If the new favorite's ID matching an existing favorite then note the index of that item
-        _.some(currentFavorites, function(oldFav) {
-            if(oldFav.postingId == item.postingId){
-                matchingIndexes.push(currentFavorites.indexOf(oldFav));
-            }
-        });
-
-        //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
-        if(matchingIndexes.length > 0){
-            currentFavorites.splice(matchingIndexes[0],1);
-
-            Session.setSessionValue("favorites", currentFavorites, callback);
-        }
-    };
-
-
-
-
-
-    //Socketio passes emit object and we update the wishlist items.
-    favesFactory.updateFavorite = function (emit, callback) {
-        var currentFavorites = Session.userObj.user_settings.favorites;
-
-        console.log('emitted favorite object', emit);
-
-        console.log('currentFavorites', currentFavorites);
-
-        var matchingIndex;
-
-        for(var i = 0; i < currentFavorites.length; i++){
-            var oldFavorite = currentFavorites[i];
-
-            console.log(oldFavorite.postingId, emit.posting.postingId);
-
-            if(oldFavorite.postingId === emit.posting.postingId){
-                matchingIndex = i;
-                break;
-            }
-        }
-
-        console.log('done with loop');
-
-        if (matchingIndex >= 0) {
-            console.log('here is matching favorite');
-            console.log(currentFavorites[matchingIndex]);
-
-
-            myPostsFactory.getPostingIdQuestionsAndOffers(emit.posting.postingId).then(function (response) {
-
-                var postWithQuestionOfferAndProfile = response.data;
-
-                Session.userObj.user_settings.favorites[matchingIndex] = postWithQuestionOfferAndProfile;
-
-
-                try {
-                    favesFactory.refreshTable();
-                } catch(err){
-                    console.log(err);
-                } finally {
-                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
-                }
-
-            });
-
-
-        }
-    };
-
-
-
-
-    favesFactory.checkFave = function (item, callback) {
-        var currentFavorites = Session.userObj.user_settings.favorites;
-
-        //We use this array to store index of items that user may have ALREADY favorited
-        var matchingIndexes = [];
-
-        //If the new favorite's ID matching an existing favorite then note the index of that item
-        _.some(currentFavorites, function(oldFav) {
-            if(oldFav.postingId == item.postingId){
-                matchingIndexes.push(currentFavorites.indexOf(oldFav));
-            }
-        });
-
-        //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
-        if(matchingIndexes.length > 0){
-            callback(true);
-        } else {
-            callback(false);
-        }
-    };
-
-
-    //Refreshes ng-table in the favorites pane
-    favesFactory.refreshTable = function(){
-        console.log("refreshing favorites table");
-        //favesFactory.currentFavorites = Session.getSessionValue('favorites');
-        favesFactory.tableParams.reload();
-    };
-
-
-    favesFactory.filterString = '';
-
-
-    favesFactory.batchRemoveFaves = function(checkedItems){
-        console.log(checkedItems);
-        angular.forEach(checkedItems.items, function(checked, id) {
-            console.log("checked: ", checked, "id: ", id);
-            if(checked) {
-                var tempObj = {};
-                tempObj.postingId = id;
-                favesFactory.removeFave(tempObj, function () {
-                    favesFactory.refreshTable();
-                });
-            }
-        });
-    };
-
-
-    favesFactory.addFavoriteLabel = function(newLabel){
-        var sessionObj = Session.userObj;
-
-        if(!sessionObj.user_settings.user_labels){ //user_labels was not part of original schema.  This protorypes array if doesn't exist.
-            sessionObj.user_settings.user_labels = [];
-        }
-
-        sessionObj.user_settings.user_labels.push(newLabel);
-        Session.setSessionValue("user_labels", sessionObj.user_settings.user_labels);
-    };
-
-
-
-
-    favesFactory.removeFavoriteLabel = function(labelToRemove, callback){
-
-        var sessionObj = Session.userObj; //Get entire session object
-        sessionObj.user_settings.user_labels = _.without(sessionObj.user_settings.user_labels, _.findWhere(sessionObj.user_settings.user_labels, labelToRemove)); //find the user label and remove it from session object
-
-
-        Session.setSessionValue("user_labels", sessionObj.user_settings.user_labels); //Remove user label from server
-
-        var cleanFavorites = [];  //Temporarily store the users favorites with the label removed from all items
-
-        _.each(sessionObj.user_settings.favorites, function(favorite) {
-            favorite.labels = _.without(favorite.labels, _.findWhere(favorite.labels, labelToRemove.name));  //loop through all the users favorites and remove the label each item
-            cleanFavorites.push(favorite);
-        });
-
-        sessionObj.user_settings.favorites = cleanFavorites;
-
-        Session.setSessionValue("favorites", sessionObj.user_settings.favorites, callback);
-    };
-
-    favesFactory.getUserLabels = function(){
-        return Session.getSessionValue("user_labels");
-    };
-
-
-
-    return favesFactory;
-
-}]);;/**
- * Created by braddavis on 2/22/15.
- */
-htsApp.controller('watchlist.offers.controller', ['$scope', 'Session', 'offersFactory', 'Notification', function ($scope, Session, offersFactory, Notification) {
-
-    $scope.userObj = Session.userObj;
-
-    //Drops down menu so posting owner can delete their item for sale.
-    $scope.toggled = function(open) {
-        console.log('Dropdown is now: ', open);
-    };
-
-
-    $scope.cancelOffer = function (offer) {
-
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-
-        offersFactory.deleteOffer(postingId, offerId).then(function (response) {
-
-            console.log(response);
-
-            if (response.status === 204) {
-
-
-
-            } else {
-
-                Notification.error({title: response.name, message: response.message, delay: 20000});
-
-            }
-
-
-        }, function (err) {
-
-            console.log(err);
-
-            Notification.error({title: err.data.name, message: err.data.message, delay: 20000});
-
-        });
-
-    };
-
-}]);;/**
- * Created by braddavis on 4/1/15.
- */
-htsApp.directive("senderOffersMoreInfo", function() {
-    return {
-        restrict: "E",
-        scope: { post: '=' },
-        templateUrl: "js/interested/offers/partials/watchlist.offers.html",
-        controller: "watchlist.offers.controller"
-    };
-});;/**
- * Created by braddavis on 2/24/15.
- */
-htsApp.controller('watchlist.questions.controller', ['$scope', 'qaFactory', '$state', 'Notification', 'myPostsFactory', 'Session', function ($scope, qaFactory, $state, Notification, myPostsFactory, Session) {
-
-    console.log('watchlist.questions.controller');
-
-    $scope.userObj = Session.userObj;
-
-    //Toggles whether the posting owner sees questions they've already answered or not.
-    $scope.showAnswered = false;
-
-    //Drops down menu so posting owner can delete their item for sale.
-    $scope.toggled = function(open) {
-        console.log('Dropdown is now: ', open);
-    };
-
-
-    $scope.deleteQuestion = function (postingId, questionId) {
-
-        console.log(postingId, questionId);
-
-        qaFactory.deleteQuestion(postingId, questionId).then(function (response) {
-
-            if(response.status === 200){
-
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
-
-                //$state.go('^');
-
-            } else {
-
-                Notification.error({title: response.name, message: response.message});
-
-            }
-
-        }, function (err) {
-
-            //TODO: Alert status update
-
-        });
-
-    };
-
-}]);;/**
- * Created by braddavis on 4/1/15.
- */
-htsApp.directive("senderQuestionsMoreInfo", function() {
-    return {
-        restrict: "E",
-        scope: { post: '=' },
-        templateUrl: "js/interested/questions/partials/watchlist.questions.html",
-        controller: "watchlist.questions.controller"
-    };
-});;/**
- * Created by braddavis on 2/21/15.
- */
-htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory', function ($http, $rootScope, ENV, $q, utilsFactory) {
-    var factory = {};
-
-    //Splash controller binds with this object to update view in realtime.
-    factory.questions = {
-        store: []
-    };
-
-
-
-    factory.getPostingIdQuestions = function (postingId) {
-
-        var deferred = $q.defer();
-
-        var params = {
-            postingId: postingId,
-            questions: true,
-            count: 100
-        };
-
-        $http({
-            method: 'GET',
-            url: ENV.postingAPI + postingId + utilsFactory.bracketNotationURL(params)
-        }).then(function (response, status, headers, config) {
-
-            if(response.status === 200) {
-
-                factory.questions.store = response.data.questions.results; //SplashFactory watches this store.
-
-                deferred.resolve(response);
-
-            } else {
-                deferred.reject(response);
-            }
-
-        }, function (err, status, headers, config) {
-
-            deferred.reject(err);
-
-        });
-
-        return deferred.promise;
-
-    };
-
-
-    factory.submitQuestion = function (question, post, username) {
-
-        var deferred = $q.defer();
-
-        var postingId = post.postingId;
-
-        var data = {
-            "username": username,
-            "value" : question
-        };
-
-        $http({
-            method: 'POST',
-            url: ENV.postingAPI + postingId + '/questions',
-            data: data
-        }).then(function (response, status, headers, config) {
-
-            factory.getPostingIdQuestions(postingId).then(function (response) {
-
-                deferred.resolve(response);
-
-            }, function (err) {
-
-                deferred.reject(err);
-
-            });
-
-        }, function (err, status, headers, config) {
-
-            deferred.reject(err);
-
-        });
-
-        return deferred.promise;
-    };
-
-
-
-    factory.deleteQuestion = function (postingId, questionId) {
-
-        //mailboxFactory.mail.questions.sent.data = [];
-        //mailboxFactory.mail.questions.received.data = [];
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'DELETE',
-            url: ENV.postingAPI + postingId + '/questions/' + questionId
-        }).then(function (response, status, headers, config) {
-
-            factory.getPostingIdQuestions(postingId).then(function (response) {
-
-                deferred.resolve(response);
-
-            }, function (err) {
-
-                deferred.reject(err);
-
-            });
-
-        }, function (err, status, headers, config) {
-
-            deferred.reject(err);
-
-        });
-
-        return deferred.promise;
-
-    };
-
-
-    factory.deleteAnswer = function (postingId, questionId, answerId) {
-
-        //mailboxFactory.mail.questions.sent.data = [];
-        //mailboxFactory.mail.questions.received.data = [];
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'DELETE',
-            url: ENV.postingAPI + postingId + '/questions/' + questionId + '/answers/ ' + answerId
-        }).then(function (response, status, headers, config) {
-
-            factory.getPostingIdQuestions(postingId).then(function (response) {
-
-                deferred.resolve(response);
-
-            }, function (err) {
-
-                deferred.reject(err);
-
-            });
-
-        }, function (err, status, headers, config) {
-
-            deferred.reject(err);
-
-        });
-
-        return deferred.promise;
-    };
-
-
-    return factory;
-}]);;/**
  * Created by braddavis on 5/18/15.
  */
 htsApp.controller('betaAgreementController', ['$scope', 'ENV', function($scope, ENV) {
@@ -3412,10 +2787,19 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
         $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
-        console.log('Previous state:' + $rootScope.previousState);
-        console.log('Current state:' + $rootScope.currentState);
 
-        $timeout(function(){
+        $rootScope.toParams = toParams;
+        $rootScope.fromParams = fromParams;
+
+        $rootScope.event = event;
+
+        console.log("============= State Change Start ==============");
+        console.log('State change event', $rootScope.event);
+        console.log('Previous state:' + $rootScope.previousState, 'Params', $rootScope.fromParams);
+        console.log('Current state:' + $rootScope.currentState, 'Params', $rootScope.toParams);
+        console.log("============= State Change Done ==============");
+
+        $timeout(function () {
             metaFactory.metatags.facebook.url = $window.location.href;
         }, 50);
 
@@ -3599,7 +2983,7 @@ htsApp.factory('metaFactory', function () {
 });;/**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -3688,7 +3072,42 @@ htsApp.controller('myPosts.controller', ['$scope', '$filter', '$modal', '$window
     };
 
 
+    $scope.expandCollapseQuestions = function ($event, post) {
+        $event.stopPropagation();
 
+        if($rootScope.currentState !== 'myposts.questions') {
+            post.currentlyViewing = {
+                questions: true,
+                meetings: false
+            };
+            $state.go('myposts.questions', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
+
+
+    $scope.expandCollapseMeetingRequests = function ($event,  post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'myposts.meetings') {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: true
+            };
+            $state.go('myposts.meetings', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
 
 
 
@@ -4102,32 +3521,25 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 }]);;/**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, offersFactory, myPostsFactory, socketio, $state, Session, Notification) {
+htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification) {
 
     $scope.userObj = Session.userObj;
 
-
     $scope.acceptOffer = function (offer) {
 
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-        var payload = offer.response;
-
-        offersFactory.acceptOffer(postingId, offerId, payload).then(function (response) {
+        meetingsFactory.acceptOffer(offer).then(function (response) {
 
             if (response.status === 201) {
 
-                var recipient = offer.username;
-
-                if (!isBlank(offer.message)) {
-
-                    socketio.sendMessage(recipient, offer.message);
-
-                }
-
                 myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
-                Notification.success({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+                Notification.primary({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+
+
+                //Send private message if appended to offer acceptance.
+                if (!isBlank(offer.message)) {
+                    socketio.sendMessage(recipient, offer.message);
+                }
 
             } else {
 
@@ -4156,7 +3568,7 @@ htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPo
         var offerId = offer.offerId;
         //var payload = $scope.offer.response;
 
-        offersFactory.deleteOffer(postingId, offerId).then(function (response) {
+        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
 
             console.log(response);
 
@@ -4197,17 +3609,17 @@ htsApp.controller('myPosts.offers.controller', ['$scope', 'offersFactory', 'myPo
 }]);;/**
  * Created by braddavis on 4/1/15.
  */
-htsApp.directive("ownerOffersMoreInfo", function() {
+htsApp.directive("ownerMeetingsMoreInfo", function() {
     return {
         restrict: "E",
         scope: { post: '=' },
-        templateUrl: "js/myPosts/offers/partials/myPosts.offers.html",
-        controller: "myPosts.offers.controller"
+        templateUrl: "js/myPosts/meetings/partials/myPosts.meetings.html",
+        controller: "myPosts.meetings.controller"
     };
 });;/**
  * Created by braddavis on 2/21/15.
  */
-htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', function ($http, $rootScope, $q, ENV, Session) {
+htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', function ($http, $rootScope, $q, ENV, Session) {
 
     var factory = {};
 
@@ -4231,19 +3643,36 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 
 
 
 
-    factory.sendOffer = function (postingId, offer) {
+    factory.sendOffer = function (post, offerTime) {
 
-        console.log('sending this offer', offer);
+        console.log('sending this offer', offerTime);
 
         var deferred = $q.defer();
 
         $http({
             method: 'POST',
-            url: ENV.postingAPI + postingId + "/offers",
-            data: offer
-        }).then(function (response, status, headers, config) {
+            url: ENV.postingAPI + post.postingId + "/offers",
+            data: offerTime
+        }).then(function (offerResponse, status, headers, config) {
 
-            deferred.resolve(response);
+            console.log('heres our offer response', offerResponse);
+
+            var emailObj = {
+                post: post,
+                offer: offerResponse.data
+            };
+
+            //Send email to owner of posting and user potential buyer
+            $http.post(ENV.htsAppUrl + '/email/meeting-proposed/instant-reminder', {proposedMeeting: emailObj}).success(function(response){
+
+
+            }).error(function(data){
+
+
+            });
+
+
+            deferred.resolve(offerResponse);
 
         }, function (err, status, headers, config) {
 
@@ -4255,19 +3684,31 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 
     };
 
 
-    factory.acceptOffer = function (postingId, offerId, payload) {
-
-        console.log('postingId', postingId);
-        console.log('offerId', offerId);
-        console.log('accepting this offer', payload);
+    factory.acceptOffer = function (offer) {
 
         var deferred = $q.defer();
 
+        console.log('HERES THE ACCEPTED OFFER', offer);
+
+        var emailObj = {
+            postingOwner: Session.userObj.user_settings.name,
+            offer: offer
+        };
+
         $http({
             method: 'POST',
-            url: ENV.postingAPI + postingId + "/offers/" + offerId + "/accept",
-            data: payload
+            url: ENV.postingAPI + offer.postingId + "/offers/" + offer.offerId + "/accept",
+            data: offer.response
         }).then(function (response, status, headers, config) {
+
+            //Send email to owner of posting and user potential buyer
+            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedMeeting: emailObj}).success(function(response){
+
+
+            }).error(function(data){
+
+
+            });
 
 
             deferred.resolve(response);
@@ -4295,17 +3736,8 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 
             url: ENV.postingAPI + postingId + "/offers/" + offerId
         }).then(function (response, status, headers, config) {
 
-            //factory.getPostingIdOffers(postingId).then(function (response) {
+            deferred.resolve(response);
 
-                deferred.resolve(response);
-
-            //}, function (err) {
-            //
-            //    deferred.reject(err);
-            //
-            //});
-
-            //deferred.resolve(true);
 
         }, function (err, status, headers, config) {
 
@@ -4317,134 +3749,6 @@ htsApp.factory('offersFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 
     };
 
 
-
-    //factory.getSingleOffer = function (postingId, offerId) {
-    //
-    //    var deferred = $q.defer();
-    //
-    //    $http({
-    //        method: 'GET',
-    //        url: ENV.postingAPI + postingId + "/offers/" + offerId
-    //    }).then(function (response, status, headers, config) {
-    //
-    //        deferred.resolve(response);
-    //
-    //    }, function (err, status, headers, config) {
-    //
-    //        deferred.reject(err);
-    //
-    //    });
-    //
-    //    return deferred.promise;
-    //
-    //};
-
-
-
-    //factory.getPostingIdOffers = function (postingId) {
-    //
-    //    var deferred = $q.defer();
-    //
-    //    $http({
-    //        method: 'GET',
-    //        url: ENV.postingAPI + postingId + '/offers'
-    //    }).then(function (response, status, headers, config) {
-    //
-    //        factory.parseAllOffers(response.data.results).then(function (response) {
-    //
-    //            deferred.resolve(response);
-    //
-    //        }, function (err) {
-    //
-    //            deferred.reject(err);
-    //
-    //        });
-    //
-    //    }, function (err, status, headers, config) {
-    //
-    //        deferred.reject(err);
-    //
-    //    });
-    //
-    //    return deferred.promise;
-    //
-    //};
-
-
-
-    //factory.getAllOffers = function (allUserItemsForSale) {
-    //
-    //    var deferred = $q.defer();
-    //
-    //    factory.allUserItemsForSale = allUserItemsForSale;
-    //
-    //    //mailboxFactory.mail.offers.received.data = [];
-    //
-    //    for(var i=0; i < allUserItemsForSale.length; i++) { //Loop though all the users items for sale and append offer to matching item
-    //
-    //        var item = allUserItemsForSale[i];
-    //
-    //        $http({
-    //            method: 'GET',
-    //            url: ENV.postingAPI + item.postingId + '/offers/'
-    //        }).then(function (response, status, headers, config) {
-    //
-    //            factory.parseAllOffers(response.data.results).then(function (response) {
-    //
-    //                deferred.resolve(response);
-    //
-    //            }, function (err) {
-    //
-    //                deferred.reject(err);
-    //
-    //            });
-    //
-    //
-    //
-    //        }, function (err, status, headers, config) {
-    //
-    //            deferred.reject(err);
-    //
-    //        });
-    //    }
-    //
-    //    return deferred.promise;
-    //};
-
-
-    //factory.parseAllOffers = function (allOffers) {
-    //
-    //    var deferred = $q.defer();
-    //
-    //    console.log('here is all our offers:', allOffers);
-    //
-    //    var offersSent = [];
-    //
-    //    var offersReceived = [];
-    //
-    //    for(var i=0; i < allOffers.length; i++ ){
-    //        var offer = allOffers[i];
-    //
-    //        if(offer.username === Session.userObj.user_settings.name) {
-    //            offersSent.push(offer);
-    //        } else {
-    //            offersReceived.push(offer);
-    //        }
-    //    }
-    //
-    //    //mailboxFactory.mail.offers.sent.data = mailboxFactory.mail.offers.sent.data.concat(offersSent);
-    //    //mailboxFactory.mail.offers.received.data = mailboxFactory.mail.offers.received.data.concat(offersReceived);
-    //    //mailboxFactory.mail.totalUnread();
-    //
-    //    //console.log('our mailbox: ',mailboxFactory.mail);
-    //
-    //    deferred.resolve();
-    //
-    //    return deferred.promise;
-    //
-    //};
-
-
     return factory;
 }]);;/**
  * Created by braddavis on 2/24/15.
@@ -4454,7 +3758,7 @@ htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$stat
     $scope.userObj = Session.userObj;
 
     //Toggles whether the posting owner sees questions they've already answered or not.
-    $scope.showAnswered = false;
+    //$scope.showAnswered = false;
 
     //Drops down menu so posting owner can delete their item for sale.
     $scope.toggled = function(open) {
@@ -4501,8 +3805,6 @@ htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$stat
         qaFactory.deleteQuestion(postingId, questionId).then(function (response) {
 
             if(response.status === 204){
-
-                $scope.post.questions.results.splice(index, 1);
 
                 if(!$scope.post.questions.results.length) {
                     $state.go('^');
@@ -4623,6 +3925,18 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
             if(response.status === 201) {
 
                 factory.questions.store.unshift(response.data);
+
+                console.log('question response', response.data);
+
+                //Send email to owner of posting and user potential buyer
+                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: response.data}).success(function(response){
+
+
+                }).error(function(data){
+
+
+                });
+
 
                 deferred.resolve(response);
 
@@ -5882,7 +5196,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                             } else {
 
-                                Notification.success({
+                                Notification.primary({
                                     title: "Hrmmmmm",
                                     message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
                                 });
@@ -6481,7 +5795,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
+                Notification.primary({
                     message: "Facebook publishing success!",
                     delay: 10000
                 });  //Send the webtoast
@@ -6517,7 +5831,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
+                Notification.primary({
                     message: "Twitter publishing success!",
                     delay: 10000
                 });  //Send the webtoast
@@ -6575,8 +5889,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 newPost = response;
 
-                Notification.success({
-                    message: "eBay publishing success!",
+                Notification.primary({
+                    message: "Ebay publishing success!",
                     delay: 10000
                 });  //Send the webtoast
 
@@ -7931,7 +7245,7 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
             //}
 
             Session.setSessionValue('ebay', response.data.ebay, function () {
-                Notification.success({
+                Notification.primary({
                     message: 'Successfully linked to eBay!',
                     delay: 10000
                 });  //Send the webtoast
@@ -8393,7 +7707,7 @@ htsApp.factory('sideNavFactory', function () {
 }]);;/**
  * Created by braddavis on 1/25/15.
  */
-htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, $http, myPostsFactory, Notification, favesFactory) {
+htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, myPostsFactory, Notification, favesFactory) {
 
     var socketio = {
         postingSocket: io(ENV.realtimePostingAPI),
@@ -8596,27 +7910,27 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
         console.log('emitted private message', pm);
 
-        Notification.success({title: 'New message from @' + pm.username, message: pm.message, delay: 10000});  //Send the webtoast
+        Notification.primary({title: 'New message from @' + pm.username, message: pm.message, delay: 10000});  //Send the webtoast
     });
 
 
-    // listen for offers
+    // listen for meeting requests
     socketio.postingSocket.on('make-offer', function (emit) {
 
-        console.log('emitted make-offer', emit);
+        console.log('emitted meeting request', emit);
 
         //TODO: Need the offer object to include the sellers username
-        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their offer is sent
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
 
             favesFactory.checkFave(emit.posting, function (favorited) {
 
-                if(favorited){ //The user sending the offer already has the item in their watchlist
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
 
                     favesFactory.updateFavorite(emit, function(){
 
-                        var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Meeting Request Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -8624,13 +7938,13 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                     });
 
-                } else { //The user sending the offer does not have this item in their watchlist.
+                } else { //The user sending the meeting request does not have this item in their watchlist.
 
                     favesFactory.addFave(emit.posting, function(){
 
-                        var url = '"/watchlist/offers/' + emit.posting.postingId + '"';
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Meeting Request Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -8644,15 +7958,15 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
 
 
-        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the offer was placed on
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
 
-            //Update owners offers and notify them.
-            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, offers, etc etc.  The owner app view updates realtime.
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
 
-                var url = '"/myposts/offers/' + emit.posting.postingId + '"';
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
-                Notification.success({
-                    title: '<a href=' + url + '>New Offer</a>',
+                Notification.primary({
+                    title: '<a href=' + url + '>New Meeting Request</a>',
                     message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
                     delay: 10000
                 });  //Send the webtoast
@@ -8663,11 +7977,11 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
             favesFactory.updateFavorite(emit, function(){
 
-                var url = '"/wishlist/offers/' + emit.posting.postingId + '"';
+                var url = '"/wishlist/meetings/' + emit.posting.postingId + '"';
 
-                Notification.success({
-                    title: '<a href=' + url + '>Another user placed an offer on an item you\'re watching.</a>',
-                    message: '<a href=' + url + '>'+  emit.posting.heading +' may go fast!  We\'re just letting you know!</a>',
+                Notification.primary({
+                    title: '<a href=' + url + '>'+  emit.posting.heading +' may go fast!</a>',
+                    message: '<a href=' + url + '>Just letting you know other people are interested in an item you\'re watching. *wink *wink</a>',
                     delay: 10000
                 });  //Send the webtoast
 
@@ -8700,7 +8014,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                         var url = '"/watchlist/questions/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Question Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -8714,7 +8028,7 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
                         var url = '"/watchlist/questions/' + emit.posting.postingId + '"';
 
-                        Notification.success({
+                        Notification.primary({
                             title: '<a href=' + url + '>Question Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
@@ -8730,11 +8044,11 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
         } else if (emit.posting.username === socketio.cachedUsername) { //if currently logged in users owns the posting the emitted question relates to
 
             //Update owners questions and notify them
-            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated quesiotns, offers, etc etc.  The owner app view updates realtime.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
 
                 var url = '"/myposts/questions/' + emit.question.postingId + '"';
 
-                Notification.success({
+                Notification.primary({
                     title: '<a href=' + url + '>New Question</a>',
                     message: '<a href=' + url + '>' + emit.question.value + '</a>',
                     delay: 10000
@@ -8766,17 +8080,21 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
         //TODO: Updates qaFactory.questions.store which causes splash to update.
 
-        if(emit.posting.username !== socketio.cachedUsername){
+        if(emit.username === socketio.cachedUsername){ //If the user who asked this question is logged in then notify them
 
 
             favesFactory.updateFavorite(emit, function(){
 
-                //TODO: open posting in splash screen.
                 var url =  '"/watchlist/questions/' + emit.posting.postingId + '"';
-                Notification.success({title: '<a href=' + url + '>Question has been answered</a>', message: '<a href=' + url + '>' + emit.answer.value + '</a>', delay: 10000});  //Send the webtoast
+                Notification.primary({title: '<a href=' + url + '>Question has been answered</a>', message: '<a href=' + url + '>' + emit.answer.value + '</a>', delay: 10000});  //Send the webtoast
 
             });
 
+        } else if (emit.username !== emit.posting.username){ //if the owner of the posting is not the same person who asked the question (aka all the other people with this item in their watchlist). then update.
+
+            favesFactory.updateFavorite(emit, function(){
+
+            });
         }
 
         console.log(
@@ -8790,32 +8108,121 @@ htsApp.factory('socketio', ['ENV', '$http', 'myPostsFactory', 'Notification', 'f
 
 
     socketio.postingSocket.on('accept-offer', function (emit) {
-        console.log('emitted offer acceptance', emit);
+        console.log('emitted meeting acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted offer
+        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
+
+            favesFactory.updateFavorite(emit, function(){
+                console.log('silently updated watchlist');
+            });
 
             //TODO: open posting in splash screen.
-            var url =  '"/watchlist/offers/' + emit.posting.postingId + '"';
+            var url =  '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-            Notification.success({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Please meet at ' + emit.acceptedTime.where + ' on ' + emit.acceptedTime.when + '.  A reminder email will be sent containing the online payment URL.  Sincerely, HashtagSell Team.</a>', delay: 10000});  //Send the webtoast
+            Notification.primary({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>', delay: 10000});  //Send the webtoast
 
-            //TODO: This should not be called by client but instad realtime-svc
-            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedOffer: emit}).error(function(data){
-                Notification.error({
-                    title: 'Meeting request email failed',
-                    message: "Stay tuned we're working on this.  Send you your email shortly.",
+        }
+
+        console.log(
+            '%s accepted meeting request on postingId %s : "%s"',
+            emit.posting.username,
+            emit.posting.postingId,
+            emit.acceptedTime.when
+        );
+
+    });
+
+
+    socketio.postingSocket.on('decline-offer', function (emit) {
+
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Meeting Cancelled!</a>',
+                            message: '<a href=' + url + '>The seller has been notified</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                }
+
+            });
+
+
+
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
+
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>Meeting Cancelled</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' Had to cancel their meeting.  We apologize for the inconvenience</a>',
                     delay: 10000
                 });  //Send the webtoast
+
+            });
+
+        } else { //update all the users who have the item in their wishlist
+
+            favesFactory.updateFavorite(emit, function(){
+
             });
 
         }
 
         console.log(
-            '%s accepted offer on postingId %s : "%s"',
-            emit.posting.username,
-            emit.posting.postingId,
-            emit.acceptedTime.when
+            '%s cancelled %s regarding postingId: "%s"',
+            emit.username,
+            emit.proposedTimes,
+            emit.posting.postingId
         );
+    });
+
+
+    socketio.postingSocket.on('delete-question', function (emit) {
+
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them their message will be sent
+
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //This user asking the question already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                    });
+
+                }
+
+            });
+
+
+        } else if (emit.posting.username === socketio.cachedUsername) { //if currently logged in users owns the posting the emitted question relates to
+
+            //Update owners questions and notify them
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+            });
+
+
+        } else {  //This user is ALSO watching the same item but did not ask the question itself and does the own the item they are watching.. THEREFORE, silently update their watchlist.
+
+            favesFactory.updateFavorite(emit, function(){
+                console.log('silently updated watchlist');
+            });
+        }
 
     });
 
@@ -8851,6 +8258,8 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
+
+        console.log($scope.result);
 
 
         function strip(html){
@@ -9340,6 +8749,22 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     annotationsDictionary.put("interiorColor","Interior Color");
     annotationsDictionary.put("seller","Seller Type");
 
+    //amazon annotations
+    annotationsDictionary.put("Year", "Year");
+    annotationsDictionary.put("Color", "Color");
+    annotationsDictionary.put("Brand", "Brand");
+    annotationsDictionary.put("Material Type", "Material Type");
+    annotationsDictionary.put("Model", "Model");
+    //annotationsDictionary.put("Part Number", "Part Number");
+    annotationsDictionary.put("Warranty", "Warranty");
+    annotationsDictionary.put("CPU Speed", "Processor Speed");
+    annotationsDictionary.put("CPU Type", "Processor Type");
+    annotationsDictionary.put("Display Size", "Screen Size");
+    annotationsDictionary.put("Operating System", "OS Version");
+    //annotationsDictionary.put("Size", "Storage Capacity");
+    annotationsDictionary.put("System Memory Size", "Memory");
+    annotationsDictionary.put("Department", "Department");
+
     var factory = {};
 
     factory.sanitizeAnnotations = function (annoationsObj) {
@@ -9349,32 +8774,24 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
         angular.forEach(annoationsObj, function(value, key) {
 
             if(typeof key === 'string') {
+                console.log('we are om jere');
                 var validatedKey = annotationsDictionary.get(key);
 
                 if (validatedKey) {
                     sanitizedAnnotationsObj[validatedKey] = value;
                 }
             } else {  //TODO: Fix me, HSHTG items format annotation differently
-                //console.log(value);
+                console.log(value);
 
-                //var hshtgAnnotation = value;
-                //
-                //var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+                var hshtgAnnotation = value;
 
-                //if (hshtgvalidatedKey) {
-                //    if(hshtgvalidatedKey === "Hard Drive" || hshtgvalidatedKey === "Memory") {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"GB";
-                //
-                //    } else if (hshtgvalidatedKey === "Screen") {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"-inch";
-                //
-                //    } else {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
-                //    }
-                //}
+                var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+
+                if (hshtgvalidatedKey) {
+
+                    sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
+
+                }
 
             }
 
@@ -9827,7 +9244,7 @@ htsApp.controller('phoneModalController', ['$scope', '$modalInstance', 'Session'
 }]);;/**
  * Created by braddavis on 1/4/15.
  */
-htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session', 'result', 'ENV', '$filter', 'offersFactory', 'favesFactory', 'socketio', function ($scope, $modalInstance, Session, result, ENV, $filter, offersFactory, favesFactory, socketio) {
+htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session', 'result', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', function ($scope, $modalInstance, Session, result, ENV, $filter, meetingsFactory, favesFactory, socketio) {
 
     //Logged in user details
     $scope.userObj = Session.userObj;
@@ -9896,7 +9313,7 @@ htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session'
 
         socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function(){
 
-            offersFactory.sendOffer($scope.result.postingId, $scope.offer).then(function (response) {
+            meetingsFactory.sendOffer($scope.result, $scope.offer).then(function (response) {
 
                 $scope.dismiss("offer sent");
 
@@ -10692,4 +10109,680 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
     return factory;
 
+}]);;/**
+ * Created by braddavis on 10/29/14.
+ */
+htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
+
+    $scope.currentFaves = Session.userObj.user_settings.favorites;
+
+    favesFactory.tableParams = new ngTableParams({
+        page: 1,            // show first page
+        count: 2000, // include all favorites on page one
+        filter: {},         // initial filter
+        sorting: {}         // initial sort
+    }, {
+        counts: [], //hides page sizes
+        total: $scope.currentFaves.length, // length of data
+        getData: function($defer, params) {
+            // use build-in angular filter
+            var filteredData = $filter('filter')($scope.currentFaves, favesFactory.filterString);
+            var orderedData = params.sorting() ?
+                $filter('orderBy')(filteredData, params.orderBy()) :
+                filteredData;
+
+            params.total(orderedData.length); // set total for recalc pagination
+            $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+        }
+    });
+
+    //Sets up ng-table params
+    $scope.tableParams = favesFactory.tableParams;
+
+    // Ugh... http://stackoverflow.com/questions/22892908/ng-table-typeerror-cannot-set-property-data-of-null
+    $scope.tableParams.settings().$scope = $scope;
+
+
+    //More info directives evaluate these values and display sent offers and questions about items
+    $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+        $scope.currentState = toState.name;
+        $scope.expandedPostingId = toParams.postingId;
+    });
+
+
+
+    //Called when user clicks on remove button next to favorite
+    $scope.removeFave = function(item){
+        favesFactory.removeFave(item, function () {
+            favesFactory.refreshTable();
+        });
+    };
+
+    //Uncheck all the checkboxes by default
+    $scope.checkboxes = { checked : false, items: {} };
+
+
+    // watch for data checkboxes
+    $scope.$watch('checkboxes.items', function(values) {
+        if (!$scope.currentFaves) {
+            return;
+        }
+        var checked = 0, unchecked = 0;
+        totalFaves = $scope.currentFaves.length;
+        angular.forEach($scope.currentFaves, function(favorite) {
+            checked   +=  ($scope.checkboxes.items[favorite.postingId]) || 0;
+            unchecked += (!$scope.checkboxes.items[favorite.postingId]) || 0;
+        });
+
+        console.log("checked: ", checked, "unchecked: ", unchecked);
+
+        if ((unchecked === 0) && totalFaves !== 0 || (checked === 0) && totalFaves !== 0) {
+            $scope.checkboxes.masterCheck = (checked == totalFaves);
+        }
+        if(checked === 0 || totalFaves === 0){
+            $scope.checkboxes.checked = false;
+        } else {
+            $scope.checkboxes.checked = true;
+        }
+        angular.element(document.getElementById("select_all")).prop("indeterminate", (checked !== 0 && unchecked !== 0));
+    }, true);
+
+    // watch for master checkbox
+    $scope.$watch('checkboxes.masterCheck', function(value) {
+        angular.forEach($scope.currentFaves, function(favorite) {
+            if (angular.isDefined(favorite.postingId)) {
+                $scope.checkboxes.items[favorite.postingId] = value;
+            }
+        });
+    });
+
+    //Declaring filters var so it can be attached to ng-table
+    $scope.filters = {
+        $: ''
+    };
+
+    //Filtering by all fields in table http://plnkr.co/edit/llb5k6?p=preview
+    $scope.$watch("filters.$", function (value) {
+        favesFactory.filterString = value;
+        console.log(favesFactory.filterString);
+        $scope.tableParams.reload();
+//        favesFactory.tableParams.page(1);
+    });
+
+
+    //Takes a list of all the selected items and removes them from user favorites
+    $scope.batchRemoveFaves = function(checkedItems) {
+        favesFactory.batchRemoveFaves(checkedItems);
+        $scope.checkboxes = { checked : false, items: {} }; //Uncheck all the favorites
+    };
+
+    //Takes a list of all the selected items and creates and email with address in BCC field
+    $scope.batchEmail = function(checkedItems) {
+
+
+        var currentFavorites = $scope.currentFaves;
+
+        var results = [];
+
+        angular.forEach(checkedItems.items, function(selectedStatus, id) { //loop through all the favorites and find the ones that are checked
+            if(selectedStatus) {  //Make sure the favorite is checked
+                console.log('this item selected', selectedStatus, id);
+                for(i=0; i<currentFavorites.length; i++){ //loop through each favorites metadata
+                    if(currentFavorites[i].postingId == id){  //Match the id of checked favorite and get the rest of metadata from localstorage
+                        results.push(currentFavorites[i]);
+                    }
+                }
+            }
+        });
+
+        console.log(results);
+
+
+        if(Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
+
+            var modalInstance = $modal.open({
+                templateUrl: '/js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+                controller: 'quickComposeController',
+                resolve: {
+                    result: function () {
+                        return results;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if (reason === "signUp") {
+                    authModalFactory.signUpModal();
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+
+        } else {  //User already set their default email provider
+
+            quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, results);
+
+        }
+    };
+
+    $scope.UserLabels = favesFactory.getUserLabels(); //Gets all the users custom labels for the labels dropdown
+    $scope.selected_labels = []; //Stores which labels are checked or not
+    $scope.preselected = {name : []};  //Labels that should be pre-checked when user drops down labels menu
+
+
+    //passes properties associated with clicked DOM element to splashFactory for detailed view
+    $scope.openSplash = function(favorite){
+        splashFactory.result = favorite;
+        console.log(splashFactory.result);
+        $state.go('watchlist.splash', { id: favorite.postingId });
+    };
+
+
+    $scope.expandCollapseQuestions = function ($event, post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'watchlist.questions') {
+            post.currentlyViewing = {
+                questions: true,
+                meetings: false
+            };
+            $state.go('watchlist.questions', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
+
+
+    $scope.expandCollapseMeetingRequests = function ($event,  post) {
+        $event.stopPropagation();
+
+        if($rootScope.currentState !== 'watchlist.meetings') {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: true
+            };
+            $state.go('watchlist.meetings', {postingId: post.postingId});
+        } else {
+            post.currentlyViewing = {
+                questions: false,
+                meetings: false
+            };
+            $state.go($rootScope.previousState);
+        }
+    };
+
+}]);;htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
+
+    //Init favesFactory Object
+    var favesFactory = {};
+
+    //Get the users current favorites
+    favesFactory.currentFavorites = Session.userObj.user_settings.favorites;
+
+
+    //Takes in a item and adds it to users favorites list or removes if already there
+    favesFactory.addFave = function (item, callback) {
+
+        var alreadyFavorited = _.some(Session.userObj.user_settings.favorites, function (favorite) {
+                return (favorite.postingId === item.postingId);
+            });
+
+
+        if(!alreadyFavorited) { //check to make sure the item is not already favorited.
+
+            if(item.external.source.code === "HSHTG") {
+
+                myPostsFactory.getPostingIdQuestionsAndOffers(item.postingId).then(function (response) {
+
+                    var postWithQuestionOfferAndProfile = response.data;
+
+                    Session.userObj.user_settings.favorites.push(postWithQuestionOfferAndProfile);
+
+                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+
+                });
+
+            } else {
+
+                Session.userObj.user_settings.favorites.push(item);
+
+                Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+
+            }
+
+        }
+
+    };
+
+
+    favesFactory.removeFave = function (item, callback) {
+        var currentFavorites = Session.userObj.user_settings.favorites;
+
+        //We use this array to store index of items that user may have ALREADY favorited
+        var matchingIndexes = [];
+
+        //If the new favorite's ID matching an existing favorite then note the index of that item
+        _.some(currentFavorites, function(oldFav) {
+            if(oldFav.postingId == item.postingId){
+                matchingIndexes.push(currentFavorites.indexOf(oldFav));
+            }
+        });
+
+        //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
+        if(matchingIndexes.length > 0){
+            currentFavorites.splice(matchingIndexes[0],1);
+
+            Session.setSessionValue("favorites", currentFavorites, callback);
+        }
+    };
+
+
+
+
+
+    //Socketio passes emit object and we update the wishlist items.
+    favesFactory.updateFavorite = function (emit, callback) {
+        var currentFavorites = Session.userObj.user_settings.favorites;
+
+        console.log('emitted favorite object', emit);
+
+        console.log('currentFavorites', currentFavorites);
+
+        var matchingIndex;
+
+        for(var i = 0; i < currentFavorites.length; i++){
+            var oldFavorite = currentFavorites[i];
+
+            console.log(oldFavorite.postingId, emit.posting.postingId);
+
+            if(oldFavorite.postingId === emit.posting.postingId){
+                matchingIndex = i;
+                break;
+            }
+        }
+
+        console.log('done with loop');
+
+        if (matchingIndex >= 0) {
+            console.log('here is matching favorite');
+            console.log(currentFavorites[matchingIndex]);
+
+
+            myPostsFactory.getPostingIdQuestionsAndOffers(emit.posting.postingId).then(function (response) {
+
+                var postWithQuestionOfferAndProfile = response.data;
+
+                Session.userObj.user_settings.favorites[matchingIndex] = postWithQuestionOfferAndProfile;
+
+
+                try {
+                    favesFactory.refreshTable();
+                } catch(err){
+                    console.log(err);
+                } finally {
+                    Session.setSessionValue("favorites", Session.userObj.user_settings.favorites, callback);
+                }
+
+            });
+
+
+        }
+    };
+
+
+
+
+    favesFactory.checkFave = function (item, callback) {
+        var currentFavorites = Session.userObj.user_settings.favorites;
+
+        //We use this array to store index of items that user may have ALREADY favorited
+        var matchingIndexes = [];
+
+        //If the new favorite's ID matching an existing favorite then note the index of that item
+        _.some(currentFavorites, function(oldFav) {
+            if(oldFav.postingId == item.postingId){
+                matchingIndexes.push(currentFavorites.indexOf(oldFav));
+            }
+        });
+
+        //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
+        if(matchingIndexes.length > 0){
+            callback(true);
+        } else {
+            callback(false);
+        }
+    };
+
+
+    //Refreshes ng-table in the favorites pane
+    favesFactory.refreshTable = function(){
+        console.log("refreshing favorites table");
+        //favesFactory.currentFavorites = Session.getSessionValue('favorites');
+        favesFactory.tableParams.reload();
+    };
+
+
+    favesFactory.filterString = '';
+
+
+    favesFactory.batchRemoveFaves = function(checkedItems){
+        console.log(checkedItems);
+        angular.forEach(checkedItems.items, function(checked, id) {
+            console.log("checked: ", checked, "id: ", id);
+            if(checked) {
+                var tempObj = {};
+                tempObj.postingId = id;
+                favesFactory.removeFave(tempObj, function () {
+                    favesFactory.refreshTable();
+                });
+            }
+        });
+    };
+
+
+    favesFactory.addFavoriteLabel = function(newLabel){
+        var sessionObj = Session.userObj;
+
+        if(!sessionObj.user_settings.user_labels){ //user_labels was not part of original schema.  This protorypes array if doesn't exist.
+            sessionObj.user_settings.user_labels = [];
+        }
+
+        sessionObj.user_settings.user_labels.push(newLabel);
+        Session.setSessionValue("user_labels", sessionObj.user_settings.user_labels);
+    };
+
+
+
+
+    favesFactory.removeFavoriteLabel = function(labelToRemove, callback){
+
+        var sessionObj = Session.userObj; //Get entire session object
+        sessionObj.user_settings.user_labels = _.without(sessionObj.user_settings.user_labels, _.findWhere(sessionObj.user_settings.user_labels, labelToRemove)); //find the user label and remove it from session object
+
+
+        Session.setSessionValue("user_labels", sessionObj.user_settings.user_labels); //Remove user label from server
+
+        var cleanFavorites = [];  //Temporarily store the users favorites with the label removed from all items
+
+        _.each(sessionObj.user_settings.favorites, function(favorite) {
+            favorite.labels = _.without(favorite.labels, _.findWhere(favorite.labels, labelToRemove.name));  //loop through all the users favorites and remove the label each item
+            cleanFavorites.push(favorite);
+        });
+
+        sessionObj.user_settings.favorites = cleanFavorites;
+
+        Session.setSessionValue("favorites", sessionObj.user_settings.favorites, callback);
+    };
+
+    favesFactory.getUserLabels = function(){
+        return Session.getSessionValue("user_labels");
+    };
+
+
+
+    return favesFactory;
+
+}]);;/**
+ * Created by braddavis on 2/22/15.
+ */
+htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory) {
+
+    $scope.userObj = Session.userObj;
+
+    //Drops down menu so posting owner can delete their item for sale.
+    $scope.toggled = function(open) {
+        console.log('Dropdown is now: ', open);
+    };
+
+
+    $scope.cancelOffer = function (offer) {
+
+        var postingId = offer.postingId;
+        var offerId = offer.offerId;
+
+        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
+
+            console.log(response);
+
+            if (response.status === 204) {
+
+
+
+            } else {
+
+                Notification.error({title: response.name, message: response.message, delay: 20000});
+
+            }
+
+
+        }, function (err) {
+
+            console.log(err);
+
+            Notification.error({title: err.data.name, message: err.data.message, delay: 20000});
+
+        });
+
+    };
+
+}]);;/**
+ * Created by braddavis on 4/1/15.
+ */
+htsApp.directive("senderMeetingsMoreInfo", function() {
+    return {
+        restrict: "E",
+        scope: { post: '=' },
+        templateUrl: "js/watchlist/meetings/partials/watchlist.meetings.html",
+        controller: "watchlist.meetings.controller"
+    };
+});;/**
+ * Created by braddavis on 2/24/15.
+ */
+htsApp.controller('watchlist.questions.controller', ['$scope', 'qaFactory', '$state', 'Notification', 'myPostsFactory', 'Session', function ($scope, qaFactory, $state, Notification, myPostsFactory, Session) {
+
+    console.log('watchlist.questions.controller');
+
+    $scope.userObj = Session.userObj;
+
+    //Toggles whether the posting owner sees questions they've already answered or not.
+    $scope.showAnswered = false;
+
+    //Drops down menu so posting owner can delete their item for sale.
+    $scope.toggled = function(open) {
+        console.log('Dropdown is now: ', open);
+    };
+
+
+    $scope.deleteQuestion = function (postingId, questionId) {
+
+        console.log(postingId, questionId);
+
+        qaFactory.deleteQuestion(postingId, questionId).then(function (response) {
+
+            if(response.status === 204){
+
+
+            } else {
+
+                Notification.error({title: response.name, message: response.message});
+
+            }
+
+        }, function (err) {
+
+            //TODO: Alert status update
+
+        });
+
+    };
+
+}]);;/**
+ * Created by braddavis on 4/1/15.
+ */
+htsApp.directive("senderQuestionsMoreInfo", function() {
+    return {
+        restrict: "E",
+        scope: { post: '=' },
+        templateUrl: "js/watchlist/questions/partials/watchlist.questions.html",
+        controller: "watchlist.questions.controller"
+    };
+});;/**
+ * Created by braddavis on 2/21/15.
+ */
+htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory', function ($http, $rootScope, ENV, $q, utilsFactory) {
+    var factory = {};
+
+    //Splash controller binds with this object to update view in realtime.
+    factory.questions = {
+        store: []
+    };
+
+
+
+    factory.getPostingIdQuestions = function (postingId) {
+
+        var deferred = $q.defer();
+
+        var params = {
+            postingId: postingId,
+            questions: true,
+            count: 100
+        };
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + postingId + utilsFactory.bracketNotationURL(params)
+        }).then(function (response, status, headers, config) {
+
+            if(response.status === 200) {
+
+                factory.questions.store = response.data.questions.results; //SplashFactory watches this store.
+
+                deferred.resolve(response);
+
+            } else {
+                deferred.reject(response);
+            }
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+
+    };
+
+
+    factory.submitQuestion = function (question, post, username) {
+
+        var deferred = $q.defer();
+
+        var postingId = post.postingId;
+
+        var data = {
+            "username": username,
+            "value" : question
+        };
+
+        $http({
+            method: 'POST',
+            url: ENV.postingAPI + postingId + '/questions',
+            data: data
+        }).then(function (response, status, headers, config) {
+
+            factory.getPostingIdQuestions(postingId).then(function (response) {
+
+                deferred.resolve(response);
+
+            }, function (err) {
+
+                deferred.reject(err);
+
+            });
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+
+    factory.deleteQuestion = function (postingId, questionId) {
+
+        //mailboxFactory.mail.questions.sent.data = [];
+        //mailboxFactory.mail.questions.received.data = [];
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'DELETE',
+            url: ENV.postingAPI + postingId + '/questions/' + questionId
+        }).then(function (response, status, headers, config) {
+
+            factory.getPostingIdQuestions(postingId).then(function (response) {
+
+                deferred.resolve(response);
+
+            }, function (err) {
+
+                deferred.reject(err);
+
+            });
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+
+    };
+
+
+    factory.deleteAnswer = function (postingId, questionId, answerId) {
+
+        //mailboxFactory.mail.questions.sent.data = [];
+        //mailboxFactory.mail.questions.received.data = [];
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'DELETE',
+            url: ENV.postingAPI + postingId + '/questions/' + questionId + '/answers/ ' + answerId
+        }).then(function (response, status, headers, config) {
+
+            factory.getPostingIdQuestions(postingId).then(function (response) {
+
+                deferred.resolve(response);
+
+            }, function (err) {
+
+                deferred.reject(err);
+
+            });
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+    return factory;
 }]);

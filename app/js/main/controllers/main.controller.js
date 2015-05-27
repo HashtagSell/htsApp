@@ -19,10 +19,19 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
         $rootScope.previousState = fromState.name || 'feed';
         $rootScope.currentState = toState.name;
-        console.log('Previous state:' + $rootScope.previousState);
-        console.log('Current state:' + $rootScope.currentState);
 
-        $timeout(function(){
+        $rootScope.toParams = toParams;
+        $rootScope.fromParams = fromParams;
+
+        $rootScope.event = event;
+
+        console.log("============= State Change Start ==============");
+        console.log('State change event', $rootScope.event);
+        console.log('Previous state:' + $rootScope.previousState, 'Params', $rootScope.fromParams);
+        console.log('Current state:' + $rootScope.currentState, 'Params', $rootScope.toParams);
+        console.log("============= State Change Done ==============");
+
+        $timeout(function () {
             metaFactory.metatags.facebook.url = $window.location.href;
         }, 50);
 

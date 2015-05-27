@@ -6,7 +6,7 @@ htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$stat
     $scope.userObj = Session.userObj;
 
     //Toggles whether the posting owner sees questions they've already answered or not.
-    $scope.showAnswered = false;
+    //$scope.showAnswered = false;
 
     //Drops down menu so posting owner can delete their item for sale.
     $scope.toggled = function(open) {
@@ -53,8 +53,6 @@ htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$stat
         qaFactory.deleteQuestion(postingId, questionId).then(function (response) {
 
             if(response.status === 204){
-
-                $scope.post.questions.results.splice(index, 1);
 
                 if(!$scope.post.questions.results.length) {
                     $state.go('^');

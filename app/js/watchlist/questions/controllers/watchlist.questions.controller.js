@@ -22,11 +22,8 @@ htsApp.controller('watchlist.questions.controller', ['$scope', 'qaFactory', '$st
 
         qaFactory.deleteQuestion(postingId, questionId).then(function (response) {
 
-            if(response.status === 200){
+            if(response.status === 204){
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
-
-                //$state.go('^');
 
             } else {
 

@@ -11,6 +11,8 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
 
+        console.log($scope.result);
+
 
         function strip(html){
             var tmp = document.createElement("DIV");

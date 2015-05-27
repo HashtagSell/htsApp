@@ -75,12 +75,12 @@
                         </h4>
 
                         <div>
-                            <button class="btn btn-default" type="button" ui-sref="watchlist.questions({postingId: favorite.postingId})" ng-click="$event.stopPropagation();">
-                                Questions
+                            <button class="btn btn-default" type="button" ng-click="expandCollapseQuestions($event, favorite)">
+                                <i class="fa" ng-class="favorite.currentlyViewing.questions ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Questions
                             </button>
 
-                            <button class="btn btn-default" type="button" ui-sref="watchlist.offers({postingId: favorite.postingId})" ng-click="$event.stopPropagation();">
-                                Meeting Requests
+                            <button class="btn btn-default" type="button" ng-click="expandCollapseMeetingRequests($event, favorite)">
+                                <i class="fa" ng-class="favorite.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Meeting Requests
                             </button>
                         </div>
                     </td>
@@ -101,9 +101,9 @@
                     </td>
                 </tr>
 
-                <tr ng-repeat-end ng-show="currentState === 'watchlist.offers' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
+                <tr ng-repeat-end ng-show="currentState === 'watchlist.meetings' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
                     <td colspan="6" style="background-color: rgb(253, 253, 253);">
-                        <sender-offers-more-info post="favorite"></sender-offers-more-info>
+                        <sender-meetings-more-info post="favorite"></sender-meetings-more-info>
                     </td>
                 </tr>
 

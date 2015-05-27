@@ -67,6 +67,22 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     annotationsDictionary.put("interiorColor","Interior Color");
     annotationsDictionary.put("seller","Seller Type");
 
+    //amazon annotations
+    annotationsDictionary.put("Year", "Year");
+    annotationsDictionary.put("Color", "Color");
+    annotationsDictionary.put("Brand", "Brand");
+    annotationsDictionary.put("Material Type", "Material Type");
+    annotationsDictionary.put("Model", "Model");
+    //annotationsDictionary.put("Part Number", "Part Number");
+    annotationsDictionary.put("Warranty", "Warranty");
+    annotationsDictionary.put("CPU Speed", "Processor Speed");
+    annotationsDictionary.put("CPU Type", "Processor Type");
+    annotationsDictionary.put("Display Size", "Screen Size");
+    annotationsDictionary.put("Operating System", "OS Version");
+    //annotationsDictionary.put("Size", "Storage Capacity");
+    annotationsDictionary.put("System Memory Size", "Memory");
+    annotationsDictionary.put("Department", "Department");
+
     var factory = {};
 
     factory.sanitizeAnnotations = function (annoationsObj) {
@@ -76,32 +92,24 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
         angular.forEach(annoationsObj, function(value, key) {
 
             if(typeof key === 'string') {
+                console.log('we are om jere');
                 var validatedKey = annotationsDictionary.get(key);
 
                 if (validatedKey) {
                     sanitizedAnnotationsObj[validatedKey] = value;
                 }
             } else {  //TODO: Fix me, HSHTG items format annotation differently
-                //console.log(value);
+                console.log(value);
 
-                //var hshtgAnnotation = value;
-                //
-                //var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+                var hshtgAnnotation = value;
 
-                //if (hshtgvalidatedKey) {
-                //    if(hshtgvalidatedKey === "Hard Drive" || hshtgvalidatedKey === "Memory") {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"GB";
-                //
-                //    } else if (hshtgvalidatedKey === "Screen") {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value+"-inch";
-                //
-                //    } else {
-                //
-                //        sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
-                //    }
-                //}
+                var hshtgvalidatedKey = annotationsDictionary.get(hshtgAnnotation.key);
+
+                if (hshtgvalidatedKey) {
+
+                    sanitizedAnnotationsObj[hshtgvalidatedKey] = hshtgAnnotation.value;
+
+                }
 
             }
 

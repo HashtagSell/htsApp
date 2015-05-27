@@ -16,7 +16,7 @@ htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', '
             if(response.success) {
                 $scope.feedback.form.visible = false;
                 $scope.feedback.form.generalFeedback = null;
-                Notification.success({
+                Notification.primary({
                     title: "Feedback Sent!",
                     message: "You'll receive an email shortly.",
                     delay: 6000
