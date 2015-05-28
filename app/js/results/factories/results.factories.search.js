@@ -402,10 +402,10 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         if (parseInt(itemPrice) > parseInt(factory.priceSlider.max)) {
 
-            factory.priceSlider.max = itemPrice;
+            factory.priceSlider.max = parseInt(itemPrice);
 
             if (!factory.priceSlider.userSetValue) {
-                factory.priceSlider.rangeValue[1] = itemPrice;
+                factory.priceSlider.rangeValue[1] = parseInt(itemPrice);
             }
         }
     };
