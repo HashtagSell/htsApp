@@ -321,7 +321,7 @@ exports.signup = function(req, res) {
 
 
                             //Link the staging users account to all the appropriate staging environment accounts.
-                            if(process.env.NODE_ENV === "STAGING"){
+                            if(process.env.NODE_ENV === "STAGING" || process.env.NODE_ENV === "PRODUCTION"){
                                 newUser.user_settings.linkedAccounts = {
                                     "facebook" : {
                                         "token" : "CAAGhqsUnSnIBAI5D6p1FAjmcEelu8ZAp3JU2mBkZBm05BesD1i514mHvt9nParVsbdCt08ZBzkOC3eLImZAbNQpzSPRqUAs04TT5zUNaCoinfzdEWJTXSP63IYMz3Yu1z2PS4bOBotS7VfMs5PviJBLmLHOTk7qDAMOUtsQohdZAAo1KzPMeFLZBqakcLtxa5P6ZCzyL3FlxHmgWQO2xFdO",

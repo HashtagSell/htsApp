@@ -90,6 +90,34 @@ module.exports = function(grunt) {
                         facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
                         twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
                         ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
+                        ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
+                        ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
+                        fbAppId: '459229800909426'
+                    },
+                    clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
+                }
+            },
+            postprod: {
+                options: {
+                    dest: './app/js/htsApp.config'
+                },
+                constants: {
+                    ENV: {
+                        name: 'post-production',
+                        htsAppUrl: 'https://www.hashtagsell.com',
+                        postingAPI: 'https://www.hashtagsell.com/v1/postings/',
+                        userAPI: 'https://www.hashtagsell.com/v1/users/',
+                        feedbackAPI: 'https://www.hashtagsell.com/feedback',
+                        freeGeoIp: 'https://wwww.hashtagsell.com/json/',
+                        paymentAPI: 'https://www.hashtagsell.com/payments',
+                        precacheAPI: 'https://www.hashtagsell.com/precache',
+                        realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
+                        realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
+                        groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
+                        annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
+                        facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
+                        twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
+                        ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367469320085475'
