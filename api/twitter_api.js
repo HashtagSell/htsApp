@@ -67,7 +67,7 @@ exports.publishToTwitter = function (req, res) {
     } else {
 
         var tweet = {
-            status: posting.plainTextBody
+            status: configAuth.hts.appURL + '/ext/' + posting.postingId + ' ' + posting.plainTextBody.substring(0, 118)
         };
 
         client.post('statuses/update', tweet,  function(error, tweet, response){
