@@ -76,23 +76,51 @@ module.exports = function(grunt) {
                 constants: {
                     ENV: {
                         name: 'production',
-                        htsAppUrl: 'https://production.hashtagsell.com',
-                        postingAPI: 'https://production.hashtagsell.com/v1/postings/',
-                        userAPI: 'https://production.hashtagsell.com/v1/users/',
-                        feedbackAPI: 'https://production.hashtagsell.com/feedback',
-                        freeGeoIp: 'https://production.hashtagsell.com/json/',
-                        paymentAPI: 'https://production.hashtagsell.com/payments',
-                        precacheAPI: 'https://production.hashtagsell.com/precache',
-                        realtimePostingAPI: 'https://production.hashtagsell.com:4044/postings',
-                        realtimeUserAPI: 'https://production.hashtagsell.com:4044/users',
-                        groupingsAPI: 'https://production.hashtagsell.com:4043/v1/groupings/',
-                        annotationsAPI: 'https://production.hashtagsell.com:4043/v1/annotations',
-                        facebookAuth: 'https://production.hashtagsell.com:8081/auth/facebook',
-                        twitterAuth: 'https://production.hashtagsell.com:8081/auth/twitter',
-                        ebayAuth: 'https://production.hashtagsell.com:8081/auth/ebay',
+                        htsAppUrl: 'https://www.hashtagsell.com',
+                        postingAPI: 'https://www.hashtagsell.com/v1/postings/',
+                        userAPI: 'https://www.hashtagsell.com/v1/users/',
+                        feedbackAPI: 'https://www.hashtagsell.com/feedback',
+                        freeGeoIp: 'https://wwww.hashtagsell.com/json/',
+                        paymentAPI: 'https://www.hashtagsell.com/payments',
+                        precacheAPI: 'https://www.hashtagsell.com/precache',
+                        realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
+                        realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
+                        groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
+                        annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
+                        facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
+                        twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
+                        ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '459229800909426'
+                    },
+                    clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
+                }
+            },
+            postprod: {
+                options: {
+                    dest: './app/js/htsApp.config'
+                },
+                constants: {
+                    ENV: {
+                        name: 'post-production',
+                        htsAppUrl: 'https://www.hashtagsell.com',
+                        postingAPI: 'https://www.hashtagsell.com/v1/postings/',
+                        userAPI: 'https://www.hashtagsell.com/v1/users/',
+                        feedbackAPI: 'https://www.hashtagsell.com/feedback',
+                        freeGeoIp: 'https://wwww.hashtagsell.com/json/',
+                        paymentAPI: 'https://www.hashtagsell.com/payments',
+                        precacheAPI: 'https://www.hashtagsell.com/precache',
+                        realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
+                        realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
+                        groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
+                        annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
+                        facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
+                        twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
+                        ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
+                        ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
+                        ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
+                        fbAppId: '367469320085475'
                     },
                     clientTokenPath: 'https://production.hashtagsell.com/payments/client_token'
                 }
