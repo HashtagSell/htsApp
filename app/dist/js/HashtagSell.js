@@ -36,10 +36,38 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         version: 'v2.1'
     });
 
-    //Allows me to programatically show/hide popovers needed in tutorials
+    // configure the tooltipProvider.  Turn off tooltips for mobile.  on for desktop.
+    var tooltipFactory = $tooltipProvider.$get[$tooltipProvider.$get.length - 1];
+
+    // decorate the tooltip getter
+    $tooltipProvider.$get = [
+        '$window',
+        '$compile',
+        '$timeout',
+        '$document',
+        '$position',
+        '$interpolate',
+        function ( $window, $compile, $timeout, $document, $position, $interpolate ) {
+            // for touch devices, don't return tooltips
+            if ('ontouchstart' in $window) {
+                return function () {
+                    return {
+                        compile: function () { }
+                    };
+                };
+            } else {
+                // run the default behavior
+                return tooltipFactory($window, $compile, $timeout, $document, $position, $interpolate);
+            }
+        }
+    ];
+
+
     $tooltipProvider.setTriggers({
         'show': 'hide'
     });
+
+
 
 
     //function assigned to routes that can only be accessed when user logged in
@@ -55,7 +83,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             //    $state.go('signup', { 'redirect': redirect });
             //});
 
-            authModalFactory.signUpModal($state.params);
+            authModalFactory.betaCheckModal($state.params);
 
             deferred.resolve();
 
@@ -329,6 +357,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: { 'redirect': null },
             controller: function(authModalFactory, $state) {
                 authModalFactory.signUpModal($state.params);
+            }
+        }).
+        state('betaChecker', {
+            url: '/welcome',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.betaCheckModal($state.params);
             }
         }).
         state('subscribe', {
@@ -1318,14 +1353,14 @@ htsApp.directive('ngEnter', function () {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',freeGeoIp:'https://staging-freegeoip.hashtagsell.com/json/',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',feedbackAPI:'http://localhost:8081/feedback',freeGeoIp:'http://localhost:8080/json/',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
 
-.constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
+.constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
 ;;/**
  * Created by braddavis on 12/10/14.
  */
-htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', function (Session, $modal, $log, $state) {
+htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$rootScope', function (Session, $modal, $log, $state, $rootScope) {
 
     var factory = {};
 
@@ -1340,6 +1375,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function(){
                     return params;
@@ -1364,6 +1400,47 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
+    };
+
+
+
+
+
+    // ==========================================================
+    // Asks user if they have access code or not ================
+    // ==========================================================
+    factory.betaCheckModal = function (params) {
+
+        var modalInstance = $modal.open({
+            templateUrl: '/js/authModals/modals/betaCheckModal/partials/betaCheck.html',
+            controller: 'betaCheckModalController',
+            size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
+        });
+
+        modalInstance.result.then(function (reason) {
+
+        }, function (reason) {
+            if (reason === "signUp") {
+                $state.go('signup', {'redirect': params.redirect});
+            } else if (reason === "subscribe") {
+                $state.go('subscribe', {'redirect': params.redirect});
+            }
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
     };
 
 
@@ -1377,7 +1454,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
 
         var modalInstance = $modal.open({
             templateUrl: '/js/authModals/modals/signUpModal/partials/signUp.html',
-            controller: 'signupModalContainer',
+            controller: 'signupModalController',
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
@@ -1398,6 +1475,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
     };
 
 
@@ -1413,7 +1495,8 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'subscribeModalController',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {
@@ -1427,6 +1510,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
                 $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
         });
     };
 
@@ -1443,13 +1531,19 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'checkEmailController',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
             $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
         });
     };
 
@@ -1466,6 +1560,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function () {
                     return params;
@@ -1486,31 +1581,12 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             $log.info('Modal dismissed at: ' + new Date());
         });
 
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
     };
-
-
-    // =====================================
-    // User can change their password in settings once they're logged in ================
-    // =====================================
-    //factory.updatePasswordModal = function () {
-    //
-    //    var modalInstance = $modal.open({
-    //        templateUrl: '/js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
-    //        controller: 'updatePasswordModalController',
-    //        size: 'sm'
-    //    });
-    //
-    //    modalInstance.result.then(function (reason) {
-    //
-    //    }, function (reason) {
-    //        console.log(reason);
-    //
-    //        $log.info('Modal dismissed at: ' + new Date());
-    //    });
-    //
-    //};
-
-
 
 
     // =====================================
@@ -1524,6 +1600,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 token: function () {
                     return token;
@@ -1541,27 +1618,23 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             $log.info('Modal dismissed at: ' + new Date());
         });
 
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
     };
 
 
 
-    //factory.facebookAuthModal = function () {
-    //
-    //    var modalInstance = $modal.open({
-    //        templateUrl: '/js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
-    //        controller: 'facebookAuthController'
-    //    });
-    //
-    //    modalInstance.result.then(function (reason) {
-    //
-    //    }, function (reason) {
-    //        $log.info('Modal dismissed at: ' + new Date());
-    //    });
-    //};
-
-
-
     return factory;
+}]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
+htsApp.controller('betaCheckModalController', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
+
+    $scope.dismiss = function (reason) {
+        $modalInstance.dismiss(reason);
+    };
+
 }]);;//Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
 htsApp.controller('checkEmailController', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
@@ -1690,7 +1763,7 @@ htsApp.controller('signInModalController', ['$scope', '$modalInstance', '$window
 
 
 }]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
-htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
+htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
     $scope.signupPassport = function (isValid) {
 
         if (isValid) {

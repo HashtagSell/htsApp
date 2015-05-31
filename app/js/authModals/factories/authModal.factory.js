@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/10/14.
  */
-htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', function (Session, $modal, $log, $state) {
+htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$rootScope', function (Session, $modal, $log, $state, $rootScope) {
 
     var factory = {};
 
@@ -16,6 +16,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function(){
                     return params;
@@ -40,6 +41,47 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
+    };
+
+
+
+
+
+    // ==========================================================
+    // Asks user if they have access code or not ================
+    // ==========================================================
+    factory.betaCheckModal = function (params) {
+
+        var modalInstance = $modal.open({
+            templateUrl: '/js/authModals/modals/betaCheckModal/partials/betaCheck.html',
+            controller: 'betaCheckModalController',
+            size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
+        });
+
+        modalInstance.result.then(function (reason) {
+
+        }, function (reason) {
+            if (reason === "signUp") {
+                $state.go('signup', {'redirect': params.redirect});
+            } else if (reason === "subscribe") {
+                $state.go('subscribe', {'redirect': params.redirect});
+            }
+            $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
     };
 
 
@@ -53,7 +95,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
 
         var modalInstance = $modal.open({
             templateUrl: '/js/authModals/modals/signUpModal/partials/signUp.html',
-            controller: 'signupModalContainer',
+            controller: 'signupModalController',
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
@@ -74,6 +116,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
     };
 
 
@@ -89,7 +136,8 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'subscribeModalController',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {
@@ -103,6 +151,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
                 $state.go('signin', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
         });
     };
 
@@ -119,13 +172,19 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             controller: 'checkEmailController',
             size: 'sm',
             keyboard: false,
-            backdrop: 'static'
+            backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop'
         });
 
         modalInstance.result.then(function (reason) {
 
         }, function (reason) {
             $log.info('Modal dismissed at: ' + new Date());
+        });
+
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
         });
     };
 
@@ -142,6 +201,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function () {
                     return params;
@@ -162,31 +222,12 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             $log.info('Modal dismissed at: ' + new Date());
         });
 
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
     };
-
-
-    // =====================================
-    // User can change their password in settings once they're logged in ================
-    // =====================================
-    //factory.updatePasswordModal = function () {
-    //
-    //    var modalInstance = $modal.open({
-    //        templateUrl: '/js/authModals/modals/updatePasswordModal/partials/updatePassword.html',
-    //        controller: 'updatePasswordModalController',
-    //        size: 'sm'
-    //    });
-    //
-    //    modalInstance.result.then(function (reason) {
-    //
-    //    }, function (reason) {
-    //        console.log(reason);
-    //
-    //        $log.info('Modal dismissed at: ' + new Date());
-    //    });
-    //
-    //};
-
-
 
 
     // =====================================
@@ -200,6 +241,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             size: 'sm',
             keyboard: false,
             backdrop: 'static',
+            backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 token: function () {
                     return token;
@@ -217,23 +259,12 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', funct
             $log.info('Modal dismissed at: ' + new Date());
         });
 
+        //Hack this closes splash modal when user clicks back button https://github.com/angular-ui/bootstrap/issues/335
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            modalInstance.dismiss('direct');
+        });
+
     };
-
-
-
-    //factory.facebookAuthModal = function () {
-    //
-    //    var modalInstance = $modal.open({
-    //        templateUrl: '/js/authModals/modals/facebookAuthModal/partials/facebookAuth.html',
-    //        controller: 'facebookAuthController'
-    //    });
-    //
-    //    modalInstance.result.then(function (reason) {
-    //
-    //    }, function (reason) {
-    //        $log.info('Modal dismissed at: ' + new Date());
-    //    });
-    //};
 
 
 

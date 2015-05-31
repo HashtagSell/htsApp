@@ -113,7 +113,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 }
             } else {
 
-                $state.go('signup');
+                $state.go('betaChecker');
 
             }
         };
@@ -203,7 +203,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                $state.go('signup');
+                $state.go('betaChecker');
             }
         };
 

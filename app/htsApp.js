@@ -36,10 +36,38 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         version: 'v2.1'
     });
 
-    //Allows me to programatically show/hide popovers needed in tutorials
+    // configure the tooltipProvider.  Turn off tooltips for mobile.  on for desktop.
+    var tooltipFactory = $tooltipProvider.$get[$tooltipProvider.$get.length - 1];
+
+    // decorate the tooltip getter
+    $tooltipProvider.$get = [
+        '$window',
+        '$compile',
+        '$timeout',
+        '$document',
+        '$position',
+        '$interpolate',
+        function ( $window, $compile, $timeout, $document, $position, $interpolate ) {
+            // for touch devices, don't return tooltips
+            if ('ontouchstart' in $window) {
+                return function () {
+                    return {
+                        compile: function () { }
+                    };
+                };
+            } else {
+                // run the default behavior
+                return tooltipFactory($window, $compile, $timeout, $document, $position, $interpolate);
+            }
+        }
+    ];
+
+
     $tooltipProvider.setTriggers({
         'show': 'hide'
     });
+
+
 
 
     //function assigned to routes that can only be accessed when user logged in
@@ -55,7 +83,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             //    $state.go('signup', { 'redirect': redirect });
             //});
 
-            authModalFactory.signUpModal($state.params);
+            authModalFactory.betaCheckModal($state.params);
 
             deferred.resolve();
 
@@ -123,6 +151,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                     templateUrl: 'js/legal/betaAgreement/partials/betaAgreement.partial.html',
                     controller: 'betaAgreementController'
                 }
+            }
+        }).
+        state('betaChecker', {
+            url: '/welcome',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.betaCheckModal($state.params);
             }
         }).
         state('checkemail', {

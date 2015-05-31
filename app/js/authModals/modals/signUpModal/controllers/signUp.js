@@ -1,5 +1,5 @@
 //Controller catches the create account process from the create account modal and passes it to our authFactory
-htsApp.controller('signupModalContainer', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
+htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
     $scope.signupPassport = function (isValid) {
 
         if (isValid) {
