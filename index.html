@@ -57,6 +57,7 @@
 </head>
 
 <body ng-controller="mainController" ng-cloak class="container body-main">
+
     <div class="root" ui-view="root">
         <div class="navbar navbar-default nav-links navbar-fixed-top">
             <div class="container-fluid">
@@ -269,10 +270,10 @@
         </div>
 
 
+
         <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNav.hidden}">
             <div ui-view></div>
         </div>
-
 
         <div class="footer-master-container" ng-controller="feedbackController" ng-class="{ 'feedback-visible' : feedback.form.visible }">
 
@@ -330,7 +331,6 @@
         </div>
 
     </div>
-
     <!--IMPORT LIBRARIES-->
     <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
     <script type="text/javascript" src="/angular/angular.min.js"></script>
