@@ -55,7 +55,7 @@ module.exports = function(passport) {
 
                 // if no user is found, return the message
                 if (!user)
-                    return done(null, false, 'Hrmm.. We don\'t recognize that email.'); // req.flash is the way to set flashdata using connect-flash
+                    return done(null, false, 'The email you entered does not belong to any account.'); // req.flash is the way to set flashdata using connect-flash
 
                 // if the user is found but the password is wrong
                 if (!user.validPassword(password))

@@ -153,6 +153,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             }
         }).
+        state('betaChecker', {
+            url: '/welcome',
+            params: { 'redirect': null },
+            controller: function(authModalFactory, $state) {
+                authModalFactory.betaCheckModal($state.params);
+            }
+        }).
         state('checkemail', {
             url: '/checkemail',
             params: { 'redirect': null },
@@ -357,13 +364,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: { 'redirect': null },
             controller: function(authModalFactory, $state) {
                 authModalFactory.signUpModal($state.params);
-            }
-        }).
-        state('betaChecker', {
-            url: '/welcome',
-            params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.betaCheckModal($state.params);
             }
         }).
         state('subscribe', {
@@ -1353,9 +1353,9 @@ htsApp.directive('ngEnter', function () {
 });
 ;angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',feedbackAPI:'http://localhost:8081/feedback',freeGeoIp:'http://localhost:8080/json/',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',feedbackAPI:'https://staging.hashtagsell.com/feedback',freeGeoIp:'https://staging-freegeoip.hashtagsell.com/json/',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
-.constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
+.constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
 ;;/**
  * Created by braddavis on 12/10/14.
@@ -8436,7 +8436,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 }
             } else {
 
-                $state.go('signup');
+                $state.go('betaChecker');
 
             }
         };
@@ -8526,7 +8526,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                $state.go('signup');
+                $state.go('betaChecker');
             }
         };
 
