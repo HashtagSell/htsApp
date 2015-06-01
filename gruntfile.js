@@ -85,26 +85,16 @@ module.exports = function(grunt) {
                         groupingsAPI: 'https://production-posting-api.hashtagsell.com/v1/groupings/',
                         annotationsAPI: 'https://production-posting-api.hashtagsell.com/v1/annotations',
                         feedbackAPI: 'https://production.hashtagsell.com/feedback',
-                        //feedbackAPI: 'https://www.hashtagsell.com/feedback',
                         paymentAPI: 'https://production.hashtagsell.com/payments',
-                        //paymentAPI: 'https://www.hashtagsell.com/payments',
                         precacheAPI: 'https://production.hashtagsell.com/precache',
-                        //precacheAPI: 'https://www.hashtagsell.com/precache',
-                        facebookAuth: 'https://production.hashtagsell.com:8081/auth/facebook',
-                        //facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
-                        twitterAuth: 'https://production.hashtagsell.com:8081/auth/twitter',
-                        //twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
-                        ebayAuth: 'https://production.hashtagsell.com:8081/auth/ebay',
-                        //ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
+                        facebookAuth: 'https://production.hashtagsell.com/auth/facebook',
+                        twitterAuth: 'https://production.hashtagsell.com/auth/twitter',
+                        ebayAuth: 'https://production.hashtagsell.com/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
-                        //ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        //ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '459229800909426',
-                        //fbAppId: '367469320085475'
+                        fbAppId: '459229800909426'
                     },
-                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token',
-                    //clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
+                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token'
                 }
             }
         },
