@@ -16,6 +16,7 @@
     "grunt-nodemon": "^0.3.0",
     "grunt-services": "0.0.3",
     "grunt-shell-spawn": "^0.3.1",
+    "grunt-targethtml": "^0.2.6",
     "open": "0.0.5",
     "prerender": "^3.16.0"
   },

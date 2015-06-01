@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html ng-app="htsApp" class="top-level">
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"><![endif]-->
+
+<head ng-controller="metaController">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="fragment" content="!">
+
+    <title ng-bind="metatags.page.title"></title>
+    <link rel="icon" type="image/png" ng-href="{{metatags.page.faviconUrl}}">
+    <link rel="shortcut icon" ng-href="{{metatags.page.faviconUrl}}" type="image/icon">
+    <link rel="icon" ng-href="{{metatags.page.faviconUrl}}" type="image/icon">
+
+    <!-- Search Engines -->
+    <meta name='description' content=" {{metatags.page.description}} ">
+    <meta name="google-site-verification" content=" {{metatags.page.googleVerification}} " />
+
+    <!-- Facebook -->
+    <meta property='og:title' content=' {{metatags.facebook.title}} '/>
+    <meta property='og:image' content=' {{metatags.facebook.image}} '/>
+    <meta property='og:site_name' content=' {{metatags.facebook.site_name}} '/>
+    <meta property='og:description' content=' {{metatags.facebook.description}} '/>
+    <meta property='og:url' content=' {{metatags.facebook.url}} ' />
+
+    <!-- Twitter -->
+    <meta name='twitter:card' content=' {{metatags.twitter.card}} '>
+    <meta name='twitter:site' content=' {{metatags.twitter.site}} '>
+    <meta name='twitter:creator' content=' {{metatags.twitter.creator}} '>
+    <meta name='twitter:title' content=' {{metatags.twitter.title}} '>
+    <meta name='twitter:description' content=' {{metatags.twitter.description}} '>
+    <meta name='twitter:image' content=' {{metatags.twitter.image}} '>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" />
+    <link rel="stylesheet" href="/angular-ivh-treeview/dist/ivh-treeview.css"/>
+    <link rel="stylesheet" href="/ng-table/ng-table.min.css" />
+    <link rel="stylesheet" href="/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/slick-carousel/slick/slick.css" />
+    <link rel="stylesheet" href="/slick-carousel/slick/slick-theme.css" />
+    <link rel="stylesheet" href="/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" />
+    <link rel="stylesheet" href="/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css" />
+    <link rel="stylesheet" href="/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link rel="stylesheet" href="/angular-ui-select/dist/select.css">
+
+    
+
+    
+
+    
+    <link rel="stylesheet" href="/dist/prod/css/styles.min.css"/>
+    
+
+    <base href="/">
+</head>
+
+<body ng-controller="mainController" ng-cloak class="container body-main">
+
+    <div class="root" ui-view="root">
+        <div class="navbar navbar-default nav-links navbar-fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand hidden-sm hidden-xs" ui-sref="feed">
+                    <img src="//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg" class="logo-nav mini-navbar" />
+                </a>
+                <a class="navbar-brand visible-sm visible-xs" ng-click="toggleOffCanvasSideNav()" style="cursor: pointer; padding-right: 0px;">
+                    <i class="fa fa-bars fa-2x"></i>
+                </a>
+                <div class="col-lg-5 col-lg-offset-1 col-md-4 col-md-offset-0 col-sm-7 col-sm-offset-1 col-xs-10 awesomeBar" ng-controller="awesomeBarController">
+                    <form role="search">
+                        <div class="input-group">
+                            <div id="awesomeBar"
+                                 contenteditable="true"
+                                 awesomebar
+                                 data-ph="I'm looking for..."
+                                 class="form-control"
+                                 ng-change="validateQueryObj()"
+                                 ng-model="queryObj.q"
+                                 mentio
+                                 mentio-require-leading-space="true"
+                                 mentio-macros="macros"
+                                 mentio-id="'awesomePlace'"
+                                 mentio-typed-term="city"
+                                 style="background-color: #EAEAEA"></div>
+
+                            <span class="input-group-btn">
+                                <!--TODO: Advanced drop down fields-->
+                                <button type="button" class="btn btn-default" tooltip="Search in your area or advanced search" tooltip-trigger="mouseenter" tooltip-placement="bottom" ng-click="advancedSearch.visible = !advancedSearch.visible">
+                                    {{queryObj.city | awesomecity}} <span class="caret"></span>
+                                </button>
+                                <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()" ng-show="!advancedSearch.visible">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </input>
+                        </div>
+                    </form>
+                    <div ng-show="advancedSearch.visible" class="advanced-search-container">
+
+                        <form class="form-inline">
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input class="form-control" type="text" placeholder="Min price" ng-model="queryObj.price.min"/>
+                            </div>
+
+                            <div class="input-group">
+                                <span class="input-group-addon">$</span>
+                                <input class="form-control" type="text" placeholder="Max price" ng-model="queryObj.price.max"/>
+                            </div>
+                        </form>
+
+                        <form>
+                            <input type="text" class="form-control advanced-search-city" placeholder="City" ng-model="advancedCity" typeahead="city.description for city in searchPlaces($viewValue)" typeahead-on-select='getCityMetaData($item)' ng-focus="clearCity()">
+                            <small class="help-block">Hint: Type @ symbol in main search bar to search in specific city.  It's magic!</small>
+
+                            <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()">
+                                <span class="glyphicon glyphicon-search"></span> Advanced Search
+                            </button>
+                        </form>
+                    </div>
+
+                    <!--<div>{{queryObj.q}}</div>-->
+
+                    <mentio-menu id="mentioMenu"
+                                 mentio-for="'awesomePlace'"
+                                 mentio-trigger-char="'@'"
+                                 mentio-items="cities"
+                                 mentio-template-url="/awesomePlace.tpl"
+                                 mentio-search="searchPlaces(term)"
+                                 mentio-select="getCityMetaData(item)">
+                    </mentio-menu>
+
+
+                </div>
+                <ul class="nav navbar-nav pull-right hidden-xs">
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="feed" style="padding-left: 0px !important;">
+                            Feed
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="myposts">
+                            My Posts
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="watchlist">
+                            Watch List
+                        </a>
+                    </li>
+                    <li class="hidden-sm hidden-xs">
+                        <a ui-sref="notifications">
+                            Notify Me
+                        </a>
+                    </li>
+                    <li ng-controller="newPostController">
+                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
+                    </li>
+                    <li class="dropdown" dropdown ng-controller="userMenu">
+                        <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
+                            <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38" height="38"/>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
+                            <li><a ui-sref="signin">Sign In</a></li>
+                            <li><a ui-sref="signup">Create Account</a></li>
+                        </ul>
+                        <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
+                            <li><a ui-sref="settings.account">User Settings</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/logout" target="_self" ng-click="logout()">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="overlay" ng-class="{ 'active' : !sideNav.hidden}" ng-click="toggleOffCanvasSideNav()"></div>
+
+        <div class="sidebar-container" ng-class="{ 'active' : !sideNav.hidden, 'sidebar-container-list-view': sideNav.listView}">
+            <div class="bs-profile-nav sidebar-offcanvas">
+
+                <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}});">
+                    <span class="sideNavTriggerBannerImageUpload fa-stack">
+                        <i class="fa fa-circle fa-stack-2x"></i>
+                        <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="bannerDropzoneConfig"></i>
+                    </span>
+                    <div class="profileCircle">
+                        <span class="sideNavTriggerProfileImageUpload fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="profileDropzoneConfig"></i>
+                        </span>
+                        <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
+                    </div>
+                </div>
+
+                <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
+                    <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
+                    <div class="bs-username" ng-show="!userObj.user_settings.name">
+                        <a ui-sref="signin">Sign In</a> /
+                        <a ui-sref="signup">Create Account</a>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
+                </div>
+
+                <!--SideNav-->
+                <div class="list-group bs-side-nav" ng-controller="sideNav.controller">
+                    <a ng-repeat="item in sideNav.items" ui-sref="{{item.link}}" class="list-group-item" ng-class="item.active ? 'active' : 'null'">
+                        {{item.name}}
+                        <span ng-if="item.alerts > 0" class="badge">{{item.alerts}}</span>
+                    </a>
+                </div>
+
+            </div>
+
+
+
+
+            <!--FILTER BAR ONLY VISIBLE WHEN USER ON SEARCH RESULTS PAGE-->
+            <div ng-controller="filterBar" ng-class="{ 'filter-bar-right': sideNav.listView }">
+                <div class="list-group filter-bar" ng-show="showFilterBar">
+                    <a class="list-group-item">
+                        <span class="pull-left">{{rangeSlider.rangeValue[0] | currency : $ : 0}}</span>
+                        <span class="pull-right">{{rangeSlider.rangeValue[1] | currency : $ : 0}}</span>
+                        <span slider ng-model="rangeSlider.rangeValue" min="rangeSlider.min" max="rangeSlider.max" value="rangeSlider.rangeValue" range="true" formater="myFormatter" on-stop-slide="slideDelegate(value)"></span>
+                    </a>
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="filterToggles.mustHavePrice" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require price" style="min-width: 220px;">
+                    </a>
+
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="filterToggles.mustHaveImage" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary" switch-off-text="No" switch-label="Require image" style="min-width: 220px;">
+                    </a>
+
+                    <a class="list-group-item">
+                        <input bs-switch ng-model="views.showMap" type="checkbox" switch-on-color="info" switch-on-text="Yes" switch-off-color="primary"  switch-off-text="No" switch-label="Show map" style="min-width: 220px;">
+                    </a>
+
+                    <a class="list-group-item">
+                    <span class="btn-group btn-group-justified">
+                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="true"><i class="fa fa-th"></i>&nbsp;&nbsp;Grid view</label>
+                        <label class="btn btn-default" ng-model="views.gridView" btn-radio="false"><i class="fa fa-list"></i>&nbsp;&nbsp;List view</label>
+                    </span>
+                    </a>
+                </div>
+            </div>
+
+
+
+
+            <!--Category Tree-->
+            <div ng-controller="categorySelectorBar" ng-class="{ 'category-selector-right': sideNav.listView }">
+                <div class="category-selector" ng-show="showCategorySelectorBar">
+                    <input type="text" ng-model="filterCategories" ng-change="expandTree()" class="form-control" placeholder="Type to filter category list"/>
+
+                    <div class="feed-inner-container">
+                        <!--Category tree selector-->
+                        <div ivh-treeview="feedCategoryObj.nestedCategories"
+                             ivh-treeview-label-attribute="'name'"
+                             ivh-treeview-id-attribute="'code'"
+                             ivh-treeview-children-attribute="'categories'"
+                             ivh-treeview-selected-attribute="'selected'"
+                             ivh-treeview-change-handler="categoryOnChange"
+                             ivh-treeview-filter="filterCategories"
+                             class="panel panel-default feed-category-selector">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="content-container" ng-class="{ 'offcanvas-open' : !sideNav.hidden}">
+            <div ui-view></div>
+        </div>
+
+        <div class="footer-master-container" ng-controller="feedbackController" ng-class="{ 'feedback-visible' : feedback.form.visible }">
+
+            <div class="footer container">
+                <div class="row">
+
+                    <div class="col-sm-2 hidden-xs" ng-show="!feedback.form.visible">
+                        <span id="copyright">©2015 HashtagSell, Inc</span>
+                    </div>
+
+                    <div class="col-sm-2 hidden-xs" ng-show="!feedback.form.visible">
+                        <a href="http://www.facebook.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-facebook"></i></a>
+                        <a href="http://www.twitter.com/hashtagsell" target="_blank" class="icon-2"><i class="fa fa-twitter"></i></a>
+                    </div>
+
+                    <div class="text-center feedback-link" ng-class="feedback.form.visible ? 'col-xs-12' : 'col-sm-4 col-xs-6'">
+                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="!feedback.form.visible">Provide Feedback</a>
+                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="feedback.form.visible">Close Feedback</a>
+                    </div>
+
+
+                    <div class="col-sm-4 col-xs-6" ng-show="!feedback.form.visible">
+                        <a ui-sref="privacyPolicy" target="_blank">Privacy Policy</a> |
+                        <a class="hidden-xs" ui-sref="termsOfService" target="_blank">Terms of Service</a>
+                        <a class="hidden-sm hidden-md hidden-lg" ui-sref="termsOfService" target="_blank">TOS</a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="feedback-container container">
+                <div class="row">
+                    <form class="form-horizontal" ng-submit="submitFeedback()">
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <input type="text" class="form-control" ng-model="feedback.form.email" placeholder="{{userObj.user_settings.name}}" ng-disabled="true"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <textarea rows="5" class="form-control" placeholder="Provide any feedback here.  Don't be shy!  We can take it." ng-model="feedback.form.generalFeedback"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div style="width: 50%; margin: auto;">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--IMPORT LIBRARIES-->
+    <script type="text/javascript" src='/jquery/dist/jquery.min.js'></script>
+    <script type="text/javascript" src="/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.core.min.js"></script>
+    <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.dsr.min.js"></script>
+    <script type="text/javascript" src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
+    <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
+    <script type="text/javascript" src='/underscore/underscore-min.js'></script>
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+    <script type="text/javascript" src='/dropzone/downloads/dropzone.min.js'></script>
+    <script type="text/javascript" src="/jshashtable-3.0/hashtable.js"></script>
+    <script type="text/javascript" src="/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap-slider/slider.js"></script>
+    <script type='text/javascript' src='/lodash/dist/lodash.min.js'></script>
+    <script type="text/javascript" src="/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script type="text/javascript" src="/angular-ivh-treeview/dist/ivh-treeview.min.js"></script>
+    <script type="text/javascript" src="/slick-carousel/slick/slick.js"></script>
+    <script type="text/javascript" src="/angular-slick/dist/slick.js"></script>
+    <script type="text/javascript" src="/angular-vs-repeat/src/angular-vs-repeat.js"></script>
+    <script type="text/javascript" src="/moment/moment.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+    <script type="text/javascript" src="/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="/angular-bootstrap-switch/dist/angular-bootstrap-switch.min.js"></script>
+    <script type="text/javascript" src="//cdn.socket.io/socket.io-1.3.5.js"></script>
+    <script type="text/javascript" src="/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
+    <script type="text/javascript" src="/angular-easyfb/angular-easyfb.min.js"></script>
+    <script type="text/javascript" src="/jsdiff/diff.js"></script>
+    <script type="text/javascript" src="/braintree-angular/dist/braintree-angular.js"></script>
+    <script type="text/javascript" src="/angular-ui-select/dist/select.min.js"></script>
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="/dist/prod/js/HashtagSell.min.js"></script>
+    
+
+
+    <script type="text/ng-template" id="/awesomePlace.tpl">
+        <ul class="list-group user-search demo-scrollable-menu">
+            <li mentio-menu-item="place" ng-repeat="place in items" class="list-group-item">
+
+                <span class="text-primary" ng-bind-html="place.description | mentioHighlight:city:'menu-highlighted' | unsafe"></span>
+
+            </li>
+        </ul>
+    </script>
+
+</body>
+</html>
+
+

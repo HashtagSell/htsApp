@@ -14,7 +14,7 @@
     <meta name="fragment" content="!">
 
     <title ng-bind="metatags.page.title"></title>
-    <link rel="icon" type="image/png" href="/images/favicon/favicon.ico">
+    <link rel="icon" type="image/png" ng-href="{{metatags.page.faviconUrl}}">
     <link rel="shortcut icon" ng-href="{{metatags.page.faviconUrl}}" type="image/icon">
     <link rel="icon" ng-href="{{metatags.page.faviconUrl}}" type="image/icon">
 
@@ -50,8 +50,17 @@
     <link rel="stylesheet" href="/angular-ui-notification/dist/angular-ui-notification.min.css">
     <link rel="stylesheet" href="/angular-ui-select/dist/select.css">
 
-    <!--ONLY LOADED IN PRODUCTION-->
-    <link rel="stylesheet" href="/dist/css/styles.min.css"/>
+    <!--(if target dev)><!-->
+    <link rel="stylesheet" href="/dist/dev/css/styles.min.css"/>
+    <!--<!(endif)-->
+
+    <!--(if target stage)><!-->
+    <link rel="stylesheet" href="/dist/stage/css/styles.min.css"/>
+    <!--<!(endif)-->
+
+    <!--(if target prod)><!-->
+    <link rel="stylesheet" href="/dist/prod/css/styles.min.css"/>
+    <!--<!(endif)-->
 
     <base href="/">
 </head>
@@ -364,8 +373,17 @@
     <script type="text/javascript" src="/braintree-angular/dist/braintree-angular.js"></script>
     <script type="text/javascript" src="/angular-ui-select/dist/select.min.js"></script>
 
+    <!--(if target dev)><!-->
+    <script type="text/javascript" src="/dist/dev/js/HashtagSell.js"></script>
+    <!--<!(endif)-->
 
-    <script type="text/javascript" src="/dist/js/HashtagSell.js"></script>
+    <!--(if target stage)><!-->
+    <script type="text/javascript" src="/dist/stage/js/HashtagSell.js"></script>
+    <!--<!(endif)-->
+
+    <!--(if target prod)><!-->
+    <script type="text/javascript" src="/dist/prod/js/HashtagSell.min.js"></script>
+    <!--<!(endif)-->
 
 
     <script type="text/ng-template" id="/awesomePlace.tpl">

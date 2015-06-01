@@ -51,14 +51,14 @@ module.exports = function(grunt) {
                         htsAppUrl: 'https://staging.hashtagsell.com',
                         postingAPI: 'https://staging-posting-api.hashtagsell.com/v1/postings/',
                         userAPI: 'https://staging-posting-api.hashtagsell.com/v1/users/',
-                        feedbackAPI: 'https://staging.hashtagsell.com/feedback',
                         freeGeoIp: 'https://staging-freegeoip.hashtagsell.com/json/',
-                        paymentAPI: 'https://staging.hashtagsell.com/payments',
-                        precacheAPI: 'https://staging.hashtagsell.com/precache',
                         realtimePostingAPI: 'https://staging-realtime-svc.hashtagsell.com/postings',
                         realtimeUserAPI: 'https://staging-realtime-svc.hashtagsell.com/users',
                         groupingsAPI: 'https://staging-posting-api.hashtagsell.com/v1/groupings/',
                         annotationsAPI: 'https://staging-posting-api.hashtagsell.com/v1/annotations',
+                        feedbackAPI: 'https://staging.hashtagsell.com/feedback',
+                        paymentAPI: 'https://staging.hashtagsell.com/payments',
+                        precacheAPI: 'https://staging.hashtagsell.com/precache',
                         facebookAuth: 'https://staging.hashtagsell.com/auth/facebook',
                         twitterAuth: 'https://staging.hashtagsell.com/auth/twitter',
                         ebayAuth: 'https://staging.hashtagsell.com/auth/ebay',
@@ -77,52 +77,34 @@ module.exports = function(grunt) {
                     ENV: {
                         name: 'production',
                         htsAppUrl: 'https://production.hashtagsell.com',
-                        postingAPI: 'https://production.hashtagsell.com/v1/postings/',
-                        userAPI: 'https://production.hashtagsell.com/v1/users/',
+                        postingAPI: 'https://production-posting-api.hashtagsell.com/v1/postings/',
+                        userAPI: 'https://production-posting-api.hashtagsell.com/v1/users/',
+                        freeGeoIp: 'https://production-freegeoip.hashtagsell.com/json/',
+                        realtimePostingAPI: 'https://production-realtime-svc.hashtagsell.com/postings',
+                        realtimeUserAPI: 'https://production-realtime-svc.hashtagsell.com/users',
+                        groupingsAPI: 'https://production-posting-api.hashtagsell.com/v1/groupings/',
+                        annotationsAPI: 'https://production-posting-api.hashtagsell.com/v1/annotations',
                         feedbackAPI: 'https://production.hashtagsell.com/feedback',
-                        freeGeoIp: 'https://production.hashtagsell.com/json/',
+                        //feedbackAPI: 'https://www.hashtagsell.com/feedback',
                         paymentAPI: 'https://production.hashtagsell.com/payments',
+                        //paymentAPI: 'https://www.hashtagsell.com/payments',
                         precacheAPI: 'https://production.hashtagsell.com/precache',
-                        realtimePostingAPI: 'https://production.hashtagsell.com:4044/postings',
-                        realtimeUserAPI: 'https://production.hashtagsell.com:4044/users',
-                        groupingsAPI: 'https://production.hashtagsell.com:4043/v1/groupings/',
-                        annotationsAPI: 'https://production.hashtagsell.com:4043/v1/annotations',
+                        //precacheAPI: 'https://www.hashtagsell.com/precache',
                         facebookAuth: 'https://production.hashtagsell.com:8081/auth/facebook',
+                        //facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
                         twitterAuth: 'https://production.hashtagsell.com:8081/auth/twitter',
+                        //twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
                         ebayAuth: 'https://production.hashtagsell.com:8081/auth/ebay',
+                        //ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
+                        //ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '459229800909426'
+                        //ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
+                        fbAppId: '459229800909426',
+                        //fbAppId: '367469320085475'
                     },
-                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token'
-                }
-            },
-            postprod: {
-                options: {
-                    dest: './app/js/htsApp.config'
-                },
-                constants: {
-                    ENV: {
-                        name: 'post-production',
-                        htsAppUrl: 'https://www.hashtagsell.com',
-                        postingAPI: 'https://www.hashtagsell.com/v1/postings/',
-                        userAPI: 'https://www.hashtagsell.com/v1/users/',
-                        feedbackAPI: 'https://www.hashtagsell.com/feedback',
-                        freeGeoIp: 'https://wwww.hashtagsell.com/json/',
-                        paymentAPI: 'https://www.hashtagsell.com/payments',
-                        precacheAPI: 'https://www.hashtagsell.com/precache',
-                        realtimePostingAPI: 'https://www.hashtagsell.com:4044/postings',
-                        realtimeUserAPI: 'https://www.hashtagsell.com:4044/users',
-                        groupingsAPI: 'https://www.hashtagsell.com:4043/v1/groupings/',
-                        annotationsAPI: 'https://www.hashtagsell.com:4043/v1/annotations',
-                        facebookAuth: 'https://www.hashtagsell.com:8081/auth/facebook',
-                        twitterAuth: 'https://www.hashtagsell.com:8081/auth/twitter',
-                        ebayAuth: 'https://www.hashtagsell.com:8081/auth/ebay',
-                        ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
-                        ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '367469320085475'
-                    },
-                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token'
+                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token',
+                    //clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
                 }
             }
         },
@@ -141,23 +123,55 @@ module.exports = function(grunt) {
         },
         //Concat combines all js files in js directory to one file.
         concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
+            dev: {
+                options: {
+                    separator: ';'
+                },
                 src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
-                dest: './app/dist/js/<%= pkg.name %>.js'
+                dest: './app/dist/dev/js/<%= pkg.name %>.js'
+            },
+            stage: {
+                options: {
+                    separator: ';'
+                },
+                src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
+                dest: './app/dist/stage/js/<%= pkg.name %>.js'
+            },
+            prod: {
+                options: {
+                    separator: ';'
+                },
+                src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
+                dest: './app/dist/prod/js/<%= pkg.name %>.js'
             }
         },
         //combine all css into one file
         cssmin: {
-            options: {
-                shorthandCompacting: false,
-                roundingPrecision: -1
-            },
-            target: {
+            dev: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1
+                },
                 files: {
-                    './app/dist/css/styles.min.css': ['./app/css/*.css']
+                    './app/dist/dev/css/styles.min.css': ['./app/src/css/*.css']
+                }
+            },
+            stage: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1
+                },
+                files: {
+                    './app/dist/stage/css/styles.min.css': ['./app/src/css/*.css']
+                }
+            },
+            prod: {
+                options: {
+                    shorthandCompacting: false,
+                    roundingPrecision: -1
+                },
+                files: {
+                    './app/dist/prod/css/styles.min.css': ['./app/src/css/*.css']
                 }
             }
         },
@@ -178,23 +192,53 @@ module.exports = function(grunt) {
         },
         //Minify all the Javascript
         uglify: {
-            options: {
-                // the banner is inserted at the top of the output
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-            },
-            dist: {
+            dev: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                },
                 files: {
-                    './app/dist/js/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                    './app/dist/dev/js/<%= pkg.name %>.min.js': ['<%= concat.dev.dest %>']
+                }
+            },
+            stage: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                },
+                files: {
+                    './app/dist/stage/js/<%= pkg.name %>.min.js': ['<%= concat.stage.dest %>']
+                }
+            },
+            prod: {
+                options: {
+                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                },
+                files: {
+                    './app/dist/prod/js/<%= pkg.name %>.min.js': ['<%= concat.prod.dest %>']
+                }
+            }
+        },
+        targethtml: {
+            dev: {
+                files: {
+                    './app/dist/dev/dev_index.html': './app/src/index.html'
+                }
+            },
+            stage: {
+                files: {
+                    './app/dist/stage/stage_index.html': './app/src/index.html'
+                }
+            },
+            prod: {
+                files: {
+                    './app/dist/prod/prod_index.html': './app/src/index.html'
                 }
             }
         },
         concurrent: {
-            dev: {
-                tasks: ['nodemon:dev', 'watch'],
-                options: {
-                    async: true,
-                    logConcurrentOutput: true
-                }
+            tasks: ['nodemon:dev', 'watch'],
+            options: {
+                async: true,
+                logConcurrentOutput: true
             }
         },
         nodemon: {
@@ -252,15 +296,22 @@ module.exports = function(grunt) {
         watch: {
             'client-javascript': {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'concat'],
+                tasks: ['jshint', 'concat:dev'],
                 options: {
                     async: true,
                     livereload: false
                 }
             },
             css: {
-                files: ['./app/css/*.css'],
-                tasks: ['cssmin'],
+                files: ['./app/src/css/*.css'],
+                tasks: ['cssmin:dev'],
+                options: {
+                    livereload: false,
+                }
+            },
+            html: {
+                files: ['./app/src/index.html'],
+                tasks: ['targethtml:dev'],
                 options: {
                     livereload: false,
                 }
@@ -410,6 +461,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-ng-constant');
     grunt.loadNpmTasks('grunt-shell-spawn');
     grunt.loadNpmTasks('grunt-services');
+    grunt.loadNpmTasks('grunt-targethtml');
 
 
 
@@ -421,23 +473,28 @@ module.exports = function(grunt) {
 
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('start-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'concat', 'uglify', 'cssmin', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent:dev']);
+    grunt.registerTask('start', 'Run htsApp locally with all api dependencies', function () {
+        grunt.task.run(['build-htsApp-dev', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent']);
+    });
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('stop-dev', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
+    grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
+
+
+    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'concat:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
+    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'concat:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage']);
+    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'concat:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod']);
+
+
+    //Run all build tasks
+    grunt.registerTask('build', 'Create all builds and store in app/dist directory', function () {
+        grunt.task.run(['build-htsApp-dev', 'build-htsApp-stage', 'build-htsApp-prod']);
+    });
 
 
 
-    //START htsApp in STAGING ENV.  HTTPS://STAGING.HASHTAGSELL.COM
-    grunt.registerTask('build-htsApp-staging', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'concat', 'uglify', 'cssmin']);
-    grunt.registerTask('start-htsApp-staging', 'nodemon:stage');
-
-
-
-    //TODO: Use grunt include to add single concatonated css and js file to index.html
     //TODO: Update robot.txt file to allow all user-agents in production
-    //START htsApp in PRODUCTION ENV.  HTTPS://WWW.HASHTAGSELL.COM
-    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'concat', 'uglify', 'cssmin']);
+    grunt.registerTask('start-htsApp-staging', 'nodemon:stage');
     grunt.registerTask('start-htsApp-prod', 'nodemon:prod');
 
 };

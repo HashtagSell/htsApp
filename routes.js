@@ -5,7 +5,13 @@ module.exports = function(app, passport) {
     // HOME PAGE (with login links) ========
     // =====================================
     app.get('/', function(req, res) {
-        res.sendFile(__dirname + '/index.html'); // load index.html which kicks off angular
+        if(process.env.NODE_ENV === "DEVELOPMENT") {
+            res.sendFile(__dirname + '/app/dist/dev/dev_index.html'); // load dev index.html which kicks off angular
+        } else if(process.env.NODE_ENV === "STAGING") {
+            res.sendFile(__dirname + '/app/dist/stage/stage_index.html'); // load staging index.html which kicks off angular
+        } else if(process.env.NODE_ENV === "PRODUCTION") {
+            res.sendFile(__dirname + '/app/dist/prod/prod_index.html'); // load production index.html which kicks off angular
+        }
     });
 
 
@@ -47,16 +53,16 @@ module.exports = function(app, passport) {
     // =====================================
     // Photo Upload ======================== (Used when user uploads profile photo, banner photo, or adds an item to item they're selling)
     // =====================================
-    var posting_api = require('./api/posting_api');
+    var image_upload_api = require('./api/image_upload_api');
     app.post('/upload', isLoggedIn, function(req, res) {
 
         console.log(req.files);
 
         if (req.files.profilePhoto || req.files.bannerPhoto) { // based on param the user is updating profile photo
-            user_settings_api.updateUserPhotos(req, res);
+            image_upload_api.profileImage(req, res);
 
         } else { // user is uploading photos appended to post
-            posting_api.newUpload(req, res);
+            image_upload_api.postingImage(req, res);
         }
     });
 
@@ -295,7 +301,13 @@ module.exports = function(app, passport) {
 
     //Since using HTML5 mode in htsApp.js we need to preface all requests so that they are directed to index.ejs.. this way we use the client-side angular router.
     app.use(function(req, res) {
-        res.sendFile(__dirname + '/index.html');
+        if(process.env.NODE_ENV === "DEVELOPMENT") {
+            res.sendFile(__dirname + '/app/dist/dev/dev_index.html'); // load dev index.html which kicks off angular
+        } else if(process.env.NODE_ENV === "STAGING") {
+            res.sendFile(__dirname + '/app/dist/stage/stage_index.html'); // load staging index.html which kicks off angular
+        } else if(process.env.NODE_ENV === "PRODUCTION") {
+            res.sendFile(__dirname + '/app/dist/prod/prod_index.html'); // load production index.html which kicks off angular
+        }
     });
 
 };
