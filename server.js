@@ -52,7 +52,14 @@ app.use(function(req, res, next) {
         } else {
             next();
         }
-    } else  {
+    } else if(host === "production.hashtagsell.com" || host === "http://production.hashtagsell.com" || host === "production.hashtagsell.com/" || host === "http://production.hashtagsell.com/") {
+
+        if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) { //If not https
+            res.redirect('https://' + host + req.url); //force https
+        } else {
+            next();
+        }
+    } else {
         next();
     }
 });
