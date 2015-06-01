@@ -10263,8 +10263,6 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
 
-    alert('watchlist controller fired');
-
     favesFactory.tableParams = new ngTableParams({
         page: 1,            // show first page
         count: 2000, // include all favorites on page one
