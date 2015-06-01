@@ -47,7 +47,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         '$document',
         '$position',
         '$interpolate',
-        function ( $window, $compile, $timeout, $document, $position, $interpolate ) {
+        function ($window, $compile, $timeout, $document, $position, $interpolate) {
             // for touch devices, don't return tooltips
             if ('ontouchstart' in $window) {
                 return function () {
@@ -156,16 +156,16 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('betaChecker', {
             url: '/welcome',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.betaCheckModal($state.params);
-            }
+            }]
         }).
         state('checkemail', {
             url: '/checkemail',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.checkEmailModal($state.params);
-            }
+            }]
         }).
         state('externalSplash', {
             url: "/ext/:id",
@@ -194,9 +194,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'redirect': null,
                 'msg': null
             },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.forgotPasswordModal($state.params);
-            }
+            }]
         }).
         state('myposts', {
             url: "/myposts",
@@ -270,9 +270,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('reset', {
             url: '/reset/:token/',
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.resetPasswordModal('signin', $state.params.token);
-            }
+            }]
         }).
         state('results', {
             url: '/q/:q',
@@ -313,9 +313,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('root', {
             url: "/",
-            onEnter: function ($state) {
+            onEnter: ['$state', function ($state) {
                 $state.go('feed');
-            }
+            }]
         }).
         state('settings', {
             url: "/settings",
@@ -354,24 +354,24 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'email': null,
                 'tour': null
             },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 console.log($state.params);
                 authModalFactory.signInModal($state.params);
-            }
+            }]
         }).
         state('signup', {
             url: '/signup',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.signUpModal($state.params);
-            }
+            }]
         }).
         state('subscribe', {
             url: '/subscribe',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
+            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                 authModalFactory.subscribeModal($state.params);
-            }
+            }]
         }).
         state('termsOfService', {
             url: "/terms-of-service",
@@ -1351,13 +1351,15 @@ htsApp.directive('ngEnter', function () {
         });
     };
 });
-;angular.module('globalVars', [])
+
+angular.module('globalVars', [])
 
 .constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',freeGeoIp:'https://staging-freegeoip.hashtagsell.com/json/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
-;;/**
+;
+/**
  * Created by braddavis on 12/10/14.
  */
 htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$rootScope', function (Session, $modal, $log, $state, $rootScope) {
@@ -1628,21 +1630,24 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
 
     return factory;
-}]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
+}]);
+//Controller catches the create account process from the create account modal and passes it to our authFactory
 htsApp.controller('betaCheckModalController', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
     $scope.dismiss = function (reason) {
         $modalInstance.dismiss(reason);
     };
 
-}]);;//Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
+}]);
+//Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
 htsApp.controller('checkEmailController', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
 
     $scope.dismiss = function (reason) {
         $modalInstance.dismiss(reason);
     };
 
-}]);;//Controller catches forgot password process from the forgot password modal and passes it to our authFactory
+}]);
+//Controller catches forgot password process from the forgot password modal and passes it to our authFactory
 htsApp.controller('forgotPasswordController', ['$scope', '$modalInstance', 'authFactory', 'params', function ($scope, $modalInstance, authFactory, params) {
 
     if(params.msg) {
@@ -1679,7 +1684,8 @@ htsApp.controller('forgotPasswordController', ['$scope', '$modalInstance', 'auth
         $modalInstance.dismiss(reason);
     };
 
-}]);;//Controller catches forgot password process from the forgot password modal and passes it to our authFactory
+}]);
+//Controller catches forgot password process from the forgot password modal and passes it to our authFactory
 htsApp.controller('resetPasswordModalController', ['$scope', '$modalInstance', 'authFactory', 'token', function ($scope, $modalInstance, authFactory, token) {
     $scope.resetPassword = function (isValid) {
         if (isValid) {
@@ -1714,7 +1720,8 @@ htsApp.controller('resetPasswordModalController', ['$scope', '$modalInstance', '
         $modalInstance.dismiss(response);
     };
 
-}]);;//Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
+}]);
+//Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
 htsApp.controller('signInModalController', ['$scope', '$modalInstance', '$window', 'authFactory', 'params', function ($scope, $modalInstance, $window, authFactory, params) {
 
     if (params.email) {
@@ -1762,7 +1769,8 @@ htsApp.controller('signInModalController', ['$scope', '$modalInstance', '$window
     };
 
 
-}]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
+}]);
+//Controller catches the create account process from the create account modal and passes it to our authFactory
 htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
     $scope.signupPassport = function (isValid) {
 
@@ -1810,7 +1818,8 @@ htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFac
     };
 
 
-}]);;//Controller catches the create account process from the create account modal and passes it to our authFactory
+}]);
+//Controller catches the create account process from the create account modal and passes it to our authFactory
 htsApp.controller('subscribeModalController', ['$scope', '$modalInstance', 'authFactory', 'Notification', function ($scope, $modalInstance, authFactory, Notification) {
 
 
@@ -1858,7 +1867,8 @@ htsApp.controller('subscribeModalController', ['$scope', '$modalInstance', 'auth
     };
 
 
-}]);;//This factory handles all our ajax posts to the server for sign-in, account creation, password reset, and changing the actual password
+}]);
+//This factory handles all our ajax posts to the server for sign-in, account creation, password reset, and changing the actual password
 htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($http, Session, $q) {
 
     var factory = {};
@@ -2049,7 +2059,8 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
 
 
     return factory;
-}]);;htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
+}]);
+htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
     //$scope.clearedPlaceholder = false;
     //$scope.clearPlaceholder = function () {
@@ -2159,7 +2170,8 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
     };
 
 }]);
-;/**
+
+/**
  * Created by braddavis on 4/26/15.
  */
 htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q, $http, $stateParams) {
@@ -2228,7 +2240,8 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/1/15.
  */
 htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, $state, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
@@ -2404,7 +2417,8 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
     });
 
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 12/15/14.
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
@@ -2587,7 +2601,8 @@ htsApp.filter('secondsToTimeString', function() {
         if(minutes >= 0) timeString += (minutes > 1) ? (minutes + " minutes ") : (minutes + " minute ");
         return timeString;
     };
-});;/**
+});
+/**
  * Created by braddavis on 12/15/14.
  */
 htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function( $http, $stateParams, $location, $q, Session) {
@@ -2677,7 +2692,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/28/15.
  */
 htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, feedbackFactory, $http, ENV, Notification, Session) {
@@ -2717,7 +2733,8 @@ htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', '
         });
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/28/15.
  */
 htsApp.factory('feedbackFactory', function () {
@@ -2732,7 +2749,8 @@ htsApp.factory('feedbackFactory', function () {
     };
 
     return factory;
-});;htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
+});
+htsApp.controller('filterBar', ['$scope', '$rootScope', 'searchFactory', '$timeout', 'sideNavFactory', function ($scope, $rootScope, searchFactory, $timeout, sideNavFactory) {
 
     //Any time the user moves to a different page this function is called.
     $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
@@ -2805,17 +2823,20 @@ htsApp.factory('feedbackFactory', function () {
 
 
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/18/15.
  */
 htsApp.controller('betaAgreementController', ['$scope', 'ENV', function($scope, ENV) {
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/18/15.
  */
 htsApp.controller('postingRulesController', ['$scope', 'ENV', function($scope, ENV) {
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/18/15.
  */
 htsApp.controller('privacyPolicyController', ['$scope', 'ENV', function($scope, ENV) {
@@ -2827,7 +2848,8 @@ htsApp.controller('privacyPolicyController', ['$scope', 'ENV', function($scope, 
         termsOfServiceUrl: ENV.htsAppUrl + '/terms-of-service'
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/18/15.
  */
 htsApp.controller('termsOfServiceController', ['$scope', 'ENV', function($scope, ENV) {
@@ -2839,7 +2861,8 @@ htsApp.controller('termsOfServiceController', ['$scope', 'ENV', function($scope,
         termsOfServiceUrl: ENV.htsAppUrl + '/terms-of-service'
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/24/15.
  */
 htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '$timeout', 'Session', 'socketio', 'myPostsFactory', 'favesFactory', 'metaFactory', '$window', function ($scope, $rootScope, sideNavFactory, $timeout, Session, socketio, myPostsFactory, favesFactory, metaFactory, $window) {
@@ -3013,14 +3036,16 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         }
     }, true);
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/22/15.
  */
 htsApp.controller('metaController', ['$scope', 'metaFactory', function ($scope, metaFactory) {
 
     $scope.metatags = metaFactory.metatags;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/22/15.
  */
 htsApp.factory('metaFactory', function () {
@@ -3053,7 +3078,8 @@ htsApp.factory('metaFactory', function () {
 
 
     return factory;
-});;/**
+});
+/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
@@ -3322,7 +3348,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 3/31/15.
  */
 htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNavFactory', 'profileFactory', function ($http, ENV, $q, utilsFactory, sideNavFactory, profileFactory) {
@@ -3591,7 +3618,8 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 2/22/15.
  */
 htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification) {
@@ -3675,7 +3703,8 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
         return (!str || /^\s*$/.test(str));
     }
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/1/15.
  */
 htsApp.directive("ownerMeetingsMoreInfo", function() {
@@ -3685,7 +3714,8 @@ htsApp.directive("ownerMeetingsMoreInfo", function() {
         templateUrl: "js/myPosts/meetings/partials/myPosts.meetings.html",
         controller: "myPosts.meetings.controller"
     };
-});;/**
+});
+/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', function ($http, $rootScope, $q, ENV, Session) {
@@ -3820,7 +3850,8 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 2/24/15.
  */
 htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$state', 'Notification', 'myPostsFactory', 'Session', function ($scope, qaFactory, $state, Notification, myPostsFactory, Session) {
@@ -3915,7 +3946,8 @@ htsApp.controller('myPosts.questions.controller', ['$scope', 'qaFactory', '$stat
         });
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/1/15.
  */
 htsApp.directive("ownerQuestionsMoreInfo", function() {
@@ -3925,7 +3957,8 @@ htsApp.directive("ownerQuestionsMoreInfo", function() {
         templateUrl: "js/myPosts/questions/partials/myPosts.questions.html",
         controller: "myPosts.questions.controller"
     };
-});;/**
+});
+/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory', function ($http, $rootScope, ENV, $q, utilsFactory) {
@@ -4120,7 +4153,8 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
 
     return factory;
-}]);;htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
+}]);
+htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -4205,7 +4239,8 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
     };
 
 }]);
-;/**
+
+/**
  * Created by braddavis on 2/25/15.
  */
 htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'newPost', 'myPostsFactory', 'Session', 'socketio', function ($scope, $modal, $modalInstance, newPost, myPostsFactory, Session, socketio) {
@@ -4229,7 +4264,8 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
         $modalInstance.dismiss(reason);
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/6/15.
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
@@ -5073,7 +5109,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }, 1000);
     })();
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/6/15.
  */
 htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, ENV, utilsFactory, Notification) {
@@ -5823,7 +5860,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 2/25/15.
  */
 htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
@@ -6053,7 +6091,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/21/15.
  */
 htsApp.controller('notifications.controller', ['$scope', function ($scope) {
@@ -6072,7 +6111,8 @@ htsApp.controller('notifications.controller', ['$scope', function ($scope) {
         }
         return res;
     }
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/9/15.
  */
 htsApp.controller('paymentController', ['$scope', '$http', '$stateParams', 'ENV', function($scope, $http, $stateParams, ENV) {
@@ -6172,7 +6212,8 @@ htsApp.controller('paymentController', ['$scope', '$http', '$stateParams', 'ENV'
 
     $scope.alerts = [];
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/10/15.
  */
 /**
@@ -6206,14 +6247,16 @@ htsApp.controller('peerReviewController', ['$scope', '$http', '$stateParams', 'E
 
 
     $scope.alerts = [];
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/5/15.
  */
 htsApp.controller('profile.controller', ['$scope', 'profileFactory', function ($scope, profileFactory) {
 
     $scope.nav = profileFactory.nav;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/2/15.
  */
 
@@ -6276,7 +6319,8 @@ htsApp.factory('profileFactory', ['$http', '$location', '$q', 'ENV', function ($
 
     return factory;
 
-}]);;htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
+}]);
+htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
 
     //While true the hashtagspinner will appear
     $scope.status = searchFactory.status;
@@ -6413,7 +6457,8 @@ htsApp.directive('resizeGrid', ['$rootScope', '$window', 'searchFactory', functi
             });
         }
     };
-}]);;/**
+}]);
+/**
  * Created by braddavis on 12/14/14.
  */
 htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$log', '$timeout', 'utilsFactory', 'ENV', function ($http, $stateParams, $location, $q, $log, $timeout, utilsFactory, ENV) {
@@ -7052,7 +7097,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     return factory;
-}]);;//This service is getter and setter for user settings, favorites, logged in status etc.
+}]);
+//This service is getter and setter for user settings, favorites, logged in status etc.
 htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window, $http, $q, $state) {
 
     this.defaultUserObj = {
@@ -7192,7 +7238,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
 
     return this;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/29/14.
  */
 htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification) {
@@ -7376,7 +7423,8 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
         });
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/16/15.
  */
 htsApp.controller('settings.password.controller', ['$scope', 'authFactory', function ($scope, authFactory) {
@@ -7419,12 +7467,14 @@ htsApp.controller('settings.password.controller', ['$scope', 'authFactory', func
         $scope.verifyNewPassword = null;
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/29/14.
  */
 htsApp.controller('settings.payment.controller', ['$scope', function ($scope) {
     //alert("payment controller");
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/29/14.
  */
 htsApp.controller('settings.profile.controller', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
@@ -7529,13 +7579,15 @@ htsApp.controller('settings.profile.controller', ['$scope', 'Session', '$templat
         });
     };
 
-}]);;htsApp.controller('sideNav.controller', ['$scope', 'sideNavFactory', 'splashFactory', function ($scope, sideNavFactory, splashFactory) {
+}]);
+htsApp.controller('sideNav.controller', ['$scope', 'sideNavFactory', 'splashFactory', function ($scope, sideNavFactory, splashFactory) {
 
     $scope.sideNav = sideNavFactory;
 
     $scope.result = splashFactory.result;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/29/14.
  */
 htsApp.factory('sideNavFactory', function () {
@@ -7702,7 +7754,8 @@ htsApp.factory('sideNavFactory', function () {
 
     return factory;
 
-});;htsApp.controller('sideProfile', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
+});
+htsApp.controller('sideProfile', ['$scope', 'Session', '$templateCache', function ($scope, Session, $templateCache) {
 
     $scope.userObj = Session.userObj;
 
@@ -7779,7 +7832,8 @@ htsApp.factory('sideNavFactory', function () {
         }
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/25/15.
  */
 htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, myPostsFactory, Notification, favesFactory) {
@@ -8321,7 +8375,8 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 
 
     return socketio;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/15/14.
  */
 htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $modal, $state, splashFactory, metaFactory) {
@@ -8755,7 +8810,8 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
             }
         }
     };
-}]);;/**
+}]);
+/**
  * Created by braddavis on 11/15/14.
  */
 htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($http, $location, $q, ENV) {
@@ -8921,7 +8977,8 @@ htsApp.factory('splashFactory', ['$http', '$location', '$q', 'ENV', function ($h
     };
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/24/15.
  */
 htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'Session', function ($q, $http, $modal, $log, ENV, Session) {
@@ -8979,7 +9036,8 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/3/15.
  */
 htsApp.directive('transactionButtons', function () {
@@ -9019,7 +9077,8 @@ htsApp.directive('transactionButtons', function () {
 
         }]
     };
-});;/**
+});
+/**
  * Created by braddavis on 1/10/15.
  */
 htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
@@ -9165,7 +9224,8 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
     };
 
     return transactionFactory;
-}]);;htsApp.controller('quickComposeController', ['$scope', '$modalInstance', 'quickComposeFactory', 'Session', '$window', 'result', function ($scope, $modalInstance, quickComposeFactory, Session, $window, result) {
+}]);
+htsApp.controller('quickComposeController', ['$scope', '$modalInstance', 'quickComposeFactory', 'Session', '$window', 'result', function ($scope, $modalInstance, quickComposeFactory, Session, $window, result) {
 
     $scope.userObj = Session.userObj;
 
@@ -9306,7 +9366,8 @@ htsApp.factory('quickComposeFactory', ['Session', '$window', function(Session, $
 
 
     return newQuickCompose;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/4/15.
  */
 htsApp.controller('phoneModalController', ['$scope', '$modalInstance', 'Session', 'result', function ($scope, $modalInstance, Session, result) {
@@ -9319,7 +9380,8 @@ htsApp.controller('phoneModalController', ['$scope', '$modalInstance', 'Session'
         $modalInstance.dismiss(reason);
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 1/4/15.
  */
 htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session', 'result', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', function ($scope, $modalInstance, Session, result, ENV, $filter, meetingsFactory, favesFactory, socketio) {
@@ -9407,7 +9469,8 @@ htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session'
 
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 10/17/14.
  */
 //Controller catches the sign-in process from the sign-in modal and passes it to our authFactory
@@ -9443,7 +9506,8 @@ htsApp.controller('userMenu', ['$scope', 'Session', 'authModalFactory', '$modal'
     };
 
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 2/16/15.
  */
 
@@ -9514,7 +9578,8 @@ htsApp.factory('utilsFactory', ['ENV', function (ENV) {
 
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 5/1/15.
  */
 htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, ENV) {
@@ -9543,7 +9608,8 @@ htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, EN
 
 
     return factory;
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/23/15.
  */
 htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout',  '$interval', 'ENV', 'Session', 'Notification', function ($q, $http, $window, $rootScope, $timeout, $interval, ENV, Session, Notification) {
@@ -9744,7 +9810,8 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/23/15.
  */
 htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', function ($q, ENV, $http, Session, ezfb) {
@@ -9986,7 +10053,8 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/23/15.
  */
 htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 'Session', function ($q, $http, $window, $interval, ENV, Session) {
@@ -10187,7 +10255,8 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
     return factory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 10/29/14.
  */
 htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
@@ -10395,7 +10464,8 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
         }
     };
 
-}]);;htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
+}]);
+htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, myPostsFactory) {
 
     //Init favesFactory Object
     var favesFactory = {};
@@ -10606,7 +10676,8 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
 
     return favesFactory;
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 2/22/15.
  */
 htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory) {
@@ -10649,7 +10720,8 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
 
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/1/15.
  */
 htsApp.directive("senderMeetingsMoreInfo", function() {
@@ -10659,7 +10731,8 @@ htsApp.directive("senderMeetingsMoreInfo", function() {
         templateUrl: "js/watchlist/meetings/partials/watchlist.meetings.html",
         controller: "watchlist.meetings.controller"
     };
-});;/**
+});
+/**
  * Created by braddavis on 2/24/15.
  */
 htsApp.controller('watchlist.questions.controller', ['$scope', 'qaFactory', '$state', 'Notification', 'myPostsFactory', 'Session', function ($scope, qaFactory, $state, Notification, myPostsFactory, Session) {
@@ -10700,7 +10773,8 @@ htsApp.controller('watchlist.questions.controller', ['$scope', 'qaFactory', '$st
 
     };
 
-}]);;/**
+}]);
+/**
  * Created by braddavis on 4/1/15.
  */
 htsApp.directive("senderQuestionsMoreInfo", function() {
@@ -10710,7 +10784,8 @@ htsApp.directive("senderQuestionsMoreInfo", function() {
         templateUrl: "js/watchlist/questions/partials/watchlist.questions.html",
         controller: "watchlist.questions.controller"
     };
-});;/**
+});
+/**
  * Created by braddavis on 2/21/15.
  */
 htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory', function ($http, $rootScope, ENV, $q, utilsFactory) {

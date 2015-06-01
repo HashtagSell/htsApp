@@ -47,7 +47,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         '$document',
         '$position',
         '$interpolate',
-        function ( $window, $compile, $timeout, $document, $position, $interpolate ) {
+        function ($window, $compile, $timeout, $document, $position, $interpolate) {
             // for touch devices, don't return tooltips
             if ('ontouchstart' in $window) {
                 return function () {

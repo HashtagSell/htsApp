@@ -111,30 +111,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        //Concat combines all js files in js directory to one file.
-        concat: {
-            dev: {
-                options: {
-                    separator: ';'
-                },
-                src: ['./app/htsApp.js', './app/dist/dev/dev.config', './app/js/**/*.js'],
-                dest: './app/dist/dev/js/<%= pkg.name %>.js'
-            },
-            stage: {
-                options: {
-                    separator: ';'
-                },
-                src: ['./app/htsApp.js', './app/dist/stage/stage.config', './app/js/**/*.js'],
-                dest: './app/dist/stage/js/<%= pkg.name %>.js'
-            },
-            prod: {
-                options: {
-                    separator: ';'
-                },
-                src: ['./app/htsApp.js', './app/dist/prod/prod.config', './app/js/**/*.js'],
-                dest: './app/dist/prod/js/<%= pkg.name %>.js'
-            }
-        },
         //combine all css into one file
         cssmin: {
             dev: {
@@ -165,6 +141,26 @@ module.exports = function(grunt) {
                 }
             }
         },
+        ngAnnotate: {
+            options: {
+                singleQuotes: true
+            },
+            dev: {
+                files: {
+                    './app/dist/dev/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/dev/dev.config', './app/js/**/*.js']
+                }
+            },
+            stage: {
+                files: {
+                    './app/dist/stage/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/stage/stage.config', './app/js/**/*.js']
+                }
+            },
+            prod: {
+                files: {
+                    './app/dist/prod/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/prod/prod.config', './app/js/**/*.js']
+                }
+            }
+        },
         //Validate all js
         jshint: {
             // define the files to lint
@@ -187,7 +183,7 @@ module.exports = function(grunt) {
                     banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
                 },
                 files: {
-                    './app/dist/dev/js/<%= pkg.name %>.min.js': ['<%= concat.dev.dest %>']
+                    './app/dist/dev/js/<%= pkg.name %>.min.js': ['./app/dist/dev/js/<%= pkg.name %>.annotated.js']
                 }
             },
             stage: {
@@ -195,7 +191,7 @@ module.exports = function(grunt) {
                     banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
                 },
                 files: {
-                    './app/dist/stage/js/<%= pkg.name %>.min.js': ['<%= concat.stage.dest %>']
+                    './app/dist/stage/js/<%= pkg.name %>.min.js': ['./app/dist/stage/js/<%= pkg.name %>.annotated.js']
                 }
             },
             prod: {
@@ -203,7 +199,7 @@ module.exports = function(grunt) {
                     banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
                 },
                 files: {
-                    './app/dist/prod/js/<%= pkg.name %>.min.js': ['<%= concat.prod.dest %>']
+                    './app/dist/prod/js/<%= pkg.name %>.min.js': ['./app/dist/prod/js/<%= pkg.name %>.annotated.js']
                 }
             }
         },
@@ -286,7 +282,7 @@ module.exports = function(grunt) {
         watch: {
             'client-javascript': {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'concat:dev'],
+                tasks: ['jshint', 'ngAnnotate:dev'],
                 options: {
                     async: true,
                     livereload: false
@@ -440,7 +436,6 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -452,6 +447,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell-spawn');
     grunt.loadNpmTasks('grunt-services');
     grunt.loadNpmTasks('grunt-targethtml');
+    grunt.loadNpmTasks('grunt-ng-annotate');
 
 
 
@@ -471,9 +467,9 @@ module.exports = function(grunt) {
     grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
 
 
-    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'concat:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
-    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'concat:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage']);
-    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'concat:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod']);
+    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngAnnotate:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
+    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'ngAnnotate:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage']);
+    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'ngAnnotate:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod']);
 
 
     //Run all build tasks
