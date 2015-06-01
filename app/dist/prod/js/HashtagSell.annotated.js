@@ -1354,9 +1354,9 @@ htsApp.directive('ngEnter', function () {
 
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'production',htsAppUrl:'https://production.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',freeGeoIp:'https://production-freegeoip.hashtagsell.com/json/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://production.hashtagsell.com/feedback',paymentAPI:'https://production.hashtagsell.com/payments',precacheAPI:'https://production.hashtagsell.com/precache',facebookAuth:'https://production.hashtagsell.com/auth/facebook',twitterAuth:'https://production.hashtagsell.com/auth/twitter',ebayAuth:'https://production.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',freeGeoIp:'https://production-freegeoip.hashtagsell.com/json/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
-.constant('clientTokenPath', 'https://production.hashtagsell.com/payments/client_token')
+.constant('clientTokenPath', 'https://www.hashtagsell.com/payments/client_token')
 
 ;
 /**
@@ -2519,8 +2519,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     feedFactory.persistedResults = $scope.results.slice(0, 300);
                     resumePersisted = false;
 
-                    //UI will query polling API every 30 seconds
-                    var intervalUpdate = $interval(updateFeed, 60000, 0, true);
+                    //UI will query polling API every 60 seconds
+                    var intervalUpdate = $interval(updateFeed, 15000, 0, true);
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
                     $scope.$on('$destroy', function () {

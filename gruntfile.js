@@ -76,7 +76,7 @@ module.exports = function(grunt) {
                 constants: {
                     ENV: {
                         name: 'production',
-                        htsAppUrl: 'https://production.hashtagsell.com',
+                        htsAppUrl: 'https://www.hashtagsell.com',
                         postingAPI: 'https://production-posting-api.hashtagsell.com/v1/postings/',
                         userAPI: 'https://production-posting-api.hashtagsell.com/v1/users/',
                         freeGeoIp: 'https://production-freegeoip.hashtagsell.com/json/',
@@ -84,17 +84,17 @@ module.exports = function(grunt) {
                         realtimeUserAPI: 'https://production-realtime-svc.hashtagsell.com/users',
                         groupingsAPI: 'https://production-posting-api.hashtagsell.com/v1/groupings/',
                         annotationsAPI: 'https://production-posting-api.hashtagsell.com/v1/annotations',
-                        feedbackAPI: 'https://production.hashtagsell.com/feedback',
-                        paymentAPI: 'https://production.hashtagsell.com/payments',
-                        precacheAPI: 'https://production.hashtagsell.com/precache',
-                        facebookAuth: 'https://production.hashtagsell.com/auth/facebook',
-                        twitterAuth: 'https://production.hashtagsell.com/auth/twitter',
-                        ebayAuth: 'https://production.hashtagsell.com/auth/ebay',
+                        feedbackAPI: 'https://www.hashtagsell.com/feedback',
+                        paymentAPI: 'https://www.hashtagsell.com/payments',
+                        precacheAPI: 'https://www.hashtagsell.com/precache',
+                        facebookAuth: 'https://www.hashtagsell.com/auth/facebook',
+                        twitterAuth: 'https://www.hashtagsell.com/auth/twitter',
+                        ebayAuth: 'https://www.hashtagsell.com/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '459229800909426'
                     },
-                    clientTokenPath: 'https://production.hashtagsell.com/payments/client_token'
+                    clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
                 }
             }
         },
