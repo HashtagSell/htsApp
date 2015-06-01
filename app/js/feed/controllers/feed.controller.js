@@ -100,7 +100,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     resumePersisted = false;
 
                     //UI will query polling API every 60 seconds
-                    var intervalUpdate = $interval(updateFeed, 15000, 0, true);
+                    var intervalUpdate = $interval(updateFeed, 60000, 0, true);
 
                     //This is called when user changes route. It stops javascript from interval polling in background.
                     $scope.$on('$destroy', function () {
