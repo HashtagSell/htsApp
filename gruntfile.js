@@ -15,7 +15,7 @@ module.exports = function(grunt) {
             // Environment targets
             dev: {
                 options: {
-                    dest: './app/js/htsApp.config'
+                    dest: './app/dist/dev/dev.config'
                 },
                 constants: {
                     ENV: {
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             },
             stage: {
                 options: {
-                    dest: './app/js/htsApp.config'
+                    dest: './app/dist/stage/stage.config'
                 },
                 constants: {
                     ENV: {
@@ -71,7 +71,7 @@ module.exports = function(grunt) {
             },
             prod: {
                 options: {
-                    dest: './app/js/htsApp.config'
+                    dest: './app/dist/prod/prod.config'
                 },
                 constants: {
                     ENV: {
@@ -127,21 +127,21 @@ module.exports = function(grunt) {
                 options: {
                     separator: ';'
                 },
-                src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
+                src: ['./app/htsApp.js', './app/dist/dev/dev.config', './app/js/**/*.js'],
                 dest: './app/dist/dev/js/<%= pkg.name %>.js'
             },
             stage: {
                 options: {
                     separator: ';'
                 },
-                src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
+                src: ['./app/htsApp.js', './app/dist/stage/stage.config', './app/js/**/*.js'],
                 dest: './app/dist/stage/js/<%= pkg.name %>.js'
             },
             prod: {
                 options: {
                     separator: ';'
                 },
-                src: ['./app/htsApp.js', './app/js/*.config', './app/js/**/*.js'],
+                src: ['./app/htsApp.js', './app/dist/prod/prod.config', './app/js/**/*.js'],
                 dest: './app/dist/prod/js/<%= pkg.name %>.js'
             }
         },
