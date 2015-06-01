@@ -59,55 +59,54 @@
 
             </thead>
             <tbody>
-            <tr ng-repeat-start="favorite in $data" ng-click="openSplash(favorite)">
-                <td width="30" style="text-align: center; vertical-align: middle;">
-                    <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" ng-click="$event.stopPropagation();"/>
-                </td>
-                <td style="width:70px; cursor: pointer;">
-                    <img ng-show="favorite.images.length" ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
-                    <div ng-show="!favorite.images.length" class="watchlist-noImage-Placeholder"></div>
-                </td>
-                <td filter="{ 'heading': 'text' }" style="cursor: pointer;">
+                <tr ng-repeat-start="favorite in $data" ng-click="openSplash(favorite)">
+                    <td width="30" style="text-align: center; vertical-align: middle;">
+                        <input type="checkbox" ng-model="checkboxes.items[favorite.postingId]" ng-click="$event.stopPropagation();"/>
+                    </td>
+                    <td style="width:70px; cursor: pointer;">
+                        <img ng-show="favorite.images.length" ng-src="{{::favorite.images[0].full || favorite.images[0].thumb || favorite.images[0].images}}" style="width:70px; height:70px;">
+                        <div ng-show="!favorite.images.length" class="watchlist-noImage-Placeholder"></div>
+                    </td>
+                    <td filter="{ 'heading': 'text' }" style="cursor: pointer;">
 
-                    <h4>{{::favorite.heading | cleanHeading}}
-                            <span ng-repeat="label in favorite.labels" class="label label-primary" style="font-weight: inherit; margin-right: 5px;">
-                                {{label}} | x
-                            </span>
-                    </h4>
+                        <h4>{{::favorite.heading | cleanHeading}}
+                                <span ng-repeat="label in favorite.labels" class="label label-primary" style="font-weight: inherit; margin-right: 5px;">
+                                    {{label}} | x
+                                </span>
+                        </h4>
 
-                    <div>
-                        <button class="btn btn-default" type="button" ng-click="expandCollapseQuestions($event, favorite)">
-                            <i class="fa" ng-class="favorite.currentlyViewing.questions ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Questions
-                        </button>
+                        <div>
+                            <button class="btn btn-default" type="button" ng-click="expandCollapseQuestions($event, favorite)">
+                                <i class="fa" ng-class="favorite.currentlyViewing.questions ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Questions
+                            </button>
 
-                        <button class="btn btn-default" type="button" ng-click="expandCollapseMeetingRequests($event, favorite)">
-                            <i class="fa" ng-class="favorite.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Meeting Requests
-                        </button>
-                    </div>
-                </td>
-                <td ng-if="favorite.askingPrice.value" style="vertical-align: middle;">
-                    <h5>{{::favorite.askingPrice.value | currency : $ : 0}}</h5>
-                </td>
-                <td ng-if="!favorite.askingPrice.value" style="vertical-align: middle;">
-                    <h4>No price</h4>
-                </td>
-                <td style="width:20px; vertical-align: middle;">
-                    <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;" tooltip="Remove from watch list" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
-                </td>
-            </tr>
+                            <button class="btn btn-default" type="button" ng-click="expandCollapseMeetingRequests($event, favorite)">
+                                <i class="fa" ng-class="favorite.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'"></i> Meeting Requests
+                            </button>
+                        </div>
+                    </td>
+                    <td ng-if="favorite.askingPrice.value" style="vertical-align: middle;">
+                        <h5>{{::favorite.askingPrice.value | currency : $ : 0}}</h5>
+                    </td>
+                    <td ng-if="!favorite.askingPrice.value" style="vertical-align: middle;">
+                        <h4>No price</h4>
+                    </td>
+                    <td style="width:20px; vertical-align: middle;">
+                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;" tooltip="Remove from watch list" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
+                    </td>
+                </tr>
 
-            <tr ng-show="currentState === 'watchlist.questions' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
-                <td colspan="6" style="background-color: rgb(253, 253, 253);">
-                    <sender-questions-more-info post="favorite"></sender-questions-more-info>
-                </td>
-            </tr>
+                <tr ng-show="currentState === 'watchlist.questions' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
+                    <td colspan="6" style="background-color: rgb(253, 253, 253);">
+                        <sender-questions-more-info post="favorite"></sender-questions-more-info>
+                    </td>
+                </tr>
 
-            <tr ng-repeat-end ng-show="currentState === 'watchlist.meetings' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
-                <td colspan="6" style="background-color: rgb(253, 253, 253);">
-                    <sender-meetings-more-info post="favorite"></sender-meetings-more-info>
-                </td>
-            </tr>
-
+                <tr ng-repeat-end ng-show="currentState === 'watchlist.meetings' && expandedPostingId === favorite.postingId" style="background-color: rgb(253, 253, 253);">
+                    <td colspan="6" style="background-color: rgb(253, 253, 253);">
+                        <sender-meetings-more-info post="favorite"></sender-meetings-more-info>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>

@@ -11,18 +11,13 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
     };
 
 
-    $scope.cancelOffer = function (offer) {
+    $scope.cancelOffer = function (offer, post) {
 
-        var postingId = offer.postingId;
-        var offerId = offer.offerId;
-
-        meetingsFactory.deleteOffer(postingId, offerId).then(function (response) {
-
-            console.log(response);
+        meetingsFactory.deleteOffer(offer, post).then(function (response) {
 
             if (response.status === 204) {
 
-
+                alert('deleted');
 
             } else {
 
@@ -39,6 +34,19 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
 
         });
 
+    };
+
+
+
+    $scope.acceptedMeetingTime = function (offer) {
+
+        for (var i = 0; i < offer.proposedTimes.length; i++) {
+            var proposedTime = offer.proposedTimes[i];
+            if(proposedTime.acceptedAt){
+                return true;
+            }
+        }
+        return false;
     };
 
 }]);

@@ -82,4 +82,16 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
         return (!str || /^\s*$/.test(str));
     }
 
+
+    $scope.acceptedMeetingTime = function (offer) {
+
+        for (var i = 0; i < offer.proposedTimes.length; i++) {
+            var proposedTime = offer.proposedTimes[i];
+            if(proposedTime.acceptedAt){
+                return true;
+            }
+        }
+        return false;
+    };
+
 }]);
