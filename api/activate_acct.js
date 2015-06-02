@@ -23,7 +23,9 @@ var config   = common.config();
 exports.id = function(req, res) {
 
     //Search our users collection for the user with the activation id in the url
-    User.findOne({ 'stats.activation_code': req.param("id") }, function (err, user) {
+    var activationToken = req.param("id");
+
+    User.findOne({ 'stats.activation_code': activationToken}, function (err, user) {
 
         //systematic error. Redirect to page so user can report error.
         if (err) {
@@ -42,7 +44,7 @@ exports.id = function(req, res) {
 
             user.stats.activated = true;
 
-            user.stats.activation_code = undefined;
+            user.stats.activation_code = user.stats.activation_code + 1234;
 
             user.save(function(err) {
                 if (err) {
