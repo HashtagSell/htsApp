@@ -1881,26 +1881,29 @@ angular.module('htsApp').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <form id=\"betaSubscriberForm\" name=\"betaSubscriberForm\" class=\"form-horizontal\" ng-submit=\"subscribe(betaSubscriberForm.$valid)\" novalidate>\n" +
     "        <div class=\"modal-header\">\n" +
-    "            <h3 id=\"myModalLabel\" style=\"text-align: center;\">Request Early Access</h3>\n" +
+    "            <h3 id=\"myModalLabel\" style=\"text-align: center;\" ng-show=\"!done\">Request Early Access</h3>\n" +
+    "            <h3 id=\"myModalLabel\" style=\"text-align: center;\" ng-show=\"done\">Tell Your Friends!</h3>\n" +
     "        </div>\n" +
     "        <div class=\"modal-body\">\n" +
     "            <div class=\"controls\">\n" +
     "\n" +
     "                <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
     "\n" +
-    "                <input class=\"form-control\" type=\"email\" name=\"subscriberEmail\" ng-model=\"email\" placeholder=\"Email\" required>\n" +
-    "                <br>\n" +
-    "                <a href ng-click=\"dismiss('signUp')\">\n" +
-    "                    <small>Create Account</small>\n" +
-    "                </a>\n" +
-    "                <small> | </small>\n" +
-    "                <a href ng-click=\"dismiss('signIn')\">\n" +
-    "                    <small>Sign In</small>\n" +
-    "                </a>\n" +
+    "                <input class=\"form-control\" type=\"email\" name=\"subscriberEmail\" ng-model=\"email\" placeholder=\"Email\" ng-show=\"!done\" required>\n" +
+    "                <span ng-show=\"!done\">\n" +
+    "                    <br>\n" +
+    "                    <a href ng-click=\"dismiss('signUp')\">\n" +
+    "                        <small>Create Account</small>\n" +
+    "                    </a>\n" +
+    "                    <small> | </small>\n" +
+    "                    <a href ng-click=\"dismiss('signIn')\">\n" +
+    "                        <small>Sign In</small>\n" +
+    "                    </a>\n" +
+    "                </span>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "        <div class=\"modal-footer\">\n" +
-    "            <input class=\"btn btn-success\" type=\"submit\" value=\"I want early access!\" ng-disabled=\"betaSubscriberForm.$invalid\">\n" +
+    "            <input class=\"btn btn-success\" type=\"submit\" value=\"I want early access!\" ng-disabled=\"betaSubscriberForm.$invalid\" ng-show=\"!done\">\n" +
     "            <!--<button class=\"btn btn-default\" ng-click=\"dismiss()\">Close</button>-->\n" +
     "        </div>\n" +
     "    </form>\n" +
@@ -4860,6 +4863,8 @@ htsApp.controller('subscribeModalController', ['$scope', '$modalInstance', 'auth
                     $scope.alerts.push({ type: 'danger', msg: response.message });
 
                 } else if(response.success) {
+
+                    $scope.done = true;
 
                     $scope.alerts.push({ type: 'success', msg: response.message });
 

@@ -8,26 +8,29 @@
 
     <form id="betaSubscriberForm" name="betaSubscriberForm" class="form-horizontal" ng-submit="subscribe(betaSubscriberForm.$valid)" novalidate>
         <div class="modal-header">
-            <h3 id="myModalLabel" style="text-align: center;">Request Early Access</h3>
+            <h3 id="myModalLabel" style="text-align: center;" ng-show="!done">Request Early Access</h3>
+            <h3 id="myModalLabel" style="text-align: center;" ng-show="done">Tell Your Friends!</h3>
         </div>
         <div class="modal-body">
             <div class="controls">
 
                 <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
-                <input class="form-control" type="email" name="subscriberEmail" ng-model="email" placeholder="Email" required>
-                <br>
-                <a href ng-click="dismiss('signUp')">
-                    <small>Create Account</small>
-                </a>
-                <small> | </small>
-                <a href ng-click="dismiss('signIn')">
-                    <small>Sign In</small>
-                </a>
+                <input class="form-control" type="email" name="subscriberEmail" ng-model="email" placeholder="Email" ng-show="!done" required>
+                <span ng-show="!done">
+                    <br>
+                    <a href ng-click="dismiss('signUp')">
+                        <small>Create Account</small>
+                    </a>
+                    <small> | </small>
+                    <a href ng-click="dismiss('signIn')">
+                        <small>Sign In</small>
+                    </a>
+                </span>
             </div>
         </div>
         <div class="modal-footer">
-            <input class="btn btn-success" type="submit" value="I want early access!" ng-disabled="betaSubscriberForm.$invalid">
+            <input class="btn btn-success" type="submit" value="I want early access!" ng-disabled="betaSubscriberForm.$invalid" ng-show="!done">
             <!--<button class="btn btn-default" ng-click="dismiss()">Close</button>-->
         </div>
     </form>

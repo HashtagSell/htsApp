@@ -24,6 +24,8 @@ htsApp.controller('subscribeModalController', ['$scope', '$modalInstance', 'auth
 
                 } else if(response.success) {
 
+                    $scope.done = true;
+
                     $scope.alerts.push({ type: 'success', msg: response.message });
 
                 }

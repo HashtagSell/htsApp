@@ -525,7 +525,7 @@ exports.subscribe = function(req, res) {
                     return res.json({success: false, message: "Sorry " + subscriberEmail + ", something went wrong.  Please try again in a few minutes."});
                     throw err;
                 } else {
-                    return res.json({success: true, message: "Alrighty!  We'll send you an access code shortly.  Currently we're operating on a first-come first-serve basis, so hang tight!"});
+                    return res.json({success: true, message: "Alrighty!  We'll send you an access code shortly.  Hang tight!"});
                 }
             });
 
