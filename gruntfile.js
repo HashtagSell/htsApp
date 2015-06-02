@@ -147,17 +147,17 @@ module.exports = function(grunt) {
             },
             dev: {
                 files: {
-                    './app/dist/dev/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/dev/dev.config', './app/js/**/*.js']
+                    './app/dist/dev/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/dev/dev.config', './app/dist/dev/templates.js', './app/js/**/*.js']
                 }
             },
             stage: {
                 files: {
-                    './app/dist/stage/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/stage/stage.config', './app/js/**/*.js']
+                    './app/dist/stage/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/stage/stage.config', './app/dist/stage/templates.js', './app/js/**/*.js']
                 }
             },
             prod: {
                 files: {
-                    './app/dist/prod/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/prod/prod.config', './app/js/**/*.js']
+                    './app/dist/prod/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/prod/prod.config', './app/dist/prod/templates.js', './app/js/**/*.js']
                 }
             }
         },
@@ -174,6 +174,58 @@ module.exports = function(grunt) {
                     console: true,
                     module: true
                 }
+            }
+        },
+        ngtemplates:  {
+            dev: {
+                cwd: 'app',
+                src: 'js/**/*.html',
+                dest: './app/dist/dev/templates.js',
+                options: {
+                    module:  'htsApp'
+                }
+            },
+            stage: {
+                cwd: 'app',
+                src: 'js/**/*.html',
+                dest: './app/dist/stage/templates.js',
+                options: {
+                    module:  'htsApp'
+                }
+            },
+            prod: {
+                cwd: 'app',
+                src: 'js/**/*.html',
+                dest: './app/dist/prod/templates.js',
+                options: {
+                    module:  'htsApp'
+                }
+            }
+        },
+        robotstxt: {
+            stage: {
+                dest: './app/dist/stage/',
+                policy: [
+                    {
+                        ua: '*',
+                        disallow: '/'
+                    }
+                ]
+            },
+            prod: {
+                dest: './app/dist/prod/',
+                policy: [
+                    {
+                        ua: '*',
+                        allow: '/'
+                    },
+                    {
+                        crawldelay: 100
+                    },
+                    {
+                        host: 'https://www.hashtagsell.com'
+                    }
+                ]
             }
         },
         //Minify all the Javascript
@@ -292,14 +344,14 @@ module.exports = function(grunt) {
                 files: ['./app/src/css/*.css'],
                 tasks: ['cssmin:dev'],
                 options: {
-                    livereload: false,
+                    livereload: false
                 }
             },
             html: {
                 files: ['./app/src/index.html'],
                 tasks: ['targethtml:dev'],
                 options: {
-                    livereload: false,
+                    livereload: false
                 }
             },
             server: {
@@ -448,7 +500,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-services');
     grunt.loadNpmTasks('grunt-targethtml');
     grunt.loadNpmTasks('grunt-ng-annotate');
-
+    grunt.loadNpmTasks('grunt-robots-txt');
+    grunt.loadNpmTasks('grunt-angular-templates');
 
 
     //Starts ingest agent on local machine
@@ -467,9 +520,9 @@ module.exports = function(grunt) {
     grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
 
 
-    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngAnnotate:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
-    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'ngAnnotate:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage']);
-    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'ngAnnotate:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod']);
+    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngtemplates:dev', 'ngAnnotate:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
+    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'ngtemplates:stage', 'ngAnnotate:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage', 'robotstxt:stage']);
+    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'ngtemplates:prod', 'ngAnnotate:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod', 'robotstxt:prod']);
 
 
     //Run all build tasks

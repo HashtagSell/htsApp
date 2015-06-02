@@ -67,6 +67,16 @@ app.use(function(req, res, next) {
 
 //Maps request to static folders
 app.use(express.static(__dirname + '/bower_components'));
+
+
+if(process.env.NODE_ENV === "DEVELOPMENT") {
+    app.use(express.static(__dirname + '/app/dist/dev'));
+} else if(process.env.NODE_ENV === "STAGING") {
+    app.use(express.static(__dirname + '/app/dist/stage'));
+} else if(process.env.NODE_ENV === "PRODUCTION") {
+    app.use(express.static(__dirname + '/app/dist/prod'));
+}
+
 app.use(express.static(__dirname + '/app'));
 
 
