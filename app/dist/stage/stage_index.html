@@ -20,7 +20,6 @@
 
     <!-- Search Engines -->
     <meta name='description' content=" {{metatags.page.description}} ">
-    <meta name="google-site-verification" content=" {{metatags.page.googleVerification}} " />
 
     <!-- Facebook -->
     <meta property='og:title' content=' {{metatags.facebook.title}} '/>
@@ -118,7 +117,7 @@
                             <input type="text" class="form-control advanced-search-city" placeholder="City" ng-model="advancedCity" typeahead="city.description for city in searchPlaces($viewValue)" typeahead-on-select='getCityMetaData($item)' ng-focus="clearCity()">
                             <small class="help-block">Hint: Type @ symbol in main search bar to search in specific city.  It's magic!</small>
 
-                            <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()">
+                            <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()" analytics-on="click" analytics-event="Conducted advanced search">
                                 <span class="glyphicon glyphicon-search"></span> Advanced Search
                             </button>
                         </form>
@@ -159,7 +158,7 @@
                         </a>
                     </li>
                     <li ng-controller="newPostController">
-                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
+                        <button type="button" class="btn btn-danger" ng-click="newPost(); $event.stopPropagation();" analytics-on="click" analytics-event="Clicked navbar sell button" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
                     </li>
                     <li class="dropdown" dropdown ng-controller="userMenu">
                         <a href class="dropdown-toggle" dropdown-toggle on-toggle="toggled(open)">
@@ -204,7 +203,7 @@
                         <a ui-sref="signin">Sign In</a> /
                         <a ui-sref="signup">Create Account</a>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
+                    <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" analytics-on="click" analytics-event="Clicked sidebar sell button" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
                 </div>
 
                 <!--SideNav-->
@@ -368,6 +367,8 @@
     <script type="text/javascript" src="/jsdiff/diff.js"></script>
     <script type="text/javascript" src="/braintree-angular/dist/braintree-angular.js"></script>
     <script type="text/javascript" src="/angular-ui-select/dist/select.min.js"></script>
+    <script type="text/javascript" src="/angulartics/dist/angulartics.min.js"></script>
+    <script type="text/javascript" src="/angulartics/dist/angulartics-ga.min.js"></script>
 
     
 

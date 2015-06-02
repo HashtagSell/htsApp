@@ -117,9 +117,14 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     //RUNS ON PAGE LOAD.  Fetches user object from server as soon as page loads
     if ($scope.userObj.user_settings.loggedIn) {
 
+        try {
+            ga('set', '&uid', 'bdavis');
+        } catch (err){
+            console.log('Google Analytics not running');
+        }
+
         Session.getUserFromServer().then(function (response) {
             Session.create(response);
-
         });
     }
 
@@ -128,6 +133,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     //Joins/Leaves rooms and builds/destroys userobject on login/logout
     $scope.$watch('userObj.user_settings.loggedIn', function(newValue, oldValue) {
         if(newValue){
+
             socketio.init(Session.userObj.user_settings.name);
             myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function(response){
 
@@ -145,6 +151,12 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
             _.each(favesFactory.currentFavorites, function(favorite) {
                 socketio.joinPostingRoom(favorite.postingId, 'inWatchList');
             });
+
+            try {
+                ga('set', '&uid', 'bdavis');
+            } catch (err){
+                console.log('Google Analytics not running');
+            }
 
 
 
