@@ -11,7 +11,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.signInModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/signInModal/partials/signIn.html',
+            templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
             controller: 'signInModalController',
             size: 'sm',
             keyboard: false,
@@ -59,7 +59,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.betaCheckModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/betaCheckModal/partials/betaCheck.html',
+            templateUrl: 'js/authModals/modals/betaCheckModal/partials/betaCheck.html',
             controller: 'betaCheckModalController',
             size: 'lg',
             keyboard: false,
@@ -94,7 +94,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.signUpModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/signUpModal/partials/signUp.html',
+            templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
             controller: 'signupModalController',
             size: 'sm',
             keyboard: false,
@@ -132,7 +132,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.subscribeModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/subscribeModal/partials/subscribe.html',
+            templateUrl: 'js/authModals/modals/subscribeModal/partials/subscribe.html',
             controller: 'subscribeModalController',
             size: 'sm',
             keyboard: false,
@@ -168,7 +168,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.checkEmailModal = function () {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/checkEmailModal/partials/checkEmail.html',
+            templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
             controller: 'checkEmailController',
             size: 'sm',
             keyboard: false,
@@ -196,7 +196,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.forgotPasswordModal = function (params) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
+            templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
             controller: 'forgotPasswordController',
             size: 'sm',
             keyboard: false,
@@ -236,7 +236,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
     factory.resetPasswordModal = function (redirect, token) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
+            templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
             controller: 'resetPasswordModalController',
             size: 'sm',
             keyboard: false,

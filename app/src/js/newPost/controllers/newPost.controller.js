@@ -7,7 +7,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
         if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
 
             var modalInstance = $modal.open({
-                templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
+                templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
                 controller: 'newPostModal',
                 size: 'lg',
                 keyboard: false,
@@ -39,7 +39,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
     $scope.pushtoExternalService = function (post) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
+            templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
             resolve: {
                 newPost : function () {
@@ -64,7 +64,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
     $scope.congrats = function (postingObj) {
 
         var modalInstance = $modal.open({
-            templateUrl: '/js/newPost/modals/congrats/partials/newPost.congrats.html',
+            templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
             controller: 'newPostCongrats',
             resolve: {
                 newPost: function () {

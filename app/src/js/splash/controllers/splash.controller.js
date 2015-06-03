@@ -247,7 +247,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
 
         var splashInstance = $modal.open({
             backdrop: false,
-            templateUrl: "/js/splash/partials/splash_content.html",
+            templateUrl: "js/splash/partials/splash_content.html",
             windowTemplateUrl: "js/splash/partials/splash_window.html",
             controller: splashInstanceCtrl
         });

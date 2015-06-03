@@ -147,24 +147,24 @@ module.exports = function(grunt) {
             },
             dev: {
                 files: {
-                    './app/dist/dev/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/dev/dev.config', './app/dist/dev/templates.js', './app/js/**/*.js']
+                    './app/dist/dev/js/<%= pkg.name %>.annotated.js': ['./app/src/htsApp.js', './app/dist/dev/dev.config', './app/src/js/**/*.js']
                 }
             },
             stage: {
                 files: {
-                    './app/dist/stage/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/stage/stage.config', './app/dist/stage/templates.js', './app/js/**/*.js']
+                    './app/dist/stage/js/<%= pkg.name %>.annotated.js': ['./app/src/htsApp.js', './app/dist/stage/stage.config', './app/src/js/**/*.js']
                 }
             },
             prod: {
                 files: {
-                    './app/dist/prod/js/<%= pkg.name %>.annotated.js': ['./app/htsApp.js', './app/dist/prod/prod.config', './app/dist/prod/templates.js', './app/js/**/*.js']
+                    './app/dist/prod/js/<%= pkg.name %>.annotated.js': ['./app/src/htsApp.js', './app/dist/prod/prod.config', './app/src/js/**/*.js']
                 }
             }
         },
         //Validate all js
         jshint: {
             // define the files to lint
-            files: ['./gruntfile.js', './app/htsApp.js', './app/js/**/*.js'],
+            files: ['./gruntfile.js', './app/src/htsApp.js', './app/src/js/**/*.js'],
             // configure JSHint (documented at http://www.jshint.com/docs/)
             options: {
                 // more options here if you want to override JSHint defaults
@@ -178,27 +178,30 @@ module.exports = function(grunt) {
         },
         ngtemplates:  {
             dev: {
-                cwd: 'app',
+                cwd: 'app/src',
                 src: 'js/**/*.html',
-                dest: './app/dist/dev/templates.js',
+                dest: './app/dist/dev/js/<%= pkg.name %>.annotated.js',
                 options: {
-                    module:  'htsApp'
+                    module:  'htsApp',
+                    append: true
                 }
             },
             stage: {
-                cwd: 'app',
+                cwd: 'app/src',
                 src: 'js/**/*.html',
-                dest: './app/dist/stage/templates.js',
+                dest: './app/dist/stage/js/<%= pkg.name %>.annotated.js',
                 options: {
-                    module:  'htsApp'
+                    module:  'htsApp',
+                    append: true
                 }
             },
             prod: {
-                cwd: 'app',
+                cwd: 'app/src',
                 src: 'js/**/*.html',
-                dest: './app/dist/prod/templates.js',
+                dest: './app/dist/prod/js/<%= pkg.name %>.annotated.js',
                 options: {
-                    module:  'htsApp'
+                    module:  'htsApp',
+                    append: true
                 }
             }
         },
@@ -334,24 +337,32 @@ module.exports = function(grunt) {
         watch: {
             'client-javascript': {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'ngAnnotate:dev'],
+                tasks: ['jshint', 'ngAnnotate:dev', 'ngtemplates:dev'],
                 options: {
                     async: true,
-                    livereload: false
+                    livereload: true
                 }
             },
             css: {
                 files: ['./app/src/css/*.css'],
                 tasks: ['cssmin:dev'],
                 options: {
-                    livereload: false
+                    livereload: true
                 }
             },
             html: {
                 files: ['./app/src/index.html'],
                 tasks: ['targethtml:dev'],
                 options: {
-                    livereload: false
+                    livereload: true
+                }
+            },
+            partials: {
+                files: ['./app/src/js/**/*.html'],
+                tasks: ['ngAnnotate:dev', 'ngtemplates:dev', 'targethtml:dev'],
+                options: {
+                    async: true,
+                    livereload: true
                 }
             },
             server: {
@@ -520,14 +531,14 @@ module.exports = function(grunt) {
     grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
 
 
-    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngtemplates:dev', 'ngAnnotate:dev', 'uglify:dev', 'cssmin:dev', 'targethtml:dev']);
-    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'ngtemplates:stage', 'ngAnnotate:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage', 'robotstxt:stage']);
-    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'ngtemplates:prod', 'ngAnnotate:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod', 'robotstxt:prod']);
+    grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngAnnotate:dev', 'ngtemplates:dev', 'cssmin:dev', 'targethtml:dev']);
+    grunt.registerTask('build-htsApp-stage', ['clean:stage', 'file-creator:gitignore', 'ngconstant:stage', 'jshint', 'ngAnnotate:stage', 'ngtemplates:stage', 'uglify:stage', 'cssmin:stage', 'targethtml:stage', 'robotstxt:stage']);
+    grunt.registerTask('build-htsApp-prod', ['clean:prod', 'file-creator:gitignore', 'ngconstant:prod', 'jshint', 'ngAnnotate:prod', 'ngtemplates:prod', 'uglify:prod', 'cssmin:prod', 'targethtml:prod', 'robotstxt:prod']);
 
 
     //Run all build tasks
     grunt.registerTask('build', 'Create all builds and store in app/dist directory', function () {
-        grunt.task.run(['build-htsApp-dev', 'build-htsApp-stage', 'build-htsApp-prod']);
+        grunt.task.run(['build-htsApp-stage', 'build-htsApp-prod']);
     });
 
 
