@@ -11147,7 +11147,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</style>\n" +
     "\n" +
     "<div class=\"modal-header bike-background\">\n" +
-    "    <h2 style=\"text-align: center; color: white;\">boop <img src=\"//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg\" style=\"top: -5px; position: relative; height: 80px;\"/><sup>Beta</sup></h2>\n" +
+    "    <h2 style=\"text-align: center; color: white;\">Join <img src=\"//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg\" style=\"top: -5px; position: relative; height: 80px;\"/><sup>Beta</sup></h2>\n" +
     "</div>\n" +
     "<div class=\"modal-body\" style=\"background-color: #F5F5F5; border-radius: 0px 0px 4px 4px;\">\n" +
     "    <div class=\"row\">\n" +
