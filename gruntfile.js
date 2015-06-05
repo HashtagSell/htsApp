@@ -233,14 +233,6 @@ module.exports = function(grunt) {
         },
         //Minify all the Javascript
         uglify: {
-            dev: {
-                options: {
-                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-                },
-                files: {
-                    './app/dist/dev/js/<%= pkg.name %>.min.js': ['./app/dist/dev/js/<%= pkg.name %>.annotated.js']
-                }
-            },
             stage: {
                 options: {
                     banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
@@ -251,7 +243,10 @@ module.exports = function(grunt) {
             },
             prod: {
                 options: {
-                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
+                    banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
+                    compress: {
+                        drop_console: true
+                    }
                 },
                 files: {
                     './app/dist/prod/js/<%= pkg.name %>.min.js': ['./app/dist/prod/js/<%= pkg.name %>.annotated.js']

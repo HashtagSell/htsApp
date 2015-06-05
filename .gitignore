@@ -48,6 +48,6 @@ api/posting-api
 api/posting-sync-agent
 api/realtime-svc
 
-app/js/htsApp.config
+app/dist/dev
 
 .rdb
