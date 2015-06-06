@@ -69,6 +69,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
 
 
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '',
+        defaultSelectedState: false
+    });
+
 
     //function assigned to routes that can only be accessed when user logged in
     var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', 'authModalFactory', function ($q, Session, $state, $timeout, redirect, authModalFactory) {
@@ -151,13 +158,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                     templateUrl: 'js/legal/betaAgreement/partials/betaAgreement.partial.html',
                     controller: 'betaAgreementController'
                 }
-            }
-        }).
-        state('betaChecker', {
-            url: '/welcome',
-            params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.betaCheckModal($state.params);
             }
         }).
         state('checkemail', {
@@ -314,7 +314,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('root', {
             url: "/",
             onEnter: function ($state) {
-                $state.go('feed');
+                $state.go('feed', {}, {location: false});
             }
         }).
         state('settings', {
@@ -405,15 +405,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onEnter: joinRoom,
             onExit: leaveRoom
         });
-
-
-
-    ivhTreeviewOptionsProvider.set({
-        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
-        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
-        twistieLeafTpl: '',
-        defaultSelectedState: false
-    });
 }]);
 
 

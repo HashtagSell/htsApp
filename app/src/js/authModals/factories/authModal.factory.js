@@ -29,11 +29,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
         }, function (reason) {
             console.log(reason);
             if(reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "forgot") {
-                $state.go('forgot', {'redirect': params.redirect});
+                //$state.go('forgot', {'redirect': params.redirect});
+                factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             } else if (reason === "successful login" && params.redirect) {
                 $state.go(params.redirect);
             }  else if (reason === "successful login" && !params.redirect) {
@@ -71,9 +74,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "subscribe") {
-                $state.go('subscribe', {'redirect': params.redirect});
+                factory.subscribeModal(params);
+                //$state.go('subscribe', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -106,13 +111,17 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "forgot") {
-                $state.go('forgot', {'redirect': params.redirect});
+                //$state.go('forgot', {'redirect': params.redirect});
+                factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             } else if (reason === "subscribe") {
-                $state.go('subscribe', {'redirect': params.redirect});
+                //$state.go('subscribe', {'redirect': params.redirect});
+                factory.subscribeModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -144,11 +153,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -213,11 +225,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -231,7 +246,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
 
     // =====================================
-    // User can change their if they're not logged in using email recovery token ================
+    // User can change their password if they're not logged in using email recovery token ================
     // =====================================
     factory.resetPasswordModal = function (redirect, token) {
 

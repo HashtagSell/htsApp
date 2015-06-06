@@ -69,6 +69,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
 
 
+    ivhTreeviewOptionsProvider.set({
+        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
+        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
+        twistieLeafTpl: '',
+        defaultSelectedState: false
+    });
+
 
     //function assigned to routes that can only be accessed when user logged in
     var loginRequired = ['$q', 'Session', '$state', '$timeout', 'redirect', 'authModalFactory', function ($q, Session, $state, $timeout, redirect, authModalFactory) {
@@ -152,13 +159,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                     controller: 'betaAgreementController'
                 }
             }
-        }).
-        state('betaChecker', {
-            url: '/welcome',
-            params: { 'redirect': null },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.betaCheckModal($state.params);
-            }]
         }).
         state('checkemail', {
             url: '/checkemail',
@@ -314,7 +314,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('root', {
             url: "/",
             onEnter: ['$state', function ($state) {
-                $state.go('feed');
+                $state.go('feed', {}, {location: false});
             }]
         }).
         state('settings', {
@@ -405,15 +405,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onEnter: joinRoom,
             onExit: leaveRoom
         });
-
-
-
-    ivhTreeviewOptionsProvider.set({
-        twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
-        twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
-        twistieLeafTpl: '',
-        defaultSelectedState: false
-    });
 }]);
 
 
@@ -1390,11 +1381,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
         }, function (reason) {
             console.log(reason);
             if(reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "forgot") {
-                $state.go('forgot', {'redirect': params.redirect});
+                //$state.go('forgot', {'redirect': params.redirect});
+                factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             } else if (reason === "successful login" && params.redirect) {
                 $state.go(params.redirect);
             }  else if (reason === "successful login" && !params.redirect) {
@@ -1432,9 +1426,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "subscribe") {
-                $state.go('subscribe', {'redirect': params.redirect});
+                factory.subscribeModal(params);
+                //$state.go('subscribe', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1467,13 +1463,17 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "forgot") {
-                $state.go('forgot', {'redirect': params.redirect});
+                //$state.go('forgot', {'redirect': params.redirect});
+                factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             } else if (reason === "subscribe") {
-                $state.go('subscribe', {'redirect': params.redirect});
+                //$state.go('subscribe', {'redirect': params.redirect});
+                factory.subscribeModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1505,11 +1505,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1574,11 +1577,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                $state.go('checkemail');
+                //$state.go('checkemail');
+                factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                $state.go('signup', {'redirect': params.redirect});
+                //$state.go('signup', {'redirect': params.redirect});
+                factory.signUpModal(params);
             } else if (reason === "signIn") {
-                $state.go('signin', {'redirect': params.redirect});
+                //$state.go('signin', {'redirect': params.redirect});
+                factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1592,7 +1598,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
 
     // =====================================
-    // User can change their if they're not logged in using email recovery token ================
+    // User can change their password if they're not logged in using email recovery token ================
     // =====================================
     factory.resetPasswordModal = function (redirect, token) {
 
@@ -11144,16 +11150,23 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        height: 100%;\n" +
     "        width: 100%;\n" +
     "    }\n" +
+    "\n" +
+    "\n" +
+    "    @media (min-width: 992px) {\n" +
+    "        .modal-lg {\n" +
+    "            width: 80%;\n" +
+    "        }\n" +
+    "    }\n" +
     "</style>\n" +
     "\n" +
     "<div class=\"modal-header bike-background\">\n" +
-    "    <h2 style=\"text-align: center; color: white;\">Join <img src=\"//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg\" style=\"top: -5px; position: relative; height: 80px;\"/><sup>Beta</sup></h2>\n" +
+    "    <h2 style=\"text-align: center; color: white; margin-top: 100px; margin-bottom: 100px;\">Join <img src=\"//static.hashtagsell.com/logos/hts/HashtagSell_Logo_80px.svg\" style=\"top: -5px; position: relative; height: 80px;\"/><sup>Beta</sup></h2>\n" +
     "</div>\n" +
     "<div class=\"modal-body\" style=\"background-color: #F5F5F5; border-radius: 0px 0px 4px 4px;\">\n" +
     "    <div class=\"row\">\n" +
-    "        <button type=\"button\" class=\"btn btn-default btn-lg raised col-md-4 col-md-offset-1 col-xs-10 col-xs-offset-1\" ng-click=\"dismiss('signUp')\">I already have an access code</button>\n" +
+    "        <button type=\"button\" class=\"btn btn-default btn-lg raised col-md-4 col-md-offset-1 col-xs-10 col-xs-offset-1\" ng-click=\"dismiss('signUp')\">I have a beta code</button>\n" +
     "        <div class=\"col-md-2 col-xs-hidden\"></div>\n" +
-    "        <button type=\"button\" class=\"btn btn-default btn-lg raised col-md-4 col-md-offset-0 col-xs-10 col-xs-offset-1\" ng-click=\"dismiss('subscribe')\">I want an access code</button>\n" +
+    "        <button type=\"button\" class=\"btn btn-default btn-lg raised col-md-4 col-md-offset-0 col-xs-10 col-xs-offset-1\" ng-click=\"dismiss('subscribe')\">I want a beta code</button>\n" +
     "    </div>\n" +
     "</div>"
   );
@@ -11439,10 +11452,10 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                <br/>\n" +
     "\n" +
     "                <div class=\"controls\">\n" +
-    "                    <small>\n" +
-    "                        <input id=\"betaAgreement\" name=\"betaAgreement\" type=\"checkbox\" ng-model=\"betaAgreement\" required=\"true\"> I agree to\n" +
+    "\n" +
+    "                        <input id=\"betaAgreement\" name=\"betaAgreement\" type=\"checkbox\" ng-model=\"betaAgreement\" required=\"true\"> I agree to the\n" +
     "                        <a ui-sref=\"betaAgreement\" target=\"_blank\" required>Beta Agreement</a>\n" +
-    "                    </small>\n" +
+    "\n" +
     "                    <br>\n" +
     "                    <small class=\"text-danger\">{{message}}</small>\n" +
     "                </div>\n" +

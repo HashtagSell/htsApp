@@ -274,8 +274,8 @@ h1, h2, h3, h4, h5{
 }
 
 .translucent-modal-backdrop {
-    filter: alpha(opacity=40) !important;
-    opacity: .4 !important;
+    filter: alpha(opacity=65) !important;
+    opacity: .65 !important;
 }
 
 
