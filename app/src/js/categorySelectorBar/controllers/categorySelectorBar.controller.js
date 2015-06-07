@@ -87,7 +87,7 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
 
         ivhTreeviewMgr.validate(sanitizedCategoryList);
 
-        console.log(sanitizedCategoryList);
+        console.log('sanitized category list', sanitizedCategoryList);
 
         return sanitizedCategoryList;
     };

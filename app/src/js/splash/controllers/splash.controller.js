@@ -256,10 +256,10 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         splashInstance.result.then(function (selectedItem) {
             //console.log(selectedItem);
         }, function (direct) {
-            //if(!direct) {
-            //    alert('not direct');
+            if(!direct) {
+                //alert('not direct');
                 $state.go('^');
-            //}
+            }
         });
 
 

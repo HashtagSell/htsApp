@@ -122,8 +122,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                             response.data.external.postings[i].feedItemHeight = 179;
                             scrollTopOffset = scrollTopOffset + 179;
                         } else if (response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 216;
-                            scrollTopOffset = scrollTopOffset + 216;
+                            response.data.external.postings[i].feedItemHeight = 261;
+                            scrollTopOffset = scrollTopOffset + 261;
                         } else {
                             response.data.external.postings[i].feedItemHeight = 420;
                             scrollTopOffset = scrollTopOffset + 420;
