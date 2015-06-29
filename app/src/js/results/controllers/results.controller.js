@@ -68,7 +68,7 @@ htsApp.controller('results.controller', ['$scope', '$state', '$stateParams', 'se
                 } else if (!response.data.results.length && page > 0) { //No results found after pagination
 
                     searchFactory.status.pleaseWait = false;
-                    searchFactory.status.loadingMessage = "Congratulations!  You've finished the internet!";
+                    searchFactory.status.loadingMessage = "No more results.  Sell your next item with us to increase our inventory.";
 
                 }
 
