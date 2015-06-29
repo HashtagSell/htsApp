@@ -384,7 +384,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
             geo: {
                 coords: ['-122.431297', '37.773972'],
                 "min": 0,
-                "max": 100000
+                "max": 50000000
             }
         };
 

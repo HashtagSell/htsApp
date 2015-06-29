@@ -244,7 +244,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         geo: {
             lookup: true,
             min: 0,
-            max: 12890000 // 8000 miles in meters
+            max: 50000000 // 8000 miles in meters
         }
     };
 
@@ -663,7 +663,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
             geo: {
                 lookup: true,
                 min: 0,
-                max: 100000
+                max: 50000000
             }
         };
     };
