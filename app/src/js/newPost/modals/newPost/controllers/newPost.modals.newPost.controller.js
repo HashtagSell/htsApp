@@ -1,14 +1,33 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.clearDemo = function () {
-        console.log("clearing contents");
-        if (!$scope.demoCleared) {
+    $scope.animatedGifUrl = null;
+    $timeout(function () {
+        $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
+    }, 200);
+
+
+    $scope.showDemo = true;
+    $scope.hideDemo = function () {
+        $scope.showDemo = false;
+    };
+
+    $scope.clearPlaceholder = function () {
+        if (!$scope.placeholderCleared) {
+            console.log("clearing placeholder");
             document.getElementById("htsPost").innerHTML = "";
-            $scope.demoCleared = true;
+            $scope.resetAll();
+            $scope.placeholderCleared = true;
+        } else {
+            console.log('placeholder already cleared');
         }
+    };
+
+    $scope.toggleExampleVisibility = true;
+    $scope.clearExampleReminder = function () {
+        $scope.toggleExampleVisibility = false;
     };
 
     $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
@@ -612,21 +631,23 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 'removedfile': function () {
                     console.log("image removed");
                     $scope.numImages = $scope.numImages - 1;
-                    scope.$apply($scope.numImages);
+                    $scope.$apply($scope.numImages);
                 },
                 'uploadprogress': function(progress) {
                     //$scope.uploadProgress = progress;
                     //console.log($scope.uploadProgress);
                 },
                 'totaluploadprogress': function(progress) {
-                    $scope.uploadProgress = progress;
-                    $scope.$apply($scope.uploadProgress);
-                    if(progress < 100) {
-                        $scope.uploadMessage = Math.round(progress) + '%';
+                    if(progress) {
+                        $scope.uploadProgress = progress;
                         $scope.$apply($scope.uploadProgress);
-                    } else if (progress === 100) {
-                        $scope.uploadMessage = 'Preparing photos.. please wait.';
-                        $scope.$apply($scope.uploadProgress);
+                        if (progress < 100) {
+                            $scope.uploadMessage = Math.round(progress) + '%';
+                            $scope.$apply($scope.uploadProgress);
+                        } else if (progress === 100) {
+                            $scope.uploadMessage = 'Preparing photos.. please wait.';
+                            $scope.$apply($scope.uploadProgress);
+                        }
                     }
                 }
             },
@@ -636,12 +657,12 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
 
     $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
+        $scope.alerts.banners.splice(index, 1);
     };
 
-    $scope.validatePost = function () {
+    $scope.alerts = mentionsFactory.alerts;
 
-        $scope.alerts = [];
+    $scope.validatePost = function () {
 
         var newPost = $scope.jsonObj;
 
@@ -650,13 +671,13 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 if (!$scope.isEmpty(newPost.location)) {
                     $scope.processPost();
                 } else {
-                    $scope.alerts.push({
+                    $scope.alerts.banners.push({
                         type: 'danger',
                         msg: 'Use the @ symbol in your post to specify where the buyer should pickup the item.'
                     });
                 }
             } else {
-                $scope.alerts.push({
+                $scope.alerts.banners.push({
                     type: 'danger',
                     msg: 'Add more #\'s to describe your item for sale, or manually specify a category.'
                 });
@@ -665,7 +686,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.jsonObj.category = "ZOTH";
             }
         } else {
-            $scope.alerts.push({
+            $scope.alerts.banners.push({
                 type: 'danger',
                 msg: 'Use the # symbol in your post to describe the item you\'re selling.  Hint: You can add more than one hashtag if you want.'
             });
@@ -691,7 +712,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
 
-    //Sellbox directive calls this to update model when a hash
+    //Sellbox directive calls this to update model when a special character is removed
     $scope.cleanModel = function(type, mentionToRemove) {
         mentionsFactory.cleanModel(type, mentionToRemove);
     };
@@ -748,17 +769,31 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.products = results;
                 //console.log("Here is scope.products", $scope.products);
             });
+        } else {
+            $scope.products = [
+                {
+                    value: "Describe your item for sale",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getProductTextRaw = function (product) {
-        mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
-            //console.log(jsonTemplate);
-            //console.log("done");
-        }, function (err) {
-            console.log(err);
-        });
-        return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+        console.log('============================');
+        console.log(product);
+        console.log('============================');
+        if(!product.demoText) {
+            if (mentionsFactory.getProductMetaData(product)) {
+                return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+            } else {
+                //$scope.alerts.banners.push({
+                //    type: 'danger',
+                //    msg: 'Duplicate hashtags not necessary'
+                //});
+                return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+            }
+        }
     };
 
 
@@ -768,23 +803,33 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.searchPlaces = function (term) {
 
         if (term) {
-
             if($scope.isEmpty($scope.jsonObj.location)) {
                 mentionsFactory.predictPlace(term).then(function (results) {
                     $scope.places = results;
                     //console.log("Here is scope.places", $scope.places);
                 });
             }
+        } else {
+            $scope.places = [
+                {
+                    description: "Specify a landmark OR address to pickup item",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getPlacesTextRaw = function (selectedPlace) {
-        mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
-            console.log(jsonTemplate);
-            //console.log("done");
-        });
-
-        return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
+        if(!selectedPlace.demoText) {
+            if (mentionsFactory.getPlaceMetaData(selectedPlace)) {
+                return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
+            } else {
+                $scope.alerts.banners.push({
+                    type: 'danger',
+                    msg: 'Please only use one @ symbol in your post'
+                });
+            }
+        }
     };
 
     //========= $ Prices =========
@@ -794,52 +839,87 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.prices = mentionsFactory.predictPrice(term);
                 //console.log("here is scope.prices", $scope.prices);
             }
+        } else {
+            $scope.prices = [
+                {
+                    suggestion: "Type your asking price",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getPricesTextRaw = function (selectedPrice) {
-        mentionsFactory.getPriceMetaData(selectedPrice);
-        return '<span class="mention-highlighter-price" contentEditable="false">$' + selectedPrice.suggestion + '</span>';
+        if(!selectedPrice.demoText) {
+            if (mentionsFactory.getPriceMetaData(selectedPrice)) {
+                if($scope.jsonObj.price_avg) {
+                    if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
+                        return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                    } else {
+                        var message = 'Just a friendly warning that your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
+                        $scope.alerts.banners.push({
+                            type: 'warning',
+                            msg: message
+                        });
+                        return '<span class="mention-highlighter-price mention-highlighter-price-high" tooltip-placement="bottom" tooltip="Higher than average price" tooltip-trigger="mouseenter" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                    }
+                } else {
+                    return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                }
+            } else {
+                //$scope.alerts.banners.push({
+                //    type: 'danger',
+                //    msg: 'Please only use one $ symbol in your post.'
+                //});
+                console.log('new post Controller sees priceMetaData returned false.');
+            }
+        }
     };
 
 
 
     //Demo plays to describe how to sell an item
-    (function demo () {
-        $timeout(function () {
-            if (!$scope.demoCleared) {
-                $(".mention-highlighter").triggerHandler('show');
-            }
-
-            $timeout(function () {
-                if (!$scope.demoCleared) {
-                    $(".mention-highlighter").triggerHandler('hide');
-                    $(".mention-highlighter-price").triggerHandler('show');
-                }
-
-                $timeout(function () {
-                    if (!$scope.demoCleared) {
-                        $(".mention-highlighter-price").triggerHandler('hide');
-                        $(".mention-highlighter-location").triggerHandler('show');
-                    }
-
-                    $timeout(function () {
-                        if (!$scope.demoCleared) {
-                            $(".mention-highlighter-location").triggerHandler('hide');
-                            $(".sellModalButton").triggerHandler('show');
-                        }
-
-                        $timeout(function () {
-                            $(".sellModalButton").triggerHandler('hide');
-                        }, 4000);
-
-                    }, 4000);
-
-                }, 4000);
-
-            }, 4000);
-
-        }, 1000);
-    })();
+    //(function demo () {
+    //    $timeout(function () {
+    //        if (!$scope.demoCleared) {
+    //            $(".mention-highlighter").triggerHandler('show');
+    //        }
+    //
+    //        $timeout(function () {
+    //            if (!$scope.demoCleared) {
+    //                $(".mention-highlighter").triggerHandler('hide');
+    //                $(".mention-highlighter-price").triggerHandler('show');
+    //            }
+    //
+    //            $timeout(function () {
+    //                if (!$scope.demoCleared) {
+    //                    $(".mention-highlighter-price").triggerHandler('hide');
+    //                    $(".mention-highlighter-location").triggerHandler('show');
+    //                }
+    //
+    //                $timeout(function () {
+    //                    if (!$scope.demoCleared) {
+    //                        $(".mention-highlighter-location").triggerHandler('hide');
+    //                        $(".sellModalButton").triggerHandler('show');
+    //                    }
+    //
+    //                    $timeout(function () {
+    //                        $(".sellModalButton").triggerHandler('hide');
+    //                    }, 4000);
+    //
+    //                }, 4000);
+    //
+    //            }, 4000);
+    //
+    //        }, 4000);
+    //
+    //    }, 1000);
+    //})();
+    //$timeout(function () {
+    //    $(".mention-highlighter").triggerHandler('show');
+    //    $("div[content='# your item']").css('left', parseInt($("div[content='# your item']").css('left')) - 26 + 'px');
+    //    $(".mention-highlighter-price").triggerHandler('show');
+    //    $(".mention-highlighter-location").triggerHandler('show');
+    //}, 200);
 
 }]);

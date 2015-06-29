@@ -5,15 +5,19 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
     var factory = {};
 
-    factory.status = {
-        pleaseWait: true,
+    factory.spinner = {
+        show: true
     };
 
     factory.queryParams = {};
 
+    factory.persistedResults = [];
+
     factory.poll = function () {
 
-        var deferred = $q.defer();
+        console.log('feed query params', factory.queryParams);
+
+        factory.deferred = $q.defer();
 
         var polling_api = '';
 
@@ -53,7 +57,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             polling_api += "&cityCode=" + factory.queryParams.cityCode;
         }
 
-        $http({method: 'GET', url: polling_api}).
+        $http({method: 'GET', url: polling_api, timeout:factory.deferred.promise}).
             then(function (response, status, headers, config) {
 
                 console.log('polling response', response);
@@ -63,7 +67,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
                     factory.queryParams.anchor = response.data.external.anchor;
                     factory.queryParams.cityCode = response.data.location.cityCode;
 
-                    deferred.resolve(response);
+                    factory.deferred.resolve(response);
 
                 } else {
 
@@ -72,17 +76,17 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
                     factory.status.error.trace = response.data.error.response.error;
 
 
-                    deferred.reject(response);
+                    factory.deferred.reject(response);
                 }
 
 
 
             }, function (response, status, headers, config) {
 
-                deferred.reject(response);
+                factory.deferred.reject(response);
             });
 
-        return deferred.promise;
+        return factory.deferred.promise;
     };
 
 

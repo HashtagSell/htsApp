@@ -1,230 +1,254 @@
-/* ============================================================
-  COMMON
-============================================================ */
-#wrapper {
-    min-width: 600px;
-}
-
-.settings {
-    display: table;
-    width: 100%;
-}
-.settings .row {
-    display: table-row;
-}
-.settings .question,
-.settings .switch {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 10px;
-}
-.settings .question {
-    font-size: 17px;
-}
-
-/* ============================================================
-  COMMON
-============================================================ */
-.cmn-toggle {
-    position: absolute;
-    margin-left: -9999px;
-    visibility: hidden;
-}
-.cmn-toggle + label {
-    display: block;
-    position: relative;
-    cursor: pointer;
-    outline: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-/* ============================================================
-  SWITCH 1 - ROUND
-============================================================ */
-input.cmn-toggle-round + label {
-    padding: 2px;
-    width: 120px;
-    height: 60px;
-    background-color: #dddddd;
-    -webkit-border-radius: 60px;
-    -moz-border-radius: 60px;
-    -ms-border-radius: 60px;
-    -o-border-radius: 60px;
-    border-radius: 60px;
-}
-input.cmn-toggle-round + label:before, input.cmn-toggle-round + label:after {
-    display: block;
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    bottom: 1px;
-    content: "";
-}
-input.cmn-toggle-round + label:before {
-    right: 1px;
-    background-color: #f1f1f1;
-    -webkit-border-radius: 60px;
-    -moz-border-radius: 60px;
-    -ms-border-radius: 60px;
-    -o-border-radius: 60px;
-    border-radius: 60px;
-    -webkit-transition: background 0.4s;
-    -moz-transition: background 0.4s;
-    -o-transition: background 0.4s;
-    transition: background 0.4s;
-}
-input.cmn-toggle-round + label:after {
-    width: 58px;
-    background-color: #fff;
-    -webkit-border-radius: 100%;
-    -moz-border-radius: 100%;
-    -ms-border-radius: 100%;
-    -o-border-radius: 100%;
-    border-radius: 100%;
-    -webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    -webkit-transition: margin 0.4s;
-    -moz-transition: margin 0.4s;
-    -o-transition: margin 0.4s;
-    transition: margin 0.4s;
-}
-input.cmn-toggle-round:checked + label:before {
-    background-color: #8ce196;
-}
-input.cmn-toggle-round:checked + label:after {
-    margin-left: 60px;
-}
-
-/* ============================================================
-  SWITCH 2 - ROUND FLAT
-============================================================ */
-input.cmn-toggle-round-flat + label {
-    padding: 2px;
-    width: 120px;
-    height: 60px;
-    background-color: #dddddd;
-    -webkit-border-radius: 60px;
-    -moz-border-radius: 60px;
-    -ms-border-radius: 60px;
-    -o-border-radius: 60px;
-    border-radius: 60px;
-    -webkit-transition: background 0.4s;
-    -moz-transition: background 0.4s;
-    -o-transition: background 0.4s;
-    transition: background 0.4s;
-}
-input.cmn-toggle-round-flat + label:before, input.cmn-toggle-round-flat + label:after {
-    display: block;
-    position: absolute;
-    content: "";
-}
-input.cmn-toggle-round-flat + label:before {
-    top: 2px;
-    left: 2px;
-    bottom: 2px;
-    right: 2px;
-    background-color: #fff;
-    -webkit-border-radius: 60px;
-    -moz-border-radius: 60px;
-    -ms-border-radius: 60px;
-    -o-border-radius: 60px;
-    border-radius: 60px;
-    -webkit-transition: background 0.4s;
-    -moz-transition: background 0.4s;
-    -o-transition: background 0.4s;
-    transition: background 0.4s;
-}
-input.cmn-toggle-round-flat + label:after {
-    top: 4px;
-    left: 4px;
-    bottom: 4px;
-    width: 52px;
-    background-color: #dddddd;
-    -webkit-border-radius: 52px;
-    -moz-border-radius: 52px;
-    -ms-border-radius: 52px;
-    -o-border-radius: 52px;
-    border-radius: 52px;
-    -webkit-transition: margin 0.4s, background 0.4s;
-    -moz-transition: margin 0.4s, background 0.4s;
-    -o-transition: margin 0.4s, background 0.4s;
-    transition: margin 0.4s, background 0.4s;
-}
-input.cmn-toggle-round-flat:checked + label {
-    background-color: #8ce196;
-}
-input.cmn-toggle-round-flat:checked + label:after {
-    margin-left: 60px;
-    background-color: #8ce196;
-}
-
-/* ============================================================
-  SWITCH 3 - YES NO
-============================================================ */
-input.cmn-toggle-yes-no + label {
-    padding: 2px;
-    width: 120px;
-    height: 60px;
-}
-input.cmn-toggle-yes-no + label:before, input.cmn-toggle-yes-no + label:after {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    color: #fff;
-    font-family: "Roboto Slab", serif;
-    font-size: 20px;
+/* =============================================================================
+  COMPONENT
+============================================================================= */
+.component {
     text-align: center;
-    line-height: 60px;
 }
-input.cmn-toggle-yes-no + label:before {
-    background-color: #dddddd;
-    content: attr(data-off);
-    -webkit-transition: -webkit-transform 0.5s;
-    -moz-transition: -moz-transform 0.5s;
-    -o-transition: -o-transform 0.5s;
-    transition: transform 0.5s;
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    -ms-backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-    backface-visibility: hidden;
+
+.component__title {
+    margin-bottom: 12px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
 }
-input.cmn-toggle-yes-no + label:after {
-    background-color: #8ce196;
-    content: attr(data-on);
-    -webkit-transition: -webkit-transform 0.5s;
-    -moz-transition: -moz-transform 0.5s;
-    -o-transition: -o-transform 0.5s;
-    transition: transform 0.5s;
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-    -ms-transform: rotateY(180deg);
-    -o-transform: rotateY(180deg);
-    transform: rotateY(180deg);
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    -ms-backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-    backface-visibility: hidden;
+
+/* =============================================================================
+  ICONS - COMMON
+============================================================================= */
+/**
+ * Icon common styles.
+ *
+ * Set it to block or inline block, whichever suits your needs. Overflow set to
+ * hidden for precautions, and make sure to set the font size to 0 and the text
+ * indent to -9999px. This allows us to actually include text in the markup
+ * which will be good for screen readers and accessibility purposes.
+ */
+.icon {
+    display: inline-block;
+    vertical-align: top;
+    overflow: hidden;
+    margin: 4px;
+    width: 96px;
+    height: 96px;
+    font-size: 0;
+    text-indent: -9999px;
 }
-input.cmn-toggle-yes-no:checked + label:before {
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-    -ms-transform: rotateY(180deg);
-    -o-transform: rotateY(180deg);
-    transform: rotateY(180deg);
+
+/* =============================================================================
+  ICONS - DEMO 1
+============================================================================= */
+/**
+ * "icon-mono" class name used to indicate monochrome-type icon. Use whatever
+ * class name you want, but make sure to change it up in the markup.
+ *
+ * Example HTML:
+ *
+ * <a href="#" class="icon icon-mono facebook">facebook</a>
+ * <a href="#" class="icon icon-mono twitter">twitter</a>
+ * ...
+ */
+.icon-mono {
+    background: url("//static.hashtagsell.com/htsApp/external-marketplaces/external-services.png");
+    /*background-image: url("http://static.hashtagsell.com/logos/newPost+Icons/icons1.svg"), none;*/
+    background-color: #595959;
+    -webkit-transition: background 0.3s;
+    transition: background 0.3s;
 }
-input.cmn-toggle-yes-no:checked + label:after {
-    -webkit-transform: rotateY(0);
-    -moz-transform: rotateY(0);
-    -ms-transform: rotateY(0);
-    -o-transform: rotateY(0);
-    transform: rotateY(0);
+
+
+
+.icon-mono:hover ~ #instructions {
+    display: none;
+}
+
+
+
+
+/* facebook */
+.icon-mono.facebook {
+    background-position: 0 0;
+}
+
+.icon-mono.facebook:hover {
+    background-color: #3b5998;
+    background-position: 0 -96px;
+}
+
+.icon-mono.facebook.hold {
+    background-color: #3b5998;
+    background-position: 0 -96px;
+}
+
+#facebookBlurb {
+    display: none;
+}
+
+.icon-mono.facebook:hover ~ #facebookBlurb {
+    display: block;
+}
+
+
+
+
+
+
+
+
+
+/* twitter */
+.icon-mono.twitter {
+    background-position: -96px 0;
+}
+
+.icon-mono.twitter:hover {
+    background-color: #4099ff;
+    background-position: -96px -96px;
+}
+
+.icon-mono.twitter.hold {
+    background-color: #4099ff;
+    background-position: -96px -96px;
+}
+
+#twitterBlurb {
+    display: none;
+}
+
+.icon-mono.twitter:hover ~ #twitterBlurb {
+    display: block;
+}
+
+
+
+
+
+/* google plus */
+.icon-mono.ebay {
+    background-position: -192px 0;
+}
+
+.icon-mono.ebay:hover {
+    background-color: #d34836;
+    background-position: -192px -96px;
+}
+
+.icon-mono.ebay.hold {
+    background-color: #d34836;
+    background-position: -192px -96px;
+}
+
+#ebayBlurb {
+    display: none;
+}
+
+.icon-mono.ebay:hover ~ #ebayBlurb {
+    display: block;
+}
+
+
+
+
+
+/* github */
+.icon-mono.amazon {
+    background-position: -288px 0;
+}
+
+.icon-mono.amazon:hover {
+    background-color: #333333;
+    background-position: -288px -96px;
+}
+
+.icon-mono.amazon.hold {
+    background-color: #333333;
+    background-position: -288px -96px;
+}
+
+#amazonBlurb {
+    display: none;
+}
+
+.icon-mono.amazon:hover ~ #amazonBlurb {
+    display: block;
+}
+
+
+
+
+
+/* rss */
+.icon-mono.online-payment {
+    background-position: -384px 0;
+}
+
+.icon-mono.online-payment:hover {
+    background-color: #009cde;
+    background-position: -384px -96px;
+}
+
+.icon-mono.online-payment.hold {
+    background-color: #009cde;
+    background-position: -384px -96px;
+}
+
+#onlinePaymentBlurb {
+    display: none;
+}
+
+.icon-mono.online-payment:hover ~ #onlinePaymentBlurb {
+    display: block;
+}
+
+
+
+.circ-spinner {
+    height: 60px;
+    width: 60px;
+    margin: 17px auto;
+    position: relative;
+    -webkit-animation: rotation .6s infinite linear;
+    -moz-animation: rotation .6s infinite linear;
+    -o-animation: rotation .6s infinite linear;
+    animation: rotation .6s infinite linear;
+    border-left: 6px solid rgba(0, 174, 239, .15);
+    border-right: 6px solid rgba(0, 174, 239, .15);
+    border-bottom: 6px solid rgba(0, 174, 239, .15);
+    border-top: 6px solid rgba(0, 174, 239, .8);
+    border-radius: 100%;
+}
+
+@-webkit-keyframes rotation {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(359deg);
+    }
+}
+
+@-moz-keyframes rotation {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+    to {
+        -moz-transform: rotate(359deg);
+    }
+}
+
+@-o-keyframes rotation {
+    from {
+        -o-transform: rotate(0deg);
+    }
+    to {
+        -o-transform: rotate(359deg);
+    }
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(359deg);
+    }
 }

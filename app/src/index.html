@@ -71,7 +71,7 @@
                             <div id="awesomeBar"
                                  contenteditable="true"
                                  awesomebar
-                                 data-ph="I'm looking for..."
+                                 data-ph-awesomebar="I'm looking for..."
                                  class="form-control"
                                  ng-change="validateQueryObj()"
                                  ng-model="queryObj.q"
@@ -108,7 +108,7 @@
                         </form>
 
                         <form>
-                            <input type="text" class="form-control advanced-search-city" placeholder="City" ng-model="advancedCity" typeahead="city.description for city in searchPlaces($viewValue)" typeahead-on-select='getCityMetaData($item)' ng-focus="clearCity()">
+                            <input type="text" class="form-control advanced-search-city" placeholder="City" ng-model="advancedCity" typeahead="city.description for city in searchPlaces($viewValue)" typeahead-on-select='getCityMetaData($item)'>
                             <small class="help-block">Hint: Type @ symbol in main search bar to search in specific city.  It's magic!</small>
 
                             <button type="submit" class="btn btn-danger" type="button" ng-click="awesomeBarSubmit()" analytics-on="click" analytics-event="Conducted advanced search">
@@ -117,7 +117,7 @@
                         </form>
                     </div>
 
-                    <!--<div>{{queryObj.q}}</div>-->
+                    <!--<div>{{queryObj}}</div>-->
 
                     <mentio-menu id="mentioMenu"
                                  mentio-for="'awesomePlace'"
@@ -338,7 +338,9 @@
     <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.core.min.js"></script>
     <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.dsr.min.js"></script>
     <script type="text/javascript" src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src='/ment.io/dist/mentio.js'></script>
+    <!--<script type="text/javascript" src='/ment.io/dist/mentio.js'></script>-->
+    <script type="text/javascript" src='/ment.io/src/mentio.directive.js'></script>
+    <script type="text/javascript" src='/ment.io/src/mentio.service.js'></script>
     <script type="text/javascript" src='/ng-table/ng-table.min.js'></script>
     <script type="text/javascript" src='/underscore/underscore-min.js'></script>
     <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>

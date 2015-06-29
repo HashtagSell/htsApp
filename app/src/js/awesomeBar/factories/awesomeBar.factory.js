@@ -7,7 +7,7 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 
 
     factory.queryObj = {
-        q: $stateParams.q || "I'm searching for...",
+        q: $stateParams.q || "I'm looking for...",
         city: null,
         locationObj: null,
         price:{

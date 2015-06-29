@@ -1,11 +1,15 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, ENV, utilsFactory, Notification) {
+htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, $filter, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
     var tempDiv = document.createElement("DIV"); //Used for stripping html from strings
+
+    factory.alerts = {
+        banners: []
+    };
 
     factory.defaultJson = {
         "annotations": [],
@@ -165,8 +169,13 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
         var deferred = $q.defer();
 
+
         if(selectedProduct) {
-            this.jsonTemplate.hashtags.push(selectedProduct.value);
+            if(_.indexOf(this.jsonTemplate.hashtags, selectedProduct.value) === -1) {
+                this.jsonTemplate.hashtags.push(selectedProduct.value);
+            } else {
+                return false;
+            }
         }
 
         if(this.jsonTemplate.hashtags.length) {
@@ -194,22 +203,28 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                                 factory.jsonTemplate.annotations = annotationArray;
 
-                            } else {
-
-                                Notification.primary({
-                                    title: "Hrmmmmm",
-                                    message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
-                                });
-
                             }
+                            //else {
+                            //
+                            //    Notification.primary({
+                            //        title: "Hrmmmmm",
+                            //        message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
+                            //    });
+                            //
+                            //}
 
                             deferred.resolve(factory.jsonTemplate);
 
                         }, function (err) { //failed to lookup Amazon annotations
 
-                            Notification.error({
-                                title: "Ooops",
-                                message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                            //Notification.error({
+                            //    title: "Ooops",
+                            //    message: "Couldn't fetch Amazon data.  We're working on this."
+                            //});
+
+                            factory.alerts.banners.push({
+                                type: 'danger',
+                                msg: "Couldn't fetch Amazon data.  We're working on this.  Please continue with your post."
                             });
 
                             deferred.reject(err);
@@ -218,18 +233,28 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                     }, function (err) {  //failed to lookup internal annotations
 
-                        Notification.error({
-                            title: "Ooops",
-                            message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                        //Notification.error({
+                        //    title: "Ooops",
+                        //    message: "Couldn't lookup internal production annotations.  We're working on this."
+                        //});
+
+                        factory.alerts.banners.push({
+                            type: 'danger',
+                            msg: "Couldn't lookup internal production annotations.  We're working on this.  Please continue with your post."
                         });
 
                     });
 
                 }, function (err) { //failed to lookup category metadata
 
-                    Notification.error({
-                        title: "Cannot lookup cateogry metadata",
-                        message: err.message
+                    //Notification.error({
+                    //    title: "Cannot lookup category metadata",
+                    //    message: err.message
+                    //});
+
+                    factory.alerts.banners.push({
+                        type: 'danger',
+                        msg: "We appear to be having issues with out categories API.  Please try again later."
                     });
 
                 });
@@ -522,31 +547,39 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
             console.log('HASHTAG TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.hashtags = _.without(this.jsonTemplate.hashtags, valueToRemove);
+            if(valueToRemove) {
+                this.jsonTemplate.hashtags = _.without(this.jsonTemplate.hashtags, valueToRemove);
 
-            console.log(this.jsonTemplate);
-
-            factory.getProductMetaData();
+                factory.getProductMetaData();
+            } else {
+                console.log('hashtag to remove is empty.. not cleaning model');
+            }
 
         } else if (type === "$") {
 
             console.log('PRICE TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.price = null;
-            this.jsonTemplate.price_avg = null;
-            this.jsonTemplate.price_type = null;
-
-            console.log(this.jsonTemplate);
+            if(valueToRemove) {
+                this.jsonTemplate.price = null;
+                this.jsonTemplate.price_avg = null;
+                this.jsonTemplate.price_type = null;
+            } else {
+                console.log('price is empty, not cleaning model');
+            }
 
         } else if (type === "@") {
 
             console.log('LOCATION TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.location = {};
-
-            console.log(this.jsonTemplate);
+            if(valueToRemove) {
+                this.jsonTemplate.location = {};
+            } else {
+                console.log('location to remove is empty, not cleaning model');
+            }
 
         }
+
+        console.log(this.jsonTemplate);
     };
 
 
@@ -614,105 +647,110 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
         var country = null;
         var zipcode = null;
 
-        googleMaps.getDetails(request, function (placeMetaData, status) {
+        //if(!factory.jsonTemplate.location) {
 
-            if (status != google.maps.places.PlacesServiceStatus.OK) {
-                console.log(status);
-                return;
-            }
+            googleMaps.getDetails(request, function (placeMetaData, status) {
 
-            placeMetaData.description = selectedPlace.description;
-
-            console.log("here is our extra meta data");
-            console.log(placeMetaData);
-
-            var locationObj = {};
-            var geo = {};
-            geo.location = {};
-
-            if (placeMetaData.formatted_address) {
-                locationObj.formatted_address = placeMetaData.formatted_address;
-            }
-
-
-            if (placeMetaData.geometry.location.lat()) {
-                locationObj.lat = placeMetaData.geometry.location.lat();
-                locationObj.long = placeMetaData.geometry.location.lng();
-
-                var lat = placeMetaData.geometry.location.lat();
-                var long = placeMetaData.geometry.location.lng();
-
-                geo.coords = [long, lat];
-            }
-
-
-
-            if (placeMetaData.address_components) {
-
-                for (var i = 0; i < placeMetaData.address_components.length; ++i) {
-
-                    //Get State
-                    if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
-                        state = placeMetaData.address_components[i].short_name;
-                        locationObj.state = state;
-                        geo.location.state = state;
-                    }
-
-                    //Get City
-                    if (placeMetaData.address_components[i].types[0] == "locality") {
-                        city = placeMetaData.address_components[i].long_name;
-                        locationObj.short_name = city;
-                        geo.location.city = city;
-                    }
-
-                    //Get Country
-                    if (placeMetaData.address_components[i].types[0] == "country") {
-                        country = placeMetaData.address_components[i].short_name;
-                        locationObj.country = country;
-                        geo.location.country = country;
-                    }
-
-                    //Get Zipcode
-                    if (placeMetaData.address_components[i].types[0] == "postal_code") {
-                        zipcode = placeMetaData.address_components[i].short_name;
-                        locationObj.zipcode = zipcode;
-                        geo.location.postalCode = zipcode;
-                    }
+                if (status !== google.maps.places.PlacesServiceStatus.OK) {
+                    console.log(status);
+                    return;
                 }
 
-                //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
-                if(!geo.location.postalCode) {
+                placeMetaData.description = selectedPlace.description;
 
-                    $http.get('/search/reversegeocode', {
-                        params: {
-                            lat: placeMetaData.geometry.location.lat(),
-                            long: placeMetaData.geometry.location.lng()
+                console.log("here is our extra meta data");
+                console.log(placeMetaData);
+
+                var locationObj = {};
+                var geo = {};
+                geo.location = {};
+
+                if (placeMetaData.formatted_address) {
+                    locationObj.formatted_address = placeMetaData.formatted_address;
+                }
+
+
+                if (placeMetaData.geometry.location.lat()) {
+                    locationObj.lat = placeMetaData.geometry.location.lat();
+                    locationObj.long = placeMetaData.geometry.location.lng();
+
+                    var lat = placeMetaData.geometry.location.lat();
+                    var long = placeMetaData.geometry.location.lng();
+
+                    geo.coords = [long, lat];
+                }
+
+
+                if (placeMetaData.address_components) {
+
+                    for (var i = 0; i < placeMetaData.address_components.length; ++i) {
+
+                        //Get State
+                        if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
+                            state = placeMetaData.address_components[i].short_name;
+                            locationObj.state = state;
+                            geo.location.state = state;
                         }
-                    }).success(function (data, status) {
 
-                        console.log(data);
+                        //Get City
+                        if (placeMetaData.address_components[i].types[0] == "locality") {
+                            city = placeMetaData.address_components[i].long_name;
+                            locationObj.short_name = city;
+                            geo.location.city = city;
+                        }
 
-                        for(j=0; j<data.results[0].address_components.length; j++){
+                        //Get Country
+                        if (placeMetaData.address_components[i].types[0] == "country") {
+                            country = placeMetaData.address_components[i].short_name;
+                            locationObj.country = country;
+                            geo.location.country = country;
+                        }
 
-                            var adComponent = data.results[0].address_components[j];
+                        //Get Zipcode
+                        if (placeMetaData.address_components[i].types[0] == "postal_code") {
+                            zipcode = placeMetaData.address_components[i].short_name;
+                            locationObj.zipcode = zipcode;
+                            geo.location.postalCode = zipcode;
+                        }
+                    }
 
-                            if (adComponent.types[0] == "postal_code") {
-                                geo.location.postalCode = adComponent.long_name;
-                                break;
+                    //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
+                    if (!geo.location.postalCode) {
+
+                        $http.get('/search/reversegeocode', {
+                            params: {
+                                lat: placeMetaData.geometry.location.lat(),
+                                long: placeMetaData.geometry.location.lng()
                             }
-                        }
+                        }).success(function (data, status) {
 
-                    });
+                            console.log(data);
+
+                            for (j = 0; j < data.results[0].address_components.length; j++) {
+
+                                var adComponent = data.results[0].address_components[j];
+
+                                if (adComponent.types[0] === "postal_code") {
+                                    geo.location.postalCode = adComponent.long_name;
+                                    break;
+                                }
+                            }
+
+                        });
+                    }
+
                 }
 
-            }
+                factory.jsonTemplate.location = locationObj;
 
-            factory.jsonTemplate.location = locationObj;
+                factory.jsonTemplate.geo = geo;
 
-            factory.jsonTemplate.geo = geo;
+                deferred.resolve(factory.jsonTemplate);
+            });
 
-            deferred.resolve(factory.jsonTemplate);
-        });
+        //} else {
+        //    return false;
+        //}
 
         return deferred.promise;
     };
@@ -727,12 +765,16 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
     factory.predictPrice = function (term) {
 
         var priceSuggestionArray = [];
-        priceSuggestionArray.push({suggestion: term, rate: "flat_rate", value: term});
-        priceSuggestionArray.push({suggestion: term + "/hr", rate: "hourly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/day", rate: "daily", value: term});
-        priceSuggestionArray.push({suggestion: term + "/week", rate: "weekly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/month", rate: "monthly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/year", rate: "yearly", value: term});
+
+        var formattedPrice = $filter('currency')(term, '$', 0);
+
+        priceSuggestionArray.push({suggestion: formattedPrice, rate: "flat_rate", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/hr", rate: "hourly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/day", rate: "daily", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/week", rate: "weekly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/month", rate: "monthly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/year", rate: "yearly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/each", rate: "yearly", value: term});
 
         return priceSuggestionArray;
     };
@@ -742,8 +784,18 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
 
     factory.getPriceMetaData = function (selectedPrice) {
-        this.jsonTemplate.price = selectedPrice.value;
-        this.jsonTemplate.price_type = selectedPrice.rate;
+
+        console.log('here is what we have in price meta data', this.jsonTemplate.price);
+
+        if(this.jsonTemplate.price === null) {
+
+            this.jsonTemplate.price = selectedPrice.value;
+            this.jsonTemplate.price_type = selectedPrice.rate;
+
+            return true;
+        } else {
+            return false;
+        }
     };
 
 

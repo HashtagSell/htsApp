@@ -41,18 +41,33 @@ exports.publishToTwitter = function (req, res) {
                             res.send({success: false, data: error});
                         } else {
 
-                            console.log(media);
+                            var tweetWithPhoto = {};
 
-                            var tweetWithPhoto = {
-                                status: configAuth.hts.appURL + '/ext/' + posting.postingId + ' ' + posting.plainTextBody.substring(0, 118),
-                                media_ids: media.media_id_string
-                            };
+                            if(!posting.geo.coordinates) {
+                                tweetWithPhoto = {
+                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                                    media_ids: media.media_id_string
+                                };
+                            } else {
+                                tweetWithPhoto = {
+                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                                    media_ids: media.media_id_string,
+                                    lat: posting.geo.coordinates[1],
+                                    long: posting.geo.coordinates[0],
+                                    display_coordinates: true
+                                };
+                            }
 
+
+                            console.log('OUR TWITTER STATUS LENGTH IS THIS MANY CHARACTERS', tweetWithPhoto.status.length);
+                            console.log(tweetWithPhoto);
 
                             client.post('statuses/update', tweetWithPhoto, function (error, tweet, response) {
                                 if (error) {
+                                    console.log(error);
                                     res.send(error);
                                 } else {
+                                    console.log(tweet);
                                     res.send(tweet);
                                 }
                             });
@@ -66,9 +81,23 @@ exports.publishToTwitter = function (req, res) {
 
     } else {
 
-        var tweet = {
-            status: configAuth.hts.appURL + '/ext/' + posting.postingId + ' ' + posting.plainTextBody.substring(0, 118)
-        };
+        var tweet = {};
+
+        if(!posting.geo.coordinates) {
+            tweet = {
+                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId
+            };
+        } else {
+            tweet = {
+                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                lat: posting.geo.coordinates[1],
+                long: posting.geo.coordinates[0],
+                display_coordinates: true
+            };
+        }
+
+        console.log('OUR TWITTER STATUS LENGTH IS THIS MANY CHARACTERS', tweet.status.length);
+        console.log(tweet);
 
         client.post('statuses/update', tweet,  function(error, tweet, response){
             if(error) {

@@ -7,7 +7,7 @@
 </div>
 
 <div class="outer-container">
-    <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
+    <spinner ng-if="status.pleaseWait" class="spinner-container" spinner-text='Finding "searchTerm" for sale around you...' spinner-attribute="{{queryObj.q}}"></spinner>
     <div class="results-container" resize-grid ng-class="{ 'split-results-container' : views.showMap }">
         <!--GRID VIEW-->
         <div vs-repeat class="inner-container" vs-size="rowHeight" vs-offset-before="77" vs-excess="5" on-vs-index-change="infiniteScroll(startIndex, endIndex)" ng-show="views.gridView">
@@ -116,9 +116,14 @@
                 </div>
             </div>
         </div>
-        <div class="loadingMore" ng-show="status.loading">
-            <img src="https://static.hashtagsell.com/htsApp/spinners/ajax-loader.gif">&nbsp;{{status.loadingMessage}}</div>
-        </div>
+        <spinner ng-show="status.loading" class="spinner-container" spinner-text={{status.loadingMessage}} style="  top: -170px; z-index: 1; background: linear-gradient(to top, rgba(194, 202, 213, 1), rgba(194, 202, 213, 0)); width: 100%; text-align: center; pointer-events: none;"></spinner>
+        <!--<div class="loadingMore" ng-show="status.loading">-->
+            <!--&lt;!&ndash;<img src="https://static.hashtagsell.com/htsApp/spinners/ajax-loader.gif">&nbsp;&ndash;&gt;-->
+            <!--{{status.loadingMessage}}-->
+            <!--&lt;!&ndash;blah blah blah&ndash;&gt;-->
+
+        <!--</div>-->
+
     </div>
 
 

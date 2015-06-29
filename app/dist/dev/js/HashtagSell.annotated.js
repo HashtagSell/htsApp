@@ -18,6 +18,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
+    //removes # from urls
     $locationProvider.html5Mode({
         enabled: true,
         requireBase: false
@@ -25,7 +26,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
     //Tells search engines and crawlers this site loads content dynamically
     $locationProvider.hashPrefix('!');
-
 
     //set locale of easy facebook angular module
     ezfbProvider.setLocale('en_US');
@@ -62,13 +62,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }
     ];
 
-
+    //Used to manually trigger tooltips via js code.
     $tooltipProvider.setTriggers({
         'show': 'hide'
     });
 
 
-
+    //Modifies category checkbox nesting in feed route
     ivhTreeviewOptionsProvider.set({
         twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
         twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
@@ -103,11 +103,12 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
+    //Connects to postingId of post when user opens splash page
     var joinRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
        if (Session.userObj.user_settings.loggedIn) {
            socketio.joinPostingRoom($stateParams.id, 'toggleSplash');
 
-           //TODO: This is running before we have any data in factory.
+           //Checks if this is internal hashtagsell posting.. If so join the owner of the postings socket.io room.
            if(splashFactory.result) {
                if (splashFactory.result.external.source === 'HSHTG') {
 
@@ -119,6 +120,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
        }
     }];
 
+    //Leaves room when user exits splash view
     var leaveRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
         if (Session.userObj.user_settings.loggedIn) {
             socketio.leavePostingRoom($stateParams.id, 'toggleSplash');
@@ -135,7 +137,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
-
+    //Redirect to 404 page if user requests route we do not recognize.
     $urlRouterProvider.otherwise(function($injector, $location){
         var state = $injector.get('$state');
         state.go('404');
@@ -279,7 +281,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: {
                 'q': null,
                 'city': null,
-                'locationObj': null
+                'locationObj': null,
+                'price': null
             },
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html",
@@ -408,7 +411,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 }]);
 
 
-//Verifies is password field match
+//Verifies if input fields match
 htsApp.directive('matchinput', function () {
     return {
         require: 'ngModel',
@@ -474,7 +477,7 @@ htsApp.filter('tel', function () {
 });
 
 
-
+//Clean the heading of postings in view
 htsApp.filter('cleanHeading', ['$sce', function ($sce) {
     return function (dirtyHeading) {
         //Capitalize the first letter of every word
@@ -494,7 +497,7 @@ htsApp.filter('cleanHeading', ['$sce', function ($sce) {
     };
 }]);
 
-
+//Clean the body of postings in the view
 htsApp.filter('cleanBody', ['$sce', function ($sce) {
     return function (dirtyBody) {
 
@@ -581,6 +584,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
                     if(mentioMenu[0].style.display === "none"){
                         console.log('mentio list closed.. submitting query');
+                        element.blur();
                         scope.awesomeBarSubmit();
                     } else if(mentioMenu[0].style.display === "block") {
                         console.log('mentio list open');
@@ -598,7 +602,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
 
 
-htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
+htsApp.directive('sellbox', ['$sce', '$window', '$timeout', 'newPostFactory', 'mentioUtil', function ($sce, $window, $timeout, newPostFactory, mentioUtil) {
     return {
         restrict: 'A', // only activate on element attribute
         require: '?ngModel', // get a hold of NgModelController
@@ -618,7 +622,6 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
             // Specify how UI should be updated
             ngModel.$render = function () {
-                console.log('doing this');
                 if (ngModel.$viewValue !== element.html()) {
                     element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
                 }
@@ -631,15 +634,22 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                 return tmp.textContent || tmp.innerText || "";
             }
 
+            //Check if a string is blank, null or undefined
+            //function isBlank(str) {
+            //    return (!str || /^\s*$/.test(str));
+            //}
+
 
             //Load the js diff library
             var jsDiff = $window.JsDiff;
             var backspacePressed = false;
 
-
+            //cleans up model when user removes # $ or @ symbols
             scope.$watch('jsonObj.body', function(newValue, oldValue){
 
-                scope.alerts = [];
+                //if(scope.alerts) {
+                //    scope.alerts.banners = [];
+                //}
 
                 if(backspacePressed) {
                     backspacePressed = false;
@@ -695,10 +705,150 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
             });
 
 
+            //function isEmpty(obj) {
+            //    for(var prop in obj) {
+            //        if(obj.hasOwnProperty(prop))
+            //            return false;
+            //    }
+            //
+            //    return true;
+            //}
+            //
+            //
+            //function findMentions(searchText, specialKey) {
+            //    //var regexp = /\B\#\w\w+\b/g;
+            //    var regexp = new RegExp("\\B\\" + specialKey + "\\w\\w+\\b", "g");
+            //    var result = searchText.match(regexp);
+            //    if (result) {
+            //        for(var m = 0; m < result.length; m++) {
+            //            result[m] = result[m].replace(specialKey, '');
+            //        }
+            //        return result;
+            //    } else {
+            //        return false;
+            //    }
+            //}
+
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
-                //console.log('omit this');
-                if(parseInt(e.which) === 8 && e.type === "keydown") {
+                var keyCode = parseInt(e.which);
+
+                //Catching if users add $ @ or # in their text AFTER up the entire ad.
+                //if(e.type === "keyup") {
+                //    var specialKey = null;
+                //
+                //    if (keyCode === 50) {
+                //        specialKey = '@';
+                //        if(!isEmpty(scope.jsonObj.location)){
+                //            return false;
+                //        }
+                //    } else if (keyCode === 51) {
+                //        specialKey = '#';
+                //    } else if (keyCode === 52) {
+                //        specialKey = '$';
+                //        if(!isEmpty(scope.jsonObj.price)){
+                //            return false;
+                //        }
+                //    }
+                //
+                //    //If the demo text has been cleared and the presed key is # or $ or @
+                //    if (scope.placeholderCleared && specialKey !== null) {
+                //
+                //        //wait 500ms and verify that the hashtag has not already been picked up and put in hashtagarray
+                //        $timeout(function () {
+                //
+                //            var nodeSelection = $window.getSelection();
+                //            var text = nodeSelection.anchorNode.data;
+                //            var textLength = nodeSelection.anchorNode.length;
+                //            var mentions = findMentions(text, specialKey);
+                //
+                //            console.log(mentions);
+                //
+                //            //Make sure there is at least one mention in the nodeSelection
+                //            if (mentions.length) {
+                //
+                //                var mentioMenu;
+                //                if(specialKey === '#') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuProducts'));
+                //                } else if(specialKey === '$') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuPrices'));
+                //                } else if(specialKey === '@') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuPlaces'));
+                //                }
+                //
+                //                //Make sure the mentio menu is not visible
+                //                if(mentioMenu[0].style.display === "none") {
+                //
+                //                    var indexOfSpecialChar = text.indexOf(specialKey);
+                //                    console.log('index of special char', indexOfSpecialChar);
+                //
+                //                    var indexOfFirstSpaceAfterSpecialChar = text.indexOf(" ", indexOfSpecialChar);
+                //                    console.log('index of first space after special char', indexOfFirstSpaceAfterSpecialChar);
+                //
+                //                    var stopIndex;
+                //                    if (indexOfFirstSpaceAfterSpecialChar > -1) {
+                //
+                //                        stopIndex = indexOfFirstSpaceAfterSpecialChar - indexOfSpecialChar;
+                //                        console.log('stop index', stopIndex);
+                //                    } else {
+                //
+                //                        stopIndex = textLength;
+                //                        indexOfFirstSpaceAfterSpecialChar = textLength;
+                //                        console.log('stop index is last char in text');
+                //                    }
+                //
+                //                    var trimmedMention = text.substr(indexOfSpecialChar + 1, stopIndex - 1);
+                //                    var htmlMention;
+                //
+                //                    if(specialKey === '#') {
+                //
+                //                        if(newPostFactory.getProductMetaData({value: trimmedMention})) {
+                //                            htmlMention = '<span class="mention-highlighter" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            newPostFactory.alerts.banners.push({
+                //                                type: 'danger',
+                //                                msg: 'Duplicate hashtags not necessary'
+                //                            });
+                //                        }
+                //
+                //                    } else if(specialKey === '$') {
+                //
+                //                        if(newPostFactory.getPriceMetaData({value: trimmedMention, rate: 'flat_rate'})){
+                //                            htmlMention = '<span class="mention-highlighter-price" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            //newPostFactory.alerts.banners.push({
+                //                            //    type: 'danger',
+                //                            //    msg: 'Please only use one $ symbol in your post.'
+                //                            //});
+                //                            console.log('htsApp sell box directive sees priceMetaData returned false.');
+                //                        }
+                //
+                //                    } else if(specialKey === '@') {
+                //
+                //                        if(newPostFactory.getPlaceMetaData()) {
+                //                            htmlMention = '<span class="mention-highlighter-location" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            newPostFactory.alerts.banners.push({
+                //                                type: 'danger',
+                //                                msg: 'Please only use one @ symbol in your post.'
+                //                            });
+                //                        }
+                //                    }
+                //
+                //
+                //
+                //                } else {
+                //                    console.log('mentio menu open');
+                //                }
+                //            }
+                //        }, 1000);
+                //    }
+                //}
+
+                if(parseInt(keyCode) === 8 && e.type === "keydown") {
                     backspacePressed = true;
                     console.log('setting backspace pressed to true');
                 }
@@ -1304,7 +1454,7 @@ htsApp.filter('awesomecity', function() {
 });
 
 
-
+//Only allow integers to be inserted into html input
 htsApp.directive('onlyDigits', function () {
     return {
         require: 'ngModel',
@@ -1328,7 +1478,7 @@ htsApp.directive('onlyDigits', function () {
 });
 
 
-
+//run function when user presses enter on an html input field
 htsApp.directive('ngEnter', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {
@@ -1343,6 +1493,80 @@ htsApp.directive('ngEnter', function () {
     };
 });
 
+
+//Graphic user sees when applications is waiting/working
+htsApp.directive('spinner', ['sideNavFactory', function (sideNavFactory) {
+    return {
+        restrict: 'E',
+        scope: {
+            spinnerTextAttribute:'@spinnerAttribute'
+        },
+        template:
+        "<div>"+
+            "<div class='spinner'>"+
+            "<div class='bounce1' style='background-color: white;'></div>"+
+            "<div class='bounce2' style='background-color: white;'></div>"+
+            "<div class='bounce3' style='background-color: white;'></div>"+
+        "</div>"+
+        "<h4>{{spinnerText}}</h4>",
+        link: function(scope, element, attrs) {
+
+            scope.sideNav = sideNavFactory.sideNav;
+
+            attrs.$observe('spinnerText', function () {
+                scope.spinnerText = attrs.spinnerText;
+                if(scope.spinnerTextAttribute){
+                    scope.spinnerText = scope.spinnerText.replace('searchTerm', scope.spinnerTextAttribute);
+                }
+            });
+
+
+            scope.$watch(function(){return scope.sideNav.listView;}, function(listView) {
+                if(listView){
+                    element.addClass('nudge-spinner');
+                } else {
+                    element.removeClass('nudge-spinner');
+                }
+            });
+
+            //scope.$watch('scope.spinner.show', function(newValue, oldValue){
+            //    console.log("newvalue", newValue, "oldvalue", oldValue);
+            //});
+        }
+    };
+}]);
+
+
+
+htsApp.directive('animatedGif', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            animationUrl:'@animationUrl',
+            staticUrl: '@staticUrl'
+        },
+        template:
+            "<div class='sell-box-animation-container'>" +
+            "<img class='sell-box-image img-responsive' ng-src='{{img}}' ng-click='stopAnimation()' />" +
+            "<div class='sell-box-play-button' ng-show='!currentlyPlaying' ng-click='playAnimation()'>" +
+            "</div>",
+        link: function(scope, element, attrs) {
+
+            scope.img = scope.staticUrl;
+            scope.currentlyPlaying = false;
+
+            scope.playAnimation = function () {
+                scope.currentlyPlaying = true;
+                scope.img = scope.animationUrl;
+            };
+
+            scope.stopAnimation = function () {
+                scope.currentlyPlaying = false;
+                scope.img = scope.staticUrl;
+            };
+        }
+    };
+});
 angular.module('globalVars', [])
 
 .constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',freeGeoIp:'http://localhost:8080/json/',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
@@ -2070,26 +2294,20 @@ htsApp.factory('authFactory', ['$http', 'Session', '$q', '$window', function ($h
 }]);
 htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    //$scope.clearedPlaceholder = false;
-    //$scope.clearPlaceholder = function () {
-    //    if (!$scope.clearedPlaceholder) {
-    //        console.log("clearing placeholder");
-    //
-    //        $scope.queryObj.q = "";
-    //        $scope.clearedPlaceholder = true;
-    //    }
-    //};
 
-    $scope.clearCity = function () {
-        $scope.queryObj.city = null;
-        $scope.queryObj.locationObj = null;
-    };
+    //$scope.clearCity = function () {
+    //    console.log('clearing city');
+    //    $scope.queryObj.city = null;
+    //    $scope.queryObj.locationObj = null;
+    //};
 
 
     $scope.queryObj = awesomeBarFactory.queryObj;
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
+
+        console.log('==================== RUNNING AWESOMEBAR SUBMIT ====================');
 
         $scope.advancedSearch.visible = false; //Hide advanced search
 
@@ -2114,7 +2332,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
             console.log('after sanatize', $scope.queryObj);
 
-            $state.go('results', $scope.queryObj);
+            $state.go('results', $scope.queryObj, {'reload':true});
 
             $scope.queryObj.q = entireSearchString;
         }
@@ -2188,7 +2406,7 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 
 
     factory.queryObj = {
-        q: $stateParams.q || "I'm searching for...",
+        q: $stateParams.q || "I'm looking for...",
         city: null,
         locationObj: null,
         price:{
@@ -2431,7 +2649,7 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
 
-    $scope.status = feedFactory.status;
+    $scope.spinner = feedFactory.spinner;
 
     //updateFeed is triggered on interval and performs polling call to server for more items
     var updateFeed = function () {
@@ -2439,27 +2657,27 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         $scope.currentDate = Math.floor(Date.now() / 1000);
 
         //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
-        if (!$scope.results && feedFactory.persistedResults){
+        if (!$scope.results && feedFactory.persistedResults.length){
             console.log('recovering from persisted results', feedFactory.persistedResults);
             $scope.results = feedFactory.persistedResults;
             var resumePersisted = true;
         } else if (!$scope.results) {
             //While true the hashtagspinner will appear
-            feedFactory.status.pleaseWait = true;
+            feedFactory.spinner.show = true;
         }
 
 
         feedFactory.poll().then(function (response) {
-
             if (response.status !== 200) {
 
-                $scope.status.pleaseWait = false;
+                $scope.spinner.show = false;
                 $scope.status.error.message = ":( Oops.. Something went wrong.";
                 $scope.status.error.trace = response.data.error;
 
             } else if (response.status === 200) {
 
                 if (!$scope.results || resumePersisted) { //If there are not results on the page yet, this is our first query
+                    console.log('this is first feed query');
 
                     //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
@@ -2473,15 +2691,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                             posting.feedItemHeight = 261;
 
                             if (posting.username === 'CRAIG') {
-                                if(posting.images[0].full) {
+                                if (posting.images[0].full) {
                                     posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
                                 }
 
-                                if(posting.images[0].thumb) {
+                                if (posting.images[0].thumb) {
                                     posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
                                 }
 
-                                if(posting.images[0].images) {
+                                if (posting.images[0].images) {
                                     posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
                                 }
                             }
@@ -2491,18 +2709,18 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                             if (posting.username === 'CRAIG') {
 
-                                for(var j=0; j < posting.images.length; j++){
+                                for (var j = 0; j < posting.images.length; j++) {
                                     var imageObj = posting.images[j];
 
-                                    if(imageObj.full) {
+                                    if (imageObj.full) {
                                         imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
                                     }
 
-                                    if(imageObj.thumb) {
+                                    if (imageObj.thumb) {
                                         imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
                                     }
 
-                                    if(imageObj.images) {
+                                    if (imageObj.images) {
                                         imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
                                     }
 
@@ -2517,7 +2735,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         }
                     }
 
-                    feedFactory.status.pleaseWait = false;
+                    feedFactory.spinner.show = false;
 
                     if (!resumePersisted) {
                         $scope.results = response.data.external.postings;
@@ -2528,17 +2746,13 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     resumePersisted = false;
 
                     //UI will query polling API every 60 seconds
-                    var intervalUpdate = $interval(updateFeed, 60000, 0, true);
-
-                    //This is called when user changes route. It stops javascript from interval polling in background.
-                    $scope.$on('$destroy', function () {
-                        console.log('pausing feed updates');
-                        $interval.cancel(intervalUpdate);
-                    });
+                    $scope.intervalUpdate = $interval(updateFeed, 60000, 0, true);
 
                 } else { //If there are already results on the page the add them to the top of the array
 
                     //console.log('our new items', response.data.external.postings);
+
+                    console.log('resuming');
 
                     //Capture how far user has scroll down.
                     var scrollTopOffset = jQuery(".inner-container").scrollTop();
@@ -2546,7 +2760,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
 
-                        if(response.data.external.postings[i].images.length === 0) {
+                        if (response.data.external.postings[i].images.length === 0) {
                             response.data.external.postings[i].feedItemHeight = 179;
                             scrollTopOffset = scrollTopOffset + 179;
                         } else if (response.data.external.postings[i].images.length === 1) {
@@ -2594,6 +2808,19 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         $state.go('feed.splash', { id: elems.result.postingId });
     };
 
+
+    //This is called when user changes route. It stops javascript from interval polling in background.
+    $scope.$on('$destroy', function () {
+        feedFactory.deferred.resolve();
+        $interval.cancel($scope.intervalUpdate);
+
+        if(!$scope.results){
+            feedFactory.queryParams = {};
+        }
+
+        console.log('cancelled ongoing feed request and stopped interval');
+    });
+
 }]);
 
 
@@ -2617,15 +2844,19 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
 
     var factory = {};
 
-    factory.status = {
-        pleaseWait: true,
+    factory.spinner = {
+        show: true
     };
 
     factory.queryParams = {};
 
+    factory.persistedResults = [];
+
     factory.poll = function () {
 
-        var deferred = $q.defer();
+        console.log('feed query params', factory.queryParams);
+
+        factory.deferred = $q.defer();
 
         var polling_api = '';
 
@@ -2665,7 +2896,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
             polling_api += "&cityCode=" + factory.queryParams.cityCode;
         }
 
-        $http({method: 'GET', url: polling_api}).
+        $http({method: 'GET', url: polling_api, timeout:factory.deferred.promise}).
             then(function (response, status, headers, config) {
 
                 console.log('polling response', response);
@@ -2675,7 +2906,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
                     factory.queryParams.anchor = response.data.external.anchor;
                     factory.queryParams.cityCode = response.data.location.cityCode;
 
-                    deferred.resolve(response);
+                    factory.deferred.resolve(response);
 
                 } else {
 
@@ -2684,17 +2915,17 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
                     factory.status.error.trace = response.data.error.response.error;
 
 
-                    deferred.reject(response);
+                    factory.deferred.reject(response);
                 }
 
 
 
             }, function (response, status, headers, config) {
 
-                deferred.reject(response);
+                factory.deferred.reject(response);
             });
 
-        return deferred.promise;
+        return factory.deferred.promise;
     };
 
 
@@ -2879,9 +3110,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $scope.sideNav = sideNavFactory.sideNav;
 
-
-
-
+    //toggles sideNav left/right
     $scope.toggleOffCanvasSideNav = function () {
         $scope.sideNav.hidden = !$scope.sideNav.hidden;
     };
@@ -2913,7 +3142,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
 
 
-        if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
+        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash') {
             if ($rootScope.currentState === 'feed') {
                 $scope.sideNav.listView = true;
             } else {
@@ -2997,15 +3226,17 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
 
 
-    //RUNS ON PAGE LOAD.  Fetches user object from server as soon as page loads
+    //RUNS ON PAGE LOAD.
     if ($scope.userObj.user_settings.loggedIn) {
 
+        //Connect to Google Analytics... This will fail if app running in dev env.
         try {
             ga('set', '&uid', 'bdavis');
         } catch (err){
             console.log('Google Analytics not running');
         }
 
+        //Fetches user object from server as soon as page loads
         Session.getUserFromServer().then(function (response) {
             Session.create(response);
         });
@@ -3085,24 +3316,24 @@ htsApp.factory('metaFactory', function () {
 
     factory.metatags = {
         page: {
-            title: "HashtagSell · Rethinking Online Classifieds",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            title: "HashtagSell | Reinventing Online Classifieds",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
             faviconUrl: "https://static.hashtagsell.com/htsApp/favicon/favicon.ico"
         },
         facebook: {
-            title: "HashtagSell Online Classifieds",
+            title: "HashtagSell | Reinventing Online Classifieds",
             image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png",
             site_name: "HashtagSell.com",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
             url: null
         },
         twitter: {
             card: "summary_large_image",
             site: "@hashtagsell",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            title: "HashtagSell.com - Rethinking Online Classifieds",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
+            title: "HashtagSell.com | Reinventing Online Classifieds",
             creator: "@hashtagsell",
-            image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png",
+            image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png"
         }
     };
 
@@ -4275,6 +4506,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
         }, function (reason) {
             if(reason === "dismiss"){
+                $state.go('myposts');
                 console.log('Modal dismissed at: ' + new Date());
             }
         });
@@ -4310,14 +4542,33 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, mentionsFactory, $templateCache, ENV, Session, Notification) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.clearDemo = function () {
-        console.log("clearing contents");
-        if (!$scope.demoCleared) {
+    $scope.animatedGifUrl = null;
+    $timeout(function () {
+        $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
+    }, 200);
+
+
+    $scope.showDemo = true;
+    $scope.hideDemo = function () {
+        $scope.showDemo = false;
+    };
+
+    $scope.clearPlaceholder = function () {
+        if (!$scope.placeholderCleared) {
+            console.log("clearing placeholder");
             document.getElementById("htsPost").innerHTML = "";
-            $scope.demoCleared = true;
+            $scope.resetAll();
+            $scope.placeholderCleared = true;
+        } else {
+            console.log('placeholder already cleared');
         }
+    };
+
+    $scope.toggleExampleVisibility = true;
+    $scope.clearExampleReminder = function () {
+        $scope.toggleExampleVisibility = false;
     };
 
     $scope.manualCategorySelect = mentionsFactory.manualCategorySelect;
@@ -4921,21 +5172,23 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 'removedfile': function () {
                     console.log("image removed");
                     $scope.numImages = $scope.numImages - 1;
-                    scope.$apply($scope.numImages);
+                    $scope.$apply($scope.numImages);
                 },
                 'uploadprogress': function(progress) {
                     //$scope.uploadProgress = progress;
                     //console.log($scope.uploadProgress);
                 },
                 'totaluploadprogress': function(progress) {
-                    $scope.uploadProgress = progress;
-                    $scope.$apply($scope.uploadProgress);
-                    if(progress < 100) {
-                        $scope.uploadMessage = Math.round(progress) + '%';
+                    if(progress) {
+                        $scope.uploadProgress = progress;
                         $scope.$apply($scope.uploadProgress);
-                    } else if (progress === 100) {
-                        $scope.uploadMessage = 'Preparing photos.. please wait.';
-                        $scope.$apply($scope.uploadProgress);
+                        if (progress < 100) {
+                            $scope.uploadMessage = Math.round(progress) + '%';
+                            $scope.$apply($scope.uploadProgress);
+                        } else if (progress === 100) {
+                            $scope.uploadMessage = 'Preparing photos.. please wait.';
+                            $scope.$apply($scope.uploadProgress);
+                        }
                     }
                 }
             },
@@ -4945,12 +5198,12 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
 
     $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
+        $scope.alerts.banners.splice(index, 1);
     };
 
-    $scope.validatePost = function () {
+    $scope.alerts = mentionsFactory.alerts;
 
-        $scope.alerts = [];
+    $scope.validatePost = function () {
 
         var newPost = $scope.jsonObj;
 
@@ -4959,13 +5212,13 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 if (!$scope.isEmpty(newPost.location)) {
                     $scope.processPost();
                 } else {
-                    $scope.alerts.push({
+                    $scope.alerts.banners.push({
                         type: 'danger',
                         msg: 'Use the @ symbol in your post to specify where the buyer should pickup the item.'
                     });
                 }
             } else {
-                $scope.alerts.push({
+                $scope.alerts.banners.push({
                     type: 'danger',
                     msg: 'Add more #\'s to describe your item for sale, or manually specify a category.'
                 });
@@ -4974,7 +5227,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.jsonObj.category = "ZOTH";
             }
         } else {
-            $scope.alerts.push({
+            $scope.alerts.banners.push({
                 type: 'danger',
                 msg: 'Use the # symbol in your post to describe the item you\'re selling.  Hint: You can add more than one hashtag if you want.'
             });
@@ -5000,7 +5253,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
 
-    //Sellbox directive calls this to update model when a hash
+    //Sellbox directive calls this to update model when a special character is removed
     $scope.cleanModel = function(type, mentionToRemove) {
         mentionsFactory.cleanModel(type, mentionToRemove);
     };
@@ -5057,17 +5310,31 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.products = results;
                 //console.log("Here is scope.products", $scope.products);
             });
+        } else {
+            $scope.products = [
+                {
+                    value: "Describe your item for sale",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getProductTextRaw = function (product) {
-        mentionsFactory.getProductMetaData(product).then(function (jsonTemplate) {
-            //console.log(jsonTemplate);
-            //console.log("done");
-        }, function (err) {
-            console.log(err);
-        });
-        return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+        console.log('============================');
+        console.log(product);
+        console.log('============================');
+        if(!product.demoText) {
+            if (mentionsFactory.getProductMetaData(product)) {
+                return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+            } else {
+                //$scope.alerts.banners.push({
+                //    type: 'danger',
+                //    msg: 'Duplicate hashtags not necessary'
+                //});
+                return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
+            }
+        }
     };
 
 
@@ -5077,23 +5344,33 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.searchPlaces = function (term) {
 
         if (term) {
-
             if($scope.isEmpty($scope.jsonObj.location)) {
                 mentionsFactory.predictPlace(term).then(function (results) {
                     $scope.places = results;
                     //console.log("Here is scope.places", $scope.places);
                 });
             }
+        } else {
+            $scope.places = [
+                {
+                    description: "Specify a landmark OR address to pickup item",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getPlacesTextRaw = function (selectedPlace) {
-        mentionsFactory.getPlaceMetaData(selectedPlace).then(function (jsonTemplate) {
-            console.log(jsonTemplate);
-            //console.log("done");
-        });
-
-        return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
+        if(!selectedPlace.demoText) {
+            if (mentionsFactory.getPlaceMetaData(selectedPlace)) {
+                return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
+            } else {
+                $scope.alerts.banners.push({
+                    type: 'danger',
+                    msg: 'Please only use one @ symbol in your post'
+                });
+            }
+        }
     };
 
     //========= $ Prices =========
@@ -5103,63 +5380,102 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 $scope.prices = mentionsFactory.predictPrice(term);
                 //console.log("here is scope.prices", $scope.prices);
             }
+        } else {
+            $scope.prices = [
+                {
+                    suggestion: "Type your asking price",
+                    demoText: true
+                }
+            ];
         }
     };
 
     $scope.getPricesTextRaw = function (selectedPrice) {
-        mentionsFactory.getPriceMetaData(selectedPrice);
-        return '<span class="mention-highlighter-price" contentEditable="false">$' + selectedPrice.suggestion + '</span>';
+        if(!selectedPrice.demoText) {
+            if (mentionsFactory.getPriceMetaData(selectedPrice)) {
+                if($scope.jsonObj.price_avg) {
+                    if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
+                        return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                    } else {
+                        var message = 'Just a friendly warning that your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
+                        $scope.alerts.banners.push({
+                            type: 'warning',
+                            msg: message
+                        });
+                        return '<span class="mention-highlighter-price mention-highlighter-price-high" tooltip-placement="bottom" tooltip="Higher than average price" tooltip-trigger="mouseenter" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                    }
+                } else {
+                    return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                }
+            } else {
+                //$scope.alerts.banners.push({
+                //    type: 'danger',
+                //    msg: 'Please only use one $ symbol in your post.'
+                //});
+                console.log('new post Controller sees priceMetaData returned false.');
+            }
+        }
     };
 
 
 
     //Demo plays to describe how to sell an item
-    (function demo () {
-        $timeout(function () {
-            if (!$scope.demoCleared) {
-                $(".mention-highlighter").triggerHandler('show');
-            }
-
-            $timeout(function () {
-                if (!$scope.demoCleared) {
-                    $(".mention-highlighter").triggerHandler('hide');
-                    $(".mention-highlighter-price").triggerHandler('show');
-                }
-
-                $timeout(function () {
-                    if (!$scope.demoCleared) {
-                        $(".mention-highlighter-price").triggerHandler('hide');
-                        $(".mention-highlighter-location").triggerHandler('show');
-                    }
-
-                    $timeout(function () {
-                        if (!$scope.demoCleared) {
-                            $(".mention-highlighter-location").triggerHandler('hide');
-                            $(".sellModalButton").triggerHandler('show');
-                        }
-
-                        $timeout(function () {
-                            $(".sellModalButton").triggerHandler('hide');
-                        }, 4000);
-
-                    }, 4000);
-
-                }, 4000);
-
-            }, 4000);
-
-        }, 1000);
-    })();
+    //(function demo () {
+    //    $timeout(function () {
+    //        if (!$scope.demoCleared) {
+    //            $(".mention-highlighter").triggerHandler('show');
+    //        }
+    //
+    //        $timeout(function () {
+    //            if (!$scope.demoCleared) {
+    //                $(".mention-highlighter").triggerHandler('hide');
+    //                $(".mention-highlighter-price").triggerHandler('show');
+    //            }
+    //
+    //            $timeout(function () {
+    //                if (!$scope.demoCleared) {
+    //                    $(".mention-highlighter-price").triggerHandler('hide');
+    //                    $(".mention-highlighter-location").triggerHandler('show');
+    //                }
+    //
+    //                $timeout(function () {
+    //                    if (!$scope.demoCleared) {
+    //                        $(".mention-highlighter-location").triggerHandler('hide');
+    //                        $(".sellModalButton").triggerHandler('show');
+    //                    }
+    //
+    //                    $timeout(function () {
+    //                        $(".sellModalButton").triggerHandler('hide');
+    //                    }, 4000);
+    //
+    //                }, 4000);
+    //
+    //            }, 4000);
+    //
+    //        }, 4000);
+    //
+    //    }, 1000);
+    //})();
+    //$timeout(function () {
+    //    $(".mention-highlighter").triggerHandler('show');
+    //    $("div[content='# your item']").css('left', parseInt($("div[content='# your item']").css('left')) - 26 + 'px');
+    //    $(".mention-highlighter-price").triggerHandler('show');
+    //    $(".mention-highlighter-location").triggerHandler('show');
+    //}, 200);
 
 }]);
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, ENV, utilsFactory, Notification) {
+htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', 'utilsFactory', 'Notification', function ($q, $http, $timeout, $filter, ENV, utilsFactory, Notification) {
 
     var factory = {}; //init the factory
 
     var tempDiv = document.createElement("DIV"); //Used for stripping html from strings
+
+    factory.alerts = {
+        banners: []
+    };
 
     factory.defaultJson = {
         "annotations": [],
@@ -5319,8 +5635,13 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
         var deferred = $q.defer();
 
+
         if(selectedProduct) {
-            this.jsonTemplate.hashtags.push(selectedProduct.value);
+            if(_.indexOf(this.jsonTemplate.hashtags, selectedProduct.value) === -1) {
+                this.jsonTemplate.hashtags.push(selectedProduct.value);
+            } else {
+                return false;
+            }
         }
 
         if(this.jsonTemplate.hashtags.length) {
@@ -5348,22 +5669,28 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                                 factory.jsonTemplate.annotations = annotationArray;
 
-                            } else {
-
-                                Notification.primary({
-                                    title: "Hrmmmmm",
-                                    message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
-                                });
-
                             }
+                            //else {
+                            //
+                            //    Notification.primary({
+                            //        title: "Hrmmmmm",
+                            //        message: "We didn't recognize that hashtag.  Add more hashtags to help us out."
+                            //    });
+                            //
+                            //}
 
                             deferred.resolve(factory.jsonTemplate);
 
                         }, function (err) { //failed to lookup Amazon annotations
 
-                            Notification.error({
-                                title: "Ooops",
-                                message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                            //Notification.error({
+                            //    title: "Ooops",
+                            //    message: "Couldn't fetch Amazon data.  We're working on this."
+                            //});
+
+                            factory.alerts.banners.push({
+                                type: 'danger',
+                                msg: "Couldn't fetch Amazon data.  We're working on this.  Please continue with your post."
                             });
 
                             deferred.reject(err);
@@ -5372,18 +5699,28 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
                     }, function (err) {  //failed to lookup internal annotations
 
-                        Notification.error({
-                            title: "Ooops",
-                            message: "We seem to be having difficulty.  Don't worry, we've got our best geeks on the case."
+                        //Notification.error({
+                        //    title: "Ooops",
+                        //    message: "Couldn't lookup internal production annotations.  We're working on this."
+                        //});
+
+                        factory.alerts.banners.push({
+                            type: 'danger',
+                            msg: "Couldn't lookup internal production annotations.  We're working on this.  Please continue with your post."
                         });
 
                     });
 
                 }, function (err) { //failed to lookup category metadata
 
-                    Notification.error({
-                        title: "Cannot lookup cateogry metadata",
-                        message: err.message
+                    //Notification.error({
+                    //    title: "Cannot lookup category metadata",
+                    //    message: err.message
+                    //});
+
+                    factory.alerts.banners.push({
+                        type: 'danger',
+                        msg: "We appear to be having issues with out categories API.  Please try again later."
                     });
 
                 });
@@ -5676,31 +6013,39 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
             console.log('HASHTAG TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.hashtags = _.without(this.jsonTemplate.hashtags, valueToRemove);
+            if(valueToRemove) {
+                this.jsonTemplate.hashtags = _.without(this.jsonTemplate.hashtags, valueToRemove);
 
-            console.log(this.jsonTemplate);
-
-            factory.getProductMetaData();
+                factory.getProductMetaData();
+            } else {
+                console.log('hashtag to remove is empty.. not cleaning model');
+            }
 
         } else if (type === "$") {
 
             console.log('PRICE TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.price = null;
-            this.jsonTemplate.price_avg = null;
-            this.jsonTemplate.price_type = null;
-
-            console.log(this.jsonTemplate);
+            if(valueToRemove) {
+                this.jsonTemplate.price = null;
+                this.jsonTemplate.price_avg = null;
+                this.jsonTemplate.price_type = null;
+            } else {
+                console.log('price is empty, not cleaning model');
+            }
 
         } else if (type === "@") {
 
             console.log('LOCATION TO REMOVE: ', valueToRemove);
 
-            this.jsonTemplate.location = {};
-
-            console.log(this.jsonTemplate);
+            if(valueToRemove) {
+                this.jsonTemplate.location = {};
+            } else {
+                console.log('location to remove is empty, not cleaning model');
+            }
 
         }
+
+        console.log(this.jsonTemplate);
     };
 
 
@@ -5768,105 +6113,110 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
         var country = null;
         var zipcode = null;
 
-        googleMaps.getDetails(request, function (placeMetaData, status) {
+        //if(!factory.jsonTemplate.location) {
 
-            if (status != google.maps.places.PlacesServiceStatus.OK) {
-                console.log(status);
-                return;
-            }
+            googleMaps.getDetails(request, function (placeMetaData, status) {
 
-            placeMetaData.description = selectedPlace.description;
-
-            console.log("here is our extra meta data");
-            console.log(placeMetaData);
-
-            var locationObj = {};
-            var geo = {};
-            geo.location = {};
-
-            if (placeMetaData.formatted_address) {
-                locationObj.formatted_address = placeMetaData.formatted_address;
-            }
-
-
-            if (placeMetaData.geometry.location.lat()) {
-                locationObj.lat = placeMetaData.geometry.location.lat();
-                locationObj.long = placeMetaData.geometry.location.lng();
-
-                var lat = placeMetaData.geometry.location.lat();
-                var long = placeMetaData.geometry.location.lng();
-
-                geo.coords = [long, lat];
-            }
-
-
-
-            if (placeMetaData.address_components) {
-
-                for (var i = 0; i < placeMetaData.address_components.length; ++i) {
-
-                    //Get State
-                    if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
-                        state = placeMetaData.address_components[i].short_name;
-                        locationObj.state = state;
-                        geo.location.state = state;
-                    }
-
-                    //Get City
-                    if (placeMetaData.address_components[i].types[0] == "locality") {
-                        city = placeMetaData.address_components[i].long_name;
-                        locationObj.short_name = city;
-                        geo.location.city = city;
-                    }
-
-                    //Get Country
-                    if (placeMetaData.address_components[i].types[0] == "country") {
-                        country = placeMetaData.address_components[i].short_name;
-                        locationObj.country = country;
-                        geo.location.country = country;
-                    }
-
-                    //Get Zipcode
-                    if (placeMetaData.address_components[i].types[0] == "postal_code") {
-                        zipcode = placeMetaData.address_components[i].short_name;
-                        locationObj.zipcode = zipcode;
-                        geo.location.postalCode = zipcode;
-                    }
+                if (status !== google.maps.places.PlacesServiceStatus.OK) {
+                    console.log(status);
+                    return;
                 }
 
-                //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
-                if(!geo.location.postalCode) {
+                placeMetaData.description = selectedPlace.description;
 
-                    $http.get('/search/reversegeocode', {
-                        params: {
-                            lat: placeMetaData.geometry.location.lat(),
-                            long: placeMetaData.geometry.location.lng()
+                console.log("here is our extra meta data");
+                console.log(placeMetaData);
+
+                var locationObj = {};
+                var geo = {};
+                geo.location = {};
+
+                if (placeMetaData.formatted_address) {
+                    locationObj.formatted_address = placeMetaData.formatted_address;
+                }
+
+
+                if (placeMetaData.geometry.location.lat()) {
+                    locationObj.lat = placeMetaData.geometry.location.lat();
+                    locationObj.long = placeMetaData.geometry.location.lng();
+
+                    var lat = placeMetaData.geometry.location.lat();
+                    var long = placeMetaData.geometry.location.lng();
+
+                    geo.coords = [long, lat];
+                }
+
+
+                if (placeMetaData.address_components) {
+
+                    for (var i = 0; i < placeMetaData.address_components.length; ++i) {
+
+                        //Get State
+                        if (placeMetaData.address_components[i].types[0] == "administrative_area_level_1") {
+                            state = placeMetaData.address_components[i].short_name;
+                            locationObj.state = state;
+                            geo.location.state = state;
                         }
-                    }).success(function (data, status) {
 
-                        console.log(data);
+                        //Get City
+                        if (placeMetaData.address_components[i].types[0] == "locality") {
+                            city = placeMetaData.address_components[i].long_name;
+                            locationObj.short_name = city;
+                            geo.location.city = city;
+                        }
 
-                        for(j=0; j<data.results[0].address_components.length; j++){
+                        //Get Country
+                        if (placeMetaData.address_components[i].types[0] == "country") {
+                            country = placeMetaData.address_components[i].short_name;
+                            locationObj.country = country;
+                            geo.location.country = country;
+                        }
 
-                            var adComponent = data.results[0].address_components[j];
+                        //Get Zipcode
+                        if (placeMetaData.address_components[i].types[0] == "postal_code") {
+                            zipcode = placeMetaData.address_components[i].short_name;
+                            locationObj.zipcode = zipcode;
+                            geo.location.postalCode = zipcode;
+                        }
+                    }
 
-                            if (adComponent.types[0] == "postal_code") {
-                                geo.location.postalCode = adComponent.long_name;
-                                break;
+                    //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
+                    if (!geo.location.postalCode) {
+
+                        $http.get('/search/reversegeocode', {
+                            params: {
+                                lat: placeMetaData.geometry.location.lat(),
+                                long: placeMetaData.geometry.location.lng()
                             }
-                        }
+                        }).success(function (data, status) {
 
-                    });
+                            console.log(data);
+
+                            for (j = 0; j < data.results[0].address_components.length; j++) {
+
+                                var adComponent = data.results[0].address_components[j];
+
+                                if (adComponent.types[0] === "postal_code") {
+                                    geo.location.postalCode = adComponent.long_name;
+                                    break;
+                                }
+                            }
+
+                        });
+                    }
+
                 }
 
-            }
+                factory.jsonTemplate.location = locationObj;
 
-            factory.jsonTemplate.location = locationObj;
+                factory.jsonTemplate.geo = geo;
 
-            factory.jsonTemplate.geo = geo;
+                deferred.resolve(factory.jsonTemplate);
+            });
 
-            deferred.resolve(factory.jsonTemplate);
-        });
+        //} else {
+        //    return false;
+        //}
 
         return deferred.promise;
     };
@@ -5881,12 +6231,16 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
     factory.predictPrice = function (term) {
 
         var priceSuggestionArray = [];
-        priceSuggestionArray.push({suggestion: term, rate: "flat_rate", value: term});
-        priceSuggestionArray.push({suggestion: term + "/hr", rate: "hourly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/day", rate: "daily", value: term});
-        priceSuggestionArray.push({suggestion: term + "/week", rate: "weekly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/month", rate: "monthly", value: term});
-        priceSuggestionArray.push({suggestion: term + "/year", rate: "yearly", value: term});
+
+        var formattedPrice = $filter('currency')(term, '$', 0);
+
+        priceSuggestionArray.push({suggestion: formattedPrice, rate: "flat_rate", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/hr", rate: "hourly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/day", rate: "daily", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/week", rate: "weekly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/month", rate: "monthly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/year", rate: "yearly", value: term});
+        priceSuggestionArray.push({suggestion: formattedPrice + "/each", rate: "yearly", value: term});
 
         return priceSuggestionArray;
     };
@@ -5896,8 +6250,18 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
 
 
     factory.getPriceMetaData = function (selectedPrice) {
-        this.jsonTemplate.price = selectedPrice.value;
-        this.jsonTemplate.price_type = selectedPrice.rate;
+
+        console.log('here is what we have in price meta data', this.jsonTemplate.price);
+
+        if(this.jsonTemplate.price === null) {
+
+            this.jsonTemplate.price = selectedPrice.value;
+            this.jsonTemplate.price_type = selectedPrice.rate;
+
+            return true;
+        } else {
+            return false;
+        }
     };
 
 
@@ -5908,15 +6272,45 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', 'ENV', 'utilsFactor
  */
 htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
 
+    $scope.currentlyPublishing = {
+        publishing: false,
+        facebook: false,
+        twitter: false,
+        amazon: false,
+        ebay: false,
+        craigslist: false,
+        onlinePayment: false
+    };
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
     $scope.dismiss = function (reason) {
+
+        $scope.currentlyPublishing.publishing = true;
+
         $scope.publishToFacebook().then(function(){
+
+            $scope.currentlyPublishing.facebook = false;
+
             $scope.publishToTwitter().then(function(){
+
+                $scope.currentlyPublishing.twitter = false;
+
                 $scope.publishToAmazon().then(function(){
+
+                    $scope.currentlyPublishing.amazon = false;
+
                    $scope.publishToEbay().then(function(){
+
+                       $scope.currentlyPublishing.ebay = false;
+
                        $scope.publishToCraigslist().then(function(){
+
+                           $scope.currentlyPublishing.craigslist = false;
+
                            $scope.setupOnlinePayment().then(function() {
+
+                               $scope.currentlyPublishing.onlinePayment = false;
+
                                $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
                            });
                        });
@@ -5946,14 +6340,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.facebook) {
 
+            $scope.currentlyPublishing.facebook = true;
+
             facebookFactory.publishToWall(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Facebook publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -5982,14 +6373,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.twitter) {
 
+            $scope.currentlyPublishing.twitter = true;
+
             twitterFactory.publishToTwitter(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Twitter publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -6018,6 +6406,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.amazon) {
 
+            $scope.currentlyPublishing.amazon = true;
+
             Notification.error({
                 title: "Amazon publishing error",
                 message: "push to amazon coming soon!",
@@ -6040,14 +6430,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.ebay) {
 
+            $scope.currentlyPublishing.ebay = true;
+
             ebayFactory.publishToEbay(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Ebay publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -6091,6 +6478,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.craigslist) {
 
+            $scope.currentlyPublishing.craigslist = true;
+
             Notification.error({
                 title: "Craigslist publishing error",
                 message: "push to craiglist coming soon!",
@@ -6111,6 +6500,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         var deferred = $q.defer();
 
         if($scope.onlinePayment.allow) {
+
+            $scope.currentlyPublishing.onlinePayment = true;
 
             subMerchantFactory.validateSubMerchant(newPost).then(function(response){
 
@@ -6362,13 +6753,15 @@ htsApp.factory('profileFactory', ['$http', '$location', '$q', 'ENV', function ($
     return factory;
 
 }]);
-htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
+htsApp.controller('results.controller', ['$scope', '$state', '$stateParams', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, $stateParams, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
 
     //While true the hashtagspinner will appear
     $scope.status = searchFactory.status;
 
     //Tracks state of grid visible or not
     $scope.views = searchFactory.views;
+
+    $scope.queryObj = $stateParams;
 
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view
@@ -6571,16 +6964,16 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         var avg = (total / response.data.length);
 
-                        console.log('total: ', total, ' divided by number of categories: ', response.data.length, ' equals: ', avg);
+                        //console.log('total: ', total, ' divided by number of categories: ', response.data.length, ' equals: ', avg);
 
                         for (var j = 0; j < response.data.length; j++) {
 
                             var secondCategory = response.data[j];
 
-                            console.log('total number of items: ', total);
-                            console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                            //console.log('total number of items: ', total);
+                            //console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
                             var percentage = (secondCategory.count/total) * 100;
-                            console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+                            //console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
 
 
                             if (percentage >= 10) {
@@ -6613,7 +7006,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
             }).then(function () {
 
-                console.log($stateParams);
+                console.log('state params are: ', $stateParams);
 
                 factory.defaultParams.filters.mandatory.contains.heading = $stateParams.q;
 
@@ -6627,6 +7020,19 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         factory.defaultParams.geo.coords = [lon, lat];
                     }
+                }
+
+                if($stateParams.price){
+                    if($stateParams.price.min){
+                        factory.priceSlider.userSetValue = true;
+                        factory.priceSlider.rangeValue[0] = parseInt($stateParams.price.min);
+                    }
+
+                    if($stateParams.price.max){
+                        factory.priceSlider.userSetValue = true;
+                        factory.priceSlider.rangeValue[1] = parseInt($stateParams.price.max);
+                    }
+                    console.log('manually set pricesliders', factory.priceSlider);
                 }
 
                 factory.query(page).then(function (response) {
@@ -6677,7 +7083,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var deferred = $q.defer();
 
-        //console.log(factory.defaultParams);
+        console.log('before braketizing url', factory.defaultParams);
 
         var bracketURL = utilsFactory.bracketNotationURL(factory.defaultParams);
         console.log('final URL', bracketURL);
@@ -6802,6 +7208,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     //Evaluates the width of the browser and builds array with array of rows.
     factory.generateRows = function (results, reason, views) {
 
+        //console.log('generate rows', results, reason, views);
+
         var numColumns;
 
         //If user has gridView enabled calculate columns, else build list view.
@@ -6857,9 +7265,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                             //console.log(i + j);
 
 
-                            if (results[i + j].askingPrice.value) {
-                                factory.updatePriceSlider(results[i + j].askingPrice.value);
-                            }
+                            //if (results[i + j].askingPrice.value) {
+                            //    factory.updatePriceSlider(results[i + j].askingPrice.value);
+                            //}
 
 
                             row.rowContents.push(results[i + j]);
@@ -6901,6 +7309,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     factory.updatePriceSlider = function (itemPrice) {
+
+        console.log(itemPrice);
 
         if (parseInt(itemPrice) > parseInt(factory.priceSlider.max)) {
 
@@ -6949,6 +7359,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.images.length);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -6958,6 +7370,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHavePrice = function(element, index){
 
         var visibleStatus = Boolean(element.askingPrice.value);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -6969,6 +7383,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(!element.askingPrice.value || element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -6979,6 +7395,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -6988,6 +7406,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHaveImageAndMustFitPriceRange = function(element, index){
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -7000,6 +7420,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -7010,6 +7432,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange = function(element, index){
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -7074,6 +7498,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         } else {
 
             for (i = 0; i < factory.results.unfiltered.length; i++ ) {
+
+                factory.updatePriceSlider(factory.results.unfiltered[i].askingPrice.value);
+
                 factory.markerMaker(factory.results.unfiltered[i], i, true);
             }
 
@@ -8824,7 +9251,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
-                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash_v2.png)",
                         'background-size': "cover"
                     });
 
@@ -9875,7 +10302,24 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
             return tmp.textContent || tmp.innerText || "";
         }
 
-        newPost.plainTextBody = strip(newPost.body);
+
+        var bodyElem = $('<div>' + newPost.body + '</div>');
+
+        $(bodyElem.find('.mention-highlighter')).each(function(i){
+            var text = $(this).text();
+            text = text.replace(/ /g,'');
+            $(this).text(text);
+        });
+
+
+        $(bodyElem.find('.mention-highlighter-location')).each(function(i){
+            var text = $(this).text();
+            text = text.replace('@','at ');
+            $(this).text(text);
+        });
+
+
+        newPost.plainTextBody = strip(bodyElem.html());
 
 
         var currentDate = new Date();
@@ -9888,13 +10332,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             if(newPost.images.length) {
                 fbPost = {
-                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
                     access_token: facebook.token,
                 };
             } else {
                 fbPost = {
-                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 };
@@ -10116,7 +10560,24 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
             return tmp.textContent || tmp.innerText || "";
         }
 
-        newPost.plainTextBody = strip(newPost.body);
+
+        var bodyElem = $('<div>' + newPost.body + '</div>');
+
+        $(bodyElem.find('.mention-highlighter')).each(function(i){
+            var text = $(this).text();
+            text = text.replace(/ /g,'');
+            $(this).text(text);
+        });
+
+
+        $(bodyElem.find('.mention-highlighter-location')).each(function(i){
+            var text = $(this).text();
+            text = text.replace('@','at ');
+            $(this).text(text);
+        });
+
+
+        newPost.plainTextBody = strip(bodyElem.html());
 
         //We already have twitter token for user.. just post to twitter.
         if(!factory.isEmpty(twitter)) {
@@ -11552,7 +12013,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "<div ui-view></div>\n" +
     "\n" +
     "<div class=\"outer-container col-xs-12\">\n" +
-    "    <img ng-if=\"status.pleaseWait\" src=\"https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif\" class=\"spinner-abs-center\"/>\n" +
+    "    <spinner ng-if=\"spinner.show\" class=\"spinner-container\" spinner-text=\"Finding recently posted items around you\"></spinner>\n" +
     "\n" +
     "    <div vs-repeat class=\"inner-container row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
     "        <div class=\"list-item\" ng-repeat=\"result in results\" ng-click=\"openSplash(this)\">\n" +
@@ -12313,72 +12774,100 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "<div class=\"modal-body dropzone hts-post-modal-body\" dropzone=\"dropzoneConfig\">\n" +
     "\n" +
-    "    <div class=\"row remove-row-margins\">\n" +
+    "    <div class=\"sell-box-demo\" ng-show=\"showDemo\">\n" +
     "\n" +
-    "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
+    "        <alert type=\"warning\">\n" +
+    "            <div style=\"text-align: center; font-size: 17px;\">\n" +
+    "                <i class=\"fa fa-info-circle\"></i>\n" +
+    "                Watch the tutorial below then\n" +
+    "                <btn class=\"btn btn-warning\" style=\"font-size: 17px;\" ng-click=\"hideDemo()\">Click this button to sell your item!</btn>\n" +
+    "            </div>\n" +
+    "        </alert>\n" +
     "\n" +
-    "        <div class=\"hts-input-container\">\n" +
-    "            <div id=\"htsPost\"\n" +
-    "                 ng-class=\"jsonObj.category_name ? 'col-md-10' : 'col-md-12' \"\n" +
-    "                 class=\"hts-input\" style=\"clear:both;\"\n" +
-    "                 mentio\n" +
-    "                 contenteditable\n" +
-    "                 sellbox\n" +
-    "                 ng-focus=\"clearDemo()\"\n" +
-    "                 data-placeholder=\"I'm selling\"\n" +
-    "                 mentio-require-leading-space=\"true\"\n" +
-    "                 mentio-macros=\"macros\"\n" +
-    "                 mentio-id=\"'hashtag'\"\n" +
-    "                 mentio-typed-term=\"typedTerm\"\n" +
-    "                 ng-model=\"jsonObj.body\">\n" +
+    "        <animated-gif animation-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_animation.gif\" static-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_static.png\"/>\n" +
+    "    </div>\n" +
     "\n" +
-    "                I'm selling my <span class=\"mention-highlighter\" contenteditable=\"false\" popover-placement=\"bottom\" popover=\"# your item for sale\" popover-trigger=\"show\">#coffee table</span>&nbsp;\n" +
-    "                for <span  class=\"mention-highlighter-price\" contenteditable=\"false\" popover-placement=\"top\" popover=\"$ your price\" popover-trigger=\"show\">$75</span>&nbsp;\n" +
-    "                <span class=\"mention-highlighter-location\" contenteditable=\"false\" popover-placement=\"bottom\" popover=\"@ your meeting location!\" popover-trigger=\"show\">@1234 Mulberry Street, New York, NY, United States</span>&nbsp;\n" +
+    "    <div class=\"sell-box\" ng-show=\"!showDemo\">\n" +
+    "        <div class=\"row remove-row-margins\">\n" +
+    "\n" +
+    "            <alert type=\"info\" style=\"font-size: 17px;\" close=\"clearExampleReminder()\" ng-show=\"toggleExampleVisibility\">\n" +
+    "                <b>Example: </b>\n" +
+    "                \"<i>I'm selling my <span class=\"mention-highlighter\" contenteditable=\"false\">#item name</span>&nbsp;\n" +
+    "                for  <span  class=\"mention-highlighter-price\" contenteditable=\"false\">$item price</span>&nbsp;\n" +
+    "                <span class=\"mention-highlighter-location\" contenteditable=\"false\">@meeting location</span>&nbsp;\"</i>\n" +
+    "                <br>\n" +
+    "                <br>\n" +
+    "                <small>(Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.)</small>\n" +
+    "            </alert>\n" +
+    "\n" +
+    "            <alert ng-repeat=\"banner in alerts.banners\" type=\"{{banner.type}}\" close=\"closeAlert($index)\">{{banner.msg}}</alert>\n" +
+    "\n" +
+    "            <!--<pre>-->\n" +
+    "                <!--{{jsonObj}}-->\n" +
+    "            <!--</pre>-->\n" +
+    "\n" +
+    "            <div class=\"hts-input-container\">\n" +
+    "                <div id=\"htsPost\"\n" +
+    "                     ng-class=\"jsonObj.category_name ? 'col-md-10' : 'col-md-12' \"\n" +
+    "                     class=\"hts-input\" style=\"clear:both;\"\n" +
+    "                     mentio\n" +
+    "                     contenteditable\n" +
+    "                     sellbox\n" +
+    "                     ng-focus=\"clearPlaceholder()\"\n" +
+    "                     mentio-require-leading-space=\"false\"\n" +
+    "                     mentio-macros=\"macros\"\n" +
+    "                     mentio-id=\"'hashtag'\"\n" +
+    "                     mentio-typed-term=\"typedTerm\"\n" +
+    "                     ng-model=\"jsonObj.body\">\n" +
+    "                    <span>I'm selling my...</span>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div ng-class=\"{ 'hts-annotations-container' : jsonObj.category_name}\">\n" +
+    "                    <div ng-show=\"jsonObj.annotations.length\" ng-repeat=\"annotation in jsonObj.annotations\">\n" +
+    "                        <input ng-model=\"jsonObj.annotations[$index].value\" placeholder=\"{{annotation.key}}\" class=\"hts-annotation-input\">\n" +
+    "                    </div>\n" +
+    "                    <div ng-show=\"!jsonObj.annotations.length && jsonObj.category_name\">\n" +
+    "                        <div class=\"spinner\">\n" +
+    "                            <div class=\"bounce1\"></div>\n" +
+    "                            <div class=\"bounce2\"></div>\n" +
+    "                            <div class=\"bounce3\"></div>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
     "            </div>\n" +
     "\n" +
-    "            <div ng-class=\"{ 'hts-annotations-container' : jsonObj.category_name}\">\n" +
-    "                <div ng-show=\"jsonObj.annotations.length\" ng-repeat=\"annotation in jsonObj.annotations\">\n" +
-    "                    <input ng-model=\"jsonObj.annotations[$index].value\" placeholder=\"{{annotation.key}}\" class=\"hts-annotation-input\">\n" +
-    "                </div>\n" +
-    "                <div ng-show=\"!jsonObj.annotations.length && jsonObj.category_name\">\n" +
-    "                    <div class=\"spinner\">\n" +
-    "                        <div class=\"bounce1\"></div>\n" +
-    "                        <div class=\"bounce2\"></div>\n" +
-    "                        <div class=\"bounce3\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <!--<pre>-->\n" +
+    "            <!--{{jsonObj}}-->\n" +
+    "        <!--</pre>-->\n" +
+    "\n" +
+    "        <div class=\"row remove-row-margins\">\n" +
+    "            <div class=\"inset-toolbar\">\n" +
+    "                <div>\n" +
+    "                    <div style=\"position: absolute; bottom: 15px;\">\n" +
+    "                        <button id=\"imageUpload\" class=\"btn btn-primary\" style=\"height: 45px; border-radius: 0px 0px 0px 4px;\">\n" +
+    "                            <i class=\"fa fa-camera\"> Add photo</i>\n" +
+    "                        </button>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <progressbar value=\"uploadProgress\" id=\"imgPreviewsContainer\" class=\"dz-preview-container progress-striped active\">{{uploadMessage}}</progressbar>\n" +
+    "\n" +
+    "                    <div style=\"position: absolute; right: 15px; bottom: 15px;\" class=\"sellModalButton\" popover-placement=\"left\" popover=\"Publish on Amazon, eBay, Craigslist, and HashtagSell!\" popover-trigger=\"show\">\n" +
+    "                        <button class=\"btn btn-primary\" ng-click=\"validatePost()\" style=\"height: 45px; border-radius: 0px 0px 4px 0px;\">\n" +
+    "                            <i class=\"fa fa-slack\">Sell It</i>\n" +
+    "                        </button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "\n" +
     "    </div>\n" +
-    "\n" +
-    "    <div class=\"row remove-row-margins\">\n" +
-    "        <div class=\"inset-toolbar\">\n" +
-    "            <div>\n" +
-    "                <div style=\"position: absolute; bottom: 15px;\">\n" +
-    "                    <button id=\"imageUpload\" class=\"btn btn-primary\" style=\"height: 45px; border-radius: 0px 0px 0px 4px;\">\n" +
-    "                        <i class=\"fa fa-camera\"> Add photo</i>\n" +
-    "                    </button>\n" +
-    "                </div>\n" +
-    "\n" +
-    "                <progressbar value=\"uploadProgress\" id=\"imgPreviewsContainer\" class=\"dz-preview-container progress-striped active\">{{uploadMessage}}</progressbar>\n" +
-    "\n" +
-    "                <div style=\"position: absolute; right: 15px; bottom: 15px;\" class=\"sellModalButton\" popover-placement=\"left\" popover=\"Publish on Amazon, eBay, Craigslist, and HashtagSell!\" popover-trigger=\"show\">\n" +
-    "                    <button class=\"btn btn-primary\" ng-click=\"validatePost()\" style=\"height: 45px; border-radius: 0px 0px 4px 0px;\">\n" +
-    "                        <i class=\"fa fa-slack\">Sell It</i>\n" +
-    "                    </button>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "        </div>\n" +
-    "    </div>\n" +
-    "\n" +
     "</div>\n" +
     "\n" +
     "\n" +
     "<!--ng-TEMPLATES-->\n" +
     "\n" +
-    "<mentio-menu id=\"mentioMenu\"\n" +
+    "<mentio-menu id=\"mentioMenu\" class=\"mentioMenuProducts\"\n" +
     "        mentio-for=\"'hashtag'\"\n" +
     "        mentio-trigger-char=\"'#'\"\n" +
     "        mentio-items=\"products\"\n" +
@@ -12387,7 +12876,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        mentio-select=\"getProductTextRaw(item)\">\n" +
     "</mentio-menu>\n" +
     "\n" +
-    "<mentio-menu id=\"mentioMenu\"\n" +
+    "<mentio-menu id=\"mentioMenu\" class=\"mentioMenuPlaces\"\n" +
     "        mentio-for=\"'hashtag'\"\n" +
     "        mentio-trigger-char=\"'@'\"\n" +
     "        mentio-items=\"places\"\n" +
@@ -12396,7 +12885,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        mentio-select=\"getPlacesTextRaw(item)\">\n" +
     "</mentio-menu>\n" +
     "\n" +
-    "<mentio-menu id=\"mentioMenu\"\n" +
+    "<mentio-menu id=\"mentioMenu\" class=\"mentioMenuPrices\"\n" +
     "        mentio-for=\"'hashtag'\"\n" +
     "        mentio-trigger-char=\"'$'\"\n" +
     "        mentio-items=\"prices\"\n" +
@@ -12451,82 +12940,44 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
 
   $templateCache.put('js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
     "<div class=\"modal-header\">\n" +
-    "    <h3 class=\"modal-title\" style=\"text-align: center; font-weight: 100 !important\">Share To</h3>\n" +
+    "    <h3 class=\"modal-title\" style=\"text-align: center\">Share To</h3>\n" +
     "</div>\n" +
     "<div class=\"modal-body\">\n" +
     "\n" +
-    "    <div class=\"settings\">\n" +
+    "    <!--<div class=\"component\">-->\n" +
+    "        <div class=\"icon icon-mono facebook\" ng-class=\"{ 'hold': shareToggles.facebook}\" ng-click=\"shareToggles.facebook = !shareToggles.facebook\">\n" +
+    "            <div ng-show=\"currentlyPublishing.facebook\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"icon icon-mono twitter\" ng-class=\"{ 'hold': shareToggles.twitter}\" ng-click=\"shareToggles.twitter = !shareToggles.twitter\">\n" +
+    "            <div ng-show=\"currentlyPublishing.twitter\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay\">\n" +
+    "            <div ng-show=\"currentlyPublishing.ebay\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"icon icon-mono amazon\"ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
+    "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"icon icon-mono online-payment\" ng-class=\"{ 'hold': onlinePayment.allow}\" ng-click=\"onlinePayment.allow = !onlinePayment.allow\">\n" +
+    "            <div ng-show=\"currentlyPublishing.onlinePayment\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
+    "    <!--</div>-->\n" +
     "\n" +
-    "        <div class=\"row\">\n" +
-    "            <div class=\"question\">\n" +
-    "                Share to your Facebook?\n" +
-    "            </div>\n" +
-    "            <div class=\"switch\">\n" +
-    "                <input id=\"cmn-toggle-1\" class=\"cmn-toggle cmn-toggle-round\" type=\"checkbox\" ng-model=\"shareToggles.facebook\">\n" +
-    "                <label for=\"cmn-toggle-1\"></label>\n" +
-    "            </div>\n" +
-    "        </div><!-- /row -->\n" +
-    "\n" +
-    "        <div class=\"row\">\n" +
-    "            <div class=\"question\">\n" +
-    "                Share to your Twitter?\n" +
-    "            </div>\n" +
-    "            <div class=\"switch\">\n" +
-    "                <input id=\"cmn-toggle-2\" class=\"cmn-toggle cmn-toggle-round\" type=\"checkbox\" ng-model=\"shareToggles.twitter\">\n" +
-    "                <label for=\"cmn-toggle-2\"></label>\n" +
-    "            </div>\n" +
-    "        </div><!-- /row -->\n" +
-    "\n" +
-    "        <div class=\"row\">\n" +
-    "            <div class=\"question\">\n" +
-    "                Share to your eBay?\n" +
-    "            </div>\n" +
-    "            <div class=\"switch\">\n" +
-    "                <input id=\"cmn-toggle-3\" class=\"cmn-toggle cmn-toggle-round\" type=\"checkbox\" ng-model=\"shareToggles.ebay\">\n" +
-    "                <label for=\"cmn-toggle-3\"></label>\n" +
-    "            </div>\n" +
-    "        </div><!-- /row -->\n" +
-    "\n" +
-    "        <!--<div class=\"row\">-->\n" +
-    "        <!--<div class=\"question\">-->\n" +
-    "        <!--Share to your Amazon Seller account?-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--<div class=\"switch\">-->\n" +
-    "        <!--<input id=\"cmn-toggle-4\" class=\"cmn-toggle cmn-toggle-round-flat\" type=\"checkbox\" ng-model=\"shareToggles.amazon\" ng-disabled=\"true\">-->\n" +
-    "        <!--<label for=\"cmn-toggle-4\"></label>-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--</div>&lt;!&ndash; /row &ndash;&gt;-->\n" +
-    "\n" +
-    "        <!--<div class=\"row\">-->\n" +
-    "        <!--<div class=\"question\">-->\n" +
-    "        <!--Share to your Craigslist?-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--<div class=\"switch\">-->\n" +
-    "        <!--<input id=\"cmn-toggle-5\" class=\"cmn-toggle cmn-toggle-round-flat\" type=\"checkbox\" ng-model=\"shareToggles.craigslist\" ng-disabled=\"true\">-->\n" +
-    "        <!--<label for=\"cmn-toggle-5\"></label>-->\n" +
-    "        <!--</div>-->\n" +
-    "        <!--</div>&lt;!&ndash; /row &ndash;&gt;-->\n" +
-    "\n" +
-    "        <div class=\"row\">\n" +
-    "            <div class=\"question\">\n" +
-    "                Allow Online Payment from Buyer?\n" +
-    "            </div>\n" +
-    "            <div class=\"switch\">\n" +
-    "                <input id=\"cmn-toggle-7\" class=\"cmn-toggle cmn-toggle-yes-no\" type=\"checkbox\" ng-model=\"onlinePayment.allow\">\n" +
-    "                <label for=\"cmn-toggle-7\" data-on=\"Yes\" data-off=\"No\"></label>\n" +
-    "            </div>\n" +
-    "        </div><!-- /row -->\n" +
-    "\n" +
-    "    </div>\n" +
+    "    <h3 id=\"instructions\">Boost your post's visibility and allow online payment.</h3>\n" +
+    "    <h3 id=\"facebookBlurb\">Share to your facebook timeline for friends to see.</h3>\n" +
+    "    <h3 id=\"twitterBlurb\">Share to your twitter timeline for friends to see.</h3>\n" +
+    "    <h3 id=\"ebayBlurb\">Share to your existing Ebay account.</h3>\n" +
+    "    <h3 id=\"amazonBlurb\">Coming soon!  Share to Amazon.</h3>\n" +
+    "    <h3 id=\"onlinePaymentBlurb\">Allow buyer to send online payment.</h3>\n" +
     "\n" +
     "    <!--{{shareToggles}}-->\n" +
-    "\n" +
     "    <!--{{onlinePayment}}-->\n" +
     "\n" +
-    "\n" +
     "</div>\n" +
-    "<div class=\"modal-footer\" style=\"background-color:rgba(235, 121, 121, .9);\">\n" +
-    "    <button class=\"btn btn-default\" ng-click=\"dismiss('stageTwoSuccess')\">Next</button>\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <button class=\"btn\" ng-class=\"currentlyPublishing.publishing ? 'btn-warning' : 'btn-primary'\" ng-click=\"dismiss('stageTwoSuccess')\" ng-disabled=\"{{currentlyPublishing.publishing}}\">\n" +
+    "        <span ng-show=\"!currentlyPublishing.publishing\">Share</span>\n" +
+    "        <span ng-show=\"currentlyPublishing.publishing\">Please wait</span>\n" +
+    "    </button>\n" +
     "</div>"
   );
 
@@ -12744,7 +13195,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "\n" +
     "<div class=\"outer-container\">\n" +
-    "    <img ng-if=\"status.pleaseWait\" src=\"https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif\" class=\"spinner-abs-center\"/>\n" +
+    "    <spinner ng-if=\"status.pleaseWait\" class=\"spinner-container\" spinner-text='Finding \"searchTerm\" for sale around you...' spinner-attribute=\"{{queryObj.q}}\"></spinner>\n" +
     "    <div class=\"results-container\" resize-grid ng-class=\"{ 'split-results-container' : views.showMap }\">\n" +
     "        <!--GRID VIEW-->\n" +
     "        <div vs-repeat class=\"inner-container\" vs-size=\"rowHeight\" vs-offset-before=\"77\" vs-excess=\"5\" on-vs-index-change=\"infiniteScroll(startIndex, endIndex)\" ng-show=\"views.gridView\">\n" +
@@ -12853,9 +13304,14 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div class=\"loadingMore\" ng-show=\"status.loading\">\n" +
-    "            <img src=\"https://static.hashtagsell.com/htsApp/spinners/ajax-loader.gif\">&nbsp;{{status.loadingMessage}}</div>\n" +
-    "        </div>\n" +
+    "        <spinner ng-show=\"status.loading\" class=\"spinner-container\" spinner-text={{status.loadingMessage}} style=\"  top: -170px; z-index: 1; background: linear-gradient(to top, rgba(194, 202, 213, 1), rgba(194, 202, 213, 0)); width: 100%; text-align: center; pointer-events: none;\"></spinner>\n" +
+    "        <!--<div class=\"loadingMore\" ng-show=\"status.loading\">-->\n" +
+    "            <!--&lt;!&ndash;<img src=\"https://static.hashtagsell.com/htsApp/spinners/ajax-loader.gif\">&nbsp;&ndash;&gt;-->\n" +
+    "            <!--{{status.loadingMessage}}-->\n" +
+    "            <!--&lt;!&ndash;blah blah blah&ndash;&gt;-->\n" +
+    "\n" +
+    "        <!--</div>-->\n" +
+    "\n" +
     "    </div>\n" +
     "\n" +
     "\n" +

@@ -1,78 +1,40 @@
 <div class="modal-header">
-    <h3 class="modal-title" style="text-align: center; font-weight: 100 !important">Share To</h3>
+    <h3 class="modal-title" style="text-align: center">Share To</h3>
 </div>
 <div class="modal-body">
 
-    <div class="settings">
+    <!--<div class="component">-->
+        <div class="icon icon-mono facebook" ng-class="{ 'hold': shareToggles.facebook}" ng-click="shareToggles.facebook = !shareToggles.facebook">
+            <div ng-show="currentlyPublishing.facebook" class="circ-spinner"></div>
+        </div>
+        <div class="icon icon-mono twitter" ng-class="{ 'hold': shareToggles.twitter}" ng-click="shareToggles.twitter = !shareToggles.twitter">
+            <div ng-show="currentlyPublishing.twitter" class="circ-spinner"></div>
+        </div>
+        <div class="icon icon-mono ebay" ng-class="{ 'hold': shareToggles.ebay}" ng-click="shareToggles.ebay = !shareToggles.ebay">
+            <div ng-show="currentlyPublishing.ebay" class="circ-spinner"></div>
+        </div>
+        <div class="icon icon-mono amazon"ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon">
+            <div ng-show="currentlyPublishing.amazon" class="circ-spinner"></div>
+        </div>
+        <div class="icon icon-mono online-payment" ng-class="{ 'hold': onlinePayment.allow}" ng-click="onlinePayment.allow = !onlinePayment.allow">
+            <div ng-show="currentlyPublishing.onlinePayment" class="circ-spinner"></div>
+        </div>
+    <!--</div>-->
 
-        <div class="row">
-            <div class="question">
-                Share to your Facebook?
-            </div>
-            <div class="switch">
-                <input id="cmn-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-model="shareToggles.facebook">
-                <label for="cmn-toggle-1"></label>
-            </div>
-        </div><!-- /row -->
-
-        <div class="row">
-            <div class="question">
-                Share to your Twitter?
-            </div>
-            <div class="switch">
-                <input id="cmn-toggle-2" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-model="shareToggles.twitter">
-                <label for="cmn-toggle-2"></label>
-            </div>
-        </div><!-- /row -->
-
-        <div class="row">
-            <div class="question">
-                Share to your eBay?
-            </div>
-            <div class="switch">
-                <input id="cmn-toggle-3" class="cmn-toggle cmn-toggle-round" type="checkbox" ng-model="shareToggles.ebay">
-                <label for="cmn-toggle-3"></label>
-            </div>
-        </div><!-- /row -->
-
-        <!--<div class="row">-->
-        <!--<div class="question">-->
-        <!--Share to your Amazon Seller account?-->
-        <!--</div>-->
-        <!--<div class="switch">-->
-        <!--<input id="cmn-toggle-4" class="cmn-toggle cmn-toggle-round-flat" type="checkbox" ng-model="shareToggles.amazon" ng-disabled="true">-->
-        <!--<label for="cmn-toggle-4"></label>-->
-        <!--</div>-->
-        <!--</div>&lt;!&ndash; /row &ndash;&gt;-->
-
-        <!--<div class="row">-->
-        <!--<div class="question">-->
-        <!--Share to your Craigslist?-->
-        <!--</div>-->
-        <!--<div class="switch">-->
-        <!--<input id="cmn-toggle-5" class="cmn-toggle cmn-toggle-round-flat" type="checkbox" ng-model="shareToggles.craigslist" ng-disabled="true">-->
-        <!--<label for="cmn-toggle-5"></label>-->
-        <!--</div>-->
-        <!--</div>&lt;!&ndash; /row &ndash;&gt;-->
-
-        <div class="row">
-            <div class="question">
-                Allow Online Payment from Buyer?
-            </div>
-            <div class="switch">
-                <input id="cmn-toggle-7" class="cmn-toggle cmn-toggle-yes-no" type="checkbox" ng-model="onlinePayment.allow">
-                <label for="cmn-toggle-7" data-on="Yes" data-off="No"></label>
-            </div>
-        </div><!-- /row -->
-
-    </div>
+    <h3 id="instructions">Boost your post's visibility and allow online payment.</h3>
+    <h3 id="facebookBlurb">Share to your facebook timeline for friends to see.</h3>
+    <h3 id="twitterBlurb">Share to your twitter timeline for friends to see.</h3>
+    <h3 id="ebayBlurb">Share to your existing Ebay account.</h3>
+    <h3 id="amazonBlurb">Coming soon!  Share to Amazon.</h3>
+    <h3 id="onlinePaymentBlurb">Allow buyer to send online payment.</h3>
 
     <!--{{shareToggles}}-->
-
     <!--{{onlinePayment}}-->
 
-
 </div>
-<div class="modal-footer" style="background-color:rgba(235, 121, 121, .9);">
-    <button class="btn btn-default" ng-click="dismiss('stageTwoSuccess')">Next</button>
+<div class="modal-footer">
+    <button class="btn" ng-class="currentlyPublishing.publishing ? 'btn-warning' : 'btn-primary'" ng-click="dismiss('stageTwoSuccess')" ng-disabled="{{currentlyPublishing.publishing}}">
+        <span ng-show="!currentlyPublishing.publishing">Share</span>
+        <span ng-show="currentlyPublishing.publishing">Please wait</span>
+    </button>
 </div>

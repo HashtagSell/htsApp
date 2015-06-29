@@ -404,7 +404,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 } else if (scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
-                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash.png)",
+                        'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash_v2.png)",
                         'background-size': "cover"
                     });
 

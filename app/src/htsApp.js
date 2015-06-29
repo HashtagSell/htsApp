@@ -18,6 +18,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     //Allows for async ajax calls to authentication apis
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
+    //removes # from urls
     $locationProvider.html5Mode({
         enabled: true,
         requireBase: false
@@ -25,7 +26,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
     //Tells search engines and crawlers this site loads content dynamically
     $locationProvider.hashPrefix('!');
-
 
     //set locale of easy facebook angular module
     ezfbProvider.setLocale('en_US');
@@ -62,13 +62,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }
     ];
 
-
+    //Used to manually trigger tooltips via js code.
     $tooltipProvider.setTriggers({
         'show': 'hide'
     });
 
 
-
+    //Modifies category checkbox nesting in feed route
     ivhTreeviewOptionsProvider.set({
         twistieCollapsedTpl: '<span class="glyphicon glyphicon-chevron-right"></span>',
         twistieExpandedTpl: '<span class="glyphicon glyphicon-chevron-down"></span>',
@@ -103,11 +103,12 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
+    //Connects to postingId of post when user opens splash page
     var joinRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
        if (Session.userObj.user_settings.loggedIn) {
            socketio.joinPostingRoom($stateParams.id, 'toggleSplash');
 
-           //TODO: This is running before we have any data in factory.
+           //Checks if this is internal hashtagsell posting.. If so join the owner of the postings socket.io room.
            if(splashFactory.result) {
                if (splashFactory.result.external.source === 'HSHTG') {
 
@@ -119,6 +120,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
        }
     }];
 
+    //Leaves room when user exits splash view
     var leaveRoom = ['socketio', 'Session', '$stateParams', 'splashFactory', function (socketio, Session, $stateParams, splashFactory) {
         if (Session.userObj.user_settings.loggedIn) {
             socketio.leavePostingRoom($stateParams.id, 'toggleSplash');
@@ -135,7 +137,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
     }];
 
 
-
+    //Redirect to 404 page if user requests route we do not recognize.
     $urlRouterProvider.otherwise(function($injector, $location){
         var state = $injector.get('$state');
         state.go('404');
@@ -279,7 +281,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: {
                 'q': null,
                 'city': null,
-                'locationObj': null
+                'locationObj': null,
+                'price': null
             },
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html",
@@ -408,7 +411,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 }]);
 
 
-//Verifies is password field match
+//Verifies if input fields match
 htsApp.directive('matchinput', function () {
     return {
         require: 'ngModel',
@@ -474,7 +477,7 @@ htsApp.filter('tel', function () {
 });
 
 
-
+//Clean the heading of postings in view
 htsApp.filter('cleanHeading', ['$sce', function ($sce) {
     return function (dirtyHeading) {
         //Capitalize the first letter of every word
@@ -494,7 +497,7 @@ htsApp.filter('cleanHeading', ['$sce', function ($sce) {
     };
 }]);
 
-
+//Clean the body of postings in the view
 htsApp.filter('cleanBody', ['$sce', function ($sce) {
     return function (dirtyBody) {
 
@@ -581,6 +584,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
                     if(mentioMenu[0].style.display === "none"){
                         console.log('mentio list closed.. submitting query');
+                        element.blur();
                         scope.awesomeBarSubmit();
                     } else if(mentioMenu[0].style.display === "block") {
                         console.log('mentio list open');
@@ -598,7 +602,7 @@ htsApp.directive('awesomebar', ['$sce', function ($sce) {
 
 
 
-htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
+htsApp.directive('sellbox', ['$sce', '$window', '$timeout', 'newPostFactory', 'mentioUtil', function ($sce, $window, $timeout, newPostFactory, mentioUtil) {
     return {
         restrict: 'A', // only activate on element attribute
         require: '?ngModel', // get a hold of NgModelController
@@ -618,7 +622,6 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
 
             // Specify how UI should be updated
             ngModel.$render = function () {
-                console.log('doing this');
                 if (ngModel.$viewValue !== element.html()) {
                     element.html($sce.getTrustedHtml(ngModel.$viewValue || ''));
                 }
@@ -631,15 +634,22 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
                 return tmp.textContent || tmp.innerText || "";
             }
 
+            //Check if a string is blank, null or undefined
+            //function isBlank(str) {
+            //    return (!str || /^\s*$/.test(str));
+            //}
+
 
             //Load the js diff library
             var jsDiff = $window.JsDiff;
             var backspacePressed = false;
 
-
+            //cleans up model when user removes # $ or @ symbols
             scope.$watch('jsonObj.body', function(newValue, oldValue){
 
-                scope.alerts = [];
+                //if(scope.alerts) {
+                //    scope.alerts.banners = [];
+                //}
 
                 if(backspacePressed) {
                     backspacePressed = false;
@@ -695,10 +705,150 @@ htsApp.directive('sellbox', ['$sce', '$window', function ($sce, $window) {
             });
 
 
+            //function isEmpty(obj) {
+            //    for(var prop in obj) {
+            //        if(obj.hasOwnProperty(prop))
+            //            return false;
+            //    }
+            //
+            //    return true;
+            //}
+            //
+            //
+            //function findMentions(searchText, specialKey) {
+            //    //var regexp = /\B\#\w\w+\b/g;
+            //    var regexp = new RegExp("\\B\\" + specialKey + "\\w\\w+\\b", "g");
+            //    var result = searchText.match(regexp);
+            //    if (result) {
+            //        for(var m = 0; m < result.length; m++) {
+            //            result[m] = result[m].replace(specialKey, '');
+            //        }
+            //        return result;
+            //    } else {
+            //        return false;
+            //    }
+            //}
+
             // Listen for change events to enable binding
             element.on('keydown keyup', function (e) {
-                //console.log('omit this');
-                if(parseInt(e.which) === 8 && e.type === "keydown") {
+                var keyCode = parseInt(e.which);
+
+                //Catching if users add $ @ or # in their text AFTER up the entire ad.
+                //if(e.type === "keyup") {
+                //    var specialKey = null;
+                //
+                //    if (keyCode === 50) {
+                //        specialKey = '@';
+                //        if(!isEmpty(scope.jsonObj.location)){
+                //            return false;
+                //        }
+                //    } else if (keyCode === 51) {
+                //        specialKey = '#';
+                //    } else if (keyCode === 52) {
+                //        specialKey = '$';
+                //        if(!isEmpty(scope.jsonObj.price)){
+                //            return false;
+                //        }
+                //    }
+                //
+                //    //If the demo text has been cleared and the presed key is # or $ or @
+                //    if (scope.placeholderCleared && specialKey !== null) {
+                //
+                //        //wait 500ms and verify that the hashtag has not already been picked up and put in hashtagarray
+                //        $timeout(function () {
+                //
+                //            var nodeSelection = $window.getSelection();
+                //            var text = nodeSelection.anchorNode.data;
+                //            var textLength = nodeSelection.anchorNode.length;
+                //            var mentions = findMentions(text, specialKey);
+                //
+                //            console.log(mentions);
+                //
+                //            //Make sure there is at least one mention in the nodeSelection
+                //            if (mentions.length) {
+                //
+                //                var mentioMenu;
+                //                if(specialKey === '#') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuProducts'));
+                //                } else if(specialKey === '$') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuPrices'));
+                //                } else if(specialKey === '@') {
+                //                    mentioMenu = angular.element(document.querySelector('.mentioMenuPlaces'));
+                //                }
+                //
+                //                //Make sure the mentio menu is not visible
+                //                if(mentioMenu[0].style.display === "none") {
+                //
+                //                    var indexOfSpecialChar = text.indexOf(specialKey);
+                //                    console.log('index of special char', indexOfSpecialChar);
+                //
+                //                    var indexOfFirstSpaceAfterSpecialChar = text.indexOf(" ", indexOfSpecialChar);
+                //                    console.log('index of first space after special char', indexOfFirstSpaceAfterSpecialChar);
+                //
+                //                    var stopIndex;
+                //                    if (indexOfFirstSpaceAfterSpecialChar > -1) {
+                //
+                //                        stopIndex = indexOfFirstSpaceAfterSpecialChar - indexOfSpecialChar;
+                //                        console.log('stop index', stopIndex);
+                //                    } else {
+                //
+                //                        stopIndex = textLength;
+                //                        indexOfFirstSpaceAfterSpecialChar = textLength;
+                //                        console.log('stop index is last char in text');
+                //                    }
+                //
+                //                    var trimmedMention = text.substr(indexOfSpecialChar + 1, stopIndex - 1);
+                //                    var htmlMention;
+                //
+                //                    if(specialKey === '#') {
+                //
+                //                        if(newPostFactory.getProductMetaData({value: trimmedMention})) {
+                //                            htmlMention = '<span class="mention-highlighter" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            newPostFactory.alerts.banners.push({
+                //                                type: 'danger',
+                //                                msg: 'Duplicate hashtags not necessary'
+                //                            });
+                //                        }
+                //
+                //                    } else if(specialKey === '$') {
+                //
+                //                        if(newPostFactory.getPriceMetaData({value: trimmedMention, rate: 'flat_rate'})){
+                //                            htmlMention = '<span class="mention-highlighter-price" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            //newPostFactory.alerts.banners.push({
+                //                            //    type: 'danger',
+                //                            //    msg: 'Please only use one $ symbol in your post.'
+                //                            //});
+                //                            console.log('htsApp sell box directive sees priceMetaData returned false.');
+                //                        }
+                //
+                //                    } else if(specialKey === '@') {
+                //
+                //                        if(newPostFactory.getPlaceMetaData()) {
+                //                            htmlMention = '<span class="mention-highlighter-location" contentEditable="false">' + specialKey + trimmedMention + '</span>' + '\xA0';
+                //                            mentioUtil.pasteHtml(undefined, htmlMention, indexOfSpecialChar, indexOfFirstSpaceAfterSpecialChar);
+                //                        } else {
+                //                            newPostFactory.alerts.banners.push({
+                //                                type: 'danger',
+                //                                msg: 'Please only use one @ symbol in your post.'
+                //                            });
+                //                        }
+                //                    }
+                //
+                //
+                //
+                //                } else {
+                //                    console.log('mentio menu open');
+                //                }
+                //            }
+                //        }, 1000);
+                //    }
+                //}
+
+                if(parseInt(keyCode) === 8 && e.type === "keydown") {
                     backspacePressed = true;
                     console.log('setting backspace pressed to true');
                 }
@@ -1304,7 +1454,7 @@ htsApp.filter('awesomecity', function() {
 });
 
 
-
+//Only allow integers to be inserted into html input
 htsApp.directive('onlyDigits', function () {
     return {
         require: 'ngModel',
@@ -1328,7 +1478,7 @@ htsApp.directive('onlyDigits', function () {
 });
 
 
-
+//run function when user presses enter on an html input field
 htsApp.directive('ngEnter', function () {
     return function (scope, element, attrs) {
         element.bind("keydown keypress", function (event) {
@@ -1340,5 +1490,80 @@ htsApp.directive('ngEnter', function () {
                 event.preventDefault();
             }
         });
+    };
+});
+
+
+//Graphic user sees when applications is waiting/working
+htsApp.directive('spinner', ['sideNavFactory', function (sideNavFactory) {
+    return {
+        restrict: 'E',
+        scope: {
+            spinnerTextAttribute:'@spinnerAttribute'
+        },
+        template:
+        "<div>"+
+            "<div class='spinner'>"+
+            "<div class='bounce1' style='background-color: white;'></div>"+
+            "<div class='bounce2' style='background-color: white;'></div>"+
+            "<div class='bounce3' style='background-color: white;'></div>"+
+        "</div>"+
+        "<h4>{{spinnerText}}</h4>",
+        link: function(scope, element, attrs) {
+
+            scope.sideNav = sideNavFactory.sideNav;
+
+            attrs.$observe('spinnerText', function () {
+                scope.spinnerText = attrs.spinnerText;
+                if(scope.spinnerTextAttribute){
+                    scope.spinnerText = scope.spinnerText.replace('searchTerm', scope.spinnerTextAttribute);
+                }
+            });
+
+
+            scope.$watch(function(){return scope.sideNav.listView;}, function(listView) {
+                if(listView){
+                    element.addClass('nudge-spinner');
+                } else {
+                    element.removeClass('nudge-spinner');
+                }
+            });
+
+            //scope.$watch('scope.spinner.show', function(newValue, oldValue){
+            //    console.log("newvalue", newValue, "oldvalue", oldValue);
+            //});
+        }
+    };
+}]);
+
+
+
+htsApp.directive('animatedGif', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            animationUrl:'@animationUrl',
+            staticUrl: '@staticUrl'
+        },
+        template:
+            "<div class='sell-box-animation-container'>" +
+            "<img class='sell-box-image img-responsive' ng-src='{{img}}' ng-click='stopAnimation()' />" +
+            "<div class='sell-box-play-button' ng-show='!currentlyPlaying' ng-click='playAnimation()'>" +
+            "</div>",
+        link: function(scope, element, attrs) {
+
+            scope.img = scope.staticUrl;
+            scope.currentlyPlaying = false;
+
+            scope.playAnimation = function () {
+                scope.currentlyPlaying = true;
+                scope.img = scope.animationUrl;
+            };
+
+            scope.stopAnimation = function () {
+                scope.currentlyPlaying = false;
+                scope.img = scope.staticUrl;
+            };
+        }
     };
 });

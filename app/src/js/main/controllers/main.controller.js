@@ -7,9 +7,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
     $scope.sideNav = sideNavFactory.sideNav;
 
-
-
-
+    //toggles sideNav left/right
     $scope.toggleOffCanvasSideNav = function () {
         $scope.sideNav.hidden = !$scope.sideNav.hidden;
     };
@@ -41,7 +39,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
 
 
-        if($rootScope.currentState !== 'feed.splash'  && $rootScope.currentState !== 'results.splash') {
+        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash') {
             if ($rootScope.currentState === 'feed') {
                 $scope.sideNav.listView = true;
             } else {
@@ -125,15 +123,17 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
 
 
 
-    //RUNS ON PAGE LOAD.  Fetches user object from server as soon as page loads
+    //RUNS ON PAGE LOAD.
     if ($scope.userObj.user_settings.loggedIn) {
 
+        //Connect to Google Analytics... This will fail if app running in dev env.
         try {
             ga('set', '&uid', 'bdavis');
         } catch (err){
             console.log('Google Analytics not running');
         }
 
+        //Fetches user object from server as soon as page loads
         Session.getUserFromServer().then(function (response) {
             Session.create(response);
         });

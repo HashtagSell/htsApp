@@ -299,7 +299,7 @@ exports.signup = function(req, res) {
 
                 // check to see if there is already a user with that email
                 if (user) {
-                    return res.json({ error: 'That email is already taken.  Forget your password?'});
+                    return res.json({ error: 'The email you entered belongs to an existing account.'});
                 } else {
 
                     User.findOne({ 'user_settings.name' :  username }, function(err, user) {

@@ -3,7 +3,7 @@
  */
 htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
 
-    $scope.status = feedFactory.status;
+    $scope.spinner = feedFactory.spinner;
 
     //updateFeed is triggered on interval and performs polling call to server for more items
     var updateFeed = function () {
@@ -11,27 +11,27 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         $scope.currentDate = Math.floor(Date.now() / 1000);
 
         //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
-        if (!$scope.results && feedFactory.persistedResults){
+        if (!$scope.results && feedFactory.persistedResults.length){
             console.log('recovering from persisted results', feedFactory.persistedResults);
             $scope.results = feedFactory.persistedResults;
             var resumePersisted = true;
         } else if (!$scope.results) {
             //While true the hashtagspinner will appear
-            feedFactory.status.pleaseWait = true;
+            feedFactory.spinner.show = true;
         }
 
 
         feedFactory.poll().then(function (response) {
-
             if (response.status !== 200) {
 
-                $scope.status.pleaseWait = false;
+                $scope.spinner.show = false;
                 $scope.status.error.message = ":( Oops.. Something went wrong.";
                 $scope.status.error.trace = response.data.error;
 
             } else if (response.status === 200) {
 
                 if (!$scope.results || resumePersisted) { //If there are not results on the page yet, this is our first query
+                    console.log('this is first feed query');
 
                     //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
                     //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
@@ -45,15 +45,15 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                             posting.feedItemHeight = 261;
 
                             if (posting.username === 'CRAIG') {
-                                if(posting.images[0].full) {
+                                if (posting.images[0].full) {
                                     posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
                                 }
 
-                                if(posting.images[0].thumb) {
+                                if (posting.images[0].thumb) {
                                     posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
                                 }
 
-                                if(posting.images[0].images) {
+                                if (posting.images[0].images) {
                                     posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
                                 }
                             }
@@ -63,18 +63,18 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
                             if (posting.username === 'CRAIG') {
 
-                                for(var j=0; j < posting.images.length; j++){
+                                for (var j = 0; j < posting.images.length; j++) {
                                     var imageObj = posting.images[j];
 
-                                    if(imageObj.full) {
+                                    if (imageObj.full) {
                                         imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
                                     }
 
-                                    if(imageObj.thumb) {
+                                    if (imageObj.thumb) {
                                         imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
                                     }
 
-                                    if(imageObj.images) {
+                                    if (imageObj.images) {
                                         imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
                                     }
 
@@ -89,7 +89,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                         }
                     }
 
-                    feedFactory.status.pleaseWait = false;
+                    feedFactory.spinner.show = false;
 
                     if (!resumePersisted) {
                         $scope.results = response.data.external.postings;
@@ -100,17 +100,13 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     resumePersisted = false;
 
                     //UI will query polling API every 60 seconds
-                    var intervalUpdate = $interval(updateFeed, 60000, 0, true);
-
-                    //This is called when user changes route. It stops javascript from interval polling in background.
-                    $scope.$on('$destroy', function () {
-                        console.log('pausing feed updates');
-                        $interval.cancel(intervalUpdate);
-                    });
+                    $scope.intervalUpdate = $interval(updateFeed, 60000, 0, true);
 
                 } else { //If there are already results on the page the add them to the top of the array
 
                     //console.log('our new items', response.data.external.postings);
+
+                    console.log('resuming');
 
                     //Capture how far user has scroll down.
                     var scrollTopOffset = jQuery(".inner-container").scrollTop();
@@ -118,7 +114,7 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
                     //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
                     for (i = 0; i < response.data.external.postings.length; i++) {
 
-                        if(response.data.external.postings[i].images.length === 0) {
+                        if (response.data.external.postings[i].images.length === 0) {
                             response.data.external.postings[i].feedItemHeight = 179;
                             scrollTopOffset = scrollTopOffset + 179;
                         } else if (response.data.external.postings[i].images.length === 1) {
@@ -165,6 +161,19 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         console.log(splashFactory.result);
         $state.go('feed.splash', { id: elems.result.postingId });
     };
+
+
+    //This is called when user changes route. It stops javascript from interval polling in background.
+    $scope.$on('$destroy', function () {
+        feedFactory.deferred.resolve();
+        $interval.cancel($scope.intervalUpdate);
+
+        if(!$scope.results){
+            feedFactory.queryParams = {};
+        }
+
+        console.log('cancelled ongoing feed request and stopped interval');
+    });
 
 }]);
 

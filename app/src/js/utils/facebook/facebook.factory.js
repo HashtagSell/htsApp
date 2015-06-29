@@ -20,7 +20,24 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
             return tmp.textContent || tmp.innerText || "";
         }
 
-        newPost.plainTextBody = strip(newPost.body);
+
+        var bodyElem = $('<div>' + newPost.body + '</div>');
+
+        $(bodyElem.find('.mention-highlighter')).each(function(i){
+            var text = $(this).text();
+            text = text.replace(/ /g,'');
+            $(this).text(text);
+        });
+
+
+        $(bodyElem.find('.mention-highlighter-location')).each(function(i){
+            var text = $(this).text();
+            text = text.replace('@','at ');
+            $(this).text(text);
+        });
+
+
+        newPost.plainTextBody = strip(bodyElem.html());
 
 
         var currentDate = new Date();
@@ -33,13 +50,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             if(newPost.images.length) {
                 fbPost = {
-                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
                     access_token: facebook.token,
                 };
             } else {
                 fbPost = {
-                    message: ENV.htsAppUrl + '/ext/' + newPost.postingId + ' ' + newPost.plainTextBody,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
                     access_token: facebook.token
                 };

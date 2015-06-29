@@ -7,24 +7,24 @@ htsApp.factory('metaFactory', function () {
 
     factory.metatags = {
         page: {
-            title: "HashtagSell · Rethinking Online Classifieds",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            title: "HashtagSell | Reinventing Online Classifieds",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
             faviconUrl: "https://static.hashtagsell.com/htsApp/favicon/favicon.ico"
         },
         facebook: {
-            title: "HashtagSell Online Classifieds",
+            title: "HashtagSell | Reinventing Online Classifieds",
             image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png",
             site_name: "HashtagSell.com",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
             url: null
         },
         twitter: {
             card: "summary_large_image",
             site: "@hashtagsell",
-            description: "HashtagSell.com is rethinking the way people buy and sell online.  Search millions of online classifieds in seconds!  Sell your next item with HashtagSell.com.",
-            title: "HashtagSell.com - Rethinking Online Classifieds",
+            description: "HashtagSell is drastically improving how people sell items online. Share your item to eBay, Amazon, Craigslist and more with one click!",
+            title: "HashtagSell.com | Reinventing Online Classifieds",
             creator: "@hashtagsell",
-            image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png",
+            image: "https://static.hashtagsell.com/logos/hts/hi_res/Logo+(Complete).png"
         }
     };
 

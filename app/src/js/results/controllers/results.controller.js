@@ -1,10 +1,12 @@
-htsApp.controller('results.controller', ['$scope', '$state', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
+htsApp.controller('results.controller', ['$scope', '$state', '$stateParams', 'searchFactory', 'splashFactory', 'uiGmapGoogleMapApi', 'uiGmapIsReady', function ($scope, $state, $stateParams, searchFactory, splashFactory, uiGmapGoogleMapApi, uiGmapIsReady) {
 
     //While true the hashtagspinner will appear
     $scope.status = searchFactory.status;
 
     //Tracks state of grid visible or not
     $scope.views = searchFactory.views;
+
+    $scope.queryObj = $stateParams;
 
 
     //passes properties associated with clicked DOM element to splashFactory for detailed view

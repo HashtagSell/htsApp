@@ -3,15 +3,45 @@
  */
 htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
 
+    $scope.currentlyPublishing = {
+        publishing: false,
+        facebook: false,
+        twitter: false,
+        amazon: false,
+        ebay: false,
+        craigslist: false,
+        onlinePayment: false
+    };
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
     $scope.dismiss = function (reason) {
+
+        $scope.currentlyPublishing.publishing = true;
+
         $scope.publishToFacebook().then(function(){
+
+            $scope.currentlyPublishing.facebook = false;
+
             $scope.publishToTwitter().then(function(){
+
+                $scope.currentlyPublishing.twitter = false;
+
                 $scope.publishToAmazon().then(function(){
+
+                    $scope.currentlyPublishing.amazon = false;
+
                    $scope.publishToEbay().then(function(){
+
+                       $scope.currentlyPublishing.ebay = false;
+
                        $scope.publishToCraigslist().then(function(){
+
+                           $scope.currentlyPublishing.craigslist = false;
+
                            $scope.setupOnlinePayment().then(function() {
+
+                               $scope.currentlyPublishing.onlinePayment = false;
+
                                $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
                            });
                        });
@@ -41,14 +71,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.facebook) {
 
+            $scope.currentlyPublishing.facebook = true;
+
             facebookFactory.publishToWall(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Facebook publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -77,14 +104,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.twitter) {
 
+            $scope.currentlyPublishing.twitter = true;
+
             twitterFactory.publishToTwitter(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Twitter publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -113,6 +137,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.amazon) {
 
+            $scope.currentlyPublishing.amazon = true;
+
             Notification.error({
                 title: "Amazon publishing error",
                 message: "push to amazon coming soon!",
@@ -135,14 +161,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.ebay) {
 
+            $scope.currentlyPublishing.ebay = true;
+
             ebayFactory.publishToEbay(newPost).then(function (response) {
 
                 newPost = response;
-
-                Notification.primary({
-                    message: "Ebay publishing success!",
-                    delay: 10000
-                });  //Send the webtoast
 
                 deferred.resolve();
 
@@ -186,6 +209,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
         if($scope.shareToggles.craigslist) {
 
+            $scope.currentlyPublishing.craigslist = true;
+
             Notification.error({
                 title: "Craigslist publishing error",
                 message: "push to craiglist coming soon!",
@@ -206,6 +231,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         var deferred = $q.defer();
 
         if($scope.onlinePayment.allow) {
+
+            $scope.currentlyPublishing.onlinePayment = true;
 
             subMerchantFactory.validateSubMerchant(newPost).then(function(response){
 

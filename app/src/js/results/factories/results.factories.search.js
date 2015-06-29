@@ -69,16 +69,16 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         var avg = (total / response.data.length);
 
-                        console.log('total: ', total, ' divided by number of categories: ', response.data.length, ' equals: ', avg);
+                        //console.log('total: ', total, ' divided by number of categories: ', response.data.length, ' equals: ', avg);
 
                         for (var j = 0; j < response.data.length; j++) {
 
                             var secondCategory = response.data[j];
 
-                            console.log('total number of items: ', total);
-                            console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
+                            //console.log('total number of items: ', total);
+                            //console.log('number of items in category: ', secondCategory.code, ' is: ', secondCategory.count);
                             var percentage = (secondCategory.count/total) * 100;
-                            console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
+                            //console.log('Percentage weight for category: ', secondCategory.code, ' is: ', percentage);
 
 
                             if (percentage >= 10) {
@@ -111,7 +111,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
             }).then(function () {
 
-                console.log($stateParams);
+                console.log('state params are: ', $stateParams);
 
                 factory.defaultParams.filters.mandatory.contains.heading = $stateParams.q;
 
@@ -125,6 +125,19 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
                         factory.defaultParams.geo.coords = [lon, lat];
                     }
+                }
+
+                if($stateParams.price){
+                    if($stateParams.price.min){
+                        factory.priceSlider.userSetValue = true;
+                        factory.priceSlider.rangeValue[0] = parseInt($stateParams.price.min);
+                    }
+
+                    if($stateParams.price.max){
+                        factory.priceSlider.userSetValue = true;
+                        factory.priceSlider.rangeValue[1] = parseInt($stateParams.price.max);
+                    }
+                    console.log('manually set pricesliders', factory.priceSlider);
                 }
 
                 factory.query(page).then(function (response) {
@@ -175,7 +188,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var deferred = $q.defer();
 
-        //console.log(factory.defaultParams);
+        console.log('before braketizing url', factory.defaultParams);
 
         var bracketURL = utilsFactory.bracketNotationURL(factory.defaultParams);
         console.log('final URL', bracketURL);
@@ -300,6 +313,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     //Evaluates the width of the browser and builds array with array of rows.
     factory.generateRows = function (results, reason, views) {
 
+        //console.log('generate rows', results, reason, views);
+
         var numColumns;
 
         //If user has gridView enabled calculate columns, else build list view.
@@ -355,9 +370,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
                             //console.log(i + j);
 
 
-                            if (results[i + j].askingPrice.value) {
-                                factory.updatePriceSlider(results[i + j].askingPrice.value);
-                            }
+                            //if (results[i + j].askingPrice.value) {
+                            //    factory.updatePriceSlider(results[i + j].askingPrice.value);
+                            //}
 
 
                             row.rowContents.push(results[i + j]);
@@ -399,6 +414,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
 
     factory.updatePriceSlider = function (itemPrice) {
+
+        console.log(itemPrice);
 
         if (parseInt(itemPrice) > parseInt(factory.priceSlider.max)) {
 
@@ -447,6 +464,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.images.length);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -456,6 +475,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHavePrice = function(element, index){
 
         var visibleStatus = Boolean(element.askingPrice.value);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -467,6 +488,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(!element.askingPrice.value || element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -477,6 +500,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -486,6 +511,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHaveImageAndMustFitPriceRange = function(element, index){
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -498,6 +525,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
         var visibleStatus = Boolean(element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
 
+        factory.updatePriceSlider(element.askingPrice.value);
+
         factory.markerMaker(element, index, visibleStatus);
 
         return visibleStatus;
@@ -508,6 +537,8 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
     factory.mustHavePriceAndMustHaveImageAndMustFitPriceRange = function(element, index){
 
         var visibleStatus = Boolean(element.images.length && element.askingPrice.value && element.askingPrice.value >= factory.priceSlider.rangeValue[0] && element.askingPrice.value <= factory.priceSlider.rangeValue[1]);
+
+        factory.updatePriceSlider(element.askingPrice.value);
 
         factory.markerMaker(element, index, visibleStatus);
 
@@ -572,6 +603,9 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         } else {
 
             for (i = 0; i < factory.results.unfiltered.length; i++ ) {
+
+                factory.updatePriceSlider(factory.results.unfiltered[i].askingPrice.value);
+
                 factory.markerMaker(factory.results.unfiltered[i], i, true);
             }
 

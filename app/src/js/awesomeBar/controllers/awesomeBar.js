@@ -1,25 +1,19 @@
 htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'awesomeBarFactory', 'searchFactory', '$state', function ($window, $scope, $location, awesomeBarFactory, searchFactory, $state) {
 
-    //$scope.clearedPlaceholder = false;
-    //$scope.clearPlaceholder = function () {
-    //    if (!$scope.clearedPlaceholder) {
-    //        console.log("clearing placeholder");
-    //
-    //        $scope.queryObj.q = "";
-    //        $scope.clearedPlaceholder = true;
-    //    }
-    //};
 
-    $scope.clearCity = function () {
-        $scope.queryObj.city = null;
-        $scope.queryObj.locationObj = null;
-    };
+    //$scope.clearCity = function () {
+    //    console.log('clearing city');
+    //    $scope.queryObj.city = null;
+    //    $scope.queryObj.locationObj = null;
+    //};
 
 
     $scope.queryObj = awesomeBarFactory.queryObj;
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
+
+        console.log('==================== RUNNING AWESOMEBAR SUBMIT ====================');
 
         $scope.advancedSearch.visible = false; //Hide advanced search
 
@@ -44,7 +38,7 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
             console.log('after sanatize', $scope.queryObj);
 
-            $state.go('results', $scope.queryObj);
+            $state.go('results', $scope.queryObj, {'reload':true});
 
             $scope.queryObj.q = entireSearchString;
         }

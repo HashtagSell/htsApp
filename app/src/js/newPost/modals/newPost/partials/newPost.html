@@ -19,72 +19,100 @@
 </div>
 <div class="modal-body dropzone hts-post-modal-body" dropzone="dropzoneConfig">
 
-    <div class="row remove-row-margins">
+    <div class="sell-box-demo" ng-show="showDemo">
 
-        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+        <alert type="warning">
+            <div style="text-align: center; font-size: 17px;">
+                <i class="fa fa-info-circle"></i>
+                Watch the tutorial below then
+                <btn class="btn btn-warning" style="font-size: 17px;" ng-click="hideDemo()">Click this button to sell your item!</btn>
+            </div>
+        </alert>
 
-        <div class="hts-input-container">
-            <div id="htsPost"
-                 ng-class="jsonObj.category_name ? 'col-md-10' : 'col-md-12' "
-                 class="hts-input" style="clear:both;"
-                 mentio
-                 contenteditable
-                 sellbox
-                 ng-focus="clearDemo()"
-                 data-placeholder="I'm selling"
-                 mentio-require-leading-space="true"
-                 mentio-macros="macros"
-                 mentio-id="'hashtag'"
-                 mentio-typed-term="typedTerm"
-                 ng-model="jsonObj.body">
+        <animated-gif animation-url="//static.hashtagsell.com/tutorialRelated/sell_box_animation.gif" static-url="//static.hashtagsell.com/tutorialRelated/sell_box_static.png"/>
+    </div>
 
-                I'm selling my <span class="mention-highlighter" contenteditable="false" popover-placement="bottom" popover="# your item for sale" popover-trigger="show">#coffee table</span>&nbsp;
-                for <span  class="mention-highlighter-price" contenteditable="false" popover-placement="top" popover="$ your price" popover-trigger="show">$75</span>&nbsp;
-                <span class="mention-highlighter-location" contenteditable="false" popover-placement="bottom" popover="@ your meeting location!" popover-trigger="show">@1234 Mulberry Street, New York, NY, United States</span>&nbsp;
+    <div class="sell-box" ng-show="!showDemo">
+        <div class="row remove-row-margins">
+
+            <alert type="info" style="font-size: 17px;" close="clearExampleReminder()" ng-show="toggleExampleVisibility">
+                <b>Example: </b>
+                "<i>I'm selling my <span class="mention-highlighter" contenteditable="false">#item name</span>&nbsp;
+                for  <span  class="mention-highlighter-price" contenteditable="false">$item price</span>&nbsp;
+                <span class="mention-highlighter-location" contenteditable="false">@meeting location</span>&nbsp;"</i>
+                <br>
+                <br>
+                <small>(Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.)</small>
+            </alert>
+
+            <alert ng-repeat="banner in alerts.banners" type="{{banner.type}}" close="closeAlert($index)">{{banner.msg}}</alert>
+
+            <!--<pre>-->
+                <!--{{jsonObj}}-->
+            <!--</pre>-->
+
+            <div class="hts-input-container">
+                <div id="htsPost"
+                     ng-class="jsonObj.category_name ? 'col-md-10' : 'col-md-12' "
+                     class="hts-input" style="clear:both;"
+                     mentio
+                     contenteditable
+                     sellbox
+                     ng-focus="clearPlaceholder()"
+                     mentio-require-leading-space="false"
+                     mentio-macros="macros"
+                     mentio-id="'hashtag'"
+                     mentio-typed-term="typedTerm"
+                     ng-model="jsonObj.body">
+                    <span>I'm selling my...</span>
+                </div>
+
+                <div ng-class="{ 'hts-annotations-container' : jsonObj.category_name}">
+                    <div ng-show="jsonObj.annotations.length" ng-repeat="annotation in jsonObj.annotations">
+                        <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
+                    </div>
+                    <div ng-show="!jsonObj.annotations.length && jsonObj.category_name">
+                        <div class="spinner">
+                            <div class="bounce1"></div>
+                            <div class="bounce2"></div>
+                            <div class="bounce3"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div ng-class="{ 'hts-annotations-container' : jsonObj.category_name}">
-                <div ng-show="jsonObj.annotations.length" ng-repeat="annotation in jsonObj.annotations">
-                    <input ng-model="jsonObj.annotations[$index].value" placeholder="{{annotation.key}}" class="hts-annotation-input">
-                </div>
-                <div ng-show="!jsonObj.annotations.length && jsonObj.category_name">
-                    <div class="spinner">
-                        <div class="bounce1"></div>
-                        <div class="bounce2"></div>
-                        <div class="bounce3"></div>
+        </div>
+
+        <!--<pre>-->
+            <!--{{jsonObj}}-->
+        <!--</pre>-->
+
+        <div class="row remove-row-margins">
+            <div class="inset-toolbar">
+                <div>
+                    <div style="position: absolute; bottom: 15px;">
+                        <button id="imageUpload" class="btn btn-primary" style="height: 45px; border-radius: 0px 0px 0px 4px;">
+                            <i class="fa fa-camera"> Add photo</i>
+                        </button>
+                    </div>
+
+                    <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container progress-striped active">{{uploadMessage}}</progressbar>
+
+                    <div style="position: absolute; right: 15px; bottom: 15px;" class="sellModalButton" popover-placement="left" popover="Publish on Amazon, eBay, Craigslist, and HashtagSell!" popover-trigger="show">
+                        <button class="btn btn-primary" ng-click="validatePost()" style="height: 45px; border-radius: 0px 0px 4px 0px;">
+                            <i class="fa fa-slack">Sell It</i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-
-    <div class="row remove-row-margins">
-        <div class="inset-toolbar">
-            <div>
-                <div style="position: absolute; bottom: 15px;">
-                    <button id="imageUpload" class="btn btn-primary" style="height: 45px; border-radius: 0px 0px 0px 4px;">
-                        <i class="fa fa-camera"> Add photo</i>
-                    </button>
-                </div>
-
-                <progressbar value="uploadProgress" id="imgPreviewsContainer" class="dz-preview-container progress-striped active">{{uploadMessage}}</progressbar>
-
-                <div style="position: absolute; right: 15px; bottom: 15px;" class="sellModalButton" popover-placement="left" popover="Publish on Amazon, eBay, Craigslist, and HashtagSell!" popover-trigger="show">
-                    <button class="btn btn-primary" ng-click="validatePost()" style="height: 45px; border-radius: 0px 0px 4px 0px;">
-                        <i class="fa fa-slack">Sell It</i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 
 <!--ng-TEMPLATES-->
 
-<mentio-menu id="mentioMenu"
+<mentio-menu id="mentioMenu" class="mentioMenuProducts"
         mentio-for="'hashtag'"
         mentio-trigger-char="'#'"
         mentio-items="products"
@@ -93,7 +121,7 @@
         mentio-select="getProductTextRaw(item)">
 </mentio-menu>
 
-<mentio-menu id="mentioMenu"
+<mentio-menu id="mentioMenu" class="mentioMenuPlaces"
         mentio-for="'hashtag'"
         mentio-trigger-char="'@'"
         mentio-items="places"
@@ -102,7 +130,7 @@
         mentio-select="getPlacesTextRaw(item)">
 </mentio-menu>
 
-<mentio-menu id="mentioMenu"
+<mentio-menu id="mentioMenu" class="mentioMenuPrices"
         mentio-for="'hashtag'"
         mentio-trigger-char="'$'"
         mentio-items="prices"

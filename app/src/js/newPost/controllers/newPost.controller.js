@@ -77,6 +77,7 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
         }, function (reason) {
             if(reason === "dismiss"){
+                $state.go('myposts');
                 console.log('Modal dismissed at: ' + new Date());
             }
         });

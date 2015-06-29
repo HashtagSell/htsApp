@@ -1,7 +1,7 @@
 <div ui-view></div>
 
 <div class="outer-container col-xs-12">
-    <img ng-if="status.pleaseWait" src="https://static.hashtagsell.com/htsApp/spinners/hashtag_spinner.gif" class="spinner-abs-center"/>
+    <spinner ng-if="spinner.show" class="spinner-container" spinner-text="Finding recently posted items around you"></spinner>
 
     <div vs-repeat class="inner-container row" vs-size="feedItemHeight" vs-offset-before="77" vs-excess="10">
         <div class="list-item" ng-repeat="result in results" ng-click="openSplash(this)">

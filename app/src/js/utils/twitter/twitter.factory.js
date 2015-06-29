@@ -18,7 +18,24 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
             return tmp.textContent || tmp.innerText || "";
         }
 
-        newPost.plainTextBody = strip(newPost.body);
+
+        var bodyElem = $('<div>' + newPost.body + '</div>');
+
+        $(bodyElem.find('.mention-highlighter')).each(function(i){
+            var text = $(this).text();
+            text = text.replace(/ /g,'');
+            $(this).text(text);
+        });
+
+
+        $(bodyElem.find('.mention-highlighter-location')).each(function(i){
+            var text = $(this).text();
+            text = text.replace('@','at ');
+            $(this).text(text);
+        });
+
+
+        newPost.plainTextBody = strip(bodyElem.html());
 
         //We already have twitter token for user.. just post to twitter.
         if(!factory.isEmpty(twitter)) {

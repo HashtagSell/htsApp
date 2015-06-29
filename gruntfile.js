@@ -141,6 +141,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //Combine all javascript files into one file and ensure that angular injections is handled properly.
         ngAnnotate: {
             options: {
                 singleQuotes: true
@@ -169,6 +170,7 @@ module.exports = function(grunt) {
             options: {
                 // more options here if you want to override JSHint defaults
                 loopfunc: true,
+                boss: true,
                 globals: {
                     jQuery: true,
                     console: true,
@@ -176,6 +178,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //combine all html files into angular $templateCache! nice!
         ngtemplates:  {
             dev: {
                 cwd: 'app/src',
@@ -253,6 +256,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //pre-compile html to include appropriate javascript build files.
         targethtml: {
             dev: {
                 files: {
@@ -270,6 +274,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //Watch all dev files and recompile upon changes
         concurrent: {
             tasks: ['nodemon:dev', 'watch'],
             options: {
@@ -277,6 +282,7 @@ module.exports = function(grunt) {
                 logConcurrentOutput: true
             }
         },
+        //Watch all dev files and recompile upon changes
         nodemon: {
             dev: {
                 script: 'server.js',
@@ -367,6 +373,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        //shell scripts start all necessary APIs when running application locally in dev
         shell: {
             //start mongo
             startMongo: {
