@@ -3,11 +3,6 @@
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    //$scope.animatedGifUrl = null;
-    //$timeout(function () {
-    //    $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
-    //}, 200);
-
 
     $scope.showDemo = false;
     $scope.hideDemo = function () {

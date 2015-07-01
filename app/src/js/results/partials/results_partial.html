@@ -18,6 +18,7 @@
                      style="width: {{results.gridPercentageWidth}}%;"
                         >
                     <div class="thumbnail" style="cursor: pointer">
+                        <div ng-show="result.external.source.code === 'HSHTG'" class="hshtg-ribbon"><span>HashtagSell</span></div>
                         <ribbon-grid ng-if="result.askingPrice.value">{{result.askingPrice.value | currency : $ : 0}}</ribbon-grid>
                         <hts-fave-toggle class="starPositioning"></hts-fave-toggle>
                         <!--<div style="background: url({{result.images[0].full || result.images[0].thumb || result.images[0].images}}) no-repeat center center fixed; height: 172px; webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;"></div>-->

@@ -82,6 +82,13 @@ h1, h2, h3, h4, h5{
     color:#494949 !important;
 }
 
+/*.thumbnail.glow {*/
+    /*-webkit-box-shadow:0 0 20px blue;*/
+    /*-moz-box-shadow: 0 0 20px blue;*/
+    /*box-shadow:0 0 20px blue;*/
+
+/*}*/
+
 
 
 /* Shadow under nav bar */
@@ -922,3 +929,4 @@ div.img-div{
     border-width: 9.5px 0 9.5px 17px;
     border-color: transparent transparent transparent rgba(255, 255, 255, 1);
 }
+

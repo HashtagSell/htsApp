@@ -4547,11 +4547,6 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    //$scope.animatedGifUrl = null;
-    //$timeout(function () {
-    //    $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
-    //}, 200);
-
 
     $scope.showDemo = false;
     $scope.hideDemo = function () {
@@ -13212,6 +13207,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                     style=\"width: {{results.gridPercentageWidth}}%;\"\n" +
     "                        >\n" +
     "                    <div class=\"thumbnail\" style=\"cursor: pointer\">\n" +
+    "                        <div ng-show=\"result.external.source.code === 'HSHTG'\" class=\"hshtg-ribbon\"><span>HashtagSell</span></div>\n" +
     "                        <ribbon-grid ng-if=\"result.askingPrice.value\">{{result.askingPrice.value | currency : $ : 0}}</ribbon-grid>\n" +
     "                        <hts-fave-toggle class=\"starPositioning\"></hts-fave-toggle>\n" +
     "                        <!--<div style=\"background: url({{result.images[0].full || result.images[0].thumb || result.images[0].images}}) no-repeat center center fixed; height: 172px; webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;\"></div>-->\n" +
