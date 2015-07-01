@@ -4560,7 +4560,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             $scope.img = '//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif';
 
             $timeout(function () {
-                $scope.hideDemo();
+                $scope.showDemo = false;
             }, 22720);
 
         } else {
