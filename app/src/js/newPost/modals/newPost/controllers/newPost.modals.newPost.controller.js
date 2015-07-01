@@ -3,15 +3,26 @@
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.animatedGifUrl = null;
-    $timeout(function () {
-        $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
-    }, 200);
+    //$scope.animatedGifUrl = null;
+    //$timeout(function () {
+    //    $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
+    //}, 200);
 
 
-    $scope.showDemo = true;
+    $scope.showDemo = false;
     $scope.hideDemo = function () {
-        $scope.showDemo = false;
+        $scope.showDemo = !$scope.showDemo;
+        if($scope.showDemo) {
+            $scope.img = '//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif';
+
+            $timeout(function () {
+                $scope.hideDemo();
+            }, 22720);
+
+        } else {
+            $scope.img = '//static.hashtagsell.com/tutorialRelated/sell_box_static.png';
+        }
+        //scope.currentlyPlaying = false;
     };
 
     $scope.clearPlaceholder = function () {
@@ -856,7 +867,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
                         return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
                     } else {
-                        var message = 'Just a friendly warning that your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
+                        var message = 'Your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
                         $scope.alerts.banners.push({
                             type: 'warning',
                             msg: message

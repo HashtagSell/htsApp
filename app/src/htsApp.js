@@ -1538,7 +1538,7 @@ htsApp.directive('spinner', ['sideNavFactory', function (sideNavFactory) {
 
 
 
-htsApp.directive('animatedGif', function () {
+htsApp.directive('animatedGif', ['$timeout', function ($timeout) {
     return {
         restrict: 'E',
         scope: {
@@ -1558,6 +1558,9 @@ htsApp.directive('animatedGif', function () {
             scope.playAnimation = function () {
                 scope.currentlyPlaying = true;
                 scope.img = scope.animationUrl;
+                $timeout(function () {
+                    scope.currentlyPlaying = false;
+                }, 22720);
             };
 
             scope.stopAnimation = function () {
@@ -1566,4 +1569,4 @@ htsApp.directive('animatedGif', function () {
             };
         }
     };
-});
+}]);

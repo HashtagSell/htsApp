@@ -1538,7 +1538,7 @@ htsApp.directive('spinner', ['sideNavFactory', function (sideNavFactory) {
 
 
 
-htsApp.directive('animatedGif', function () {
+htsApp.directive('animatedGif', ['$timeout', function ($timeout) {
     return {
         restrict: 'E',
         scope: {
@@ -1558,6 +1558,9 @@ htsApp.directive('animatedGif', function () {
             scope.playAnimation = function () {
                 scope.currentlyPlaying = true;
                 scope.img = scope.animationUrl;
+                $timeout(function () {
+                    scope.currentlyPlaying = false;
+                }, 22720);
             };
 
             scope.stopAnimation = function () {
@@ -1566,7 +1569,7 @@ htsApp.directive('animatedGif', function () {
             };
         }
     };
-});
+}]);
 angular.module('globalVars', [])
 
 .constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',freeGeoIp:'http://localhost:8080/json/',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
@@ -4544,15 +4547,26 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
  */
 htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
 
-    $scope.animatedGifUrl = null;
-    $timeout(function () {
-        $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
-    }, 200);
+    //$scope.animatedGifUrl = null;
+    //$timeout(function () {
+    //    $scope.animatedGifUrl = '//static.hashtagsell.com/tutorialRelated/sell_box_example.gif';
+    //}, 200);
 
 
-    $scope.showDemo = true;
+    $scope.showDemo = false;
     $scope.hideDemo = function () {
-        $scope.showDemo = false;
+        $scope.showDemo = !$scope.showDemo;
+        if($scope.showDemo) {
+            $scope.img = '//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif';
+
+            $timeout(function () {
+                $scope.hideDemo();
+            }, 22720);
+
+        } else {
+            $scope.img = '//static.hashtagsell.com/tutorialRelated/sell_box_static.png';
+        }
+        //scope.currentlyPlaying = false;
     };
 
     $scope.clearPlaceholder = function () {
@@ -5397,7 +5411,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                     if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
                         return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
                     } else {
-                        var message = 'Just a friendly warning that your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
+                        var message = 'Your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
                         $scope.alerts.banners.push({
                             type: 'warning',
                             msg: message
@@ -5850,7 +5864,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
             geo: {
                 coords: ['-122.431297', '37.773972'],
                 "min": 0,
-                "max": 100000
+                "max": 50000000
             }
         };
 
@@ -6823,7 +6837,7 @@ htsApp.controller('results.controller', ['$scope', '$state', '$stateParams', 'se
                 } else if (!response.data.results.length && page > 0) { //No results found after pagination
 
                     searchFactory.status.pleaseWait = false;
-                    searchFactory.status.loadingMessage = "Congratulations!  You've finished the internet!";
+                    searchFactory.status.loadingMessage = "No more results.  Sell your next item with us to increase our inventory.";
 
                 }
 
@@ -7139,7 +7153,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
         geo: {
             lookup: true,
             min: 0,
-            max: 12890000 // 8000 miles in meters
+            max: 50000000 // 8000 miles in meters
         }
     };
 
@@ -7558,7 +7572,7 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
             geo: {
                 lookup: true,
                 min: 0,
-                max: 100000
+                max: 50000000
             }
         };
     };
@@ -12774,38 +12788,30 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "<div class=\"modal-body dropzone hts-post-modal-body\" dropzone=\"dropzoneConfig\">\n" +
     "\n" +
-    "    <div class=\"sell-box-demo\" ng-show=\"showDemo\">\n" +
+    "    <alert type=\"info\" style=\"font-size: 17px;\" close=\"clearExampleReminder()\" ng-show=\"toggleExampleVisibility\">\n" +
+    "        <b>Example: </b>\n" +
+    "        \"<i>I'm selling my <span class=\"mention-highlighter\" contenteditable=\"false\">#item name</span>&nbsp;\n" +
+    "        for  <span  class=\"mention-highlighter-price\" contenteditable=\"false\">$item price</span>&nbsp;\n" +
+    "        <span class=\"mention-highlighter-location\" contenteditable=\"false\">@meeting location</span>&nbsp;\"</i>\n" +
+    "        <br>\n" +
+    "        <br>\n" +
+    "        <small>(Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.)</small>\n" +
+    "        <br>\n" +
+    "        <br>\n" +
+    "        <button ng-show=\"!showDemo\" class=\"btn btn-primary\" ng-click=\"hideDemo()\">Show video example</button>\n" +
+    "        <button ng-show=\"showDemo\" class=\"btn btn-primary\" ng-click=\"hideDemo()\">Stop video</button>\n" +
+    "    </alert>\n" +
     "\n" +
-    "        <alert type=\"warning\">\n" +
-    "            <div style=\"text-align: center; font-size: 17px;\">\n" +
-    "                <i class=\"fa fa-info-circle\"></i>\n" +
-    "                Watch the tutorial below then\n" +
-    "                <btn class=\"btn btn-warning\" style=\"font-size: 17px;\" ng-click=\"hideDemo()\">Click this button to sell your item!</btn>\n" +
-    "            </div>\n" +
-    "        </alert>\n" +
+    "    <alert ng-repeat=\"banner in alerts.banners\" type=\"{{banner.type}}\" close=\"closeAlert($index)\">{{banner.msg}}</alert>\n" +
     "\n" +
-    "        <animated-gif animation-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_animation.gif\" static-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_static.png\"/>\n" +
-    "    </div>\n" +
+    "    <!--<div ng-show=\"showDemo\">-->\n" +
+    "        <!--<animated-gif animation-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif\" static-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_static.png\"/>-->\n" +
+    "    <!--</div>-->\n" +
+    "    <!--{{img}}-->\n" +
+    "    <img class='sell-box-image img-responsive' ng-src='{{img}}' ng-show=\"showDemo\"/>\n" +
     "\n" +
     "    <div class=\"sell-box\" ng-show=\"!showDemo\">\n" +
     "        <div class=\"row remove-row-margins\">\n" +
-    "\n" +
-    "            <alert type=\"info\" style=\"font-size: 17px;\" close=\"clearExampleReminder()\" ng-show=\"toggleExampleVisibility\">\n" +
-    "                <b>Example: </b>\n" +
-    "                \"<i>I'm selling my <span class=\"mention-highlighter\" contenteditable=\"false\">#item name</span>&nbsp;\n" +
-    "                for  <span  class=\"mention-highlighter-price\" contenteditable=\"false\">$item price</span>&nbsp;\n" +
-    "                <span class=\"mention-highlighter-location\" contenteditable=\"false\">@meeting location</span>&nbsp;\"</i>\n" +
-    "                <br>\n" +
-    "                <br>\n" +
-    "                <small>(Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.)</small>\n" +
-    "            </alert>\n" +
-    "\n" +
-    "            <alert ng-repeat=\"banner in alerts.banners\" type=\"{{banner.type}}\" close=\"closeAlert($index)\">{{banner.msg}}</alert>\n" +
-    "\n" +
-    "            <!--<pre>-->\n" +
-    "                <!--{{jsonObj}}-->\n" +
-    "            <!--</pre>-->\n" +
-    "\n" +
     "            <div class=\"hts-input-container\">\n" +
     "                <div id=\"htsPost\"\n" +
     "                     ng-class=\"jsonObj.category_name ? 'col-md-10' : 'col-md-12' \"\n" +
@@ -12819,7 +12825,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                     mentio-id=\"'hashtag'\"\n" +
     "                     mentio-typed-term=\"typedTerm\"\n" +
     "                     ng-model=\"jsonObj.body\">\n" +
-    "                    <span>I'm selling my...</span>\n" +
+    "                    <span>Try it yourself, begin typing here...</span>\n" +
     "                </div>\n" +
     "\n" +
     "                <div ng-class=\"{ 'hts-annotations-container' : jsonObj.category_name}\">\n" +
