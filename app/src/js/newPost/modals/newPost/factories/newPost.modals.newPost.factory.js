@@ -304,7 +304,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 
         if(!factory.manualCategorySelect.code) {
 
-            $http.get(ENV.groupingsAPI + 'popular', {
+            $http.get(ENV.groupingsAPI + 'suggested', {
                 params: {
                     query: queryString
                 }

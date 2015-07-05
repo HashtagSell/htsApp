@@ -5362,7 +5362,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         } else {
             $scope.places = [
                 {
-                    description: "Specify a landmark OR address to pickup item",
+                    description: "Specify a landmark OR address to pick up item",
                     demoText: true
                 }
             ];
@@ -5779,7 +5779,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 
         if(!factory.manualCategorySelect.code) {
 
-            $http.get(ENV.groupingsAPI + 'popular', {
+            $http.get(ENV.groupingsAPI + 'suggested', {
                 params: {
                     query: queryString
                 }
@@ -11666,7 +11666,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "    </div>\n" +
     "    <div class=\"modal-body\">\n" +
     "        <p>Please acknowledge the activation email we've just sent you.</p>\n" +
-    "        <p>Thanks for making HashtagSell a safe community to buy and sell used goods!</p>\n" +
+    "        <p>Thanks for making HashtagSell a great community to buy and sell used goods!</p>\n" +
     "    </div>\n" +
     "    <!--<div class=\"modal-footer\">-->\n" +
     "        <!--<a href=\"mailto:\" target=\"_self\" class=\"btn btn-default\">Go to inbox</a>-->\n" +
@@ -12790,7 +12790,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <span class=\"mention-highlighter-location\" contenteditable=\"false\">@meeting location</span>&nbsp;\"</i>\n" +
     "        <br>\n" +
     "        <br>\n" +
-    "        <small>(Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.)</small>\n" +
+    "        <small>Pro tip: Multiple hashtags make our product prediction smarter!  Also, don't include a price if you're listing an item for free.</small>\n" +
     "        <br>\n" +
     "        <br>\n" +
     "        <button ng-show=\"!showDemo\" class=\"btn btn-primary\" ng-click=\"hideDemo()\">Show video example</button>\n" +

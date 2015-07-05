@@ -818,7 +818,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         } else {
             $scope.places = [
                 {
-                    description: "Specify a landmark OR address to pickup item",
+                    description: "Specify a landmark OR address to pick up item",
                     demoText: true
                 }
             ];
