@@ -3407,7 +3407,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
         if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
 
             var modalInstance = $modal.open({
-                templateUrl: '/js/newPost/modals/newPost/partials/newPost.html',
+                templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
                 controller: 'newPostModal',
                 size: 'lg',
                 keyboard: false,
