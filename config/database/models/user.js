@@ -55,7 +55,7 @@ var userSchema = mongoose.Schema({
                         street_address: String,
                         locality: String,
                         region: String,
-                        postalCode: String,
+                        postalCode: String
                     }
                 },
                 individual: {
@@ -68,7 +68,7 @@ var userSchema = mongoose.Schema({
                         locality: String,
                         region: String,
                         postalCode: String
-                    },
+                    }
                 },
                 funding: {
                     destination: String,

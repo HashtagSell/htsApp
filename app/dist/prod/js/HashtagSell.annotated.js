@@ -9183,8 +9183,8 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                         var sellerProfileDetails = response.data.user;
 
-                        //console.log(sellerProfileDetails);
-
+                        console.log(scope);
+                        alert('cehck it!');
                         var bannerElement = angular.element(element[0].querySelector('.profile'));
                         bannerElement.css({
                             'background-image': "url(" + sellerProfileDetails.banner_photo + ")",

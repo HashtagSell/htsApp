@@ -31,6 +31,7 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
                     deferred.resolve(subMerchantResponse);
                 } else if (reason === "abortSubMerchantModal"){
                     console.log('use clicked close button');
+                    deferred.reject();
                 }
                 $log.info('Modal dismissed at: ' + new Date());
             });

@@ -40,6 +40,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.resetAll = function () {
         $scope.jsonObj = mentionsFactory.setJsonTemplate();
+        mentionsFactory.alerts = {
+            banners: []
+        };
     };
     $scope.resetAll();
 

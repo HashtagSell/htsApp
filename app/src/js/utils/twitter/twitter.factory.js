@@ -72,6 +72,10 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
                     payload.craigslist = newPost.craigslist;
                 }
 
+                if (newPost.payment) {
+                    payload.payment = newPost.payment;
+                }
+
                 $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
 
                     deferred.resolve(response);

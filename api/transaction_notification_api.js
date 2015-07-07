@@ -278,7 +278,8 @@ exports.meetingAccepted = {
                     offer: acceptedMeeting.offer,
                     buttons: {
                         payment: {
-                            url : env.hts.appURL + '/payment/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId
+                            url : env.hts.appURL + '/payment/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId,
+                            venmo: "https://venmo.com/?txn=pay&recipients=" + sellerUserObj.user_settings.merchantAccount.details.funding.email + "&amount=" + acceptedMeeting.post.askingPrice.value + "&note=" + acceptedMeeting.post.heading + "&audience=private"
                         },
                         review: {
                             buyerReviewUrl: env.hts.appURL + '/review/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId + '/' + buyerUserObj._id

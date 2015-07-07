@@ -10,7 +10,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -50,7 +50,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -89,7 +89,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -102,7 +102,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -138,8 +138,48 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
+        }
+    };
+
+
+    transactionFactory.buyNow = function(result) {
+
+        if(!Session.userObj.user_settings.loggedIn) {
+
+            authModalFactory.betaCheckModal($state.params);
+
+        } else {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/transactionButtons/modals/buyNow/partials/transactionButtons.modal.buyNow.partial.html',
+                controller: 'buyNowModalController',
+                resolve: {
+                    result: function () {
+                        return result;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if(reason === 'venmo'){
+
+                    var venmoUrl = "https://venmo.com/?txn=pay&recipients=" + result.user.merchantAccount.details.funding.email + "&amount=" + result.askingPrice.value + "&note=" + result.heading + "&audience=private";
+                    $window.open(venmoUrl);
+
+                } else if (reason === 'meetingRequest') {
+
+                    console.log('closing modal');
+
+                    transactionFactory.placeOffer(result);
+
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
         }
     };
 

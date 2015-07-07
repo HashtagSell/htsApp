@@ -32,6 +32,10 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             payload.craigslist = newPost.craigslist;
         }
 
+        if (newPost.payment) {
+            payload.payment = newPost.payment;
+        }
+
 
         //We already have ebay token for user.. just push to ebay
         if(!factory.isEmpty(ebay)) {
@@ -66,10 +70,12 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
                 //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
 
                 Notification.error({
-                    title: 'Manually link eBay account',
-                    message: 'After completing eBay authorization please click the big red button below.',
+                    title: 'Ebay time out',
+                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
                     delay: 10000
                 });  //Send the webtoast
+
+                deferred.resolve(response);
             });
 
         }
@@ -112,7 +118,7 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
                         $interval.cancel(fetchTokenInterval);
                         deferred.resolve(response);
 
-                    } else if(attemptCount === 50) {
+                    } else if(attemptCount === 500) {
 
                         $interval.cancel(fetchTokenInterval);
 

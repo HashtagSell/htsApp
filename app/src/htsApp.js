@@ -1216,7 +1216,7 @@ htsApp.directive('subMerchant', function () {
                        street_address: null,
                        locality: null,
                        region: null,
-                       postalCode: null,
+                       postalCode: null
                    }
                },
                individual: {
@@ -1229,10 +1229,10 @@ htsApp.directive('subMerchant', function () {
                        locality: null,
                        region: null,
                        postalCode: null
-                   },
+                   }
                },
                funding: {
-                   destination: null,
+                   destination: 'email',
                    email: null,
                    mobilePhone: null,
                    accountNumber: null,

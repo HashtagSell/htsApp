@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -61,7 +61,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
     $scope.onlinePayment = {
-        allow: false
+        allow: true
     };
 
 
@@ -141,7 +141,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             Notification.error({
                 title: "Amazon publishing error",
-                message: "push to amazon coming soon!",
+                message: "Publish to amazon coming soon!",
                 delay: 10000
             });  //Send the webtoast
             deferred.resolve();
@@ -236,9 +236,30 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             subMerchantFactory.validateSubMerchant(newPost).then(function(response){
 
-                console.log('success', response);
+                var payload = {
+                    payment: response
+                };
 
-                deferred.resolve();
+                if (newPost.facebook) {
+                    payload.facebook = newPost.facebook;
+                }
+
+                if (newPost.amazon) {
+                    payload.amazon = newPost.amazon;
+                }
+
+                if (newPost.craigslist) {
+                    payload.craigslist = newPost.craigslist;
+                }
+
+                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                    deferred.resolve(response);
+
+                }).error(function (response) {
+
+                    deferred.reject(response);
+                });
 
             }, function (err) {
 

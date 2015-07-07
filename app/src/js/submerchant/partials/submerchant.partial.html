@@ -2,10 +2,10 @@
 
 <div class="container">
 
-    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-
     <form name="subMerchForm" class="form-horizontal" autocomplete="false" ng-submit="submitSubMerchant()">
         <fieldset>
+
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
             <!-- Select Basic -->
             <div class="form-group">
@@ -90,50 +90,57 @@
             </div>
 
             <!-- Multiple Radios -->
+            <!--<div class="form-group">-->
+                <!--<label class="col-md-2 control-label" for="destination">Send funds to</label>-->
+                <!--<div class="col-md-3">-->
+                    <!--<div class="radio">-->
+                        <!--<label for="destination-0">-->
+                            <!--<input type="radio" name="destination" id="destination-0" ng-model="subMerchantForm.destination.disperseType" value="bank" required="required">-->
+                            <!--Bank Account-->
+                        <!--</label>-->
+                    <!--</div>-->
+                    <!--<div class="radio">-->
+                        <!--<label for="destination-1">-->
+                            <!--<input type="radio" name="destination" id="destination-1" ng-model="subMerchantForm.destination.disperseType" value="venmo" required="required">-->
+                            <!--Venmo-->
+                        <!--</label>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!-- Text input-->
+            <!--<div class="form-group" ng-show="subMerchantForm.destination.disperseType === 'bank'">-->
+                <!--<label class="col-md-2 control-label" for="accountnumber">Bank Account No.</label>-->
+                <!--<div class="col-md-4">-->
+                    <!--<input id="accountnumber" name="accountnumber" type="number" placeholder="Bank Account No." ng-model="subMerchant.funding.accountNumber" class="form-control input-md" ng-required="subMerchantForm.destination.disperseType === 'bank'">-->
+
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--&lt;!&ndash; Text input&ndash;&gt;-->
+            <!--<div class="form-group" ng-show="subMerchantForm.destination.disperseType === 'bank'">-->
+                <!--<label class="col-md-2 control-label" for="routingnumber">Bank Routing No.</label>-->
+                <!--<div class="col-md-4">-->
+                    <!--<input id="routingnumber" name="routingnumber" type="number" placeholder="Bank Routing No." ng-model="subMerchant.funding.routingNumber" class="form-control input-md" ng-required="subMerchantForm.destination.disperseType === 'bank'">-->
+
+                <!--</div>-->
+            <!--</div>-->
+
+            <!-- Text input-->
             <div class="form-group">
-                <label class="col-md-2 control-label" for="destination">Send funds to</label>
-                <div class="col-md-3">
-                    <div class="radio">
-                        <label for="destination-0">
-                            <input type="radio" name="destination" id="destination-0" ng-model="subMerchantForm.destination.disperseType" value="bank" required="required">
-                            Bank Account
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label for="destination-1">
-                            <input type="radio" name="destination" id="destination-1" ng-model="subMerchantForm.destination.disperseType" value="venmo" required="required">
-                            Venmo
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.disperseType === 'bank'">
-                <label class="col-md-2 control-label" for="accountnumber">Bank Account No.</label>
-                <div class="col-md-4">
-                    <input id="accountnumber" name="accountnumber" type="number" placeholder="Bank Account No." ng-model="subMerchant.funding.accountNumber" class="form-control input-md" ng-required="subMerchantForm.destination.disperseType === 'bank'">
-
-                </div>
-            </div>
-
-            <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.disperseType === 'bank'">
-                <label class="col-md-2 control-label" for="routingnumber">Bank Routing No.</label>
-                <div class="col-md-4">
-                    <input id="routingnumber" name="routingnumber" type="number" placeholder="Bank Routing No." ng-model="subMerchant.funding.routingNumber" class="form-control input-md" ng-required="subMerchantForm.destination.disperseType === 'bank'">
-
-                </div>
-            </div>
-
-            <!-- Text input-->
-            <div class="form-group" ng-show="subMerchantForm.destination.disperseType === 'venmo'">
                 <label class="col-md-2 control-label" for="venmoemail">Venmo Email</label>
                 <div class="col-md-4">
-                    <input id="venmoemail" name="venmoemail" type="email" placeholder="Venmo Email Account" ng-model="subMerchant.funding.email" class="form-control input-md" ng-required="subMerchantForm.destination.disperseType === 'venmo'">
-
+                    <input id="venmoemail" name="venmoemail" type="email" placeholder="Venmo Email Account" ng-model="subMerchant.funding.email" class="form-control input-md" required="required">
+                    <small><a href="https://venmo.com/w/signup" target="_blank">I need a Venmo account.</a></small>
                 </div>
             </div>
+
+            <!--<div class="form-group">-->
+                <!--<label class="col-md-2 control-label" for="venmoemail">Venmo Email</label>-->
+                <!--<div class="col-md-4">-->
+                    <!-- -->
+                <!--</div>-->
+            <!--</div>-->
 
             <!-- Button -->
             <div class="form-group">

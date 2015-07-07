@@ -6,7 +6,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
     var metaCache = angular.copy(metaFactory.metatags);
     console.log(metaCache);
 
-    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio) {
+    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', 'authModalFactory', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio, authModalFactory) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
@@ -112,9 +112,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                     });
                 }
             } else {
-
-                $state.go('betaChecker');
-
+                authModalFactory.betaCheckModal($state.params);
             }
         };
 
@@ -203,7 +201,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                $state.go('betaChecker');
+                authModalFactory.betaCheckModal($state.params);
             }
         };
 
@@ -226,7 +224,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         };
 
         $scope.buyOnline = function (result) {
-            alert('online payment and shipping coming soon!');
+            transactionFactory.buyNow(result);
         };
 
         $scope.placeBid = function (result) {
@@ -305,16 +303,13 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
 htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory) {
     return {
         restrict: 'E',
-        scope: {
-            result: '='
-        },
-        link : function (scope, element, attrs) {
+        controller : ['$scope', '$element', function ($scope, $element) {
 
             //console.log(scope.result.images[0]);
 
-            if(scope.result.external.source.code === 'HSHTG') {
+            if($scope.result.external.source.code === 'HSHTG') {
 
-                var username = scope.result.username;
+                var username = $scope.result.username;
 
                 splashFactory.getUserProfile(username).then(function (response) {
 
@@ -327,21 +322,21 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                         var sellerProfileDetails = response.data.user;
 
-                        //console.log(sellerProfileDetails);
+                        $scope.result.user = sellerProfileDetails;
 
-                        var bannerElement = angular.element(element[0].querySelector('.profile'));
+                        var bannerElement = angular.element($element[0].querySelector('.profile'));
                         bannerElement.css({
                             'background-image': "url(" + sellerProfileDetails.banner_photo + ")",
                             'background-size': "cover"
                         });
 
-                        var profilePhotoElement = angular.element(element[0].querySelector('.bs-profile-image'));
+                        var profilePhotoElement = angular.element($element[0].querySelector('.bs-profile-image'));
                         profilePhotoElement.css({
                             'background-image': "url(" + sellerProfileDetails.profile_photo + ")",
                             'background-size': "cover"
                         });
 
-                        var username = angular.element(element[0].querySelector('.splash-bs-username'));
+                        var username = angular.element($element[0].querySelector('.splash-bs-username'));
                         username.html('@' + sellerProfileDetails.name);
                     }
                 }, function (response) {
@@ -353,12 +348,12 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 });
             } else {
 
-                var bannerElement = angular.element(element[0].querySelector('.profile'));
+                var bannerElement = angular.element($element[0].querySelector('.profile'));
 
-                if (scope.result.images.length) {
+                if ($scope.result.images.length) {
 
-                    var photoIndex = scope.result.images.length - 1;
-                    var lastImage = scope.result.images[photoIndex].thumb || scope.result.images[photoIndex].images || scope.result.images[photoIndex].full;
+                    var photoIndex = $scope.result.images.length - 1;
+                    var lastImage = $scope.result.images[photoIndex].thumb || $scope.result.images[photoIndex].images || $scope.result.images[photoIndex].full;
 
                     bannerElement.css({
                         'background-image': "url(" + lastImage + ")",
@@ -372,9 +367,9 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                     });
                 }
 
-                var usernamePlaceholder = angular.element(element[0].querySelector('.splash-bs-username'));
-                var sourceIcon = angular.element(element[0].querySelector('.bs-profile-image'));
-                if (scope.result.external.source.code === "APSTD") {
+                var usernamePlaceholder = angular.element($element[0].querySelector('.splash-bs-username'));
+                var sourceIcon = angular.element($element[0].querySelector('.bs-profile-image'));
+                if ($scope.result.external.source.code === "APSTD") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/apartments_com_splash.png)",
@@ -383,7 +378,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@apartments.com');
 
-                } else if (scope.result.external.source.code === "AUTOD") {
+                } else if ($scope.result.external.source.code === "AUTOD") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/autotrader_splash.png)",
@@ -392,7 +387,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@autotrader.com');
 
-                } else if (scope.result.external.source.code === "BKPGE") {
+                } else if ($scope.result.external.source.code === "BKPGE") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/backpage_splash.png)",
@@ -401,7 +396,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@backpage.com');
 
-                } else if (scope.result.external.source.code === "CRAIG") {
+                } else if ($scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash_v2.png)",
@@ -410,7 +405,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@craigslist.com');
 
-                } else if (scope.result.external.source.code === "EBAYM") {
+                } else if ($scope.result.external.source.code === "EBAYM") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_motors_splash.png)",
@@ -419,7 +414,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@ebaymotors.com');
 
-                } else if (scope.result.external.source.code === "E_BAY") {
+                } else if ($scope.result.external.source.code === "E_BAY") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_splash.png)",
@@ -430,6 +425,6 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 }
 
             }
-        }
+        }]
     };
 }]);
