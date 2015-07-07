@@ -1216,7 +1216,7 @@ htsApp.directive('subMerchant', function () {
                        street_address: null,
                        locality: null,
                        region: null,
-                       postalCode: null,
+                       postalCode: null
                    }
                },
                individual: {
@@ -1229,10 +1229,10 @@ htsApp.directive('subMerchant', function () {
                        locality: null,
                        region: null,
                        postalCode: null
-                   },
+                   }
                },
                funding: {
-                   destination: null,
+                   destination: 'email',
                    email: null,
                    mobilePhone: null,
                    accountNumber: null,
@@ -4584,6 +4584,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.resetAll = function () {
         $scope.jsonObj = mentionsFactory.setJsonTemplate();
+        mentionsFactory.alerts = {
+            banners: []
+        };
     };
     $scope.resetAll();
 
@@ -6279,7 +6282,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', function ($scope, $modal, $modalInstance, $q, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -6339,7 +6342,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
     $scope.onlinePayment = {
-        allow: false
+        allow: true
     };
 
 
@@ -6419,7 +6422,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             Notification.error({
                 title: "Amazon publishing error",
-                message: "push to amazon coming soon!",
+                message: "Publish to amazon coming soon!",
                 delay: 10000
             });  //Send the webtoast
             deferred.resolve();
@@ -6514,9 +6517,34 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             subMerchantFactory.validateSubMerchant(newPost).then(function(response){
 
-                console.log('success', response);
+                console.log(response);
 
-                deferred.resolve();
+                //var payload = {
+                //    payment: response
+                //};
+                //
+                //if (newPost.facebook) {
+                //    payload.facebook = newPost.facebook;
+                //}
+                //
+                //if (newPost.amazon) {
+                //    payload.amazon = newPost.amazon;
+                //}
+                //
+                //if (newPost.craigslist) {
+                //    payload.craigslist = newPost.craigslist;
+                //}
+                //
+                //$http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+                //
+                //    deferred.resolve(response);
+                //
+                //}).error(function (response) {
+                //
+                //    deferred.reject(response);
+                //});
+
+                deferred.resolve(response);
 
             }, function (err) {
 
@@ -8862,7 +8890,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
     var metaCache = angular.copy(metaFactory.metatags);
     console.log(metaCache);
 
-    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio) {
+    var splashInstanceCtrl = ['$scope', '$filter', 'sideNavFactory', 'uiGmapGoogleMapApi', 'favesFactory', 'qaFactory', 'transactionFactory', 'Session', 'socketio', 'authModalFactory', function ($scope, $filter, sideNavFactory, uiGmapGoogleMapApi, favesFactory, qaFactory, transactionFactory, Session, socketio, authModalFactory) {
 
         $scope.userObj = Session.userObj;
         $scope.result = splashFactory.result;
@@ -8968,9 +8996,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                     });
                 }
             } else {
-
-                $state.go('betaChecker');
-
+                authModalFactory.betaCheckModal($state.params);
             }
         };
 
@@ -9059,7 +9085,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                $state.go('betaChecker');
+                authModalFactory.betaCheckModal($state.params);
             }
         };
 
@@ -9082,7 +9108,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         };
 
         $scope.buyOnline = function (result) {
-            alert('online payment and shipping coming soon!');
+            transactionFactory.buyNow(result);
         };
 
         $scope.placeBid = function (result) {
@@ -9161,16 +9187,13 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
 htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory) {
     return {
         restrict: 'E',
-        scope: {
-            result: '='
-        },
-        link : function (scope, element, attrs) {
+        controller : ['$scope', '$element', function ($scope, $element) {
 
             //console.log(scope.result.images[0]);
 
-            if(scope.result.external.source.code === 'HSHTG') {
+            if($scope.result.external.source.code === 'HSHTG') {
 
-                var username = scope.result.username;
+                var username = $scope.result.username;
 
                 splashFactory.getUserProfile(username).then(function (response) {
 
@@ -9183,21 +9206,21 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                         var sellerProfileDetails = response.data.user;
 
-                        //console.log(sellerProfileDetails);
+                        $scope.result.user = sellerProfileDetails;
 
-                        var bannerElement = angular.element(element[0].querySelector('.profile'));
+                        var bannerElement = angular.element($element[0].querySelector('.profile'));
                         bannerElement.css({
                             'background-image': "url(" + sellerProfileDetails.banner_photo + ")",
                             'background-size': "cover"
                         });
 
-                        var profilePhotoElement = angular.element(element[0].querySelector('.bs-profile-image'));
+                        var profilePhotoElement = angular.element($element[0].querySelector('.bs-profile-image'));
                         profilePhotoElement.css({
                             'background-image': "url(" + sellerProfileDetails.profile_photo + ")",
                             'background-size': "cover"
                         });
 
-                        var username = angular.element(element[0].querySelector('.splash-bs-username'));
+                        var username = angular.element($element[0].querySelector('.splash-bs-username'));
                         username.html('@' + sellerProfileDetails.name);
                     }
                 }, function (response) {
@@ -9209,12 +9232,12 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 });
             } else {
 
-                var bannerElement = angular.element(element[0].querySelector('.profile'));
+                var bannerElement = angular.element($element[0].querySelector('.profile'));
 
-                if (scope.result.images.length) {
+                if ($scope.result.images.length) {
 
-                    var photoIndex = scope.result.images.length - 1;
-                    var lastImage = scope.result.images[photoIndex].thumb || scope.result.images[photoIndex].images || scope.result.images[photoIndex].full;
+                    var photoIndex = $scope.result.images.length - 1;
+                    var lastImage = $scope.result.images[photoIndex].thumb || $scope.result.images[photoIndex].images || $scope.result.images[photoIndex].full;
 
                     bannerElement.css({
                         'background-image': "url(" + lastImage + ")",
@@ -9228,9 +9251,9 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                     });
                 }
 
-                var usernamePlaceholder = angular.element(element[0].querySelector('.splash-bs-username'));
-                var sourceIcon = angular.element(element[0].querySelector('.bs-profile-image'));
-                if (scope.result.external.source.code === "APSTD") {
+                var usernamePlaceholder = angular.element($element[0].querySelector('.splash-bs-username'));
+                var sourceIcon = angular.element($element[0].querySelector('.bs-profile-image'));
+                if ($scope.result.external.source.code === "APSTD") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/apartments_com_splash.png)",
@@ -9239,7 +9262,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@apartments.com');
 
-                } else if (scope.result.external.source.code === "AUTOD") {
+                } else if ($scope.result.external.source.code === "AUTOD") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/autotrader_splash.png)",
@@ -9248,7 +9271,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@autotrader.com');
 
-                } else if (scope.result.external.source.code === "BKPGE") {
+                } else if ($scope.result.external.source.code === "BKPGE") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/backpage_splash.png)",
@@ -9257,7 +9280,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@backpage.com');
 
-                } else if (scope.result.external.source.code === "CRAIG") {
+                } else if ($scope.result.external.source.code === "CRAIG") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/craigslist_splash_v2.png)",
@@ -9266,7 +9289,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@craigslist.com');
 
-                } else if (scope.result.external.source.code === "EBAYM") {
+                } else if ($scope.result.external.source.code === "EBAYM") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_motors_splash.png)",
@@ -9275,7 +9298,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
 
                     usernamePlaceholder.html('@ebaymotors.com');
 
-                } else if (scope.result.external.source.code === "E_BAY") {
+                } else if ($scope.result.external.source.code === "E_BAY") {
 
                     sourceIcon.css({
                         'background-image': "url(https://static.hashtagsell.com/logos/marketplaces/ebay_splash.png)",
@@ -9286,7 +9309,7 @@ htsApp.directive('splashSideProfile', ['splashFactory', function (splashFactory)
                 }
 
             }
-        }
+        }]
     };
 }]);
 /**
@@ -9489,6 +9512,7 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
                     deferred.resolve(subMerchantResponse);
                 } else if (reason === "abortSubMerchantModal"){
                     console.log('use clicked close button');
+                    deferred.reject();
                 }
                 $log.info('Modal dismissed at: ' + new Date());
             });
@@ -9568,7 +9592,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -9608,7 +9632,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -9647,7 +9671,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -9660,7 +9684,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         } else {
 
@@ -9696,12 +9720,72 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            $state.go('signup');
+            authModalFactory.betaCheckModal($state.params);
 
         }
     };
 
+
+    transactionFactory.buyNow = function(result) {
+
+        if(!Session.userObj.user_settings.loggedIn) {
+
+            authModalFactory.betaCheckModal($state.params);
+
+        } else {
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/transactionButtons/modals/buyNow/partials/transactionButtons.modal.buyNow.partial.html',
+                controller: 'buyNowModalController',
+                resolve: {
+                    result: function () {
+                        return result;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if(reason === 'venmo'){
+
+                    var venmoUrl = "https://venmo.com/?txn=pay&recipients=" + result.user.merchantAccount.details.funding.email + "&amount=" + result.askingPrice.value + "&note=" + result.heading + "&audience=private";
+                    $window.open(venmoUrl);
+
+                } else if (reason === 'meetingRequest') {
+
+                    console.log('closing modal');
+
+                    transactionFactory.placeOffer(result);
+
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+        }
+    };
+
     return transactionFactory;
+}]);
+/**
+ * Created by braddavis on 1/4/15.
+ */
+htsApp.controller('buyNowModalController', ['$scope', '$modalInstance', 'result', function ($scope, $modalInstance, result) {
+
+    $scope.result = result;
+
+    $scope.yes = function() {
+        $modalInstance.dismiss('venmo');
+    };
+
+    $scope.no = function() {
+        $modalInstance.dismiss('meetingRequest');
+    };
+
+    $scope.dismiss = function (reason) {
+        $modalInstance.dismiss(reason);
+    };
+
 }]);
 htsApp.controller('quickComposeController', ['$scope', '$modalInstance', 'quickComposeFactory', 'Session', '$window', 'result', function ($scope, $modalInstance, quickComposeFactory, Session, $window, result) {
 
@@ -10121,6 +10205,10 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             payload.craigslist = newPost.craigslist;
         }
 
+        if (newPost.payment) {
+            payload.payment = newPost.payment;
+        }
+
 
         //We already have ebay token for user.. just push to ebay
         if(!factory.isEmpty(ebay)) {
@@ -10155,10 +10243,12 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
                 //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
 
                 Notification.error({
-                    title: 'Manually link eBay account',
-                    message: 'After completing eBay authorization please click the big red button below.',
+                    title: 'Ebay time out',
+                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
                     delay: 10000
                 });  //Send the webtoast
+
+                deferred.resolve(response);
             });
 
         }
@@ -10201,7 +10291,7 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
                         $interval.cancel(fetchTokenInterval);
                         deferred.resolve(response);
 
-                    } else if(attemptCount === 50) {
+                    } else if(attemptCount === 500) {
 
                         $interval.cancel(fetchTokenInterval);
 
@@ -10384,6 +10474,10 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
                     if (newPost.craigslist) {
                         payload.craigslist = newPost.craigslist;
+                    }
+
+                    if (newPost.payment) {
+                        payload.payment = newPost.payment;
                     }
 
                     $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
@@ -10621,6 +10715,10 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
                 if (newPost.craigslist) {
                     payload.craigslist = newPost.craigslist;
+                }
+
+                if (newPost.payment) {
+                    payload.payment = newPost.payment;
                 }
 
                 $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
@@ -12958,9 +13056,9 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <div class=\"icon icon-mono amazon\"ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
     "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono online-payment\" ng-class=\"{ 'hold': onlinePayment.allow}\" ng-click=\"onlinePayment.allow = !onlinePayment.allow\">\n" +
-    "            <div ng-show=\"currentlyPublishing.onlinePayment\" class=\"circ-spinner\"></div>\n" +
-    "        </div>\n" +
+    "        <!--<div class=\"icon icon-mono online-payment\" ng-class=\"{ 'hold': onlinePayment.allow}\" ng-click=\"onlinePayment.allow = !onlinePayment.allow\">-->\n" +
+    "            <!--<div ng-show=\"currentlyPublishing.onlinePayment\" class=\"circ-spinner\"></div>-->\n" +
+    "        <!--</div>-->\n" +
     "    <!--</div>-->\n" +
     "\n" +
     "    <h3 id=\"instructions\">Boost your post's visibility and allow online payment.</h3>\n" +
@@ -12968,7 +13066,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "    <h3 id=\"twitterBlurb\">Share to your twitter timeline for friends to see.</h3>\n" +
     "    <h3 id=\"ebayBlurb\">Share to your existing Ebay account.</h3>\n" +
     "    <h3 id=\"amazonBlurb\">Coming soon!  Share to Amazon.</h3>\n" +
-    "    <h3 id=\"onlinePaymentBlurb\">Allow buyer to send online payment.</h3>\n" +
+    "    <!--<h3 id=\"onlinePaymentBlurb\">Allow buyer to send online payment.</h3>-->\n" +
     "\n" +
     "    <!--{{shareToggles}}-->\n" +
     "    <!--{{onlinePayment}}-->\n" +
@@ -13736,14 +13834,14 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                <a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.phone\" ng-click=\"displayPhone(result)\" style=\"cursor: pointer\">\n" +
     "                                    <i class=\"fa fa-phone-square fa-fw fa-lg\"></i>&nbsp; Phone seller\n" +
     "                                </a>\n" +
+    "                                <a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG' && result.user.merchantAccount.details.funding.destination == 'email' && result.askingPrice.value\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer\">\n" +
+    "                                    <i class=\"fa fa-vimeo-square fa-fw fa-lg\"></i>&nbsp; Buy now\n" +
+    "                                </a>\n" +
     "                                <a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG'\" ng-click=\"placeOffer(result)\" style=\"cursor: pointer\">\n" +
     "                                    <i class=\"fa fa-calendar-o fa-fw fa-lg\"></i>&nbsp; Request a meeting\n" +
     "                                </a>\n" +
-    "                                <!--<a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG'\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer\" =>-->\n" +
-    "                                    <!--<i class=\"fa fa-paypal fa-fw fa-lg\"></i>&nbsp; Payment & Shipping-->\n" +
-    "                                <!--</a>-->\n" +
     "                                <a class=\"list-group-item\"  ng-if=\"result.external.source.code === 'E_BAY'\" ng-click=\"placeBid(result)\" style=\"cursor: pointer\">\n" +
-    "                                    <i class=\"fa fa-credit-card fa-fw fa-lg\"></i>&nbsp; Bid on item\n" +
+    "                                    <i class=\"fa fa-paypal fa-fw fa-lg\"></i>&nbsp; Bid on item\n" +
     "                                </a>\n" +
     "                                <a class=\"list-group-item\" ng-click=\"toggleFave(result)\" style=\"cursor: pointer\">\n" +
     "                                    <span ng-show=\"favorited\">\n" +
@@ -13843,10 +13941,10 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "<div class=\"container\">\n" +
     "\n" +
-    "    <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
-    "\n" +
     "    <form name=\"subMerchForm\" class=\"form-horizontal\" autocomplete=\"false\" ng-submit=\"submitSubMerchant()\">\n" +
     "        <fieldset>\n" +
+    "\n" +
+    "            <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
     "\n" +
     "            <!-- Select Basic -->\n" +
     "            <div class=\"form-group\">\n" +
@@ -13931,50 +14029,57 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            </div>\n" +
     "\n" +
     "            <!-- Multiple Radios -->\n" +
+    "            <!--<div class=\"form-group\">-->\n" +
+    "                <!--<label class=\"col-md-2 control-label\" for=\"destination\">Send funds to</label>-->\n" +
+    "                <!--<div class=\"col-md-3\">-->\n" +
+    "                    <!--<div class=\"radio\">-->\n" +
+    "                        <!--<label for=\"destination-0\">-->\n" +
+    "                            <!--<input type=\"radio\" name=\"destination\" id=\"destination-0\" ng-model=\"subMerchantForm.destination.disperseType\" value=\"bank\" required=\"required\">-->\n" +
+    "                            <!--Bank Account-->\n" +
+    "                        <!--</label>-->\n" +
+    "                    <!--</div>-->\n" +
+    "                    <!--<div class=\"radio\">-->\n" +
+    "                        <!--<label for=\"destination-1\">-->\n" +
+    "                            <!--<input type=\"radio\" name=\"destination\" id=\"destination-1\" ng-model=\"subMerchantForm.destination.disperseType\" value=\"venmo\" required=\"required\">-->\n" +
+    "                            <!--Venmo-->\n" +
+    "                        <!--</label>-->\n" +
+    "                    <!--</div>-->\n" +
+    "                <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "            <!-- Text input-->\n" +
+    "            <!--<div class=\"form-group\" ng-show=\"subMerchantForm.destination.disperseType === 'bank'\">-->\n" +
+    "                <!--<label class=\"col-md-2 control-label\" for=\"accountnumber\">Bank Account No.</label>-->\n" +
+    "                <!--<div class=\"col-md-4\">-->\n" +
+    "                    <!--<input id=\"accountnumber\" name=\"accountnumber\" type=\"number\" placeholder=\"Bank Account No.\" ng-model=\"subMerchant.funding.accountNumber\" class=\"form-control input-md\" ng-required=\"subMerchantForm.destination.disperseType === 'bank'\">-->\n" +
+    "\n" +
+    "                <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "            <!--&lt;!&ndash; Text input&ndash;&gt;-->\n" +
+    "            <!--<div class=\"form-group\" ng-show=\"subMerchantForm.destination.disperseType === 'bank'\">-->\n" +
+    "                <!--<label class=\"col-md-2 control-label\" for=\"routingnumber\">Bank Routing No.</label>-->\n" +
+    "                <!--<div class=\"col-md-4\">-->\n" +
+    "                    <!--<input id=\"routingnumber\" name=\"routingnumber\" type=\"number\" placeholder=\"Bank Routing No.\" ng-model=\"subMerchant.funding.routingNumber\" class=\"form-control input-md\" ng-required=\"subMerchantForm.destination.disperseType === 'bank'\">-->\n" +
+    "\n" +
+    "                <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "            <!-- Text input-->\n" +
     "            <div class=\"form-group\">\n" +
-    "                <label class=\"col-md-2 control-label\" for=\"destination\">Send funds to</label>\n" +
-    "                <div class=\"col-md-3\">\n" +
-    "                    <div class=\"radio\">\n" +
-    "                        <label for=\"destination-0\">\n" +
-    "                            <input type=\"radio\" name=\"destination\" id=\"destination-0\" ng-model=\"subMerchantForm.destination.disperseType\" value=\"bank\" required=\"required\">\n" +
-    "                            Bank Account\n" +
-    "                        </label>\n" +
-    "                    </div>\n" +
-    "                    <div class=\"radio\">\n" +
-    "                        <label for=\"destination-1\">\n" +
-    "                            <input type=\"radio\" name=\"destination\" id=\"destination-1\" ng-model=\"subMerchantForm.destination.disperseType\" value=\"venmo\" required=\"required\">\n" +
-    "                            Venmo\n" +
-    "                        </label>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "\n" +
-    "            <!-- Text input-->\n" +
-    "            <div class=\"form-group\" ng-show=\"subMerchantForm.destination.disperseType === 'bank'\">\n" +
-    "                <label class=\"col-md-2 control-label\" for=\"accountnumber\">Bank Account No.</label>\n" +
-    "                <div class=\"col-md-4\">\n" +
-    "                    <input id=\"accountnumber\" name=\"accountnumber\" type=\"number\" placeholder=\"Bank Account No.\" ng-model=\"subMerchant.funding.accountNumber\" class=\"form-control input-md\" ng-required=\"subMerchantForm.destination.disperseType === 'bank'\">\n" +
-    "\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "\n" +
-    "            <!-- Text input-->\n" +
-    "            <div class=\"form-group\" ng-show=\"subMerchantForm.destination.disperseType === 'bank'\">\n" +
-    "                <label class=\"col-md-2 control-label\" for=\"routingnumber\">Bank Routing No.</label>\n" +
-    "                <div class=\"col-md-4\">\n" +
-    "                    <input id=\"routingnumber\" name=\"routingnumber\" type=\"number\" placeholder=\"Bank Routing No.\" ng-model=\"subMerchant.funding.routingNumber\" class=\"form-control input-md\" ng-required=\"subMerchantForm.destination.disperseType === 'bank'\">\n" +
-    "\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "\n" +
-    "            <!-- Text input-->\n" +
-    "            <div class=\"form-group\" ng-show=\"subMerchantForm.destination.disperseType === 'venmo'\">\n" +
     "                <label class=\"col-md-2 control-label\" for=\"venmoemail\">Venmo Email</label>\n" +
     "                <div class=\"col-md-4\">\n" +
-    "                    <input id=\"venmoemail\" name=\"venmoemail\" type=\"email\" placeholder=\"Venmo Email Account\" ng-model=\"subMerchant.funding.email\" class=\"form-control input-md\" ng-required=\"subMerchantForm.destination.disperseType === 'venmo'\">\n" +
-    "\n" +
+    "                    <input id=\"venmoemail\" name=\"venmoemail\" type=\"email\" placeholder=\"Venmo Email Account\" ng-model=\"subMerchant.funding.email\" class=\"form-control input-md\" required=\"required\">\n" +
+    "                    <small><a href=\"https://venmo.com/w/signup\" target=\"_blank\">I need a Venmo account.</a></small>\n" +
     "                </div>\n" +
     "            </div>\n" +
+    "\n" +
+    "            <!--<div class=\"form-group\">-->\n" +
+    "                <!--<label class=\"col-md-2 control-label\" for=\"venmoemail\">Venmo Email</label>-->\n" +
+    "                <!--<div class=\"col-md-4\">-->\n" +
+    "                    <!-- -->\n" +
+    "                <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
     "\n" +
     "            <!-- Button -->\n" +
     "            <div class=\"form-group\">\n" +
@@ -13996,6 +14101,23 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "\n" +
     "<!--{{subMerchantForm}}-->"
+  );
+
+
+  $templateCache.put('js/transactionButtons/modals/buyNow/partials/transactionButtons.modal.buyNow.partial.html',
+    "<form class=\"form-horizontal\">\n" +
+    "    <div class=\"modal-header\">\n" +
+    "        <h3 id=\"myModalLabel\">Send payment</h3>\n" +
+    "    </div>\n" +
+    "    <div class=\"modal-body\">\n" +
+    "        I've met the seller and inspected the item for sale.  I'd like to send payment.\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"modal-footer\">\n" +
+    "        <button class=\"btn btn-default\" ng-click=\"no()\">No, I need to inspect the item</button>\n" +
+    "        <button class=\"btn btn-primary\" ng-click=\"yes()\">Send Payment</button>\n" +
+    "    </div>\n" +
+    "</form>"
   );
 
 

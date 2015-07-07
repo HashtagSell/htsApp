@@ -236,30 +236,34 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             subMerchantFactory.validateSubMerchant(newPost).then(function(response){
 
-                var payload = {
-                    payment: response
-                };
+                console.log(response);
 
-                if (newPost.facebook) {
-                    payload.facebook = newPost.facebook;
-                }
+                //var payload = {
+                //    payment: response
+                //};
+                //
+                //if (newPost.facebook) {
+                //    payload.facebook = newPost.facebook;
+                //}
+                //
+                //if (newPost.amazon) {
+                //    payload.amazon = newPost.amazon;
+                //}
+                //
+                //if (newPost.craigslist) {
+                //    payload.craigslist = newPost.craigslist;
+                //}
+                //
+                //$http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+                //
+                //    deferred.resolve(response);
+                //
+                //}).error(function (response) {
+                //
+                //    deferred.reject(response);
+                //});
 
-                if (newPost.amazon) {
-                    payload.amazon = newPost.amazon;
-                }
-
-                if (newPost.craigslist) {
-                    payload.craigslist = newPost.craigslist;
-                }
-
-                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                    deferred.resolve(response);
-
-                }).error(function (response) {
-
-                    deferred.reject(response);
-                });
+                deferred.resolve(response);
 
             }, function (err) {
 
