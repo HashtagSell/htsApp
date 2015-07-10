@@ -15,24 +15,6 @@ module.exports = function(app, passport) {
     });
 
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
-    app.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/');
-    });
-
-
-
-    // =====================================
-    // ========= USER FEED ================ (RETIRE SOON SINCE MOVING TO SOCKET.IO UPDATES)
-    // =====================================
-    var feed = require('./api/feed_api'); //Proxy between HTS and 3TAPS Polling
-    app.get('/userfeed', feed.poll);
-
-
-
 
     // =====================================
     // Capture User Feedback ===============
@@ -45,8 +27,14 @@ module.exports = function(app, passport) {
     // =====================================
     // Reverse geocode via lat long to get postal code(Used to lookup the zip code a lat long falls into.  Necessary to post to ebay!)
     // =====================================
-    var geocode = require('./utils/reverseGeocode'); //Proxy between HTS and Google reverse geocode
-    app.get('/search/reversegeocode', geocode.reverseGeocode);
+    var geo = require('./utils/geo'); //Proxy between HTS and Google reverse geocode
+    app.get('/utils/reversegeocode', geo.reverseGeocode);
+
+
+    // =====================================
+    // Geolocate user via IP address
+    // =====================================
+    app.get('/utils/geolocate', geo.geolocateIp);
 
 
 
@@ -95,6 +83,12 @@ module.exports = function(app, passport) {
                     })
             });
         })(req, res);
+    });
+
+    //Local auth user log out
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
     });
 
     //Local auth user signup

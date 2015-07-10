@@ -1572,7 +1572,7 @@ htsApp.directive('animatedGif', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',freeGeoIp:'https://production-freegeoip.hashtagsell.com/json/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://www.hashtagsell.com/payments/client_token')
 
@@ -2650,156 +2650,62 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory) {
 
     $scope.spinner = feedFactory.spinner;
 
-    //updateFeed is triggered on interval and performs polling call to server for more items
-    var updateFeed = function () {
+    $scope.results = feedFactory.feed;
 
-        $scope.currentDate = Math.floor(Date.now() / 1000);
+    $scope.status = {
+        error: null
+    };
 
-        //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
-        if (!$scope.results && feedFactory.persistedResults.length){
-            console.log('recovering from persisted results', feedFactory.persistedResults);
-            $scope.results = feedFactory.persistedResults;
-            var resumePersisted = true;
-        } else if (!$scope.results) {
-            //While true the hashtagspinner will appear
-            feedFactory.spinner.show = true;
-        }
+    $scope.currentDate = feedFactory.currentDate;
 
 
-        feedFactory.poll().then(function (response) {
-            if (response.status !== 200) {
+    var initFeed = function() {
 
-                $scope.spinner.show = false;
-                $scope.status.error.message = ":( Oops.. Something went wrong.";
-                $scope.status.error.trace = response.data.error;
+        //While true the hashtagspinner will appear
+        feedFactory.spinner.show = true;
 
-            } else if (response.status === 200) {
+        if(!geoFactory.userLocation) {
+            geoFactory.geolocateUser().then(function (response) {
+                geoFactory.userLocation = response;
+                initFeed();
+            }, function (err) {
 
-                if (!$scope.results || resumePersisted) { //If there are not results on the page yet, this is our first query
-                    console.log('this is first feed query');
+                feedFactory.spinner.show = false;
 
-                    //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
-                    //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
-                    for (i = 0; i < response.data.external.postings.length; i++) {
+                $scope.status.error = err;
 
-                        var posting = response.data.external.postings[i];
-
-                        if (posting.images.length === 0) {
-                            posting.feedItemHeight = 179;
-                        } else if (posting.images.length === 1) {
-                            posting.feedItemHeight = 261;
-
-                            if (posting.username === 'CRAIG') {
-                                if (posting.images[0].full) {
-                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
-                                }
-
-                                if (posting.images[0].thumb) {
-                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
-                                }
-
-                                if (posting.images[0].images) {
-                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
-                                }
-                            }
-
-                        } else {
-                            posting.feedItemHeight = 420;
-
-                            if (posting.username === 'CRAIG') {
-
-                                for (var j = 0; j < posting.images.length; j++) {
-                                    var imageObj = posting.images[j];
-
-                                    if (imageObj.full) {
-                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
-                                    }
-
-                                    if (imageObj.thumb) {
-                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
-                                    }
-
-                                    if (imageObj.images) {
-                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        if (resumePersisted) {
-                            $scope.results.unshift(posting);
-                        }
-                    }
+            });
+        } else {
+            if(!feedFactory.feed.items.length) {
+                feedFactory.latest(geoFactory.userLocation).then(function (response) {
+                    console.log('heres our most recent posts', response);
 
                     feedFactory.spinner.show = false;
 
-                    if (!resumePersisted) {
-                        $scope.results = response.data.external.postings;
-                    }
+                    //socketio.joinCityRoom(geoFactory.userLocation.cityCode.code, function () {
+                    //
+                    //});
 
+                    socketio.joinLocationRoom('USA-' + geoFactory.userLocation.freeGeoIp.region_code, function () {
 
-                    feedFactory.persistedResults = $scope.results.slice(0, 300);
-                    resumePersisted = false;
+                    });
+                }, function (err) {
 
-                    //UI will query polling API every 60 seconds
-                    $scope.intervalUpdate = $interval(updateFeed, 60000, 0, true);
+                    feedFactory.spinner.show = false;
 
-                } else { //If there are already results on the page the add them to the top of the array
-
-                    //console.log('our new items', response.data.external.postings);
-
-                    console.log('resuming');
-
-                    //Capture how far user has scroll down.
-                    var scrollTopOffset = jQuery(".inner-container").scrollTop();
-
-                    //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                    for (i = 0; i < response.data.external.postings.length; i++) {
-
-                        if (response.data.external.postings[i].images.length === 0) {
-                            response.data.external.postings[i].feedItemHeight = 179;
-                            scrollTopOffset = scrollTopOffset + 179;
-                        } else if (response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 261;
-                            scrollTopOffset = scrollTopOffset + 261;
-                        } else {
-                            response.data.external.postings[i].feedItemHeight = 420;
-                            scrollTopOffset = scrollTopOffset + 420;
-                        }
-
-                        //Push each new result to top of feed
-                        $scope.results.unshift(response.data.external.postings[i]);
-                    }
-
-                    //Offset scroll bar location to page does not move after inserting new items.
-                    jQuery(".inner-container").scrollTop(scrollTopOffset);
-
-                    //Persist our most recent 300 items
-                    feedFactory.persistedResults = $scope.results.slice(0, 300);
-
-                    console.log('persisted results are: ', feedFactory.persistedResults);
-
-                }
-
-
+                    $scope.status.error = err;
+                });
+            } else {
+                feedFactory.spinner.show = false;
             }
-        }, function (response) {
+        }
 
-            console.log(response);
-
-            //TODO: Use modal service to notify users
-            //alert("polling error");
-
-        });
     };
-    updateFeed();
+    initFeed();
 
 
 
@@ -2810,19 +2716,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         console.log(splashFactory.result);
         $state.go('feed.splash', { id: elems.result.postingId });
     };
-
-
-    //This is called when user changes route. It stops javascript from interval polling in background.
-    $scope.$on('$destroy', function () {
-        feedFactory.deferred.resolve();
-        $interval.cancel($scope.intervalUpdate);
-
-        if(!$scope.results){
-            feedFactory.queryParams = {};
-        }
-
-        console.log('cancelled ongoing feed request and stopped interval');
-    });
 
 }]);
 
@@ -2840,10 +2733,27 @@ htsApp.filter('secondsToTimeString', function() {
         return timeString;
     };
 });
+
+
+
+
+
+//This is called when user changes route. It stops javascript from interval polling in background.
+//$scope.$on('$destroy', function () {
+//    $interval.cancel(currentTimeInterval);
+//
+//    console.log('cancelled time updates for feed');
+//
+//    //socketio.leaveCityRoom(geoFactory.userLocation.cityCode.code, function() {
+//    //
+//    //});
+//});
+
+
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function( $http, $stateParams, $location, $q, Session) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, Session, utilsFactory, ENV) {
 
     var factory = {};
 
@@ -2851,86 +2761,121 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
         show: true
     };
 
-    factory.queryParams = {};
 
-    factory.persistedResults = [];
-
-    factory.poll = function () {
-
-        console.log('feed query params', factory.queryParams);
-
-        factory.deferred = $q.defer();
-
-        var polling_api = '';
-
-        var category_groups = '';
-
-        var categories = '';
-
-        for(i=0; i < Session.userObj.user_settings.feed_categories.length; i++){
-            if((Session.userObj.user_settings.feed_categories[i].code == 'AAAA') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'CCCC') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'DISP') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'SSSS') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'JJJJ') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'MMMM') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'PPPP') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'RRRR') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'SVCS') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'ZZZZ') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'VVVV'))
-            {
-                category_groups += Session.userObj.user_settings.feed_categories[i].code + '|';
-            } else {
-                categories += Session.userObj.user_settings.feed_categories[i].code + '|';
-            }
-        }
-
-        if(Session.userObj.user_settings.safe_search) {
-            category_groups += '~PPPP|~MMMM';
-        }
-
-
-        polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=" + category_groups + "&category=" + categories;
-
-
-        if(factory.queryParams.anchor) {
-            polling_api += "&anchor=" + factory.queryParams.anchor;
-            polling_api += "&cityCode=" + factory.queryParams.cityCode;
-        }
-
-        $http({method: 'GET', url: polling_api, timeout:factory.deferred.promise}).
-            then(function (response, status, headers, config) {
-
-                console.log('polling response', response);
-
-                if(!response.data.error) {
-
-                    factory.queryParams.anchor = response.data.external.anchor;
-                    factory.queryParams.cityCode = response.data.location.cityCode;
-
-                    factory.deferred.resolve(response);
-
-                } else {
-
-                    factory.status.pleaseWait = false;
-                    factory.status.error.message = ":( Oops.. Something went wrong.";
-                    factory.status.error.trace = response.data.error.response.error;
-
-
-                    factory.deferred.reject(response);
-                }
-
-
-
-            }, function (response, status, headers, config) {
-
-                factory.deferred.reject(response);
-            });
-
-        return factory.deferred.promise;
+    factory.feed = {
+        items: []
     };
 
+    factory.currentDate = {
+        timestamp: Math.floor(Date.now() / 1000)
+    };
+
+
+    factory.defaultParams = {
+        start: 0,
+        count: 50,
+        filters: {
+            mandatory: {
+                exact: {}
+            }
+        }
+    };
+
+
+
+    factory.latest = function (userLocationObject) {
+
+        var deferred = $q.defer();
+
+        //factory.defaultParams.filters.mandatory.exact['external.threeTaps.location.city'] = userLocationObject.cityCode.code;
+
+        factory.defaultParams.filters.mandatory.exact = {
+            'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
+        };
+
+        //factory.defaultParams.filters.mandatory.exact.categoryCode = _.pluck(Session.userObj.user_settings.feed_categories,'code').join(",");
+
+        console.log('before braketizing url', factory.defaultParams);
+
+        var bracketURL = utilsFactory.bracketNotationURL(factory.defaultParams);
+        console.log('final URL', bracketURL);
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + bracketURL
+        }).then(function (response) {
+
+
+            if(response.data.results.length) {
+
+                for(var i = 0; i < response.data.results.length; i++) {
+                    response.data.results[i] = setItemHeight(response.data.results[i]);
+                }
+
+                factory.feed.items = response.data.results;
+
+                deferred.resolve(factory.feed.items);
+            } else {
+
+                var err = {
+                    message: 'Whoops.. We can\'t find any results in ' + userLocationObject.freeGeoIp.city,
+                    error: response
+                };
+
+                deferred.reject(err);
+            }
+
+        }, function (error) {
+
+
+            var err = {
+                message: 'We seem to be having issues.  Hang tight we\'re working to resolve this.',
+                error: error
+            };
+
+            deferred.reject(err);
+        });
+
+        return deferred.promise;
+
+    };
+
+
+    var setItemHeight = function (item) {
+
+        if (item.images.length === 0) {
+            item.feedItemHeight = 179;
+        } else if (item.images.length === 1) {
+            item.feedItemHeight = 261;
+        } else {
+            item.feedItemHeight = 420;
+        }
+
+        return item;
+    };
+
+
+    factory.updateFeed = function (emit) {
+
+        emit.posting = setItemHeight(emit.posting);
+
+        console.log(emit.posting);
+
+        var scrollTopOffset = jQuery(".inner-container").scrollTop();
+
+        $rootScope.$apply(function() {
+
+            factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
+
+            var tempArray = factory.feed.items;
+            tempArray.unshift(emit.posting);
+
+            factory.feed.items = tempArray.slice(0, 100);
+        });
+
+        jQuery(".inner-container").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+
+    };
 
 
     return factory;
@@ -3244,6 +3189,18 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
             Session.create(response);
         });
     }
+
+
+    //Geolocate the users ip address
+    //geoFactory.geolocateUser().then(function (response) {
+    //    Session.userLocation = response;
+    //
+    //    console.log('Session.userLocation is: ', Session.userLocation);
+    //
+    //});
+
+
+
 
 
 
@@ -6195,7 +6152,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
                     //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
                     if (!geo.location.postalCode) {
 
-                        $http.get('/search/reversegeocode', {
+                        $http.get('/utils/reversegeocode', {
                             params: {
                                 lat: placeMetaData.geometry.location.lat(),
                                 long: placeMetaData.geometry.location.lng()
@@ -8342,7 +8299,7 @@ htsApp.controller('sideProfile', ['$scope', 'Session', '$templateCache', functio
 /**
  * Created by braddavis on 1/25/15.
  */
-htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, myPostsFactory, Notification, favesFactory) {
+htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', 'feedFactory', function (ENV, myPostsFactory, Notification, favesFactory, feedFactory) {
 
     var socketio = {
         postingSocket: io(ENV.realtimePostingAPI),
@@ -8440,6 +8397,22 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     };
 
 
+    socketio.joinLocationRoom = function(metroCode, callback) {
+
+        console.log(socketio.cachedUsername + ' is joining ' + metroCode + '\'s room: ');
+
+        socketio.postingSocket.emit('join-room', {
+            username : socketio.cachedUsername,
+            roomId : metroCode
+        });
+
+        if(callback){
+            callback();
+        }
+
+    };
+
+
 
     //Leave all rooms when user logs out.
     socketio.closeAllConnections = function (callback) { //called by main.controller.js
@@ -8521,6 +8494,19 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         console.log('leaving user room: ' + username);
 
         socketio.userSocket.emit('leave-room', username);
+
+        if(callback){
+            callback();
+        }
+    };
+
+
+
+    socketio.leaveLocationRoom = function (metroCode, callback) {
+
+        console.log('leaving metro code room: ' + metroCode);
+
+        socketio.userSocket.emit('leave-room', metroCode);
 
         if(callback){
             callback();
@@ -8859,6 +8845,11 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
             });
         }
 
+    });
+
+
+    socketio.postingSocket.on('posting', function (emit) {
+        feedFactory.updateFeed(emit);
     });
 
 
@@ -10644,6 +10635,39 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
 }]);
 /**
+ * Created by braddavis on 7/9/15.
+ */
+htsApp.factory('geoFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV) {
+
+    var factory = {};
+
+    factory.geolocateUser = function () {
+
+        var deferred = $q.defer();
+
+        $http.get(ENV.utilsApi + 'geolocate').success(function (response) {
+
+            deferred.resolve(response);
+
+        }).error(function (response) {
+
+            var err = {
+                message: 'Whoops.. We can\'t find any results in ' + userLocationObject.freeGeoIp.city,
+                error: response
+            };
+
+            deferred.reject(err);
+        });
+
+
+        return deferred.promise;
+
+    };
+
+    return factory;
+
+}]);
+/**
  * Created by braddavis on 4/23/15.
  */
 htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 'Session', function ($q, $http, $window, $interval, ENV, Session) {
@@ -12119,11 +12143,17 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
   $templateCache.put('js/feed/partials/feed.partial.html',
     "<div ui-view></div>\n" +
     "\n" +
+    "<div ng-show=\"status.error.message\" class=\"background-instructions\">\n" +
+    "    <div class=\"inset-background-text\" ng-bind-html=\"status.error.message\">\n" +
+    "\n" +
+    "    </div>\n" +
+    "</div>\n" +
+    "\n" +
     "<div class=\"outer-container col-xs-12\">\n" +
     "    <spinner ng-if=\"spinner.show\" class=\"spinner-container\" spinner-text=\"Finding recently posted items around you\"></spinner>\n" +
     "\n" +
     "    <div vs-repeat class=\"inner-container row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
-    "        <div class=\"list-item\" ng-repeat=\"result in results\" ng-click=\"openSplash(this)\">\n" +
+    "        <div class=\"list-item\" ng-repeat=\"result in results.items\" ng-click=\"openSplash(this)\">\n" +
     "            <div class=\"thumbnail\">\n" +
     "\n" +
     "                <ribbon-list ng-if=\"!!result.askingPrice.value\">{{::result.askingPrice.value | currency : $ : 0}}</ribbon-list>\n" +
@@ -12136,7 +12166,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                            <hts-fave-toggle class=\"carousel-starPositioning\"></hts-fave-toggle>\n" +
     "                            <p class=\"noImage-body\" ng-bind-html=\"result.body |cleanBodyExcerpt\"></p>\n" +
     "                            <div class=\"pull-left carousel-timestamp\">\n" +
-    "                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
+    "                                <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
@@ -12156,7 +12186,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                    <hts-fave-toggle class=\"singleImage-starPositioning\"></hts-fave-toggle>\n" +
     "                                    <p class=\"singleImage-body\" ng-bind-html=\"result.body |cleanBodyExcerpt\"></p>\n" +
     "                                    <div class=\"pull-left singleImage-timestamp\">\n" +
-    "                                        <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
+    "                                        <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
     "                                    </div>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -12189,7 +12219,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                            <hts-fave-toggle class=\"carousel-starPositioning\"></hts-fave-toggle>\n" +
     "                            <p class=\"carousel-body\" ng-bind-html=\"result.body |cleanBodyExcerpt\"></p>\n" +
     "                            <div class=\"pull-left carousel-timestamp\">\n" +
-    "                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
+    "                                <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +

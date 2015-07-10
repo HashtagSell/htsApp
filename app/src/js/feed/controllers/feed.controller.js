@@ -1,156 +1,62 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', function ($scope, feedFactory, splashFactory, $state, $interval) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory) {
 
     $scope.spinner = feedFactory.spinner;
 
-    //updateFeed is triggered on interval and performs polling call to server for more items
-    var updateFeed = function () {
+    $scope.results = feedFactory.feed;
 
-        $scope.currentDate = Math.floor(Date.now() / 1000);
+    $scope.status = {
+        error: null
+    };
 
-        //If this is the first query from controller and we have data in feedFactory already then resume from persisted data.
-        if (!$scope.results && feedFactory.persistedResults.length){
-            console.log('recovering from persisted results', feedFactory.persistedResults);
-            $scope.results = feedFactory.persistedResults;
-            var resumePersisted = true;
-        } else if (!$scope.results) {
-            //While true the hashtagspinner will appear
-            feedFactory.spinner.show = true;
-        }
+    $scope.currentDate = feedFactory.currentDate;
 
 
-        feedFactory.poll().then(function (response) {
-            if (response.status !== 200) {
+    var initFeed = function() {
 
-                $scope.spinner.show = false;
-                $scope.status.error.message = ":( Oops.. Something went wrong.";
-                $scope.status.error.trace = response.data.error;
+        //While true the hashtagspinner will appear
+        feedFactory.spinner.show = true;
 
-            } else if (response.status === 200) {
+        if(!geoFactory.userLocation) {
+            geoFactory.geolocateUser().then(function (response) {
+                geoFactory.userLocation = response;
+                initFeed();
+            }, function (err) {
 
-                if (!$scope.results || resumePersisted) { //If there are not results on the page yet, this is our first query
-                    console.log('this is first feed query');
+                feedFactory.spinner.show = false;
 
-                    //TODO: Seems 3Taps items are not always sorted by newest to oldest.  May need Josh to sort these when we hit his posting API
-                    //Calculate the number of results with images and add up scroll height. This is used for virtual scrolling
-                    for (i = 0; i < response.data.external.postings.length; i++) {
+                $scope.status.error = err;
 
-                        var posting = response.data.external.postings[i];
-
-                        if (posting.images.length === 0) {
-                            posting.feedItemHeight = 179;
-                        } else if (posting.images.length === 1) {
-                            posting.feedItemHeight = 261;
-
-                            if (posting.username === 'CRAIG') {
-                                if (posting.images[0].full) {
-                                    posting.images[0].full = posting.images[0].full.replace(/^http:\/\//i, '//');
-                                }
-
-                                if (posting.images[0].thumb) {
-                                    posting.images[0].thumb = posting.images[0].thumb.replace(/^http:\/\//i, '//');
-                                }
-
-                                if (posting.images[0].images) {
-                                    posting.images[0].images = posting.images[0].images.replace(/^http:\/\//i, '//');
-                                }
-                            }
-
-                        } else {
-                            posting.feedItemHeight = 420;
-
-                            if (posting.username === 'CRAIG') {
-
-                                for (var j = 0; j < posting.images.length; j++) {
-                                    var imageObj = posting.images[j];
-
-                                    if (imageObj.full) {
-                                        imageObj.full = imageObj.full.replace(/^http:\/\//i, '//');
-                                    }
-
-                                    if (imageObj.thumb) {
-                                        imageObj.thumb = imageObj.thumb.replace(/^http:\/\//i, '//');
-                                    }
-
-                                    if (imageObj.images) {
-                                        imageObj.images = imageObj.images.replace(/^http:\/\//i, '//');
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        if (resumePersisted) {
-                            $scope.results.unshift(posting);
-                        }
-                    }
+            });
+        } else {
+            if(!feedFactory.feed.items.length) {
+                feedFactory.latest(geoFactory.userLocation).then(function (response) {
+                    console.log('heres our most recent posts', response);
 
                     feedFactory.spinner.show = false;
 
-                    if (!resumePersisted) {
-                        $scope.results = response.data.external.postings;
-                    }
+                    //socketio.joinCityRoom(geoFactory.userLocation.cityCode.code, function () {
+                    //
+                    //});
 
+                    socketio.joinLocationRoom('USA-' + geoFactory.userLocation.freeGeoIp.region_code, function () {
 
-                    feedFactory.persistedResults = $scope.results.slice(0, 300);
-                    resumePersisted = false;
+                    });
+                }, function (err) {
 
-                    //UI will query polling API every 60 seconds
-                    $scope.intervalUpdate = $interval(updateFeed, 60000, 0, true);
+                    feedFactory.spinner.show = false;
 
-                } else { //If there are already results on the page the add them to the top of the array
-
-                    //console.log('our new items', response.data.external.postings);
-
-                    console.log('resuming');
-
-                    //Capture how far user has scroll down.
-                    var scrollTopOffset = jQuery(".inner-container").scrollTop();
-
-                    //Depending on number of images we add the a feedItemHeight property to each result.  This is used for virtual scrolling
-                    for (i = 0; i < response.data.external.postings.length; i++) {
-
-                        if (response.data.external.postings[i].images.length === 0) {
-                            response.data.external.postings[i].feedItemHeight = 179;
-                            scrollTopOffset = scrollTopOffset + 179;
-                        } else if (response.data.external.postings[i].images.length === 1) {
-                            response.data.external.postings[i].feedItemHeight = 261;
-                            scrollTopOffset = scrollTopOffset + 261;
-                        } else {
-                            response.data.external.postings[i].feedItemHeight = 420;
-                            scrollTopOffset = scrollTopOffset + 420;
-                        }
-
-                        //Push each new result to top of feed
-                        $scope.results.unshift(response.data.external.postings[i]);
-                    }
-
-                    //Offset scroll bar location to page does not move after inserting new items.
-                    jQuery(".inner-container").scrollTop(scrollTopOffset);
-
-                    //Persist our most recent 300 items
-                    feedFactory.persistedResults = $scope.results.slice(0, 300);
-
-                    console.log('persisted results are: ', feedFactory.persistedResults);
-
-                }
-
-
+                    $scope.status.error = err;
+                });
+            } else {
+                feedFactory.spinner.show = false;
             }
-        }, function (response) {
+        }
 
-            console.log(response);
-
-            //TODO: Use modal service to notify users
-            //alert("polling error");
-
-        });
     };
-    updateFeed();
+    initFeed();
 
 
 
@@ -161,19 +67,6 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         console.log(splashFactory.result);
         $state.go('feed.splash', { id: elems.result.postingId });
     };
-
-
-    //This is called when user changes route. It stops javascript from interval polling in background.
-    $scope.$on('$destroy', function () {
-        feedFactory.deferred.resolve();
-        $interval.cancel($scope.intervalUpdate);
-
-        if(!$scope.results){
-            feedFactory.queryParams = {};
-        }
-
-        console.log('cancelled ongoing feed request and stopped interval');
-    });
 
 }]);
 
@@ -191,3 +84,19 @@ htsApp.filter('secondsToTimeString', function() {
         return timeString;
     };
 });
+
+
+
+
+
+//This is called when user changes route. It stops javascript from interval polling in background.
+//$scope.$on('$destroy', function () {
+//    $interval.cancel(currentTimeInterval);
+//
+//    console.log('cancelled time updates for feed');
+//
+//    //socketio.leaveCityRoom(geoFactory.userLocation.cityCode.code, function() {
+//    //
+//    //});
+//});
+

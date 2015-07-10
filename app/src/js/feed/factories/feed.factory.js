@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Session', function( $http, $stateParams, $location, $q, Session) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, Session, utilsFactory, ENV) {
 
     var factory = {};
 
@@ -9,86 +9,121 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', 'Sess
         show: true
     };
 
-    factory.queryParams = {};
 
-    factory.persistedResults = [];
-
-    factory.poll = function () {
-
-        console.log('feed query params', factory.queryParams);
-
-        factory.deferred = $q.defer();
-
-        var polling_api = '';
-
-        var category_groups = '';
-
-        var categories = '';
-
-        for(i=0; i < Session.userObj.user_settings.feed_categories.length; i++){
-            if((Session.userObj.user_settings.feed_categories[i].code == 'AAAA') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'CCCC') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'DISP') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'SSSS') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'JJJJ') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'MMMM') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'PPPP') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'RRRR') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'SVCS') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'ZZZZ') ||
-                (Session.userObj.user_settings.feed_categories[i].code == 'VVVV'))
-            {
-                category_groups += Session.userObj.user_settings.feed_categories[i].code + '|';
-            } else {
-                categories += Session.userObj.user_settings.feed_categories[i].code + '|';
-            }
-        }
-
-        if(Session.userObj.user_settings.safe_search) {
-            category_groups += '~PPPP|~MMMM';
-        }
-
-
-        polling_api = $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/userfeed?category_group=" + category_groups + "&category=" + categories;
-
-
-        if(factory.queryParams.anchor) {
-            polling_api += "&anchor=" + factory.queryParams.anchor;
-            polling_api += "&cityCode=" + factory.queryParams.cityCode;
-        }
-
-        $http({method: 'GET', url: polling_api, timeout:factory.deferred.promise}).
-            then(function (response, status, headers, config) {
-
-                console.log('polling response', response);
-
-                if(!response.data.error) {
-
-                    factory.queryParams.anchor = response.data.external.anchor;
-                    factory.queryParams.cityCode = response.data.location.cityCode;
-
-                    factory.deferred.resolve(response);
-
-                } else {
-
-                    factory.status.pleaseWait = false;
-                    factory.status.error.message = ":( Oops.. Something went wrong.";
-                    factory.status.error.trace = response.data.error.response.error;
-
-
-                    factory.deferred.reject(response);
-                }
-
-
-
-            }, function (response, status, headers, config) {
-
-                factory.deferred.reject(response);
-            });
-
-        return factory.deferred.promise;
+    factory.feed = {
+        items: []
     };
 
+    factory.currentDate = {
+        timestamp: Math.floor(Date.now() / 1000)
+    };
+
+
+    factory.defaultParams = {
+        start: 0,
+        count: 50,
+        filters: {
+            mandatory: {
+                exact: {}
+            }
+        }
+    };
+
+
+
+    factory.latest = function (userLocationObject) {
+
+        var deferred = $q.defer();
+
+        //factory.defaultParams.filters.mandatory.exact['external.threeTaps.location.city'] = userLocationObject.cityCode.code;
+
+        factory.defaultParams.filters.mandatory.exact = {
+            'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
+        };
+
+        //factory.defaultParams.filters.mandatory.exact.categoryCode = _.pluck(Session.userObj.user_settings.feed_categories,'code').join(",");
+
+        console.log('before braketizing url', factory.defaultParams);
+
+        var bracketURL = utilsFactory.bracketNotationURL(factory.defaultParams);
+        console.log('final URL', bracketURL);
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + bracketURL
+        }).then(function (response) {
+
+
+            if(response.data.results.length) {
+
+                for(var i = 0; i < response.data.results.length; i++) {
+                    response.data.results[i] = setItemHeight(response.data.results[i]);
+                }
+
+                factory.feed.items = response.data.results;
+
+                deferred.resolve(factory.feed.items);
+            } else {
+
+                var err = {
+                    message: 'Whoops.. We can\'t find any results in ' + userLocationObject.freeGeoIp.city,
+                    error: response
+                };
+
+                deferred.reject(err);
+            }
+
+        }, function (error) {
+
+
+            var err = {
+                message: 'We seem to be having issues.  Hang tight we\'re working to resolve this.',
+                error: error
+            };
+
+            deferred.reject(err);
+        });
+
+        return deferred.promise;
+
+    };
+
+
+    var setItemHeight = function (item) {
+
+        if (item.images.length === 0) {
+            item.feedItemHeight = 179;
+        } else if (item.images.length === 1) {
+            item.feedItemHeight = 261;
+        } else {
+            item.feedItemHeight = 420;
+        }
+
+        return item;
+    };
+
+
+    factory.updateFeed = function (emit) {
+
+        emit.posting = setItemHeight(emit.posting);
+
+        console.log(emit.posting);
+
+        var scrollTopOffset = jQuery(".inner-container").scrollTop();
+
+        $rootScope.$apply(function() {
+
+            factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
+
+            var tempArray = factory.feed.items;
+            tempArray.unshift(emit.posting);
+
+            factory.feed.items = tempArray.slice(0, 100);
+        });
+
+        jQuery(".inner-container").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+
+    };
 
 
     return factory;

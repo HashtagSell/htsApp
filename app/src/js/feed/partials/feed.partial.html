@@ -1,10 +1,16 @@
 <div ui-view></div>
 
+<div ng-show="status.error.message" class="background-instructions">
+    <div class="inset-background-text" ng-bind-html="status.error.message">
+
+    </div>
+</div>
+
 <div class="outer-container col-xs-12">
     <spinner ng-if="spinner.show" class="spinner-container" spinner-text="Finding recently posted items around you"></spinner>
 
     <div vs-repeat class="inner-container row" vs-size="feedItemHeight" vs-offset-before="77" vs-excess="10">
-        <div class="list-item" ng-repeat="result in results" ng-click="openSplash(this)">
+        <div class="list-item" ng-repeat="result in results.items" ng-click="openSplash(this)">
             <div class="thumbnail">
 
                 <ribbon-list ng-if="!!result.askingPrice.value">{{::result.askingPrice.value | currency : $ : 0}}</ribbon-list>
@@ -17,7 +23,7 @@
                             <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
                             <p class="noImage-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
                             <div class="pull-left carousel-timestamp">
-                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
+                                <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
                             </div>
                         </div>
                     </div>
@@ -37,7 +43,7 @@
                                     <hts-fave-toggle class="singleImage-starPositioning"></hts-fave-toggle>
                                     <p class="singleImage-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
                                     <div class="pull-left singleImage-timestamp">
-                                        <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
+                                        <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
                                     </div>
                                 </div>
                             </div>
@@ -70,7 +76,7 @@
                             <hts-fave-toggle class="carousel-starPositioning"></hts-fave-toggle>
                             <p class="carousel-body" ng-bind-html="result.body |cleanBodyExcerpt"></p>
                             <div class="pull-left carousel-timestamp">
-                                <small>Posted {{(currentDate - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
+                                <small>Posted {{(currentDate.timestamp - result.external.threeTaps.timestamp) | secondsToTimeString}} ago.</small>
                             </div>
                         </div>
                     </div>

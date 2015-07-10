@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/25/15.
  */
-htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', function (ENV, myPostsFactory, Notification, favesFactory) {
+htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFactory', 'feedFactory', function (ENV, myPostsFactory, Notification, favesFactory, feedFactory) {
 
     var socketio = {
         postingSocket: io(ENV.realtimePostingAPI),
@@ -99,6 +99,22 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     };
 
 
+    socketio.joinLocationRoom = function(metroCode, callback) {
+
+        console.log(socketio.cachedUsername + ' is joining ' + metroCode + '\'s room: ');
+
+        socketio.postingSocket.emit('join-room', {
+            username : socketio.cachedUsername,
+            roomId : metroCode
+        });
+
+        if(callback){
+            callback();
+        }
+
+    };
+
+
 
     //Leave all rooms when user logs out.
     socketio.closeAllConnections = function (callback) { //called by main.controller.js
@@ -180,6 +196,19 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         console.log('leaving user room: ' + username);
 
         socketio.userSocket.emit('leave-room', username);
+
+        if(callback){
+            callback();
+        }
+    };
+
+
+
+    socketio.leaveLocationRoom = function (metroCode, callback) {
+
+        console.log('leaving metro code room: ' + metroCode);
+
+        socketio.userSocket.emit('leave-room', metroCode);
 
         if(callback){
             callback();
@@ -518,6 +547,11 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
             });
         }
 
+    });
+
+
+    socketio.postingSocket.on('posting', function (emit) {
+        feedFactory.updateFeed(emit);
     });
 
 

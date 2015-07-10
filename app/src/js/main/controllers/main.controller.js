@@ -140,6 +140,18 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
     }
 
 
+    //Geolocate the users ip address
+    //geoFactory.geolocateUser().then(function (response) {
+    //    Session.userLocation = response;
+    //
+    //    console.log('Session.userLocation is: ', Session.userLocation);
+    //
+    //});
+
+
+
+
+
 
     //Joins/Leaves rooms and builds/destroys userobject on login/logout
     $scope.$watch('userObj.user_settings.loggedIn', function(newValue, oldValue) {
