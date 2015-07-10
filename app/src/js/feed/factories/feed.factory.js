@@ -109,7 +109,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
         console.log(emit.posting);
 
-        var scrollTopOffset = jQuery(".inner-container").scrollTop();
+        var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
 
         $rootScope.$apply(function() {
 
@@ -121,7 +121,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
             factory.feed.items = tempArray.slice(0, 100);
         });
 
-        jQuery(".inner-container").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+        jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
 
     };
 

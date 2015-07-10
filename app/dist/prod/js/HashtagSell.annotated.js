@@ -2861,7 +2861,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
         console.log(emit.posting);
 
-        var scrollTopOffset = jQuery(".inner-container").scrollTop();
+        var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
 
         $rootScope.$apply(function() {
 
@@ -2873,7 +2873,7 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
             factory.feed.items = tempArray.slice(0, 100);
         });
 
-        jQuery(".inner-container").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+        jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
 
     };
 
@@ -12152,7 +12152,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "<div class=\"outer-container col-xs-12\">\n" +
     "    <spinner ng-if=\"spinner.show\" class=\"spinner-container\" spinner-text=\"Finding recently posted items around you\"></spinner>\n" +
     "\n" +
-    "    <div vs-repeat class=\"inner-container row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
+    "    <div vs-repeat class=\"inner-container feed row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
     "        <div class=\"list-item\" ng-repeat=\"result in results.items\" ng-click=\"openSplash(this)\">\n" +
     "            <div class=\"thumbnail\">\n" +
     "\n" +
