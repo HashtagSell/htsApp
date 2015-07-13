@@ -62,7 +62,8 @@
     "underscore": "^1.7.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "migrations": "bash init/apply-migrations.sh"
   },
   "repository": {
     "type": "git",

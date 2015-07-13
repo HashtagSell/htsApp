@@ -112,6 +112,9 @@ var userSchema = mongoose.Schema({
             default: [{
                 "code": "SSSS",
                 "name": "For Sale",
+                "selected" : true,
+                "__ivhTreeviewExpanded" : false,
+                "__ivhTreeviewIndeterminate" : false,
                 "categories": [{
                     "code": "SANT",
                     "name": "Antiques",
@@ -299,6 +302,9 @@ var userSchema = mongoose.Schema({
             }, {
                 "code": "RRRR",
                 "name": "Real Estate",
+                "selected" : true,
+                "__ivhTreeviewExpanded" : false,
+                "__ivhTreeviewIndeterminate" : false,
                 "categories": [{
                     "code": "RCRE",
                     "name": "Commercial Real Estate",
@@ -372,6 +378,9 @@ var userSchema = mongoose.Schema({
             }, {
                 "code": "VVVV",
                 "name": "Vehicles",
+                "selected" : true,
+                "__ivhTreeviewExpanded" : false,
+                "__ivhTreeviewIndeterminate" : false,
                 "categories": [{
                     "code": "VAUT",
                     "name": "Autos",
