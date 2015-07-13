@@ -1,6 +1,8 @@
 /**
  * Created by braddavis on 5/1/15.
  */
+
+//Gets all the categories from groupings api
 htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, ENV) {
     var factory = {};
 

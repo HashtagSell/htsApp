@@ -11,7 +11,9 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
 
     factory.feed = {
-        items: []
+        unfiltered: [],
+        filtered: [],
+        categories: null
     };
 
     factory.currentDate = {
@@ -25,23 +27,26 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
         filters: {
             mandatory: {
                 exact: {}
+            },
+            optional: {
+                exact: {}
             }
         }
     };
 
 
 
-    factory.latest = function (userLocationObject) {
+    factory.latest = function (userLocationObject, sanitizedTree) {
 
         var deferred = $q.defer();
-
-        //factory.defaultParams.filters.mandatory.exact['external.threeTaps.location.city'] = userLocationObject.cityCode.code;
 
         factory.defaultParams.filters.mandatory.exact = {
             'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
         };
 
-        //factory.defaultParams.filters.mandatory.exact.categoryCode = _.pluck(Session.userObj.user_settings.feed_categories,'code').join(",");
+        factory.defaultParams.filters.optional.exact = {
+            'categoryCode': 'SELE'
+        };
 
         console.log('before braketizing url', factory.defaultParams);
 
@@ -60,9 +65,11 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
                     response.data.results[i] = setItemHeight(response.data.results[i]);
                 }
 
-                factory.feed.items = response.data.results;
+                factory.feed.unfiltered = response.data.results;
 
-                deferred.resolve(factory.feed.items);
+                factory.filterFeed(sanitizedTree);
+
+                deferred.resolve();
             } else {
 
                 var err = {
@@ -109,20 +116,97 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
         console.log(emit.posting);
 
-        var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
+        var tempUnfilteredArray = factory.feed.unfiltered;
+        tempUnfilteredArray.unshift(emit.posting);
 
-        $rootScope.$apply(function() {
+        factory.feed.unfiltered = tempUnfilteredArray.slice(0, 350);
 
-            factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
+        if(factory.mustMatchCategoryCode(emit.posting)){
 
-            var tempArray = factory.feed.items;
-            tempArray.unshift(emit.posting);
+            var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
 
-            factory.feed.items = tempArray.slice(0, 100);
-        });
+            $rootScope.$apply(function() {
 
-        jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+                factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
 
+                var tempFilteredArray = factory.feed.filtered;
+                tempFilteredArray.unshift(emit.posting);
+
+                factory.feed.filtered = tempFilteredArray.slice(0, 350);
+
+            });
+
+            jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+        }
+
+    };
+
+
+
+
+    //simplest filters
+    factory.mustMatchCategoryCode = function(element, index){
+
+        var visibleStatus = factory.feed.categories.indexOf(element.categoryCode) > -1;
+
+        console.log('Show ' + element.categoryCode + '? ' + visibleStatus);
+
+        return visibleStatus;
+    };
+
+
+
+    factory.filterFeed = function (sanitizedTree) {
+
+        factory.feed.categories = getVisibleCategories(sanitizedTree);
+
+        var filteredResults = factory.feed.unfiltered.filter(factory.mustMatchCategoryCode);
+
+        factory.generateFeed(filteredResults);
+
+    };
+
+
+    factory.generateFeed = function(filteredResults) {
+
+        var temp = [];
+
+        for(var i = 0; i < filteredResults.length; i++){
+
+            var feedItem = filteredResults[i];
+
+            if (feedItem.images.length === 0) {
+                feedItem.feedItemHeight = 179;
+            } else if (feedItem.images.length === 1) {
+                feedItem.feedItemHeight = 261;
+            } else {
+                feedItem.feedItemHeight = 420;
+            }
+
+            temp.push(feedItem);
+        }
+
+        factory.feed.filtered = temp;
+    };
+
+
+    var getVisibleCategories = function (sanitizedTree) {
+
+        var temp = [];
+
+        for(var i = 0; i < sanitizedTree.length; i++) {
+            var parentCategory = sanitizedTree[i];
+
+            for(var j = 0; j < parentCategory.categories.length; j ++) {
+                var childCategory = parentCategory.categories[j];
+
+                if(childCategory.selected){
+                    temp.push(childCategory.code);
+                }
+            }
+        }
+
+        return temp;
     };
 
 

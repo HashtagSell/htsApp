@@ -46,6 +46,17 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
     $scope.resetAll();
 
+
+
+
+
+    //$scope.$watch('jsonObj', function(newValue, oldValue) {
+    //        console.log(newValue);
+    //        $scope.jsonObjDebug = JSON.stringify(newValue, null, "    ");
+    //    }
+    //);
+
+
     $scope.allCategories = [
         {
             "code": "AAAA",

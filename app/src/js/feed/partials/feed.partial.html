@@ -10,7 +10,7 @@
     <spinner ng-if="spinner.show" class="spinner-container" spinner-text="Finding recently posted items around you"></spinner>
 
     <div vs-repeat class="inner-container feed row" vs-size="feedItemHeight" vs-offset-before="77" vs-excess="10">
-        <div class="list-item" ng-repeat="result in results.items" ng-click="openSplash(this)">
+        <div class="list-item" ng-repeat="result in feed.filtered" ng-click="openSplash(this)">
             <div class="thumbnail">
 
                 <ribbon-list ng-if="!!result.askingPrice.value">{{::result.askingPrice.value | currency : $ : 0}}</ribbon-list>

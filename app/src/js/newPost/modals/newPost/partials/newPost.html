@@ -35,10 +35,10 @@
 
     <alert ng-repeat="banner in alerts.banners" type="{{banner.type}}" close="closeAlert($index)">{{banner.msg}}</alert>
 
-    <!--<div ng-show="showDemo">-->
-        <!--<animated-gif animation-url="//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif" static-url="//static.hashtagsell.com/tutorialRelated/sell_box_static.png"/>-->
-    <!--</div>-->
-    <!--{{img}}-->
+    <!--<pre>-->
+        <!--{{jsonObj}}-->
+    <!--</pre>-->
+
     <img class='sell-box-image img-responsive' ng-src='{{img}}' ng-show="showDemo"/>
 
     <div class="sell-box" ng-show="!showDemo">
@@ -74,10 +74,6 @@
             </div>
 
         </div>
-
-        <!--<pre>-->
-            <!--{{jsonObj}}-->
-        <!--</pre>-->
 
         <div class="row remove-row-margins">
             <div class="inset-toolbar">

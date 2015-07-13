@@ -1,11 +1,13 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', 'Session', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory, Session) {
 
     $scope.spinner = feedFactory.spinner;
 
-    $scope.results = feedFactory.feed;
+    //feedFactory.feed.categories = Session.userObj.user_settings.feed_categories;
+
+    $scope.feed = feedFactory.feed;
 
     $scope.status = {
         error: null
@@ -19,6 +21,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         //While true the hashtagspinner will appear
         feedFactory.spinner.show = true;
 
+        var sanitizedTree = Session.userObj.user_settings.feed_categories;
+
         if(!geoFactory.userLocation) {
             geoFactory.geolocateUser().then(function (response) {
                 geoFactory.userLocation = response;
@@ -31,15 +35,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             });
         } else {
-            if(!feedFactory.feed.items.length) {
-                feedFactory.latest(geoFactory.userLocation).then(function (response) {
+            if(!feedFactory.feed.unfiltered.length) {
+                feedFactory.latest(geoFactory.userLocation, sanitizedTree).then(function (response) {
                     console.log('heres our most recent posts', response);
 
                     feedFactory.spinner.show = false;
-
-                    //socketio.joinCityRoom(geoFactory.userLocation.cityCode.code, function () {
-                    //
-                    //});
 
                     socketio.joinLocationRoom('USA-' + geoFactory.userLocation.freeGeoIp.region_code, function () {
 

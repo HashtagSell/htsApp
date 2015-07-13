@@ -717,6 +717,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
                     //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
                     if (!geo.location.postalCode) {
 
+                        locationObj.formatted_address = placeMetaData.description;
+
                         $http.get('/utils/reversegeocode', {
                             params: {
                                 lat: placeMetaData.geometry.location.lat(),
