@@ -2473,7 +2473,7 @@ htsApp.factory('awesomeBarFactory', ['$q', '$http', '$stateParams', function ($q
 /**
  * Created by braddavis on 5/1/15.
  */
-htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Session', 'ivhTreeviewMgr', 'authModalFactory', 'categoryFactory', function ($scope, $rootScope, $state, Session, ivhTreeviewMgr, authModalFactory, categoryFactory) {
+htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Session', 'ivhTreeviewMgr', 'feedFactory', function ($scope, $rootScope, $state, Session, ivhTreeviewMgr, feedFactory) {
 
 
     //Any time the user moves to a different page this function is called.
@@ -2489,147 +2489,24 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
     $scope.feedCategoryObj = {};
 
     //Get the users categories they have chosen to watch in their feed.
-    $scope.feedCategoryObj.userDefaultCategories = Session.userObj.user_settings.feed_categories;
-
-    //Fetch all the possible categories from the server and pass them function that creates nested list the tree checklist UI can understand
-    $scope.getAllCategoriesFromServer = function () {
-        categoryFactory.lookupCategories().then(function (response) {
-
-            if(response.status !== 200) {
-
-                console.log(response.data.error);
-
-            } else if (response.status === 200) {
-
-                $scope.feedCategoryObj.nestedCategories = formatCategories(response.data.results);
-
-                console.log($scope.feedCategoryObj.nestedCategories);
-
-            }
-        }, function (response) {
-
-            console.log(response);
-
-            //TODO: Use modal service to notify users
-            console.log("category lookup error");
-
-        });
-    };
-    $scope.getAllCategoriesFromServer();
-
-
-
-    var formatCategories = function (serverCategories) {
-
-        var safeSearchOn = Session.userObj.user_settings.safe_search;
-        var sanitizedCategoryList = [];
-
-        for (var i = 0; i < serverCategories.length; i++) {
-
-            var parentCategory = serverCategories[i];
-
-            switch (parentCategory.code) {
-                case 'SSSS':
-                case 'VVVV':
-                case 'RRRR':
-                case 'MMMM':
-                case 'PPPP':
-                    if(safeSearchOn && parentCategory.code === 'PPPP' ||  safeSearchOn && parentCategory.code === 'MMMM') { //If safe search is turned on
-                        continue;
-                    } else {
-                        parentCategory.name = toTitleCase(parentCategory.name);
-                        parentCategory.selected = isCategoryDefaultSelected(parentCategory.code);
-
-                        for (var j = 0; j < parentCategory.categories.length; j++) {
-
-                            var childCategory = parentCategory.categories[j];
-
-                            childCategory.name = toTitleCase(childCategory.name);
-                            childCategory.selected = isCategoryDefaultSelected(childCategory.code);
-
-                            if (childCategory.selected) {
-                                parentCategory.selected = true;
-                            }
-                        }
-
-                        sanitizedCategoryList.push(parentCategory);
-                    }
-            }
-        }
-
-        ivhTreeviewMgr.validate(sanitizedCategoryList);
-
-        console.log('sanitized category list', sanitizedCategoryList);
-
-        return sanitizedCategoryList;
-    };
-
-
-    //Capitalize first char of every word in sentence string
-    function toTitleCase(str){
-        return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    }
-
-
-    //This function used while converting 3Taps flat category list into nested list.
-    //If this function returns true the checkbox will be pre-checked in the UI when the page is loaded cause user set this preference previously.
-    var isCategoryDefaultSelected = function (categoryCode) {
-        for(var k = 0; k < $scope.feedCategoryObj.userDefaultCategories.length; k++) {
-            if($scope.feedCategoryObj.userDefaultCategories[k].code === categoryCode) {
-                return true;
-            } else if (k === $scope.feedCategoryObj.userDefaultCategories.length -1) {
-                return false;
-            }
-        }
-    };
-
+    $scope.feedCategoryObj.nestedCategories = Session.userObj.user_settings.feed_categories;
 
     //This function called when user checks or unchecks any item on the category tree.
     $scope.categoryOnChange = function(node, isSelected, tree) {
-        console.log(node, isSelected, tree);
+        console.log('node', node);
+        console.log('isSelected', isSelected);
+        console.log('tree', tree);
+        var stanitizedTree = JSON.parse(angular.toJson(tree));
+        console.log('sanitized tree', stanitizedTree);
 
-        if(Session.userObj.user_settings.loggedIn) { //If the user is logged in
-
-            var newSelectedCategories = [];
-
-            for (t = 0; t < tree.length; t++) {
-                if (!tree[t].selected) {
-                    for (u = 0; u < tree[t].categories.length; u++) {
-                        if (tree[t].categories[u].selected) {
-                            newSelectedCategories.push(
-                                {
-                                    'name': tree[t].categories[u].name,
-                                    'code': tree[t].categories[u].code
-                                }
-                            );
-                        }
-                    }
-                } else {
-                    newSelectedCategories.push(
-                        {
-                            'name': tree[t].name,
-                            'code': tree[t].code
-                        }
-                    );
-                }
-
-
+        //Update the server
+        Session.setSessionValue('feed_categories', stanitizedTree, function (response) {
+            if (response.status !== 200) {
+                alert('could not remove category from user feed.  please notify support.');
             }
+        });
 
-            console.log(newSelectedCategories);
-
-            //Update the server
-            Session.setSessionValue('feed_categories', newSelectedCategories, function (response) {
-                if (response.status !== 200) {
-                    alert('could not remove category from user feed.  please notify support.');
-                }
-            });
-
-        } else {
-            //TODO: Deselect the checked item cause user is not logged in.
-            ivhTreeviewMgr.deselect($scope.feedCategoryObj.nestedCategories, node.name, false);
-            $state.go('signup');
-        }
+        feedFactory.filterFeed(stanitizedTree);
     };
 
     //If the categoryFilter input experiences a change then expand that entire category tree as user types to filter
@@ -2650,11 +2527,13 @@ htsApp.controller('categorySelectorBar', ['$scope',  '$rootScope', '$state', 'Se
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory) {
+htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', '$state', '$interval', 'socketio', 'geoFactory', 'Session', function ($scope, feedFactory, splashFactory, $state, $interval, socketio, geoFactory, Session) {
 
     $scope.spinner = feedFactory.spinner;
 
-    $scope.results = feedFactory.feed;
+    //feedFactory.feed.categories = Session.userObj.user_settings.feed_categories;
+
+    $scope.feed = feedFactory.feed;
 
     $scope.status = {
         error: null
@@ -2668,6 +2547,8 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
         //While true the hashtagspinner will appear
         feedFactory.spinner.show = true;
 
+        var sanitizedTree = Session.userObj.user_settings.feed_categories;
+
         if(!geoFactory.userLocation) {
             geoFactory.geolocateUser().then(function (response) {
                 geoFactory.userLocation = response;
@@ -2680,15 +2561,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
             });
         } else {
-            if(!feedFactory.feed.items.length) {
-                feedFactory.latest(geoFactory.userLocation).then(function (response) {
+            if(!feedFactory.feed.unfiltered.length) {
+                feedFactory.latest(geoFactory.userLocation, sanitizedTree).then(function (response) {
                     console.log('heres our most recent posts', response);
 
                     feedFactory.spinner.show = false;
-
-                    //socketio.joinCityRoom(geoFactory.userLocation.cityCode.code, function () {
-                    //
-                    //});
 
                     socketio.joinLocationRoom('USA-' + geoFactory.userLocation.freeGeoIp.region_code, function () {
 
@@ -2763,7 +2640,9 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
 
     factory.feed = {
-        items: []
+        unfiltered: [],
+        filtered: [],
+        categories: null
     };
 
     factory.currentDate = {
@@ -2777,23 +2656,26 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
         filters: {
             mandatory: {
                 exact: {}
+            },
+            optional: {
+                exact: {}
             }
         }
     };
 
 
 
-    factory.latest = function (userLocationObject) {
+    factory.latest = function (userLocationObject, sanitizedTree) {
 
         var deferred = $q.defer();
-
-        //factory.defaultParams.filters.mandatory.exact['external.threeTaps.location.city'] = userLocationObject.cityCode.code;
 
         factory.defaultParams.filters.mandatory.exact = {
             'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
         };
 
-        //factory.defaultParams.filters.mandatory.exact.categoryCode = _.pluck(Session.userObj.user_settings.feed_categories,'code').join(",");
+        factory.defaultParams.filters.optional.exact = {
+            'categoryCode': 'SELE'
+        };
 
         console.log('before braketizing url', factory.defaultParams);
 
@@ -2812,9 +2694,11 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
                     response.data.results[i] = setItemHeight(response.data.results[i]);
                 }
 
-                factory.feed.items = response.data.results;
+                factory.feed.unfiltered = response.data.results;
 
-                deferred.resolve(factory.feed.items);
+                factory.filterFeed(sanitizedTree);
+
+                deferred.resolve();
             } else {
 
                 var err = {
@@ -2861,20 +2745,97 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
         console.log(emit.posting);
 
-        var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
+        var tempUnfilteredArray = factory.feed.unfiltered;
+        tempUnfilteredArray.unshift(emit.posting);
 
-        $rootScope.$apply(function() {
+        factory.feed.unfiltered = tempUnfilteredArray.slice(0, 350);
 
-            factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
+        if(factory.mustMatchCategoryCode(emit.posting)){
 
-            var tempArray = factory.feed.items;
-            tempArray.unshift(emit.posting);
+            var scrollTopOffset = jQuery(".inner-container.feed").scrollTop();
 
-            factory.feed.items = tempArray.slice(0, 100);
-        });
+            $rootScope.$apply(function() {
 
-        jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+                factory.currentDate.timestamp = Math.floor(Date.now() / 1000);
 
+                var tempFilteredArray = factory.feed.filtered;
+                tempFilteredArray.unshift(emit.posting);
+
+                factory.feed.filtered = tempFilteredArray.slice(0, 350);
+
+            });
+
+            jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
+        }
+
+    };
+
+
+
+
+    //simplest filters
+    factory.mustMatchCategoryCode = function(element, index){
+
+        var visibleStatus = factory.feed.categories.indexOf(element.categoryCode) > -1;
+
+        console.log('Show ' + element.categoryCode + '? ' + visibleStatus);
+
+        return visibleStatus;
+    };
+
+
+
+    factory.filterFeed = function (sanitizedTree) {
+
+        factory.feed.categories = getVisibleCategories(sanitizedTree);
+
+        var filteredResults = factory.feed.unfiltered.filter(factory.mustMatchCategoryCode);
+
+        factory.generateFeed(filteredResults);
+
+    };
+
+
+    factory.generateFeed = function(filteredResults) {
+
+        var temp = [];
+
+        for(var i = 0; i < filteredResults.length; i++){
+
+            var feedItem = filteredResults[i];
+
+            if (feedItem.images.length === 0) {
+                feedItem.feedItemHeight = 179;
+            } else if (feedItem.images.length === 1) {
+                feedItem.feedItemHeight = 261;
+            } else {
+                feedItem.feedItemHeight = 420;
+            }
+
+            temp.push(feedItem);
+        }
+
+        factory.feed.filtered = temp;
+    };
+
+
+    var getVisibleCategories = function (sanitizedTree) {
+
+        var temp = [];
+
+        for(var i = 0; i < sanitizedTree.length; i++) {
+            var parentCategory = sanitizedTree[i];
+
+            for(var j = 0; j < parentCategory.categories.length; j ++) {
+                var childCategory = parentCategory.categories[j];
+
+                if(childCategory.selected){
+                    temp.push(childCategory.code);
+                }
+            }
+        }
+
+        return temp;
     };
 
 
@@ -4547,6 +4508,17 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
     $scope.resetAll();
 
+
+
+
+
+    //$scope.$watch('jsonObj', function(newValue, oldValue) {
+    //        console.log(newValue);
+    //        $scope.jsonObjDebug = JSON.stringify(newValue, null, "    ");
+    //    }
+    //);
+
+
     $scope.allCategories = [
         {
             "code": "AAAA",
@@ -6152,6 +6124,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
                     //Postal code did not come back from intial geocode.. therefore we must reverse geocode to get postal code based on lat long.
                     if (!geo.location.postalCode) {
 
+                        locationObj.formatted_address = placeMetaData.description;
+
                         $http.get('/utils/reversegeocode', {
                             params: {
                                 lat: placeMetaData.geometry.location.lat(),
@@ -7576,20 +7550,304 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
             }
         ],
         favorites: [],
-        feed_categories:[
-            {
-                "name" : "Real Estate",
-                "code" : "RRRR"
-            },
-            {
-                "name" : "For Sale",
-                "code" : "SSSS"
-            },
-            {
-                "name" : "Vehicles",
-                "code" : "VVVV"
-            }
-        ]
+        feed_categories:[{
+            "code": "SSSS",
+            "name": "For Sale",
+            "categories": [{
+                "code": "SANT",
+                "name": "Antiques",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SAPP",
+                "name": "Apparel",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SAPL",
+                "name": "Appliances",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SANC",
+                "name": "Art And Crafts",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SKID",
+                "name": "Babies And Kids",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SBAR",
+                "name": "Barters",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SBIK",
+                "name": "Bicycles",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SBIZ",
+                "name": "Businesses",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SCOL",
+                "name": "Collections",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SEDU",
+                "name": "Educational",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SELE",
+                "name": "Electronics And Photo",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SFNB",
+                "name": "Food And Beverage",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SFUR",
+                "name": "Furniture",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SGAR",
+                "name": "Garage Sales",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SGFT",
+                "name": "Gift Cards",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SHNB",
+                "name": "Health And Beauty",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SHNG",
+                "name": "Home And Garden",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SIND",
+                "name": "Industrial",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SJWL",
+                "name": "Jewelry",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SLIT",
+                "name": "Literature",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SMNM",
+                "name": "Movies And Music",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SMUS",
+                "name": "Musical Instruments",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SRES",
+                "name": "Restaurants",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SSNF",
+                "name": "Sports And Fitness",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "STIX",
+                "name": "Tickets",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "STOO",
+                "name": "Tools",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "STOY",
+                "name": "Toys And Hobbies",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "STVL",
+                "name": "Travel",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SWNT",
+                "name": "Wanted",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "SOTH",
+                "name": "Other",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }],
+            "selected": true,
+            "__ivhTreeviewIndeterminate": false,
+            "__ivhTreeviewExpanded": true
+        }, {
+            "code": "RRRR",
+            "name": "Real Estate",
+            "categories": [{
+                "code": "RCRE",
+                "name": "Commercial Real Estate",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RHFR",
+                "name": "Housing For Rent",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RHFS",
+                "name": "Housing For Sale",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RSUB",
+                "name": "Housing Sublets",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RSWP",
+                "name": "Housing Swaps",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RLOT",
+                "name": "Lots And Land",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RPNS",
+                "name": "Parking And Storage",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RSHR",
+                "name": "Room Shares",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RVAC",
+                "name": "Vacation Properties",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "RWNT",
+                "name": "Want Housing",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "ROTH",
+                "name": "Other",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }],
+            "selected": true,
+            "__ivhTreeviewIndeterminate": false,
+            "__ivhTreeviewExpanded": true
+        }, {
+            "code": "VVVV",
+            "name": "Vehicles",
+            "categories": [{
+                "code": "VAUT",
+                "name": "Autos",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "VMOT",
+                "name": "Motorcycles",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "VMPT",
+                "name": "Motorcycle Parts",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "VPAR",
+                "name": "Parts",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }, {
+                "code": "VOTH",
+                "name": "Other",
+                "selected": true,
+                "__ivhTreeviewExpanded": false,
+                "__ivhTreeviewIndeterminate": false
+            }],
+            "selected": true,
+            "__ivhTreeviewIndeterminate": false,
+            "__ivhTreeviewExpanded": true
+        }]
     };
 
 
@@ -10135,6 +10393,8 @@ htsApp.factory('utilsFactory', ['ENV', function (ENV) {
 /**
  * Created by braddavis on 5/1/15.
  */
+
+//Gets all the categories from groupings api
 htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, ENV) {
     var factory = {};
 
@@ -12153,7 +12413,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "    <spinner ng-if=\"spinner.show\" class=\"spinner-container\" spinner-text=\"Finding recently posted items around you\"></spinner>\n" +
     "\n" +
     "    <div vs-repeat class=\"inner-container feed row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
-    "        <div class=\"list-item\" ng-repeat=\"result in results.items\" ng-click=\"openSplash(this)\">\n" +
+    "        <div class=\"list-item\" ng-repeat=\"result in feed.filtered\" ng-click=\"openSplash(this)\">\n" +
     "            <div class=\"thumbnail\">\n" +
     "\n" +
     "                <ribbon-list ng-if=\"!!result.askingPrice.value\">{{::result.askingPrice.value | currency : $ : 0}}</ribbon-list>\n" +
@@ -12927,10 +13187,10 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "    <alert ng-repeat=\"banner in alerts.banners\" type=\"{{banner.type}}\" close=\"closeAlert($index)\">{{banner.msg}}</alert>\n" +
     "\n" +
-    "    <!--<div ng-show=\"showDemo\">-->\n" +
-    "        <!--<animated-gif animation-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_animation_short.gif\" static-url=\"//static.hashtagsell.com/tutorialRelated/sell_box_static.png\"/>-->\n" +
-    "    <!--</div>-->\n" +
-    "    <!--{{img}}-->\n" +
+    "    <!--<pre>-->\n" +
+    "        <!--{{jsonObj}}-->\n" +
+    "    <!--</pre>-->\n" +
+    "\n" +
     "    <img class='sell-box-image img-responsive' ng-src='{{img}}' ng-show=\"showDemo\"/>\n" +
     "\n" +
     "    <div class=\"sell-box\" ng-show=\"!showDemo\">\n" +
@@ -12966,10 +13226,6 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            </div>\n" +
     "\n" +
     "        </div>\n" +
-    "\n" +
-    "        <!--<pre>-->\n" +
-    "            <!--{{jsonObj}}-->\n" +
-    "        <!--</pre>-->\n" +
     "\n" +
     "        <div class=\"row remove-row-margins\">\n" +
     "            <div class=\"inset-toolbar\">\n" +
