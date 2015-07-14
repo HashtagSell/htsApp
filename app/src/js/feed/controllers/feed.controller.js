@@ -59,6 +59,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     initFeed();
 
 
+    $scope.getScrollPosition = function(startIndex, endIndex){
+        console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.feed.filtered.length);
+    };
+
+
 
     //TODO: When user pulls down from top of screen perform poll and reset interval
     //openSplash called when suer clicks on item in feed for more details.

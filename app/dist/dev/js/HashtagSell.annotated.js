@@ -2585,6 +2585,11 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
     initFeed();
 
 
+    $scope.getScrollPosition = function(startIndex, endIndex){
+        console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.feed.filtered.length);
+    };
+
+
 
     //TODO: When user pulls down from top of screen perform poll and reset interval
     //openSplash called when suer clicks on item in feed for more details.
@@ -2630,7 +2635,7 @@ htsApp.filter('secondsToTimeString', function() {
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, Session, utilsFactory, ENV) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', '$timeout', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, $timeout, Session, utilsFactory, ENV) {
 
     var factory = {};
 
@@ -2798,24 +2803,32 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
     factory.generateFeed = function(filteredResults) {
 
-        var temp = [];
+        //$rootScope.$apply(function() {
 
-        for(var i = 0; i < filteredResults.length; i++){
+            var temp = [];
 
-            var feedItem = filteredResults[i];
+            for(var i = 0; i < filteredResults.length; i++) {
 
-            if (feedItem.images.length === 0) {
-                feedItem.feedItemHeight = 179;
-            } else if (feedItem.images.length === 1) {
-                feedItem.feedItemHeight = 261;
-            } else {
-                feedItem.feedItemHeight = 420;
+                var feedItem = filteredResults[i];
+
+                if (feedItem.images.length === 0) {
+                    feedItem.feedItemHeight = 179;
+                } else if (feedItem.images.length === 1) {
+                    feedItem.feedItemHeight = 261;
+                } else {
+                    feedItem.feedItemHeight = 420;
+                }
+
+                temp.push(feedItem);
             }
 
-            temp.push(feedItem);
-        }
 
-        factory.feed.filtered = temp;
+            factory.feed.filtered = temp;
+
+            $timeout(function(){
+                $rootScope.$broadcast('vsRepeatTrigger');
+            }, 10);
+        //});
     };
 
 
@@ -12412,7 +12425,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "<div class=\"outer-container col-xs-12\">\n" +
     "    <spinner ng-if=\"spinner.show\" class=\"spinner-container\" spinner-text=\"Finding recently posted items around you\"></spinner>\n" +
     "\n" +
-    "    <div vs-repeat class=\"inner-container feed row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\">\n" +
+    "    <div vs-repeat class=\"inner-container feed row\" vs-size=\"feedItemHeight\" vs-offset-before=\"77\" vs-excess=\"10\" on-vs-index-change=\"getScrollPosition(startIndex, endIndex)\">\n" +
     "        <div class=\"list-item\" ng-repeat=\"result in feed.filtered\" ng-click=\"openSplash(this)\">\n" +
     "            <div class=\"thumbnail\">\n" +
     "\n" +

@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 12/15/14.
  */
-htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, Session, utilsFactory, ENV) {
+htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$rootScope', '$timeout', 'Session', 'utilsFactory', 'ENV', function( $http, $stateParams, $location, $q, $rootScope, $timeout, Session, utilsFactory, ENV) {
 
     var factory = {};
 
@@ -169,24 +169,32 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
     factory.generateFeed = function(filteredResults) {
 
-        var temp = [];
+        //$rootScope.$apply(function() {
 
-        for(var i = 0; i < filteredResults.length; i++){
+            var temp = [];
 
-            var feedItem = filteredResults[i];
+            for(var i = 0; i < filteredResults.length; i++) {
 
-            if (feedItem.images.length === 0) {
-                feedItem.feedItemHeight = 179;
-            } else if (feedItem.images.length === 1) {
-                feedItem.feedItemHeight = 261;
-            } else {
-                feedItem.feedItemHeight = 420;
+                var feedItem = filteredResults[i];
+
+                if (feedItem.images.length === 0) {
+                    feedItem.feedItemHeight = 179;
+                } else if (feedItem.images.length === 1) {
+                    feedItem.feedItemHeight = 261;
+                } else {
+                    feedItem.feedItemHeight = 420;
+                }
+
+                temp.push(feedItem);
             }
 
-            temp.push(feedItem);
-        }
 
-        factory.feed.filtered = temp;
+            factory.feed.filtered = temp;
+
+            $timeout(function(){
+                $rootScope.$broadcast('vsRepeatTrigger');
+            }, 10);
+        //});
     };
 
 
