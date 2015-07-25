@@ -1,11 +1,25 @@
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification) {
+htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', 'transactionFactory', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification, transactionFactory) {
 
     $scope.userObj = Session.userObj;
 
-    $scope.acceptOffer = function (offer, post) {
+    $scope.cachedOffers = angular.copy($scope.post.offers.results);
+
+
+    $scope.counterOffer = function ($index, proposal) {
+
+        var indexOfOfferToUpdate = $index;
+
+        console.log('index of offer to add proposal to:', indexOfOfferToUpdate);
+
+        transactionFactory.proposeDeal($scope.post, indexOfOfferToUpdate);
+
+    };
+
+
+    $scope.acceptDeal = function ($index, proposal) {
 
         meetingsFactory.acceptOffer(offer, post).then(function (response) {
 
@@ -42,7 +56,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
 
 
-    $scope.declineOffer = function (offer, post) {
+    $scope.deleteOffer = function (offer, post) {
 
         meetingsFactory.deleteOffer(offer, post).then(function (response) {
 
@@ -81,17 +95,5 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
     function isBlank(str) {
         return (!str || /^\s*$/.test(str));
     }
-
-
-    $scope.acceptedMeetingTime = function (offer) {
-
-        for (var i = 0; i < offer.proposedTimes.length; i++) {
-            var proposedTime = offer.proposedTimes[i];
-            if(proposedTime.acceptedAt){
-                return true;
-            }
-        }
-        return false;
-    };
 
 }]);

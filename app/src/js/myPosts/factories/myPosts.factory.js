@@ -41,8 +41,8 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
                             unreadCount++;
 
-                            for(var l = 0; l < offer.proposedTimes.length; l++){
-                                var proposedTime = offer.proposedTimes[l];
+                            for(var l = 0; l < offer.proposals.length; l++){
+                                var proposedTime = offer.proposals[l];
 
                                 if(proposedTime.acceptedAt){ //if question does not have answer
                                     unreadCount--;

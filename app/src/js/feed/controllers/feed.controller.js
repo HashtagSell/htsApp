@@ -61,6 +61,14 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     $scope.getScrollPosition = function(startIndex, endIndex){
         console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.feed.filtered.length);
+        //if(!$scope.startIndexCached){
+        //    $scope.startIndexCached = startIndex;
+        //} else {
+        //    if(startIndex + 3 < $scope.startIndexCached){
+        //        $scope.startIndexCached = startIndex;
+        //        alert('scrolling up!');
+        //    }
+        //}
     };
 
 

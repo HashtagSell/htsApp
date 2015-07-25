@@ -240,7 +240,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     // listen for meeting requests
     socketio.postingSocket.on('make-offer', function (emit) {
 
-        console.log('emitted meeting request', emit);
+        console.log('emitted make-offer request', emit);
 
         //TODO: Need the offer object to include the sellers username
         if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
@@ -254,7 +254,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                         var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Meeting Request Sent!</a>',
+                            title: '<a href=' + url + '>Offer Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
                         });  //Send the webtoast
@@ -268,7 +268,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                         var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Meeting Request Sent!</a>',
+                            title: '<a href=' + url + '>Offer Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
                         });  //Send the webtoast
@@ -289,8 +289,8 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                 var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
                 Notification.primary({
-                    title: '<a href=' + url + '>New Meeting Request</a>',
-                    message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
+                    title: '<a href=' + url + '>New Offer</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' has placed an offer on your item!</a>',
                     delay: 10000
                 });  //Send the webtoast
 
@@ -313,12 +313,86 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         }
 
         console.log(
-            '%s would like to meet %s regarding postingId: "%s"',
+            '%s has placed an offer %s regarding postingId: "%s"',
             emit.username,
-            emit.proposedTimes,
+            emit.proposals,
             emit.posting.postingId
         );
     });
+
+
+
+
+    // listen for meeting requests
+    socketio.postingSocket.on('update-offer', function (emit) {
+
+        console.log('emitted update-offer request', emit);
+
+        //TODO: Need the offer object to include the sellers username
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                            message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                } else { //The user sending the meeting request does not have this item in their watchlist.
+
+                    favesFactory.addFave(emit.posting, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                            message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                }
+
+            });
+
+
+
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
+
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>Counter Offer Received</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
+                    delay: 10000
+                });  //Send the webtoast
+
+            });
+
+        }
+
+        console.log(
+            '%s sent a counter offer %s regarding postingId: "%s"',
+            emit.username,
+            emit.proposals,
+            emit.posting.postingId
+        );
+    });
+
+
 
 
     // listen for questions
@@ -508,7 +582,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         console.log(
             '%s cancelled %s regarding postingId: "%s"',
             emit.username,
-            emit.proposedTimes,
+            emit.proposals,
             emit.posting.postingId
         );
     });

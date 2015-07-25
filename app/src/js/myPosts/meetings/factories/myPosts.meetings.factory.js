@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', function ($http, $rootScope, $q, ENV, Session) {
+htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 'utilsFactory', function ($http, $rootScope, $q, ENV, Session, utilsFactory) {
 
     var factory = {};
 
@@ -12,10 +12,10 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
         console.log(
             '%s placed an %s offers on postingId %s to meet @ %s around %s',
             offer.username,
-            offer.proposedTimes.length,
+            offer.proposals.length,
             offer.postingId,
-            offer.proposedTimes[0].where,
-            offer.proposedTimes[0].when
+            offer.proposals[0].where,
+            offer.proposals[0].when
         );
 
         console.log(offer);
@@ -25,16 +25,16 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
 
 
-    factory.sendOffer = function (post, offerTime) {
+    factory.sendOffer = function (post, offer) {
 
-        console.log('sending this offer', offerTime);
+        console.log('sending this offer', offer);
 
         var deferred = $q.defer();
 
         $http({
             method: 'POST',
             url: ENV.postingAPI + post.postingId + "/offers",
-            data: offerTime
+            data: offer
         }).then(function (offerResponse, status, headers, config) {
 
             console.log('heres our offer response', offerResponse);
@@ -117,6 +117,64 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
         $http({
             method: 'DELETE',
             url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId
+        }).then(function (response, status, headers, config) {
+
+            deferred.resolve(response);
+
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+    factory.getOffers = function (post) {
+
+        console.log('Gettings offers for post: ', post.postingId);
+
+        var deferred = $q.defer();
+
+        var params = {
+            postingId: post.postingId,
+            questions: false,
+            offers: true,
+            count: 100
+        };
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + post.postingId + utilsFactory.bracketNotationURL(params)
+        }).then(function (response, status, headers, config) {
+
+            deferred.resolve(response);
+
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+
+
+    factory.updateOffer = function (post, offer) {
+
+        console.log('Updating offer', post.postingId, offer.offerId);
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'PUT',
+            url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId,
+            data: offer
         }).then(function (response, status, headers, config) {
 
             deferred.resolve(response);

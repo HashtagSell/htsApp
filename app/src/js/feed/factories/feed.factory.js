@@ -13,7 +13,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
     factory.feed = {
         unfiltered: [],
         filtered: [],
-        categories: null
+        categories: null,
+        newUnreadItems: 0
     };
 
     factory.currentDate = {
@@ -41,12 +42,12 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
         var deferred = $q.defer();
 
         factory.defaultParams.filters.mandatory.exact = {
-            'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
+            'location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
         };
 
-        factory.defaultParams.filters.optional.exact = {
-            'categoryCode': 'SELE'
-        };
+        //factory.defaultParams.filters.optional.exact = {
+        //    'categoryCode': 'SELE'
+        //};
 
         console.log('before braketizing url', factory.defaultParams);
 
@@ -138,6 +139,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
             jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
         }
+
+        factory.feed.newUnreadItems++;
 
     };
 

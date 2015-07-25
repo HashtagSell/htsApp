@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HashtagSell Propose a deal</title>
+</head>
+<body>
+
+    <form class="form-horizontal">
+        <!--<div class="modal-header">-->
+            <!--<h3 id="myModalLabel">Let's meet!</h3>-->
+        <!--</div>-->
+        <div class="modal-body">
+            <!--<div class="controls">-->
+                <!--<div class="input-group input-group-lg">-->
+                    <!--<span class="input-group-addon">#</span>-->
+                    <!--<input class="form-control" type="text" id="item" name="item" ng-model="deal.item" ng-disabled="true" required="true"/>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<br>-->
+
+            <div class="controls">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon">$</span>
+                    <input class="form-control" type="text" id="price" name="price" ng-model="deal.price" required="true"/>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="controls">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon">@</span>
+                    <input class="form-control" type="text" id="location" name="location" ng-model="deal.location" required="true"/>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="controls">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon"><i class="fa fa-comments-o"></i></span>
+                    <input class="form-control" type="comment" id="comment" name="comment" ng-model="deal.comment" placeholder="Include comment.  (Optional)"/>
+                </div>
+            </div>
+
+            <br>
+
+            <scheduler class="scheduler" slots="slots"></scheduler>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-default btn-primary" ng-click="counterOffer()">Send Offer</button>
+            <button class="btn btn-default btn-success" ng-click="acceptDeal()">Accept Deal</button>
+        </div>
+
+
+    </form>
+
+</body>
+</html>

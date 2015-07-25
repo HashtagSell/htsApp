@@ -144,6 +144,42 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
     };
 
 
+    //HTS item.  Gathers price and location to propose for pickup.
+    transactionFactory.proposeDeal = function (result, offerIndex) {
+        if(Session.userObj.user_settings.loggedIn) {  //If user logged In
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/transactionButtons/modals/proposeDeal/partials/transactionButtons.modal.proposeDeal.partial.html',
+                controller: 'proposeDealController',
+                resolve: {
+                    result: function () {
+                        return result;
+                    },
+                    offerIndex: function () {
+                        return offerIndex;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if (reason === "signUp") {
+                    authModalFactory.signUpModal();
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+
+        } else {  //User is not logged in.
+
+            authModalFactory.betaCheckModal($state.params);
+
+        }
+    };
+
+
+
     transactionFactory.buyNow = function(result) {
 
         if(!Session.userObj.user_settings.loggedIn) {
@@ -175,7 +211,8 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
                     console.log('closing modal');
 
-                    transactionFactory.placeOffer(result);
+                    //transactionFactory.placeOffer(result);
+                    transactionFactory.proposeDeal(result);
 
                 }
                 $log.info('Modal dismissed at: ' + new Date());

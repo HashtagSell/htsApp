@@ -9,7 +9,29 @@
 //
 //           This is where it all begins...
 
-var htsApp = angular.module('htsApp', ['globalVars', 'ui.router', 'ct.ui.router.extras.core', 'ct.ui.router.extras.dsr', 'ui.bootstrap', 'mentio', 'ui.bootstrap-slider', 'frapontillo.bootstrap-switch', 'ngTable', 'uiGmapgoogle-maps', 'ivh.treeview', 'vs-repeat', 'ui.bootstrap.datetimepicker', 'ngSanitize', 'ui-notification', 'ezfb', 'slick', 'braintree-angular', 'ui.select', 'angulartics', 'angulartics.google.analytics']);
+var htsApp = angular.module('htsApp', [
+    'globalVars',
+    'ui.router',
+    'ct.ui.router.extras.core',
+    'ct.ui.router.extras.dsr',
+    'ui.bootstrap',
+    'mentio',
+    'ui.bootstrap-slider',
+    'frapontillo.bootstrap-switch',
+    'ngTable',
+    'uiGmapgoogle-maps',
+    'ivh.treeview',
+    'vs-repeat',
+    'ui.bootstrap.datetimepicker',
+    'ngSanitize',
+    'ui-notification',
+    'ezfb',
+    'slick',
+    'braintree-angular',
+    'ui.select',
+    'angulartics',
+    'angulartics.google.analytics'
+]);
 
 
 //Forcing XHR requests via Angular $http (AJAX)
@@ -2587,6 +2609,14 @@ htsApp.controller('feed.controller', ['$scope', 'feedFactory', 'splashFactory', 
 
     $scope.getScrollPosition = function(startIndex, endIndex){
         console.log('startIndex: ' + startIndex, 'endIndex: ' + endIndex, 'numRows: ' + $scope.feed.filtered.length);
+        //if(!$scope.startIndexCached){
+        //    $scope.startIndexCached = startIndex;
+        //} else {
+        //    if(startIndex + 3 < $scope.startIndexCached){
+        //        $scope.startIndexCached = startIndex;
+        //        alert('scrolling up!');
+        //    }
+        //}
     };
 
 
@@ -2647,7 +2677,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
     factory.feed = {
         unfiltered: [],
         filtered: [],
-        categories: null
+        categories: null,
+        newUnreadItems: 0
     };
 
     factory.currentDate = {
@@ -2675,12 +2706,12 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
         var deferred = $q.defer();
 
         factory.defaultParams.filters.mandatory.exact = {
-            'external.threeTaps.location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
+            'location.state': 'USA-' + userLocationObject.freeGeoIp.region_code
         };
 
-        factory.defaultParams.filters.optional.exact = {
-            'categoryCode': 'SELE'
-        };
+        //factory.defaultParams.filters.optional.exact = {
+        //    'categoryCode': 'SELE'
+        //};
 
         console.log('before braketizing url', factory.defaultParams);
 
@@ -2772,6 +2803,8 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 
             jQuery(".inner-container.feed").scrollTop(scrollTopOffset + emit.posting.feedItemHeight);
         }
+
+        factory.feed.newUnreadItems++;
 
     };
 
@@ -3430,8 +3463,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
             unreadOffersCount++;
 
-            for(var j = 0; j < offer.proposedTimes.length; j++){
-                var proposedTime = offer.proposedTimes[j];
+            for(var j = 0; j < offer.proposals.length; j++){
+                var proposedTime = offer.proposals[j];
 
                 if(proposedTime.acceptedAt){ //if question does not have answer
                     unreadOffersCount--;
@@ -3587,8 +3620,8 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
                             unreadCount++;
 
-                            for(var l = 0; l < offer.proposedTimes.length; l++){
-                                var proposedTime = offer.proposedTimes[l];
+                            for(var l = 0; l < offer.proposals.length; l++){
+                                var proposedTime = offer.proposals[l];
 
                                 if(proposedTime.acceptedAt){ //if question does not have answer
                                     unreadCount--;
@@ -3817,11 +3850,25 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification) {
+htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', 'myPostsFactory', 'socketio', '$state', 'Session', 'Notification', 'transactionFactory', function ($scope, meetingsFactory, myPostsFactory, socketio, $state, Session, Notification, transactionFactory) {
 
     $scope.userObj = Session.userObj;
 
-    $scope.acceptOffer = function (offer, post) {
+    $scope.cachedOffers = angular.copy($scope.post.offers.results);
+
+
+    $scope.counterOffer = function ($index, proposal) {
+
+        var indexOfOfferToUpdate = $index;
+
+        console.log('index of offer to add proposal to:', indexOfOfferToUpdate);
+
+        transactionFactory.proposeDeal($scope.post, indexOfOfferToUpdate);
+
+    };
+
+
+    $scope.acceptDeal = function ($index, proposal) {
 
         meetingsFactory.acceptOffer(offer, post).then(function (response) {
 
@@ -3858,7 +3905,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
 
 
-    $scope.declineOffer = function (offer, post) {
+    $scope.deleteOffer = function (offer, post) {
 
         meetingsFactory.deleteOffer(offer, post).then(function (response) {
 
@@ -3898,18 +3945,6 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
         return (!str || /^\s*$/.test(str));
     }
 
-
-    $scope.acceptedMeetingTime = function (offer) {
-
-        for (var i = 0; i < offer.proposedTimes.length; i++) {
-            var proposedTime = offer.proposedTimes[i];
-            if(proposedTime.acceptedAt){
-                return true;
-            }
-        }
-        return false;
-    };
-
 }]);
 /**
  * Created by braddavis on 4/1/15.
@@ -3925,7 +3960,7 @@ htsApp.directive("ownerMeetingsMoreInfo", function() {
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', function ($http, $rootScope, $q, ENV, Session) {
+htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session', 'utilsFactory', function ($http, $rootScope, $q, ENV, Session, utilsFactory) {
 
     var factory = {};
 
@@ -3936,10 +3971,10 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
         console.log(
             '%s placed an %s offers on postingId %s to meet @ %s around %s',
             offer.username,
-            offer.proposedTimes.length,
+            offer.proposals.length,
             offer.postingId,
-            offer.proposedTimes[0].where,
-            offer.proposedTimes[0].when
+            offer.proposals[0].where,
+            offer.proposals[0].when
         );
 
         console.log(offer);
@@ -3949,16 +3984,16 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
 
 
-    factory.sendOffer = function (post, offerTime) {
+    factory.sendOffer = function (post, offer) {
 
-        console.log('sending this offer', offerTime);
+        console.log('sending this offer', offer);
 
         var deferred = $q.defer();
 
         $http({
             method: 'POST',
             url: ENV.postingAPI + post.postingId + "/offers",
-            data: offerTime
+            data: offer
         }).then(function (offerResponse, status, headers, config) {
 
             console.log('heres our offer response', offerResponse);
@@ -4041,6 +4076,64 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
         $http({
             method: 'DELETE',
             url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId
+        }).then(function (response, status, headers, config) {
+
+            deferred.resolve(response);
+
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+    factory.getOffers = function (post) {
+
+        console.log('Gettings offers for post: ', post.postingId);
+
+        var deferred = $q.defer();
+
+        var params = {
+            postingId: post.postingId,
+            questions: false,
+            offers: true,
+            count: 100
+        };
+
+        $http({
+            method: 'GET',
+            url: ENV.postingAPI + post.postingId + utilsFactory.bracketNotationURL(params)
+        }).then(function (response, status, headers, config) {
+
+            deferred.resolve(response);
+
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+    };
+
+
+
+
+    factory.updateOffer = function (post, offer) {
+
+        console.log('Updating offer', post.postingId, offer.offerId);
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'PUT',
+            url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId,
+            data: offer
         }).then(function (response, status, headers, config) {
 
             deferred.resolve(response);
@@ -7548,6 +7641,377 @@ htsApp.factory('searchFactory', ['$http', '$stateParams', '$location', '$q', '$l
 
     return factory;
 }]);
+htsApp.directive('grid', [function() {
+    return {
+        scope: {
+            min: '=',
+            max: '=',
+            tick: '='
+        },
+        restrict: 'E',
+        templateUrl: 'js/scheduler/partials/grid.html',
+        link: function(scope) {
+            scope.range = function(n) {
+                return new Array(n);
+            };
+            scope.tickcount = (scope.max - scope.min) / scope.tick;
+            scope.ticksize = 100 / scope.tickcount;
+        }
+    };
+}]);
+
+htsApp.directive('handle', ['$document', function($document){
+    return {
+        scope: {
+            ondrag: '=',
+            ondragstop: '=',
+            ondragstart: '='
+        },
+        restrict: 'A',
+        link: function(scope, element) {
+
+            var x = 0;
+
+            element.on('mousedown', function(event) {
+                // Prevent default dragging of selected content
+                event.preventDefault();
+
+                x = event.pageX;
+
+                $document.on('mousemove', mousemove);
+                $document.on('mouseup', mouseup);
+
+                if(scope.ondragstart){
+                    scope.ondragstart();
+                }
+
+            });
+
+            function mousemove(event) {
+                var delta = event.pageX - x;
+                scope.ondrag(delta);
+            }
+
+            function mouseup() {
+                $document.unbind('mousemove', mousemove);
+                $document.unbind('mouseup', mouseup);
+
+                if(scope.ondragstop){
+                    scope.ondragstop();
+                }
+            }
+        }
+    };
+}]);
+
+htsApp.filter('byDay', [function(){
+    return function(input, day){
+        var ret = [];
+        angular.forEach(input, function(el){
+            if(el.day === day){
+                ret.push(el);
+            }
+        });
+        return ret;
+    };
+}])
+
+htsApp.directive('multiSlider', [function() {
+    return {
+        scope: {
+            slots: '=',
+            max: '=',
+            min: '=',
+            tick: '=',
+            defaultValue: '=',
+            day: '='
+        },
+        restrict: 'E',
+        templateUrl: 'js/scheduler/partials/multi-slider.html',
+        link: function(scope, element){
+
+            // used for calculating relative click-events
+            var elOffX = element[0].getBoundingClientRect().left;
+
+            var valToPixel = function(val){
+                var percent = val / (scope.max - scope.min);
+                return Math.floor(percent * element[0].clientWidth + 0.5);
+            };
+
+            var pixelToVal = function(pixel){
+                var percent = pixel / element[0].clientWidth;
+                return Math.floor(percent * (scope.max - scope.min) + 0.5);
+            };
+
+            var round = function(n){
+                return scope.tick * Math.round(n / scope.tick);
+            };
+
+            var addSlot = function(start, stop){
+                start = start >= scope.min ? start : scope.min;
+                stop = stop <= scope.max ? stop : scope.max;
+                scope.slots.push({start: start, stop: stop, day: scope.day});
+                scope.$apply();
+            };
+
+
+            var hoverElement = angular.element(element.find('div')[0]);
+            var hoverElementWidth = valToPixel(scope.defaultValue);
+
+            hoverElement.css({
+                width: hoverElementWidth+'px'
+            });
+
+            element.on('mousemove', function(e){
+                hoverElement.css({
+                    left: e.pageX - elOffX - hoverElementWidth/2 + 'px'
+                });
+            });
+
+            hoverElement.on('click', function(event){
+                if(!element.attr('no-add')){
+                    var pixelOnClick = event.pageX - elOffX;
+                    var valOnClick = pixelToVal(pixelOnClick);
+
+                    var start = round(valOnClick - scope.defaultValue/2);
+                    var stop = start + scope.defaultValue;
+
+                    addSlot(start, stop);
+                }
+            });
+        }
+    };
+}]);
+
+htsApp.filter('intToTime', [function(){
+
+    return function(input){
+
+        function pad(n, width) {
+            n = n + '';
+            return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+        }
+
+        var hours = Math.floor(input / 60);
+        var minutes = input % 60;
+        return pad(hours, 2)+':'+pad(minutes, 2);
+    };
+}]);
+
+htsApp.directive('scheduler', [function(){
+    return {
+        templateUrl: 'js/scheduler/partials/scheduler.html',
+        restrict: 'E',
+        scope: {
+            slots: '=',
+        },
+        link: function(scope){
+            scope.labels = [
+                'Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+                'Sunday'
+            ];
+        }
+    };
+}]);
+
+htsApp.directive('slot', [function() {
+    return {
+        scope: {
+            min: '=',
+            max: '=',
+            model: '=',
+            slots: '=',
+            tick: '='
+        },
+        restrict: 'E',
+        templateUrl: 'js/scheduler/partials/slot.html',
+        link: function(scope, element) {
+
+
+            scope.$watch('model', function(){
+                setPosition();
+            }, true);
+
+
+            var container = element.parent()[0];
+            var resizeDirectionIsStart = true;
+            var valuesOnDragStart = {start: scope.model.start, stop: scope.model.stop};
+
+
+            var valToPixel = function(val){
+                var percent = val / (scope.max - scope.min);
+                return Math.floor(percent * container.clientWidth + 0.5);
+            };
+
+            var valToPercent = function(val){
+                return val / (scope.max - scope.min) * 100;
+            };
+
+            var pixelToVal = function(pixel){
+                var percent = pixel / container.clientWidth;
+                return Math.floor(percent * (scope.max - scope.min) + 0.5);
+            };
+
+            var round = function(n){
+                return scope.tick * Math.round(n / scope.tick);
+            };
+
+            var setPosition = function(){
+                var offset = valToPercent(scope.model.start);
+                var width = valToPercent(scope.model.stop - scope.model.start);
+                element.css({
+                    left: offset + '%',
+                    width: width + '%'
+                });
+            };
+
+
+            scope.stopDrag = function(){
+
+                // this prevents user from accidentally
+                // adding new slot after resizing or dragging
+                setTimeout(function(){
+                    angular.element(container).removeAttr('no-add');
+                }, 500);
+
+                element.removeClass('active');
+                angular.element(container).removeClass('dragging');
+
+                mergeOverlaps();
+            };
+
+
+            scope.startResizeStart = function(){
+                resizeDirectionIsStart = true;
+                scope.startDrag();
+            };
+
+            scope.startResizeStop = function(){
+                resizeDirectionIsStart = false;
+                scope.startDrag();
+            };
+
+            scope.startDrag = function(){
+                element.addClass('active');
+
+                angular.element(container).addClass('dragging');
+                angular.element(container).attr('no-add', true);
+
+                valuesOnDragStart = {start: scope.model.start, stop: scope.model.stop};
+            };
+
+
+            scope.resize = function(d){
+                if(resizeDirectionIsStart){
+
+                    var newStart = round(pixelToVal(valToPixel(valuesOnDragStart.start) + d));
+
+                    if (newStart <= scope.model.stop && newStart>=scope.min) {
+                        scope.model.start = newStart;
+                        checkForFlip();
+                        scope.$apply();
+                    }
+
+                } else {
+
+                    var newStop = round(pixelToVal(valToPixel(valuesOnDragStart.stop) + d));
+
+                    if (newStop >= scope.model.start && newStop<=scope.max) {
+                        scope.model.stop = newStop;
+                        checkForFlip();
+                        scope.$apply();
+                    }
+                }
+            };
+
+            scope.drag = function(d){
+                var oldVal = scope.model.stop - scope.model.start;
+                var newVal = round(pixelToVal(valToPixel(valuesOnDragStart.start) + d));
+
+                if (newVal>=scope.min && newVal+(oldVal)<=scope.max) {
+                    scope.model.start = newVal;
+                    scope.model.stop = newVal+oldVal;
+                    scope.$apply();
+                }
+            };
+
+
+            var checkForFlip = function(){
+                if(scope.model.start >= scope.model.stop){
+
+                    var tmp = valuesOnDragStart.stop;
+                    valuesOnDragStart.stop = valuesOnDragStart.start;
+                    valuesOnDragStart.start = tmp;
+
+                    resizeDirectionIsStart = !resizeDirectionIsStart;
+                }
+            };
+
+            var mergeOverlaps = function(skip_apply){
+                angular.forEach(scope.slots, function(el){
+                    if(el !== scope.model && el.day === scope.model.day){
+
+                        // model is inside another slot
+                        if(el.stop >= scope.model.stop && el.start <= scope.model.start){
+                            scope.slots.splice(scope.slots.indexOf(el), 1);
+                            scope.model.stop = el.stop;
+                            scope.model.start = el.start;
+                        }
+                        // model completely covers another slot
+                        else if(scope.model.stop >= el.stop && scope.model.start <= el.start){
+                            scope.slots.splice(scope.slots.indexOf(el), 1);
+                        }
+                        // another slot's stop is inside current model
+                        else if(el.stop >= scope.model.start && el.stop <= scope.model.stop ){
+                            scope.slots.splice(scope.slots.indexOf(el), 1);
+                            scope.model.start = el.start;
+                        }
+                        // another slot's start is inside current model
+                        else if (el.start >= scope.model.start && el.start <= scope.model.stop){
+                            scope.slots.splice(scope.slots.indexOf(el), 1);
+                            scope.model.stop = el.stop;
+                        }
+                    }
+                });
+
+                if(!skip_apply){
+                    scope.$apply();
+                }
+
+            };
+
+            var deleteSelf = function(){
+                angular.element(container).removeClass('dragging');
+                angular.element(container).removeClass('slot-hover');
+                scope.slots.splice(scope.slots.indexOf(scope.model), 1);
+            };
+
+
+            element.bind('contextmenu', function(e){
+                e.preventDefault();
+                deleteSelf();
+            });
+
+            element.on('mouseover', function(){
+                angular.element(container).addClass('slot-hover');
+            });
+
+            element.on('mouseleave', function(){
+                angular.element(container).removeClass('slot-hover');
+            });
+
+
+            // on init, merge overlaps
+            mergeOverlaps(true);
+
+        }
+    };
+}]);
 //This service is getter and setter for user settings, favorites, logged in status etc.
 htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window, $http, $q, $state) {
 
@@ -8809,7 +9273,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     // listen for meeting requests
     socketio.postingSocket.on('make-offer', function (emit) {
 
-        console.log('emitted meeting request', emit);
+        console.log('emitted make-offer request', emit);
 
         //TODO: Need the offer object to include the sellers username
         if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
@@ -8823,7 +9287,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                         var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Meeting Request Sent!</a>',
+                            title: '<a href=' + url + '>Offer Sent!</a>',
                             message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
                         });  //Send the webtoast
@@ -8837,7 +9301,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                         var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Meeting Request Sent!</a>',
+                            title: '<a href=' + url + '>Offer Sent!</a>',
                             message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                             delay: 10000
                         });  //Send the webtoast
@@ -8858,8 +9322,8 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                 var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
                 Notification.primary({
-                    title: '<a href=' + url + '>New Meeting Request</a>',
-                    message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
+                    title: '<a href=' + url + '>New Offer</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' has placed an offer on your item!</a>',
                     delay: 10000
                 });  //Send the webtoast
 
@@ -8882,12 +9346,86 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         }
 
         console.log(
-            '%s would like to meet %s regarding postingId: "%s"',
+            '%s has placed an offer %s regarding postingId: "%s"',
             emit.username,
-            emit.proposedTimes,
+            emit.proposals,
             emit.posting.postingId
         );
     });
+
+
+
+
+    // listen for meeting requests
+    socketio.postingSocket.on('update-offer', function (emit) {
+
+        console.log('emitted update-offer request', emit);
+
+        //TODO: Need the offer object to include the sellers username
+        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
+
+            favesFactory.checkFave(emit.posting, function (favorited) {
+
+                if(favorited){ //The user sending the meeting request already has the item in their watchlist
+
+                    favesFactory.updateFavorite(emit, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                            message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                } else { //The user sending the meeting request does not have this item in their watchlist.
+
+                    favesFactory.addFave(emit.posting, function(){
+
+                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                            message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
+
+                }
+
+            });
+
+
+
+        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
+
+            //Update owners meeting request and notify them.
+            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>Counter Offer Received</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
+                    delay: 10000
+                });  //Send the webtoast
+
+            });
+
+        }
+
+        console.log(
+            '%s sent a counter offer %s regarding postingId: "%s"',
+            emit.username,
+            emit.proposals,
+            emit.posting.postingId
+        );
+    });
+
+
 
 
     // listen for questions
@@ -9077,7 +9615,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         console.log(
             '%s cancelled %s regarding postingId: "%s"',
             emit.username,
-            emit.proposedTimes,
+            emit.proposals,
             emit.posting.postingId
         );
     });
@@ -9988,6 +10526,42 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
     };
 
 
+    //HTS item.  Gathers price and location to propose for pickup.
+    transactionFactory.proposeDeal = function (result, offerIndex) {
+        if(Session.userObj.user_settings.loggedIn) {  //If user logged In
+
+            var modalInstance = $modal.open({
+                templateUrl: 'js/transactionButtons/modals/proposeDeal/partials/transactionButtons.modal.proposeDeal.partial.html',
+                controller: 'proposeDealController',
+                resolve: {
+                    result: function () {
+                        return result;
+                    },
+                    offerIndex: function () {
+                        return offerIndex;
+                    }
+                }
+            });
+
+            modalInstance.result.then(function (reason) {
+
+            }, function (reason) {
+                console.log(reason);
+                if (reason === "signUp") {
+                    authModalFactory.signUpModal();
+                }
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+
+        } else {  //User is not logged in.
+
+            authModalFactory.betaCheckModal($state.params);
+
+        }
+    };
+
+
+
     transactionFactory.buyNow = function(result) {
 
         if(!Session.userObj.user_settings.loggedIn) {
@@ -10019,7 +10593,8 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
                     console.log('closing modal');
 
-                    transactionFactory.placeOffer(result);
+                    //transactionFactory.placeOffer(result);
+                    transactionFactory.proposeDeal(result);
 
                 }
                 $log.info('Modal dismissed at: ' + new Date());
@@ -10291,6 +10866,225 @@ htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session'
 
         }); //Join the room of each posting the user places an offer on.
 
+    };
+
+}]);
+/**
+ * Created by braddavis on 1/4/15.
+ */
+htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session', 'result', 'offerIndex', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', 'Notification', function ($scope, $modalInstance, Session, result, offerIndex, ENV, $filter, meetingsFactory, favesFactory, socketio, Notification) {
+
+    //Logged in user details
+    $scope.userObj = Session.userObj;
+
+    //Item details
+    $scope.result = result;
+
+    //Double binded to deal box in UI
+    $scope.deal = {
+        item: null,
+        price: null,
+        location: null,
+        comment: null
+    };
+
+    //All the existing offers cached here.  New proposals are pushed onto this the proposals array then sent to server.
+    $scope.offers = {
+        proposals: [],
+        username: null
+    };
+
+    $scope.slots = [
+        {start: 300, stop: 420, day: 1},
+        {start: 60, stop: 120, day: 1}
+    ];
+
+    var updateOffer = false;  //POST a new offer or UPDATE an existing offer proposal
+
+
+    meetingsFactory.getOffers($scope.result).then(function (response) {
+
+        if (offerIndex === undefined) { //if we don't have the index of the offer we are updating then this is either first offer the user is sending or we need to check
+
+            for (var i = 0; i < response.data.offers.results.length; i++) {
+                var offers = response.data.offers.results[i];
+
+                if (offers.username === $scope.userObj.user_settings.name) {
+
+                    $scope.offers = offers;
+
+                    console.log('The logged in user has already placed and offer on this item');
+
+                    updateOffer = true;
+
+                    $scope.deal.item = $scope.result.heading;
+                    $scope.deal.price = $scope.offers.proposals[$scope.offers.proposals.length - 1].price.value;
+                    $scope.deal.location = $scope.offers.proposals[$scope.offers.proposals.length - 1].where;
+                    $scope.deal.comment = $scope.offers.proposals[$scope.offers.proposals.length - 1].comment || '';
+
+                    break;
+                }
+            }
+
+            if (!updateOffer) {
+
+                console.log('The logged in user has NEVER placed an offer on this item.');
+
+                $scope.deal.item = $scope.result.heading;
+                $scope.deal.price = $scope.result.askingPrice.value;
+                $scope.deal.location = $scope.result.external.threeTaps.location.formatted;
+            }
+
+        } else { //Since the index of the offer is already supplied we will be pushing new proposal to this offer
+
+            console.log('The owner of this item is supplying a counter offer.');
+
+            $scope.offers = response.data.offers.results[offerIndex];
+
+            updateOffer = true;
+
+            $scope.deal.item = $scope.result.heading;
+            $scope.deal.price = $scope.offers.proposals[$scope.offers.proposals.length - 1].price.value;
+            $scope.deal.location = $scope.offers.proposals[$scope.offers.proposals.length - 1].where;
+
+        }
+
+    }, function (err) {
+
+        Notification.error({
+            title: "Failed to lookup offers on this post",
+            message: err.message,
+            delay: 10000
+        });  //Send the webtoast
+
+    });
+
+
+
+    //When offer modal is dismissed
+    $scope.dismiss = function (reason) {
+        $modalInstance.dismiss(reason);
+    };
+
+
+    $scope.counterOffer = function () {
+
+
+        if(offerIndex === undefined) {
+            socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function () {
+
+                $scope.offers.proposals.push({
+                    "comment": $scope.deal.comment,
+                    "price": {
+                        "currency": $scope.result.askingPrice.currency,
+                        "value": $scope.deal.price
+                    },
+                    "when": "2015-02-03T10:00:00Z",
+                    "where": $scope.deal.location
+                });
+
+                $scope.offers.username = $scope.userObj.user_settings.name;
+
+                if (!updateOffer) {
+
+                    console.log('Here is the updated offer we are about to submit', $scope.offers);
+
+                    meetingsFactory.sendOffer($scope.result, $scope.offers).then(function (response) {
+
+                        $scope.dismiss("offer sent");
+
+                    }, function (err) {
+
+                        $scope.dismiss("error");
+
+                        alert(err);
+
+                    });
+
+                } else {
+
+                    console.log('New offer we are about to submit', $scope.offers);
+
+                    meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
+
+                        $scope.dismiss("offer sent");
+
+                    }, function (err) {
+
+                        $scope.dismiss("error");
+
+                        alert(err);
+
+                    });
+
+                }
+            }); //Join the room of each posting the user places an offer on.
+        } else {
+
+            if ($scope.result.username === $scope.userObj.user_settings.name) {
+
+                $scope.offers.proposals.push({
+                    "comment": $scope.deal.comment,
+                    "isOwnerReply" : true,
+                    "price": {
+                        "currency": $scope.result.askingPrice.currency,
+                        "value": $scope.deal.price
+                    },
+                    "when": "2015-02-03T10:00:00Z",
+                    "where": $scope.deal.location
+                });
+
+                console.log('Updated offer with the owners reply', $scope.offers);
+
+            } else {
+
+                $scope.offers.proposals.push({
+                    "comment": $scope.deal.comment,
+                    "isOwnerReply" : false,
+                    "price": {
+                        "currency": $scope.result.askingPrice.currency,
+                        "value": $scope.deal.price
+                    },
+                    "when": "2015-02-03T10:00:00Z",
+                    "where": $scope.deal.location
+                });
+
+                console.log('Updated offer with the buyers reply', $scope.offers);
+            }
+
+            meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
+
+                $scope.dismiss("offer sent");
+
+            }, function (err) {
+
+                $scope.dismiss("error");
+
+                alert(err);
+
+            });
+        }
+
+    };
+
+
+    $scope.acceptDeal = function () {
+
+        socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function () {
+
+            meetingsFactory.sendOffer($scope.result, $scope.offer).then(function (response) {
+
+                $scope.dismiss("offer sent");
+
+            }, function (err) {
+
+                $scope.dismiss("error");
+
+                alert(err);
+
+            });
+
+        }); //Join the room of each posting the user places an offer on.
     };
 
 }]);
@@ -11587,13 +12381,27 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
 
     $scope.userObj = Session.userObj;
 
     //Drops down menu so posting owner can delete their item for sale.
     $scope.toggled = function(open) {
         console.log('Dropdown is now: ', open);
+    };
+
+    $scope.cachedOffers = angular.copy($scope.post.offers.results);
+
+
+
+    $scope.counterOffer = function ($index, proposal) {
+
+        var indexOfOfferToUpdate = $index;
+
+        console.log('index of offer to add proposal to:', indexOfOfferToUpdate);
+
+        transactionFactory.proposeDeal($scope.post, indexOfOfferToUpdate);
+
     };
 
 
@@ -11620,19 +12428,6 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
 
         });
 
-    };
-
-
-
-    $scope.acceptedMeetingTime = function (offer) {
-
-        for (var i = 0; i < offer.proposedTimes.length; i++) {
-            var proposedTime = offer.proposedTimes[i];
-            if(proposedTime.acceptedAt){
-                return true;
-            }
-        }
-        return false;
     };
 
 }]);
@@ -12871,134 +13666,62 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
   $templateCache.put('js/myPosts/meetings/partials/myPosts.meetings.html',
     "<div ng-repeat=\"offer in post.offers.results\">\n" +
     "\n" +
-    "        <!--Unread meeting request-->\n" +
-    "        <div ng-show=\"!acceptedMeetingTime(offer)\" style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\">\n" +
-    "            <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
-    "                <div>\n" +
-    "                    <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
-    "                    <div style=\"display: inline-block\">\n" +
-    "                        <div>\n" +
-    "                            @{{offer.username}}\n" +
-    "                        </div>\n" +
-    "                        <div>\n" +
-    "                            {{offer.modifiedAt | date:\"MMMM d 'at' h:mma\"}}\n" +
+    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-class=\"{ 'dimmed': offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply }\">\n" +
+    "        <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
+    "            <div>\n" +
+    "                <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
+    "                <div style=\"display: inline-block\">\n" +
+    "                    <div>\n" +
+    "                        @{{offer.username}}\n" +
+    "                    </div>\n" +
+    "                    <div>\n" +
+    "                        {{offer.modifiedAt | date:\"MMMM d 'at' h:mma\"}}\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"form-group\">\n" +
+    "\n" +
+    "                    <div>\n" +
+    "                        <span ng-show=\"offer.proposals[cachedOffers[$index].proposals.length - 1].comment\"><i>\"{{offer.proposals[cachedOffers[$index].proposals.length - 1].comment}}\"</i></span>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                    <br>\n" +
+    "\n" +
+    "                    <div class=\"controls\">\n" +
+    "                        <div class=\"input-group input-group-lg\">\n" +
+    "                            <span class=\"input-group-addon\">$</span>\n" +
+    "                            <input class=\"form-control\" type=\"text\" id=\"price\" name=\"price\" ng-model=\"offer.proposals[offer.proposals.length - 1].price.value\" ng-disabled=\"true\"/>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
     "\n" +
-    "                    <div class=\"form-group\">\n" +
-    "                        <div>\n" +
-    "                            Please select a time you're available to meet.\n" +
-    "                        </div>\n" +
-    "                        <br>\n" +
-    "                        <div ng-repeat=\"proposedTime in offer.proposedTimes\" ng-init=\"!!proposedTime.acceptedAt ? offer.response = proposedTime : null\">\n" +
-    "                            <input type=\"radio\" ng-model=\"offer.response\" ng-value=\"proposedTime\">\n" +
-    "                            {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}\n" +
-    "                        </div>\n" +
-    "                        <div>\n" +
-    "                            <input type=\"radio\" ng-model=\"offer.response\" value=\"Sorry, I'm not available during these times.  Please, submit some other times that may work for you.\">\n" +
-    "                            I'm not available during these times.\n" +
+    "                    <br>\n" +
+    "\n" +
+    "                    <div class=\"controls\">\n" +
+    "                        <div class=\"input-group input-group-lg\">\n" +
+    "                            <span class=\"input-group-addon\">@</span>\n" +
+    "                            <input class=\"form-control\" type=\"text\" id=\"location\" name=\"location\" ng-model=\"offer.proposals[offer.proposals.length - 1].where\" ng-disabled=\"true\"/>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
-    "            <div class=\"unread-question\">\n" +
-    "                <img ng-src={{userObj.user_settings.profile_photo}} height=\"32\">\n" +
-    "                <div style=\"display: inline-block; width: 55%; position: relative; top: 5px;\">\n" +
-    "                    <input class=\"col-md-7 col-xs-12 form-control\" height=\"32\" style=\"position: relative; top: 8px;\" placeholder=\"Include message.  (Optional)\" ng-model=\"offer.message\"/>\n" +
-    "                </div>\n" +
-    "                <div style=\"display: inline-block; position: relative;\" ng-show=\"offer.response && !offer.response.when\">\n" +
-    "                    <button class=\"btn btn-danger\" ng-click=\"declineOffer(offer, post)\">Decline meeting request</button>\n" +
-    "                </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"read-question\">\n" +
     "\n" +
-    "                <div style=\"display: inline-block; position: relative;\" ng-show=\"offer.response.when\">\n" +
-    "                    <button class=\"btn btn-primary\" ng-click=\"acceptOffer(offer, post)\">Accept meeting request</button>\n" +
-    "                </div>\n" +
+    "            <div style=\"display: inline-block; position: relative;\">\n" +
+    "                <button class=\"btn btn-primary\" ng-click=\"counterOffer($index, offer.proposals[offer.proposals.length - 1])\">Send Counter Offer</button>\n" +
     "            </div>\n" +
-    "        </div>\n" +
     "\n" +
-    "\n" +
-    "        <!--READ meeting request-->\n" +
-    "        <div ng-show=\"acceptedMeetingTime(offer)\" style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\">\n" +
-    "\n" +
-    "            <span ng-show=\"!offer.updateResponse\">\n" +
-    "                <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
-    "                    <div>\n" +
-    "                        <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
-    "                        <div style=\"display: inline-block\">\n" +
-    "                            <div>\n" +
-    "                                @{{offer.username}}\n" +
-    "                            </div>\n" +
-    "                            <div>\n" +
-    "                                {{offer.modifiedAt | date:\"MMMM d 'at' h:mma\"}}\n" +
-    "                            </div>\n" +
-    "                        </div>\n" +
-    "\n" +
-    "                        <div class=\"form-group\">\n" +
-    "                            <div ng-repeat=\"proposedTime in offer.proposedTimes\" ng-init=\"!!proposedTime.acceptedAt ? offer.response = proposedTime : null\">\n" +
-    "                                <span ng-show=\"proposedTime.acceptedAt\">Awesome! You're scheduled to meet {{offer.username}} on {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}.</span>\n" +
-    "                            </div>\n" +
-    "                        </div>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "                <div class=\"read-question\">\n" +
-    "                    <div style=\"display: inline-block; position: relative;\" ng-show=\"offer.response.when\">\n" +
-    "                        <button class=\"btn btn-primary\" ng-click=\"offer.updateResponse = true\">Update my response</button>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "            </span>\n" +
-    "\n" +
-    "\n" +
-    "            <span ng-show=\"offer.updateResponse\">\n" +
-    "                <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
-    "                    <div>\n" +
-    "                        <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
-    "                        <div style=\"display: inline-block\">\n" +
-    "                            <div>\n" +
-    "                                @{{offer.username}}\n" +
-    "                            </div>\n" +
-    "                            <div>\n" +
-    "                                {{offer.modifiedAt | date:\"MMMM d 'at' h:mma\"}}\n" +
-    "                            </div>\n" +
-    "                        </div>\n" +
-    "\n" +
-    "                        <div class=\"form-group\">\n" +
-    "                            <div>\n" +
-    "                                Please select a time you're available to meet.\n" +
-    "                            </div>\n" +
-    "                            <br>\n" +
-    "                            <div ng-repeat=\"proposedTime in offer.proposedTimes\" ng-init=\"!!proposedTime.acceptedAt ? offer.response = proposedTime : null\">\n" +
-    "                                <input type=\"radio\" ng-model=\"offer.response\" ng-value=\"proposedTime\">\n" +
-    "                                {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}\n" +
-    "                            </div>\n" +
-    "                            <div>\n" +
-    "                                <input type=\"radio\" ng-model=\"offer.response\" value=\"Actually, I'm not available during this time.  Please, submit some other times that may work for you.\">\n" +
-    "                                Whoops. This time no longer works for me.\n" +
-    "                            </div>\n" +
-    "                        </div>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "                <div class=\"read-question\">\n" +
-    "                    <img ng-src={{userObj.user_settings.profile_photo}} height=\"32\">\n" +
-    "                    <div style=\"display: inline-block; width: 55%; position: relative; top: 5px;\">\n" +
-    "                        <input class=\"col-md-7 col-xs-12 form-control\" height=\"32\" style=\"position: relative; top: 8px;\" placeholder=\"Include message.  (Optional)\" ng-model=\"offer.message\"/>\n" +
-    "                    </div>\n" +
-    "                    <div style=\"display: inline-block; position: relative;\" ng-show=\"offer.response && !offer.response.when\">\n" +
-    "                        <button class=\"btn btn-danger\" ng-click=\"declineOffer(offer, post)\">Decline meeting request</button>\n" +
-    "                    </div>\n" +
-    "\n" +
-    "                    <div style=\"display: inline-block; position: relative;\" ng-show=\"offer.response.when\">\n" +
-    "                        <button class=\"btn btn-success\" ng-click=\"acceptOffer(offer, post)\">Update meeting request</button>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "            </span>\n" +
+    "            <div style=\"display: inline-block; position: relative;\">\n" +
+    "                <button class=\"btn btn-success\" ng-click=\"acceptDeal($index, offer.proposals[offer.proposals.length - 1])\">Accept Offer</button>\n" +
+    "            </div>\n" +
     "\n" +
     "        </div>\n" +
+    "    </div>\n" +
+    "\n" +
     "\n" +
     "</div>\n" +
     "<div class=\"col-xs-12\">\n" +
-    "    <!--<a ng-show=\"showAnswered && post.questions.results.length\" ng-click=\"showAnswered = !showAnswered\">Hide answered questions</a>-->\n" +
-    "    <!--<a ng-show=\"!showAnswered && post.questions.results.length\" ng-click=\"showAnswered = !showAnswered\">Show all answered questions</a>-->\n" +
-    "    <span ng-show=\"!post.offers.results.length\">Buyer's requesting to view your {{post.heading | capitalize}} will appear here.</span>\n" +
+    "    <span ng-show=\"!post.offers.results.length\">Buyer's offers will appear here.</span>\n" +
     "</div>"
   );
 
@@ -13062,7 +13785,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                    </button>\n" +
     "\n" +
     "                                    <button class=\"btn btn-default\" type=\"button\" ng-init=\"unreadOffersCount = countUnreadOffers(post);\" ng-click=\"expandCollapseMeetingRequests($event, post)\">\n" +
-    "                                        <i class=\"fa\" ng-class=\"post.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'\"></i> Meeting Requests <span ng-if=\"unreadOffersCount > 0\" class=\"badge\">{{unreadOffersCount}}</span>\n" +
+    "                                        <i class=\"fa\" ng-class=\"post.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'\"></i> Offers <span ng-if=\"unreadOffersCount > 0\" class=\"badge\">{{unreadOffersCount}}</span>\n" +
     "                                    </button>\n" +
     "                                </div>\n" +
     "\n" +
@@ -13725,6 +14448,57 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "</div>\n" +
     "\n"
+  );
+
+
+  $templateCache.put('js/scheduler/partials/grid.html',
+    "<div class=\"grid-item\" ng-repeat=\"i in range(tickcount) track by $index\" style=\"left: {{$index*ticksize}}%; width: {{ticksize}}%\"><span class=\"content\">{{$index * tick | intToTime}}</span></div>"
+  );
+
+
+  $templateCache.put('js/scheduler/partials/multi-slider.html',
+    "<div class=\"slot ghost\">Add New</div>\n" +
+    "\n" +
+    "<slot class=\"slot\" ng-repeat=\"slot in slots | byDay:day\" tick=\"tick\" min=\"min\" max=\"max\" slots=\"slots\" model=\"slot\"></slot>\n" +
+    "\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('js/scheduler/partials/scheduler.html',
+    "<div class=\"labels\">\n" +
+    "    <div class=\"row\"></div>\n" +
+    "    <div class=\"row\" ng-repeat=\"label in labels\">{{label}}</div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"data-area\">\n" +
+    "    \n" +
+    "    <div class=\"row timestamps\">\n" +
+    "        <grid min=\"0\" max=\"1440\" tick=\"120\" class=\"grid-container\"></grid>\n" +
+    "    </div>    \n" +
+    "\n" +
+    "    <div class=\"row\" ng-repeat=\"label in labels\">\n" +
+    "        <grid min=\"0\" max=\"1440\" tick=\"120\" class=\"grid-container striped no-labels\"></grid>\n" +
+    "        <multi-slider default-value=\"180\" min=\"0\" max=\"1440\" tick=\"15\" slots=\"slots\" day=\"$index\"></multi-slider>\n" +
+    "    </div>\n" +
+    "\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('js/scheduler/partials/slider.html',
+    "<div class=\"timeslider\">\n" +
+    "    \n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('js/scheduler/partials/slot.html',
+    "<div title=\"{{model.start | intToTime }} - {{model.stop | intToTime }}\">\n" +
+    "    <div class=\"handle left\" ondrag=\"resize\" ondragstart=\"startResizeStart\" ondragstop=\"stopDrag\" handle></div>\n" +
+    "    <div class=\"content\" ondrag=\"drag\" ondragstart=\"startDrag\" ondragstop=\"stopDrag\" handle>{{model.start | intToTime }} - {{model.stop | intToTime }}</div>\n" +
+    "    <div class=\"handle right\" ondrag=\"resize\" ondragstart=\"startResizeStop\" ondragstop=\"stopDrag\" handle></div>\n" +
+    "</div>"
   );
 
 
@@ -14603,6 +15377,73 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
   );
 
 
+  $templateCache.put('js/transactionButtons/modals/proposeDeal/partials/transactionButtons.modal.proposeDeal.partial.html',
+    "<!DOCTYPE html>\n" +
+    "<html>\n" +
+    "<head lang=\"en\">\n" +
+    "    <meta charset=\"UTF-8\">\n" +
+    "    <title>HashtagSell Propose a deal</title>\n" +
+    "</head>\n" +
+    "<body>\n" +
+    "\n" +
+    "    <form class=\"form-horizontal\">\n" +
+    "        <!--<div class=\"modal-header\">-->\n" +
+    "            <!--<h3 id=\"myModalLabel\">Let's meet!</h3>-->\n" +
+    "        <!--</div>-->\n" +
+    "        <div class=\"modal-body\">\n" +
+    "            <!--<div class=\"controls\">-->\n" +
+    "                <!--<div class=\"input-group input-group-lg\">-->\n" +
+    "                    <!--<span class=\"input-group-addon\">#</span>-->\n" +
+    "                    <!--<input class=\"form-control\" type=\"text\" id=\"item\" name=\"item\" ng-model=\"deal.item\" ng-disabled=\"true\" required=\"true\"/>-->\n" +
+    "                <!--</div>-->\n" +
+    "            <!--</div>-->\n" +
+    "\n" +
+    "            <!--<br>-->\n" +
+    "\n" +
+    "            <div class=\"controls\">\n" +
+    "                <div class=\"input-group input-group-lg\">\n" +
+    "                    <span class=\"input-group-addon\">$</span>\n" +
+    "                    <input class=\"form-control\" type=\"text\" id=\"price\" name=\"price\" ng-model=\"deal.price\" required=\"true\"/>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <br>\n" +
+    "\n" +
+    "            <div class=\"controls\">\n" +
+    "                <div class=\"input-group input-group-lg\">\n" +
+    "                    <span class=\"input-group-addon\">@</span>\n" +
+    "                    <input class=\"form-control\" type=\"text\" id=\"location\" name=\"location\" ng-model=\"deal.location\" required=\"true\"/>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <br>\n" +
+    "\n" +
+    "            <div class=\"controls\">\n" +
+    "                <div class=\"input-group input-group-lg\">\n" +
+    "                    <span class=\"input-group-addon\"><i class=\"fa fa-comments-o\"></i></span>\n" +
+    "                    <input class=\"form-control\" type=\"comment\" id=\"comment\" name=\"comment\" ng-model=\"deal.comment\" placeholder=\"Include comment.  (Optional)\"/>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <br>\n" +
+    "\n" +
+    "            <scheduler class=\"scheduler\" slots=\"slots\"></scheduler>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"modal-footer\">\n" +
+    "            <button class=\"btn btn-default btn-primary\" ng-click=\"counterOffer()\">Send Offer</button>\n" +
+    "            <button class=\"btn btn-default btn-success\" ng-click=\"acceptDeal()\">Accept Deal</button>\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "    </form>\n" +
+    "\n" +
+    "</body>\n" +
+    "</html>"
+  );
+
+
   $templateCache.put('js/transactionButtons/partials/transactionButtons.partial.html',
     "\n" +
     "<!--CL item and has email-->\n" +
@@ -14640,7 +15481,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "\n" +
     "    <!--Meeting Requests Awaiting Response-->\n" +
-    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-show=\"!acceptedMeetingTime(offer)\" ng-if=\"userObj.user_settings.name === offer.username\">\n" +
+    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-if=\"userObj.user_settings.name === offer.username\" ng-class=\"{ 'dimmed': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply }\">\n" +
     "        <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
     "            <div>\n" +
     "                <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
@@ -14657,7 +15498,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                        <a href class=\"dropdown-toggle\" dropdown-toggle><i class=\"fa fa-chevron-down\"></i></a>\n" +
     "                        <ul class=\"dropdown-menu dropdown-menu-right\">\n" +
     "                            <li>\n" +
-    "                                <a href ng-click=\"cancelOffer(offer)\">Cancel my meeting request</a>\n" +
+    "                                <a href ng-click=\"cancelOffer(offer)\">Cancel my offer</a>\n" +
     "                            </li>\n" +
     "                        </ul>\n" +
     "                    </div>\n" +
@@ -14665,60 +15506,41 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div>\n" +
-    "                        I'm interested in viewing your {{post.heading}}.  Can you meet at any of the time(s) below?\n" +
+    "                        <span ng-show=\"offer.proposals[offer.proposals.length - 1].comment\"><i>\"{{offer.proposals[offer.proposals.length - 1].comment}}\"</i></span>\n" +
     "                    </div>\n" +
+    "\n" +
     "                    <br>\n" +
-    "                    <ul ng-repeat=\"proposedTime in offer.proposedTimes\">\n" +
-    "                        <li>{{proposedTime.when | date : 'EEE, MMM d h:mm a'}}</li>\n" +
-    "                    </ul>\n" +
-    "                </div>\n" +
-    "            </div>\n" +
-    "        </div>\n" +
-    "        <div class=\"unread-meeting\" ng-show=\"!offer.acceptedAt.length\">\n" +
-    "            You'll be notified as soon as the seller responds.  Hang Tight!\n" +
-    "        </div>\n" +
-    "    </div>\n" +
     "\n" +
-    "\n" +
-    "\n" +
-    "\n" +
-    "    <!--Meeting Requests Answered-->\n" +
-    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-show=\"acceptedMeetingTime(offer)\" ng-if=\"userObj.user_settings.name === offer.username\">\n" +
-    "        <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
-    "            <div>\n" +
-    "                <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
-    "                <div style=\"display: inline-block\">\n" +
-    "                    <div>\n" +
-    "                        @{{offer.username}}\n" +
+    "                    <div class=\"controls\">\n" +
+    "                        <div class=\"input-group input-group-lg\">\n" +
+    "                            <span class=\"input-group-addon\">$</span>\n" +
+    "                            <input class=\"form-control\" type=\"text\" id=\"price\" name=\"price\" ng-model=\"offer.proposals[offer.proposals.length - 1].price.value\" ng-disabled=\"true\"/>\n" +
+    "                        </div>\n" +
     "                    </div>\n" +
-    "                    <div>\n" +
-    "                        Sent {{offer.modifiedAt | date:\"MMMM d 'at' h:mma\"}}\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
-    "                <div>\n" +
-    "                    <div class=\"dropdown\" dropdown on-toggle=\"toggled(open)\" style=\"position: absolute; top: 10px; right: 15px;\">\n" +
-    "                        <a href class=\"dropdown-toggle\" dropdown-toggle><i class=\"fa fa-chevron-down\"></i></a>\n" +
-    "                        <ul class=\"dropdown-menu dropdown-menu-right\">\n" +
-    "                            <li>\n" +
-    "                                <a href ng-click=\"cancelOffer(offer, post)\">Cancel my meeting request</a>\n" +
-    "                            </li>\n" +
-    "                        </ul>\n" +
-    "                    </div>\n" +
-    "                </div>\n" +
     "\n" +
-    "                <div class=\"form-group\">\n" +
-    "                    <div ng-repeat=\"proposedTime in offer.proposedTimes\">\n" +
-    "                        <span ng-show=\"proposedTime.acceptedAt\">Awesome! You're scheduled to meet {{offer.username}} on {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}.</span>\n" +
+    "                    <br>\n" +
+    "\n" +
+    "                    <div class=\"controls\">\n" +
+    "                        <div class=\"input-group input-group-lg\">\n" +
+    "                            <span class=\"input-group-addon\">@</span>\n" +
+    "                            <input class=\"form-control\" type=\"text\" id=\"location\" name=\"location\" ng-model=\"offer.proposals[offer.proposals.length - 1].where\" ng-disabled=\"true\"/>\n" +
+    "                        </div>\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "        </div>\n" +
-    "        <div class=\"read-meeting\" ng-show=\"!offer.acceptedAt.length\">\n" +
-    "            <button class=\"btn btn-primary\" ng-click=\"cancelOffer(offer, post)\">Cancel meeting request</button>\n" +
+    "        <div class=\"read-meeting\">\n" +
+    "\n" +
+    "            <div style=\"display: inline-block; position: relative;\">\n" +
+    "                <button class=\"btn btn-primary\" ng-click=\"counterOffer($index, offer.proposals[offer.proposals.length - 1])\">Send Counter Offer</button>\n" +
+    "            </div>\n" +
+    "\n" +
+    "            <div style=\"display: inline-block; position: relative;\">\n" +
+    "                <button class=\"btn btn-success\" ng-click=\"acceptDeal(offer, post)\">Accept Offer</button>\n" +
+    "            </div>\n" +
+    "\n" +
     "        </div>\n" +
     "    </div>\n" +
-    "\n" +
-    "\n" +
     "\n" +
     "</div>\n" +
     "<div class=\"col-xs-12\">\n" +
@@ -14812,7 +15634,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                            </button>\n" +
     "\n" +
     "                            <button class=\"btn btn-default\" type=\"button\" ng-click=\"expandCollapseMeetingRequests($event, favorite)\">\n" +
-    "                                <i class=\"fa\" ng-class=\"favorite.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'\"></i> Meeting Requests\n" +
+    "                                <i class=\"fa\" ng-class=\"favorite.currentlyViewing.meetings ? 'fa-chevron-down' : 'fa-chevron-right'\"></i> Offers\n" +
     "                            </button>\n" +
     "                        </div>\n" +
     "                    </td>\n" +

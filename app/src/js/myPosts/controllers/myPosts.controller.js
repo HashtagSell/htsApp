@@ -154,8 +154,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
             unreadOffersCount++;
 
-            for(var j = 0; j < offer.proposedTimes.length; j++){
-                var proposedTime = offer.proposedTimes[j];
+            for(var j = 0; j < offer.proposals.length; j++){
+                var proposedTime = offer.proposals[j];
 
                 if(proposedTime.acceptedAt){ //if question does not have answer
                     unreadOffersCount--;

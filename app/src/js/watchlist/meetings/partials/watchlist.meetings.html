@@ -3,7 +3,7 @@
 
 
     <!--Meeting Requests Awaiting Response-->
-    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-show="!acceptedMeetingTime(offer)" ng-if="userObj.user_settings.name === offer.username">
+    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-if="userObj.user_settings.name === offer.username" ng-class="{ 'dimmed': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply }">
         <div style="background-color: #ffffff; padding: 10px;">
             <div>
                 <img ng-src="{{offer.userProfile.profile_photo}}" height="40" style="position: relative; top: -12px;">
@@ -20,7 +20,7 @@
                         <a href class="dropdown-toggle" dropdown-toggle><i class="fa fa-chevron-down"></i></a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>
-                                <a href ng-click="cancelOffer(offer)">Cancel my meeting request</a>
+                                <a href ng-click="cancelOffer(offer)">Cancel my offer</a>
                             </li>
                         </ul>
                     </div>
@@ -28,60 +28,41 @@
 
                 <div class="form-group">
                     <div>
-                        I'm interested in viewing your {{post.heading}}.  Can you meet at any of the time(s) below?
+                        <span ng-show="offer.proposals[offer.proposals.length - 1].comment"><i>"{{offer.proposals[offer.proposals.length - 1].comment}}"</i></span>
                     </div>
+
                     <br>
-                    <ul ng-repeat="proposedTime in offer.proposedTimes">
-                        <li>{{proposedTime.when | date : 'EEE, MMM d h:mm a'}}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="unread-meeting" ng-show="!offer.acceptedAt.length">
-            You'll be notified as soon as the seller responds.  Hang Tight!
-        </div>
-    </div>
 
-
-
-
-    <!--Meeting Requests Answered-->
-    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-show="acceptedMeetingTime(offer)" ng-if="userObj.user_settings.name === offer.username">
-        <div style="background-color: #ffffff; padding: 10px;">
-            <div>
-                <img ng-src="{{offer.userProfile.profile_photo}}" height="40" style="position: relative; top: -12px;">
-                <div style="display: inline-block">
-                    <div>
-                        @{{offer.username}}
+                    <div class="controls">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon">$</span>
+                            <input class="form-control" type="text" id="price" name="price" ng-model="offer.proposals[offer.proposals.length - 1].price.value" ng-disabled="true"/>
+                        </div>
                     </div>
-                    <div>
-                        Sent {{offer.modifiedAt | date:"MMMM d 'at' h:mma"}}
-                    </div>
-                </div>
-                <div>
-                    <div class="dropdown" dropdown on-toggle="toggled(open)" style="position: absolute; top: 10px; right: 15px;">
-                        <a href class="dropdown-toggle" dropdown-toggle><i class="fa fa-chevron-down"></i></a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a href ng-click="cancelOffer(offer, post)">Cancel my meeting request</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <div ng-repeat="proposedTime in offer.proposedTimes">
-                        <span ng-show="proposedTime.acceptedAt">Awesome! You're scheduled to meet {{offer.username}} on {{proposedTime.when | date : 'EEE, MMM d h:mm a'}}.</span>
+                    <br>
+
+                    <div class="controls">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-addon">@</span>
+                            <input class="form-control" type="text" id="location" name="location" ng-model="offer.proposals[offer.proposals.length - 1].where" ng-disabled="true"/>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="read-meeting" ng-show="!offer.acceptedAt.length">
-            <button class="btn btn-primary" ng-click="cancelOffer(offer, post)">Cancel meeting request</button>
+        <div class="read-meeting">
+
+            <div style="display: inline-block; position: relative;">
+                <button class="btn btn-primary" ng-click="counterOffer($index, offer.proposals[offer.proposals.length - 1])">Send Counter Offer</button>
+            </div>
+
+            <div style="display: inline-block; position: relative;">
+                <button class="btn btn-success" ng-click="acceptDeal(offer, post)">Accept Offer</button>
+            </div>
+
         </div>
     </div>
-
-
 
 </div>
 <div class="col-xs-12">

@@ -55,7 +55,8 @@
     "braintree-angular": "~1.2.1",
     "angular-ui-select": "~0.11.2",
     "angular-vs-repeat": "~1.0.0-rc9",
-    "angulartics": "~0.18.0"
+    "angulartics": "~0.18.0",
+    "angular-scheduler": "https://github.com/laurihy/angular-scheduler.git"
   },
   "resolutions": {
     "angular": "~1.3.9"
