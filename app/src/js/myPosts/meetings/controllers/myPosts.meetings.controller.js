@@ -7,6 +7,11 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
     $scope.cachedOffers = angular.copy($scope.post.offers.results);
 
+    $scope.acceptedTime = {model :  undefined};
+
+    $scope.errors = {
+        message: null
+    };
 
     $scope.counterOffer = function ($index, proposal) {
 
@@ -21,40 +26,61 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
     $scope.acceptDeal = function ($index, proposal) {
 
-        meetingsFactory.acceptOffer(offer, post).then(function (response) {
+        //console.log($index);
+        //
+        //console.log(proposal);
+        //
+        //proposal.when = $scope.acceptedTime.model;
+        //
+        //console.log(proposal);
 
-            if (response.status === 201) {
+        if($scope.acceptedTime.model) {
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+            var acceptedProposal = {
+                acceptedAt: moment().format(),
+                price: proposal.price,
+                when: $scope.acceptedTime.model,
+                where: proposal.where,
+                isOwnerReply: true
+            };
 
-                Notification.primary({title: "Meeting Request Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+            var offer = $scope.post.offers.results[$index];
 
+            meetingsFactory.acceptOffer($scope.post, offer, acceptedProposal).then(function (response) {
 
-                //Send private message if appended to offer acceptance.
-                if (!isBlank(offer.message)) {
-                    socketio.sendMessage(recipient, offer.message);
+                if (response.status === 201) {
+
+                    myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+
+                    Notification.primary({
+                        title: "Proposal Accepted!",
+                        message: "We've notified @" + offer.username + ".  Expect an email shortly.",
+                        delay: 7000
+                    });
+
+                } else {
+
+                    console.log(response);
+
+                    Notification.error({title: response.name, message: response.message, delay: 20000});
+
                 }
 
-            } else {
 
-                console.log(response);
+            }, function (err) {
 
-                Notification.error({title: response.name, message: response.message, delay: 20000});
+                console.log(err);
 
-            }
+                Notification.error({title: err.data.name, message: err.data.message, delay: 20000});
 
+            });
+        } else {
 
-        }, function (err) {
+            $scope.errors.message = "Please select a proposed time from above.";
 
-            console.log(err);
-
-            Notification.error({title: err.data.name, message: err.data.message, delay: 20000});
-
-        });
+        }
 
     };
-
-
 
     $scope.deleteOffer = function (offer, post) {
 

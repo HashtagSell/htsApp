@@ -119,7 +119,98 @@ exports.meetingProposed = {
 };
 
 
+exports.meetingUpdated = {
 
+    //Send an email to the seller with information about the buyer and a big button to accept the proposed meeting time
+    instantReminder: function (req, res) {
+        var updatedMeeting = req.body.updatedMeeting;
+
+        async.waterfall([
+
+            function(done) {
+                //Search our users collection by the username to get the sellers email address
+                User.findOne({ 'user_settings.name': updatedMeeting.user.email }, function (err, userToNotify) {
+
+                    //systematic error. Redirect to page so user can report error.
+                    if (err) {
+                        console.log("error");
+                        done(err);
+
+                        // if no user is found, then this is a bad activation id
+                    } else if (!userToNotify) {
+                        var err = "account email could not be found";
+                        done(err);
+
+                        // found user that provided feedback
+                    } else if (userToNotify) {
+                        done(null, userToNotify);
+                    }
+                });
+            },
+
+            function (userToNotify, done) {
+
+                var emailObj = {
+                    images: {
+                        fb_logo: "http://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
+                        twitter_logo: "http://static.hashtagsell.com/logos/twitter/Twitter_logo_white.png",
+                        hts_logo: "https://static.hashtagsell.com/logos/hts/HashtagSell_Logo_Home.png"
+                    },
+                    meetingRequest: updatedMeeting.offer,
+                    post: updatedMeeting.post,
+                    sellerUserObj: userToNotify,
+                };
+
+                if(updatedMeeting.user.notifySeller){
+                    emailObj.meetingUrl = env.hts.appURL + '/myposts/meetings/' + updatedMeeting.post.postingId;
+                } else {
+                    emailObj.meetingUrl = env.hts.appURL + '/watchlist/meetings/' + updatedMeeting.post.postingId;
+                }
+
+
+                //Get the ejs template for feedback email
+                var instant_reminder_meeting_update = fs.readFileSync(__dirname + '/../config/mailer/email_templates/notify_user_meeting_updated.ejs', "utf8");
+
+                //Merge the template
+                var compiled_html_user = ejs.render(instant_reminder_meeting_update, {emailObj: emailObj, moment: moment});
+
+                //Setup plain text email in case user cannot view Rich text emails
+                var plain_text_user = "You have received and updated offer.  Please visit: " + emailObj.meetingUrl;
+
+                done(null, userToNotify, compiled_html_user, plain_text_user);
+            },
+
+            function (userToNotify, compiled_html_user, plain_text_user, done) {
+
+                //Build the seller email message
+                var userInstantReminder = {
+                    from: "HashtagSell <no-reply@hashtagsell.com>",
+                    to: userToNotify.local.email,
+                    subject: "You have an updated offer!",
+                    html: compiled_html_user,
+                    text: plain_text_user
+                };
+
+                // Send seller instant reminder Email
+                mailer.sendMail(userInstantReminder, function(err, info){
+                    if(err){
+                        done(err);
+                    }else{
+                        console.log(info);
+                        done(null);
+                    }
+                });
+            }
+
+        ], function(err) {
+            if (err) {
+                res.json({error: err});
+            } else {
+                res.json({success: true});
+            }
+        });
+    }
+};
 
 exports.questionAsked = {
     instantReminder: function (req, res) {
@@ -276,10 +367,11 @@ exports.meetingAccepted = {
                     sellerUserObj: sellerUserObj,
                     post: acceptedMeeting.post,
                     offer: acceptedMeeting.offer,
+                    acceptedProposal: acceptedMeeting.acceptedProposal,
                     buttons: {
                         payment: {
                             url : env.hts.appURL + '/payment/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId,
-                            venmo: "https://venmo.com/?txn=pay&recipients=" + sellerUserObj.user_settings.merchantAccount.details.funding.email + "&amount=" + acceptedMeeting.post.askingPrice.value + "&note=" + acceptedMeeting.post.heading + "&audience=private"
+                            venmo: "https://venmo.com/?txn=pay&recipients=" + sellerUserObj.user_settings.merchantAccount.details.funding.email + "&amount=" + acceptedMeeting.acceptedProposal.price.value + "&note=" + acceptedMeeting.post.heading + "&audience=private"
                         },
                         review: {
                             buyerReviewUrl: env.hts.appURL + '/review/' + acceptedMeeting.offer.postingId + '/' + acceptedMeeting.offer.offerId + '/' + buyerUserObj._id

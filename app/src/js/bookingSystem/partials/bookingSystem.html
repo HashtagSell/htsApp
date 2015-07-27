@@ -1,0 +1,17 @@
+<div class="btn-group" role="group" ng-show="!selectedDay">
+    <label class="btn btn-default btn-lg" disabled="true" style="background-color: #eee;"><i class="fa fa-clock-o"></i></label>
+    <!--<label class="btn btn-default btn-lg" ng-repeat="day in days" ng-click="daySelected($index)" ng-show="!{{day.disabled}}">{{day.name}}</label>-->
+    <label class="btn btn-default btn-lg" ng-repeat="day in days" ng-click="daySelected($index)">{{day.name}}</label>
+</div>
+
+
+
+<div ng-show="selectedDay">
+    <h4 style="text-align: center; cursor: pointer;" ng-click="back()">
+        <i class="fa fa-arrow-left"></i>{{selectedDay.name}}
+    </h4>
+    <div>
+        <!--<label class="btn btn-default" ng-repeat="hour in selectedHours" ng-model="hour.selected" ng-change="getAllProposedTimes()" btn-checkbox ng-show="!{{hour.disabled}}">{{hour.name}}</label>-->
+        <label class="btn btn-default" ng-repeat="hour in selectedHours" ng-model="hour.selected" ng-change="getAllProposedTimes()" btn-checkbox >{{hour.name}}</label>
+    </div>
+</div>

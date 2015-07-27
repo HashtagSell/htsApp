@@ -66,22 +66,26 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
     };
 
 
-    factory.acceptOffer = function (offer, post) {
+    factory.acceptOffer = function (post, offer, acceptedProposal) {
 
         var deferred = $q.defer();
 
+        console.log('HERES THE ACCEPTED PROPOSAL', acceptedProposal);
+        console.log('HERES THE ACCEPTED POST', post);
         console.log('HERES THE ACCEPTED OFFER', offer);
-        console.log('HEREs THE ACCEPTED POST', post);
 
         var emailObj = {
             post: post,
-            offer: offer
+            offer: offer,
+            acceptedProposal: acceptedProposal
         };
+
+        console.log('HERES THE EMAIL OBJ', emailObj);
 
         $http({
             method: 'POST',
-            url: ENV.postingAPI + offer.postingId + "/offers/" + offer.offerId + "/accept",
-            data: offer.response
+            url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId + "/accept",
+            data: acceptedProposal
         }).then(function (response, status, headers, config) {
 
             //Send email to owner of posting and user potential buyer
@@ -175,9 +179,42 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
             method: 'PUT',
             url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId,
             data: offer
-        }).then(function (response, status, headers, config) {
+        }).then(function (updatedOfferResponse, status, headers, config) {
 
-            deferred.resolve(response);
+            console.log('heres our updated offer response', updatedOfferResponse);
+
+            var userToEmail;
+            var notifySeller;
+
+            //check if the most recent offer was proposed by owner or buyer
+            if(updatedOfferResponse.data.proposals[updatedOfferResponse.data.proposals.length - 1].isOwnerReply){//owner sent updated offer
+                userToEmail = updatedOfferResponse.data.username;
+                notifySeller = false;
+            } else {
+                userToEmail = post.username;
+                notifySeller = true;
+            }
+
+            var emailObj = {
+                post: post,
+                offer: updatedOfferResponse.data,
+                user: {
+                    notifySeller: notifySeller,
+                    email: userToEmail
+                }
+            };
+
+            //Send email to owner of posting and user potential buyer
+            $http.post(ENV.htsAppUrl + '/email/meeting-updated/instant-reminder', {updatedMeeting: emailObj}).success(function(response){
+
+
+            }).error(function(data){
+
+
+            });
+
+
+            deferred.resolve(updatedOfferResponse);
 
 
         }, function (err, status, headers, config) {

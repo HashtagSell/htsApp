@@ -1560,35 +1560,165 @@ htsApp.directive('spinner', ['sideNavFactory', function (sideNavFactory) {
 
 
 
-htsApp.directive('animatedGif', ['$timeout', function ($timeout) {
+
+
+
+htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
     return {
         restrict: 'E',
-        scope: {
-            animationUrl:'@animationUrl',
-            staticUrl: '@staticUrl'
-        },
-        template:
-            "<div class='sell-box-animation-container'>" +
-            "<img class='sell-box-image img-responsive' ng-src='{{img}}' ng-click='stopAnimation()' />" +
-            "<div class='sell-box-play-button' ng-show='!currentlyPlaying' ng-click='playAnimation()'>" +
-            "</div>",
+        scope: false,
+        templateUrl: 'js/bookingSystem/partials/bookingSystem.html',
         link: function(scope, element, attrs) {
 
-            scope.img = scope.staticUrl;
-            scope.currentlyPlaying = false;
+            var proposedTimes = [];
+            //var previouslyDeclinedTimes = [];
+            scope.selectedDay = null;
 
-            scope.playAnimation = function () {
-                scope.currentlyPlaying = true;
-                scope.img = scope.animationUrl;
-                $timeout(function () {
-                    scope.currentlyPlaying = false;
-                }, 22720);
+            scope.daySelected = function($index){
+
+                //Toggle the selected day
+                scope.days[$index].selected = !scope.days[$index].selected;
+
+                //If a day is selected
+                if(scope.days[$index].selected) {
+
+                    scope.selectedDay = scope.days[$index];
+
+                    scope.selectedHours = scope.days[$index].hours; // set the selected hours
+                } else {
+
+                    scope.selectedDay = null;
+
+                    scope.selectedHours = [];
+                }
             };
 
-            scope.stopAnimation = function () {
-                scope.currentlyPlaying = false;
-                scope.img = scope.staticUrl;
+
+            scope.getAllProposedTimes = function () {
+
+                proposedTimes = [];
+
+                for(var i = 0; i < scope.days.length; i++){
+                    var day = scope.days[i];
+
+                    for(var j = 0; j < day.hours.length; j++) {
+                        var hour = day.hours[j];
+                        if(hour.selected){
+                            proposedTimes.push(hour.value.format());
+                        }
+                    }
+
+                }
+
+                scope.deal.when = proposedTimes;
+                console.log(scope.deal);
             };
+
+            scope.back = function () {
+                scope.selectedDay = null;
+            };
+
+            //scope.getAllDeclinedTimes = function () {
+            //    for (var i = 0; i < scope.offers.proposals.length; i++) {
+            //        var proposal = scope.offers.proposals[i];
+            //
+            //        for (var j = 0; j < proposal.when.length; j++) {
+            //            var previouslyProposedTime = proposal.when[j];
+            //
+            //            previouslyDeclinedTimes.push(previouslyProposedTime);
+            //        }
+            //
+            //    }
+            //};
+
+
+
+            //var checkIfPreviouslyDeclined = function(timestamp){
+            //    return previouslyDeclinedTimes.indexOf(timestamp) > -1;
+            //};
+            //
+            //
+            //var checkIfEntireDayBlocked = function () {
+            //    for(var i = 0; i < scope.days.length; i++){
+            //        var day = scope.days[i];
+            //
+            //        var dayBlocked = true;
+            //
+            //        for(var j = 0; j < day.hours.length; j++) {
+            //            var hour = day.hours[j];
+            //
+            //            if(!hour.disabled){
+            //                dayBlocked = false;
+            //                break;
+            //            }
+            //        }
+            //
+            //        if(dayBlocked){
+            //            day.disabled = true;
+            //        }
+            //
+            //    }
+            //};
+
+            console.log('test');
+
+            //Init the array of objects used to build the days and hours of the week buyer and sellers can choose from.
+            (function(){
+
+                var newDays = [];
+
+                for (var i = 0; i < 5; i++) {
+                    var day = {
+                        name: moment().add(i, 'days').format('dddd').trim(),
+                        value: moment().add(i, 'days'),
+                        selected: false,
+                        hours: []
+                    };
+
+
+                    for (var j = 5; j < 25; j++) {
+
+                        var hour;
+
+                        if(i === 0) {
+
+                            day.name = 'Today';
+
+                            if (moment().isBefore(moment().startOf('day').hours(j))) {
+
+                                 hour = {
+                                    name: moment().startOf('day').hours(j).format('ha z').trim(),
+                                    value: moment().startOf('day').hours(j),
+                                    selected: false
+                                };
+
+                                day.hours.push(hour);
+                            }
+                        } else {
+
+                            hour = {
+                                name: moment().add(i, 'days').startOf('day').hours(j).format('ha z').trim(),
+                                value: moment().add(i, 'days').startOf('day').hours(j),
+                                selected: false
+                            };
+
+                            //{
+                                //                    name: moment().add(4, 'days').startOf('day').hours(22).format('ha z'),
+                                //                    value: moment().add(4, 'days').startOf('day').hours(22),
+                                //                    selected: false,
+                                //                    disabled: checkIfPreviouslyDeclined(moment().add(4, 'days').startOf('day').hours(22).format())
+                                //                }
+
+                            day.hours.push(hour);
+
+                        }
+                    }
+
+                    newDays.push(day);
+                }
+
+                scope.days = newDays;
+            })();
         }
     };
 }]);

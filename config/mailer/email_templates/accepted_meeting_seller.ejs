@@ -67,10 +67,10 @@
                                                     <%= emailObj.buyerUserObj.user_settings.name %> will be viewing your <%= emailObj.post.heading %>
                                                     <br>
                                                     <br>
-                                                    <b>When:</b> <%= moment(emailObj.offer.response.when).format('dddd, MMMM Do') %> at <%= moment(emailObj.offer.response.when).format('h:mm a') %>
+                                                    <b>When:</b> <%= moment(emailObj.acceptedProposal.when).format('dddd, MMMM Do') %> at <%= moment(emailObj.acceptedProposal.when).format('h:mm a') %>
                                                     <br>
                                                     <br>
-                                                    <b>Where:</b> <%= emailObj.offer.response.where %>
+                                                    <b>Where:</b> <%= emailObj.acceptedProposal.where %>
                                                     <br>
                                                     <br>
                                                     Please be sure to provide a review of your experience after your item is sold.

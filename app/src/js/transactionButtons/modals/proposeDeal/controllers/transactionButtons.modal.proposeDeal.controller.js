@@ -14,7 +14,9 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
         item: null,
         price: null,
         location: null,
-        comment: null
+        comment: null,
+        when: null,
+        declinedTimes: []
     };
 
     //All the existing offers cached here.  New proposals are pushed onto this the proposals array then sent to server.
@@ -28,6 +30,16 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
         {start: 60, stop: 120, day: 1}
     ];
 
+    $scope.error = {
+        price: null,
+        when: null,
+        where: null
+    };
+
+    $scope.button = {
+        text: "Send offer"
+    };
+
     var updateOffer = false;  //POST a new offer or UPDATE an existing offer proposal
 
 
@@ -40,6 +52,8 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
 
                 if (offers.username === $scope.userObj.user_settings.name) {
 
+                    $scope.button.text = "Send counter offer";
+
                     $scope.offers = offers;
 
                     console.log('The logged in user has already placed and offer on this item');
@@ -50,6 +64,7 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
                     $scope.deal.price = $scope.offers.proposals[$scope.offers.proposals.length - 1].price.value;
                     $scope.deal.location = $scope.offers.proposals[$scope.offers.proposals.length - 1].where;
                     $scope.deal.comment = $scope.offers.proposals[$scope.offers.proposals.length - 1].comment || '';
+                    $scope.deal.when = $scope.offers.proposals[$scope.offers.proposals.length - 1].when;
 
                     break;
                 }
@@ -62,11 +77,14 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
                 $scope.deal.item = $scope.result.heading;
                 $scope.deal.price = $scope.result.askingPrice.value;
                 $scope.deal.location = $scope.result.external.threeTaps.location.formatted;
+                $scope.deal.when = null;
             }
 
         } else { //Since the index of the offer is already supplied we will be pushing new proposal to this offer
 
             console.log('The owner of this item is supplying a counter offer.');
+
+            $scope.button.text = "Send counter offer";
 
             $scope.offers = response.data.offers.results[offerIndex];
 
@@ -75,6 +93,7 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
             $scope.deal.item = $scope.result.heading;
             $scope.deal.price = $scope.offers.proposals[$scope.offers.proposals.length - 1].price.value;
             $scope.deal.location = $scope.offers.proposals[$scope.offers.proposals.length - 1].where;
+            $scope.deal.when = $scope.offers.proposals[$scope.offers.proposals.length - 1].when;
 
         }
 
@@ -98,122 +117,119 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
 
     $scope.counterOffer = function () {
 
+        console.log('heres our proposal', $scope.deal);
 
-        if(offerIndex === undefined) {
-            socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function () {
+        if(!$scope.deal.price) {
+            $scope.error.price = "Please propose a price";
 
-                $scope.offers.proposals.push({
-                    "comment": $scope.deal.comment,
-                    "price": {
-                        "currency": $scope.result.askingPrice.currency,
-                        "value": $scope.deal.price
-                    },
-                    "when": "2015-02-03T10:00:00Z",
-                    "where": $scope.deal.location
-                });
+        } else if(!$scope.deal.when) {
+            $scope.error.when = "Please propose a day and time";
 
-                $scope.offers.username = $scope.userObj.user_settings.name;
+        } else if(!$scope.deal.location) {
+            $scope.error.where = "Please propose a meeting location";
 
-                if (!updateOffer) {
+        } else {
 
-                    console.log('Here is the updated offer we are about to submit', $scope.offers);
+            if (offerIndex === undefined) { //if we don't have the index of the offer we are updating then this is either first offer the user is sending or we need to check
+                socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function () {
 
-                    meetingsFactory.sendOffer($scope.result, $scope.offers).then(function (response) {
-
-                        $scope.dismiss("offer sent");
-
-                    }, function (err) {
-
-                        $scope.dismiss("error");
-
-                        alert(err);
-
+                    $scope.offers.proposals.push({
+                        "comment": $scope.deal.comment,
+                        "price": {
+                            "currency": $scope.result.askingPrice.currency,
+                            "value": $scope.deal.price
+                        },
+                        "when": $scope.deal.when,
+                        "where": $scope.deal.location
                     });
+
+                    $scope.offers.username = $scope.userObj.user_settings.name;
+
+                    if (!updateOffer) { //The logged in user has NEVER placed an offer on this item.
+
+                        console.log('Here is the updated offer we are about to submit', $scope.offers);
+
+                        meetingsFactory.sendOffer($scope.result, $scope.offers).then(function (response) {
+
+                            $scope.dismiss("offer sent");
+
+                        }, function (err) {
+
+                            $scope.dismiss("error");
+
+                            alert(err);
+
+                        });
+
+                    } else {
+
+                        console.log('New offer we are about to submit', $scope.offers);
+
+                        meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
+
+                            $scope.dismiss("offer sent");
+
+                        }, function (err) {
+
+                            $scope.dismiss("error");
+
+                            alert(err);
+
+                        });
+
+                    }
+                });
+            } else { //Since the index of the offer is already supplied we will be pushing new proposal to this offer
+
+                if ($scope.result.username === $scope.userObj.user_settings.name) {
+
+                    $scope.offers.proposals.push({
+                        "comment": $scope.deal.comment,
+                        "isOwnerReply": true,
+                        "price": {
+                            "currency": $scope.result.askingPrice.currency,
+                            "value": $scope.deal.price
+                        },
+                        "when": $scope.deal.when,
+                        "where": $scope.deal.location
+                    });
+
+                    //"2015-02-03T10:00:00Z"
+
+                    console.log('Updated offer with the owners reply', $scope.offers);
 
                 } else {
 
-                    console.log('New offer we are about to submit', $scope.offers);
-
-                    meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
-
-                        $scope.dismiss("offer sent");
-
-                    }, function (err) {
-
-                        $scope.dismiss("error");
-
-                        alert(err);
-
+                    $scope.offers.proposals.push({
+                        "comment": $scope.deal.comment,
+                        "isOwnerReply": false,
+                        "price": {
+                            "currency": $scope.result.askingPrice.currency,
+                            "value": $scope.deal.price
+                        },
+                        "when": $scope.deal.when,
+                        "where": $scope.deal.location
                     });
 
+                    //"2015-02-03T10:00:00Z"
+
+                    console.log('Updated offer with the buyers reply', $scope.offers);
                 }
-            }); //Join the room of each posting the user places an offer on.
-        } else {
 
-            if ($scope.result.username === $scope.userObj.user_settings.name) {
+                meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
 
-                $scope.offers.proposals.push({
-                    "comment": $scope.deal.comment,
-                    "isOwnerReply" : true,
-                    "price": {
-                        "currency": $scope.result.askingPrice.currency,
-                        "value": $scope.deal.price
-                    },
-                    "when": "2015-02-03T10:00:00Z",
-                    "where": $scope.deal.location
+                    $scope.dismiss("offer sent");
+
+                }, function (err) {
+
+                    $scope.dismiss("error");
+
+                    alert(err);
+
                 });
-
-                console.log('Updated offer with the owners reply', $scope.offers);
-
-            } else {
-
-                $scope.offers.proposals.push({
-                    "comment": $scope.deal.comment,
-                    "isOwnerReply" : false,
-                    "price": {
-                        "currency": $scope.result.askingPrice.currency,
-                        "value": $scope.deal.price
-                    },
-                    "when": "2015-02-03T10:00:00Z",
-                    "where": $scope.deal.location
-                });
-
-                console.log('Updated offer with the buyers reply', $scope.offers);
             }
-
-            meetingsFactory.updateOffer($scope.result, $scope.offers).then(function (response) {
-
-                $scope.dismiss("offer sent");
-
-            }, function (err) {
-
-                $scope.dismiss("error");
-
-                alert(err);
-
-            });
         }
 
-    };
-
-
-    $scope.acceptDeal = function () {
-
-        socketio.joinPostingRoom($scope.result.postingId, 'inWatchList', function () {
-
-            meetingsFactory.sendOffer($scope.result, $scope.offer).then(function (response) {
-
-                $scope.dismiss("offer sent");
-
-            }, function (err) {
-
-                $scope.dismiss("error");
-
-                alert(err);
-
-            });
-
-        }); //Join the room of each posting the user places an offer on.
     };
 
 }]);

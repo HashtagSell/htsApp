@@ -252,6 +252,10 @@ module.exports = function(app, passport) {
         transaction_notifications_api.meetingProposed.instantReminder(req, res);
     });
 
+    app.post("/email/meeting-updated/instant-reminder", function(req, res) {
+        transaction_notifications_api.meetingUpdated.instantReminder(req, res);
+    });
+
     app.post("/email/question-asked/instant-reminder", function(req, res) {
         transaction_notifications_api.questionAsked.instantReminder(req, res);
     });

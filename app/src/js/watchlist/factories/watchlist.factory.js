@@ -99,8 +99,9 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
 
                 var postWithQuestionOfferAndProfile = response.data;
 
+                console.log('before', Session.userObj.user_settings.favorites[matchingIndex]);
                 Session.userObj.user_settings.favorites[matchingIndex] = postWithQuestionOfferAndProfile;
-
+                console.log('after', Session.userObj.user_settings.favorites[matchingIndex]);
 
                 try {
                     favesFactory.refreshTable();

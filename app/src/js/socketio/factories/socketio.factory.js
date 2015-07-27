@@ -335,17 +335,34 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 
                 if(favorited){ //The user sending the meeting request already has the item in their watchlist
 
-                    favesFactory.updateFavorite(emit, function(){
+                    if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply){
 
-                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+                        favesFactory.updateFavorite(emit, function () {
 
-                        Notification.primary({
-                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
-                            message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
-                            delay: 10000
-                        });  //Send the webtoast
+                            var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                    });
+                            Notification.primary({
+                                title: '<a href=' + url + '>Counter Offer Received</a>',
+                                message: '<a href=' + url + '>The seller has responded with a counter offer</a>',
+                                delay: 10000
+                            });  //Send the webtoast
+
+                        });
+
+                    } else {
+
+                        favesFactory.updateFavorite(emit, function () {
+
+                            var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                            Notification.primary({
+                                title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                                message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
+                                delay: 10000
+                            });  //Send the webtoast
+
+                        });
+                    }
 
                 } else { //The user sending the meeting request does not have this item in their watchlist.
 
@@ -369,18 +386,38 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 
         } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
 
-            //Update owners meeting request and notify them.
-            myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
 
-                var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
-                Notification.primary({
-                    title: '<a href=' + url + '>Counter Offer Received</a>',
-                    message: '<a href=' + url + '>@' + emit.username + ' would like to meet!</a>',
-                    delay: 10000
-                });  //Send the webtoast
+            if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply){
 
-            });
+                //Update owners meeting request and notify them.
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                    Notification.primary({
+                        title: '<a href=' + url + '>Counter Offer Sent</a>',
+                        message: '<a href=' + url + '>You\'ll be notified when the buyer responds.</a>',
+                        delay: 10000
+                    });  //Send the webtoast
+
+                });
+
+            } else {
+
+                //Update owners meeting request and notify them.
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                    Notification.primary({
+                        title: '<a href=' + url + '>Counter Offer Received</a>',
+                        message: '<a href=' + url + '>@' + emit.username + ' has updated their offer.</a>',
+                        delay: 10000
+                    });  //Send the webtoast
+
+                });
+            }
 
         }
 
@@ -523,8 +560,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
         console.log(
             '%s accepted meeting request on postingId %s : "%s"',
             emit.posting.username,
-            emit.posting.postingId,
-            emit.acceptedTime.when
+            emit.posting.postingId
         );
 
     });
@@ -543,7 +579,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                         var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Meeting Cancelled!</a>',
+                            title: '<a href=' + url + '>Offer Cancelled!</a>',
                             message: '<a href=' + url + '>The seller has been notified</a>',
                             delay: 10000
                         });  //Send the webtoast
@@ -564,8 +600,8 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
                 var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
                 Notification.primary({
-                    title: '<a href=' + url + '>Meeting Cancelled</a>',
-                    message: '<a href=' + url + '>@' + emit.username + ' Had to cancel their meeting.  We apologize for the inconvenience</a>',
+                    title: '<a href=' + url + '>Offer Cancelled</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' Had cancel their offer.</a>',
                     delay: 10000
                 });  //Send the webtoast
 

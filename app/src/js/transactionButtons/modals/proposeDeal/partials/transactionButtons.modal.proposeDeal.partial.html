@@ -11,20 +11,16 @@
             <!--<h3 id="myModalLabel">Let's meet!</h3>-->
         <!--</div>-->
         <div class="modal-body">
-            <!--<div class="controls">-->
-                <!--<div class="input-group input-group-lg">-->
-                    <!--<span class="input-group-addon">#</span>-->
-                    <!--<input class="form-control" type="text" id="item" name="item" ng-model="deal.item" ng-disabled="true" required="true"/>-->
-                <!--</div>-->
-            <!--</div>-->
-
-            <!--<br>-->
 
             <div class="controls">
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">$</span>
                     <input class="form-control" type="text" id="price" name="price" ng-model="deal.price" required="true"/>
                 </div>
+            </div>
+
+            <div ng-show="error.price">
+                <span class="text-danger">{{error.price}}</span>
             </div>
 
             <br>
@@ -34,6 +30,10 @@
                     <span class="input-group-addon">@</span>
                     <input class="form-control" type="text" id="location" name="location" ng-model="deal.location" required="true"/>
                 </div>
+            </div>
+
+            <div ng-show="error.where">
+                <span class="text-danger">{{error.where}}</span>
             </div>
 
             <br>
@@ -47,13 +47,17 @@
 
             <br>
 
-            <scheduler class="scheduler" slots="slots"></scheduler>
+            <booking-system></booking-system>
+
+            <div ng-show="error.when">
+                <span class="text-danger">{{error.when}}</span>
+            </div>
+
 
         </div>
 
         <div class="modal-footer">
-            <button class="btn btn-default btn-primary" ng-click="counterOffer()">Send Offer</button>
-            <button class="btn btn-default btn-success" ng-click="acceptDeal()">Accept Deal</button>
+            <button class="btn btn-default btn-primary" ng-click="counterOffer()">{{button.text}}</button>
         </div>
 
 

@@ -152,15 +152,19 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
         for(var i = 0; i < post.offers.results.length; i++){
             var offer = post.offers.results[i];
 
-            unreadOffersCount++;
+            //unreadOffersCount++;
+            //console.log('counting offer', offer);
+            //for(var j = 0; j < offer.proposals.length; j++){
+            //    var proposedTime = offer.proposals[j];
+            //
+            //    if(proposedTime.acceptedAt){ //if offer does not have answer
+            //        unreadOffersCount--;
+            //    }
+            //
+            //}
 
-            for(var j = 0; j < offer.proposals.length; j++){
-                var proposedTime = offer.proposals[j];
-
-                if(proposedTime.acceptedAt){ //if question does not have answer
-                    unreadOffersCount--;
-                }
-
+            if(!offer.proposals[offer.proposals.length-1].isOwnerReply && !offer.proposals[offer.proposals.length-1].acceptedAt){
+                unreadOffersCount++;
             }
 
 
