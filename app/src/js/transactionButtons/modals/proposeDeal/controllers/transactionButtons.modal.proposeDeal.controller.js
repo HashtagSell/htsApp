@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/4/15.
  */
-htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session', 'result', 'offerIndex', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', 'Notification', function ($scope, $modalInstance, Session, result, offerIndex, ENV, $filter, meetingsFactory, favesFactory, socketio, Notification) {
+htsApp.controller('proposeDealController', ['$scope', '$modalInstance', '$q', 'Session', 'result', 'offerIndex', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', 'Notification', function ($scope, $modalInstance, $q, Session, result, offerIndex, ENV, $filter, meetingsFactory, favesFactory, socketio, Notification) {
 
     //Logged in user details
     $scope.userObj = Session.userObj;
@@ -229,6 +229,103 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
                 });
             }
         }
+
+    };
+
+
+    $scope.predictAddress = function (address) {
+
+        return $scope.predictPlace(address).then(function (results) {
+            return results.map(function(item){
+                return item;
+            });
+        });
+
+    };
+
+
+
+
+
+    $scope.predictPlace = function (address) {
+
+        var defaultBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(37.79738, -122.52464),
+            new google.maps.LatLng(37.68879, -122.36122)
+        );
+
+        //need to set bounds to cornwall/bodmin
+        var locationRequest = {
+            input: address,
+            bounds: defaultBounds,
+            componentRestrictions: {country: 'US'}
+        };
+        var googlePlacesService = new google.maps.places.AutocompleteService();
+
+        var deferred = $q.defer();
+
+        //Get predictions from google
+        googlePlacesService.getPlacePredictions(locationRequest, function (predictions, status) {
+            deferred.resolve(predictions);
+        });
+
+        return deferred.promise;
+    };
+
+
+
+    $scope.setAddressComponents = function (placesObj){
+
+        $scope.deal.location = placesObj.description;
+        //var googleMaps = new google.maps.places.PlacesService(new google.maps.Map(document.createElement("map-canvas")));
+
+        //capture the place_id and send to google maps for metadata about the place
+        //var request = {
+        //    placeId: placesObj.place_id
+        //};
+
+        //googleMaps.getDetails(request, function (placeMetaData, status) {
+        //
+        //    console.log(placeMetaData);
+        //
+        //    $scope.$apply(function () {
+        //        $scope.deal.location = placeMetaData.formatted_address;
+        //    });
+        //
+            console.log('here is our deal', $scope.deal);
+
+            //for(var i = 0; i < placeMetaData.address_components.length; i++){
+            //    var component = placeMetaData.address_components[i];
+            //
+            //    console.log(component);
+            //
+            //    for(var j = 0; j < component.types.length; j++){
+            //        var componentType = component.types[j];
+            //
+            //        console.log($scope.subMerchant);
+            //
+            //        if(componentType === "locality"){
+            //            $scope.subMerchant[type].address.locality = component.long_name;
+            //            break;
+            //        } else if(componentType === "administrative_area_level_1"){
+            //            $scope.subMerchant[type].address.region = component.short_name;
+            //            break;
+            //        } else if(componentType === "route") {
+            //            street = component.long_name;
+            //            break;
+            //        } else if(componentType === "postal_code") {
+            //            $scope.subMerchant[type].address.postalCode = component.long_name;
+            //            break;
+            //        } else if(componentType === "street_number") {
+            //            street_number = component.long_name;
+            //            break;
+            //        }
+            //    }
+            //}
+            //
+            //$scope.subMerchant[type].address.streetAddress = street_number + ' ' + street;
+
+        //});
 
     };
 

@@ -47,6 +47,7 @@ angular-modules
 api/posting-api
 api/posting-sync-agent
 api/realtime-svc
+api/user-api
 
 app/dist/dev
 

@@ -8,7 +8,7 @@
 
     <div ng-show="!currentFaves.length" class="background-instructions">
         <div class="inset-background-text">
-            Starred items appear in your Watch List. We'll notify you when Watch List items are sold or updated.
+            Items you've placed an offer on or starred live here.
         </div>
     </div>
 
@@ -21,17 +21,17 @@
                 <th>
 
                 </th>
-                <th colspan="4" class="fave-batch-button">
+                <th colspan="6" class="fave-batch-button">
 
                     <dropdown-multiselect selectedlabels="selected_labels" userlabels="UserLabels" selectedfaves="checkboxes.items">
 
                     </dropdown-multiselect>
 
                 </th>
-                <th colspan="4" class="fave-batch-button" ng-model="batchContact" ng-click="batchEmail(checkboxes)">
-                    <i class="fa fa-envelope">&nbsp;&nbsp;Contact Seller</i>
-                </th>
-                <th colspan="4" class="fave-batch-button" ng-model="batchTrash" ng-click="batchRemoveFaves(checkboxes)">
+                <!--<th colspan="4" class="fave-batch-button" ng-model="batchContact" ng-click="batchEmail(checkboxes)">-->
+                    <!--<i class="fa fa-envelope">&nbsp;&nbsp;Contact Seller</i>-->
+                <!--</th>-->
+                <th colspan="6" class="fave-batch-button" ng-model="batchTrash" ng-click="batchRemoveFaves(checkboxes)">
                     <i class="fa fa-trash">&nbsp;&nbsp;Trash</i>
                 </th>
             </tr>

@@ -4,34 +4,28 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
     $scope.newPost = function () {
 
-        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
-
-            var modalInstance = $modal.open({
-                templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
-                controller: 'newPostModal',
-                size: 'lg',
-                keyboard: false,
-                backdrop: 'static',
-                resolve: {
-                    mentionsFactory: function () {
-                        return newPostFactory;
-                    }
+        var modalInstance = $modal.open({
+            templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
+            controller: 'newPostModal',
+            size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                mentionsFactory: function () {
+                    return newPostFactory;
                 }
-            });
+            }
+        });
 
-            modalInstance.result.then(function (dismissObj) {
+        modalInstance.result.then(function (dismissObj) {
 
-            }, function (dismissObj) {
-                if (dismissObj.reason === "stageOneSuccess") {
+        }, function (dismissObj) {
+            if (dismissObj.reason === "stageOneSuccess") {
 
-                    $scope.pushtoExternalService(dismissObj.post);
-                }
-                console.log('Modal dismissed at: ' + new Date());
-            });
-
-        } else {
-            $state.go('signup');
-        }
+                $scope.pushtoExternalService(dismissObj.post);
+            }
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
 

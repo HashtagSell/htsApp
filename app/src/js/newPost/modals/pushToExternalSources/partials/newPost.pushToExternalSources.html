@@ -34,7 +34,14 @@
 </div>
 <div class="modal-footer">
     <button class="btn" ng-class="currentlyPublishing.publishing ? 'btn-warning' : 'btn-primary'" ng-click="dismiss('stageTwoSuccess')" ng-disabled="{{currentlyPublishing.publishing}}">
-        <span ng-show="!currentlyPublishing.publishing">Share</span>
+        <span ng-show="!currentlyPublishing.publishing && shareToggles.facebook ||
+         !currentlyPublishing.publishing && shareToggles.twitter ||
+         !currentlyPublishing.publishing && shareToggles.ebay ||
+         !currentlyPublishing.publishing && shareToggles.amazon">Share</span>
+
+
+        <span ng-show="!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon">Continue</span>
+
         <span ng-show="currentlyPublishing.publishing">Please wait</span>
     </button>
 </div>

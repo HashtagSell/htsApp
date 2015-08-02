@@ -6,6 +6,7 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
         profile_photo: '//static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
         banner_photo: '//static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
         safe_search: true,
+        linkedAccounts: [],
         email_provider: [
             {
                 name : "Always Ask",

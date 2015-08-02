@@ -1,11 +1,27 @@
 /**
  * Created by braddavis on 4/28/15.
  */
-htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, feedbackFactory, $http, ENV, Notification, Session) {
+htsApp.controller('feedbackController', ['$scope', '$state', '$rootScope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, $state, $rootScope, feedbackFactory, $http, ENV, Notification, Session) {
 
     $scope.feedback = feedbackFactory.feedback;
 
     $scope.userObj = Session.userObj;
+
+    $scope.showFeedbackForm = function () {
+        if($scope.userObj.user_settings.loggedIn) {
+            $scope.feedback.form.visible = true;
+        } else {
+            $state.go('signup', {redirect: $rootScope.currentState});
+        }
+    };
+
+    $scope.hideFeedbackForm = function () {
+        if($scope.userObj.user_settings.loggedIn) {
+            $scope.feedback.form.visible = false;
+        } else {
+            $state.go('signup', {redirect: $rootScope.currentState});
+        }
+    };
 
     $scope.submitFeedback = function() {
 

@@ -267,29 +267,29 @@ exports.signup = function(req, res) {
 
     var email = req.body.email.toLowerCase();
     var password = req.body.password;
-    var secret = req.body.secret;
+    //var secret = req.body.secret;
     var username = req.body.name.toLowerCase();
     var betaAgreement = req.body.betaAgreement;
 
-    console.log(email, password, secret, username, betaAgreement);
+    console.log(email, password, username, betaAgreement);
 
 
-    Early_Access_Keys.findOne({ 'secret.key' : secret }, function(err, access_key){
-        // if errors looking up secret, return the error
-
-        if (err)
-            return res.json({ error: err });
-
-        // That secret is not found
-        if(!access_key)
-            return res.json({ error : "Not a valid access code"});
-
-        //That secret is already taken
-        if(access_key.secret.expired) {
-            return res.json({ error: "Access code already used. :("});
-
-            //Valid Early_Access_Keys Fount!
-        } else {
+    //Early_Access_Keys.findOne({ 'secret.key' : secret }, function(err, access_key){
+    //    // if errors looking up secret, return the error
+    //
+    //    if (err)
+    //        return res.json({ error: err });
+    //
+    //    // That secret is not found
+    //    if(!access_key)
+    //        return res.json({ error : "Not a valid access code"});
+    //
+    //    //That secret is already taken
+    //    if(access_key.secret.expired) {
+    //        return res.json({ error: "Access code already used. :("});
+    //
+    //        //Valid Early_Access_Keys Fount!
+    //    } else {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
             User.findOne({ 'local.email' :  email }, function(err, user) {
@@ -323,30 +323,30 @@ exports.signup = function(req, res) {
 
 
                             //Link the staging users account to all the appropriate staging environment accounts.
-                            if(process.env.NODE_ENV === "STAGING" || process.env.NODE_ENV === "PRODUCTION"){
-                                newUser.user_settings.linkedAccounts = {
-                                    "facebook" : {
-                                        "token" : "CAAGhqsUnSnIBAI5D6p1FAjmcEelu8ZAp3JU2mBkZBm05BesD1i514mHvt9nParVsbdCt08ZBzkOC3eLImZAbNQpzSPRqUAs04TT5zUNaCoinfzdEWJTXSP63IYMz3Yu1z2PS4bOBotS7VfMs5PviJBLmLHOTk7qDAMOUtsQohdZAAo1KzPMeFLZBqakcLtxa5P6ZCzyL3FlxHmgWQO2xFdO",
-                                        "name" : "hts user",
-                                        "id" : "100178336986619",
-                                        "email" : "hts_aikathw_user@tfbnw.net"
-                                    },
-                                    "twitter" : {
-                                        "username" : "hts_beta_user",
-                                        "tokenSecret" : "OHfjzTkp8x8kA73eUDHaP6ZrWs39UiicPer8Fc0TNP9gP",
-                                        "token" : "3192595494-QXne3zc6iNxNf6nzPbQk6GleNzpbYJAKyJ0C4K7",
-                                        "id" : "3192595494",
-                                        "displayName" : "hts beta user"
-                                    },
-                                    "ebay" : {
-                                        "timestamp" : "2015-05-12T01:11:47.798Z",
-                                        "version" : "915",
-                                        "build" : "E915_CORE_API_17441756_R1",
-                                        "eBayAuthToken" : "AgAAAA**AQAAAA**aAAAAA**UlNRVQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhDZaFpg+dj6x9nY+seQ**oxgDAA**AAMAAA**Eljvh3E7PH9IwfYqQ1K6juNplXJAazUBQfS0RQk0D40l4q3W4i7HEEPIBQDoOsio/3t7abQRHQKPnkNEQbTUEqmlA64EY/fvXxrm7cJWnHRnHB2LmCMATfoD+RL39QFS2M1JCie9dA1OJAtJnT+FyW5eoX3GnS4c1JiYT0u6gS2lOWbabRc9aHP0dPzYlpvh9HIsYU6cBltz1i2nMGPlWx9C9E+MPifDALzgAly+zEI5RV0X10wK+N7fKRSpRazRtZpfjF2H0KWyZczwqESA/jNPqx5W6UxuVCzsklYkSwpHi0rBc3UVyd6ZXhyQjQmxrPbociSln+o/4bWoFBYdMBwNkwpRphkS3H2Doz8jJS+jn8z9bbXmyc52KtcpM84dhU1cAsi7Ow7NvWZ81DnqIjRCwsBc3BWILK1XNAeP1nq86Zl6fWGX5zuaaTSW6jScLSDB05xPNBwTehs6uOvzYBQnklvadzxtxVYlV6ERnDmYaPZwJWBmpuci/JwJ0rGL+mJ5bSZtMPYYVCe4ao3MDbm1kw+CT16yjkbfm4Jct+Gtfv2YfCqhNDoFkrlyr7qa4gckX+h+dvTrUxCkw8ytDbKwYZtxVjMrCu5T5v5m/5GoHB2aRW4cVLhLIi1dVb2m0qyIXhukSjXZ9waXrN6uolUpXPC8ImfhVxJYUAvH3Tsj/f0y9rtXP6i75C2B3r2pm+pwc8TANUJqtRdpulhlPwAdIQpdZAiQp6rR7v/Vh09uiFRN6mvZgX3GCEWrVosx",
-                                        "hardExpirationTime" : "2016-11-02T01:11:46.000Z"
-                                    }
-                                };
-                            }
+                            //if(process.env.NODE_ENV === "STAGING" || process.env.NODE_ENV === "PRODUCTION"){
+                            //    newUser.user_settings.linkedAccounts = {
+                            //        "facebook" : {
+                            //            "token" : "CAAGhqsUnSnIBAI5D6p1FAjmcEelu8ZAp3JU2mBkZBm05BesD1i514mHvt9nParVsbdCt08ZBzkOC3eLImZAbNQpzSPRqUAs04TT5zUNaCoinfzdEWJTXSP63IYMz3Yu1z2PS4bOBotS7VfMs5PviJBLmLHOTk7qDAMOUtsQohdZAAo1KzPMeFLZBqakcLtxa5P6ZCzyL3FlxHmgWQO2xFdO",
+                            //            "name" : "hts user",
+                            //            "id" : "100178336986619",
+                            //            "email" : "hts_aikathw_user@tfbnw.net"
+                            //        },
+                            //        "twitter" : {
+                            //            "username" : "hts_beta_user",
+                            //            "tokenSecret" : "OHfjzTkp8x8kA73eUDHaP6ZrWs39UiicPer8Fc0TNP9gP",
+                            //            "token" : "3192595494-QXne3zc6iNxNf6nzPbQk6GleNzpbYJAKyJ0C4K7",
+                            //            "id" : "3192595494",
+                            //            "displayName" : "hts beta user"
+                            //        },
+                            //        "ebay" : {
+                            //            "timestamp" : "2015-05-12T01:11:47.798Z",
+                            //            "version" : "915",
+                            //            "build" : "E915_CORE_API_17441756_R1",
+                            //            "eBayAuthToken" : "AgAAAA**AQAAAA**aAAAAA**UlNRVQ**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4GhDZaFpg+dj6x9nY+seQ**oxgDAA**AAMAAA**Eljvh3E7PH9IwfYqQ1K6juNplXJAazUBQfS0RQk0D40l4q3W4i7HEEPIBQDoOsio/3t7abQRHQKPnkNEQbTUEqmlA64EY/fvXxrm7cJWnHRnHB2LmCMATfoD+RL39QFS2M1JCie9dA1OJAtJnT+FyW5eoX3GnS4c1JiYT0u6gS2lOWbabRc9aHP0dPzYlpvh9HIsYU6cBltz1i2nMGPlWx9C9E+MPifDALzgAly+zEI5RV0X10wK+N7fKRSpRazRtZpfjF2H0KWyZczwqESA/jNPqx5W6UxuVCzsklYkSwpHi0rBc3UVyd6ZXhyQjQmxrPbociSln+o/4bWoFBYdMBwNkwpRphkS3H2Doz8jJS+jn8z9bbXmyc52KtcpM84dhU1cAsi7Ow7NvWZ81DnqIjRCwsBc3BWILK1XNAeP1nq86Zl6fWGX5zuaaTSW6jScLSDB05xPNBwTehs6uOvzYBQnklvadzxtxVYlV6ERnDmYaPZwJWBmpuci/JwJ0rGL+mJ5bSZtMPYYVCe4ao3MDbm1kw+CT16yjkbfm4Jct+Gtfv2YfCqhNDoFkrlyr7qa4gckX+h+dvTrUxCkw8ytDbKwYZtxVjMrCu5T5v5m/5GoHB2aRW4cVLhLIi1dVb2m0qyIXhukSjXZ9waXrN6uolUpXPC8ImfhVxJYUAvH3Tsj/f0y9rtXP6i75C2B3r2pm+pwc8TANUJqtRdpulhlPwAdIQpdZAiQp6rR7v/Vh09uiFRN6mvZgX3GCEWrVosx",
+                            //            "hardExpirationTime" : "2016-11-02T01:11:46.000Z"
+                            //        }
+                            //    };
+                            //}
 
 
                             // save the user
@@ -356,14 +356,14 @@ exports.signup = function(req, res) {
                                 } else {
 
                                     //Generate New Early_Access_Keys Key For New User To Share
-                                    var keyToShare = require('crypto').randomBytes(3).toString('hex');
-
-                                    var new_access_key = new Early_Access_Keys();
-                                    new_access_key.secret.key = keyToShare;
-                                    new_access_key.secret.type_of_key = "individual";
-                                    new_access_key.secret.generated_by = newUser.local.email;
-                                    new_access_key.secret.expired = false;
-                                    new_access_key.save();
+                                    //var keyToShare = require('crypto').randomBytes(3).toString('hex');
+                                    //
+                                    //var new_access_key = new Early_Access_Keys();
+                                    //new_access_key.secret.key = keyToShare;
+                                    //new_access_key.secret.type_of_key = "individual";
+                                    //new_access_key.secret.generated_by = newUser.local.email;
+                                    //new_access_key.secret.expired = false;
+                                    //new_access_key.save();
 
 
                                     //Get the ejs template for registration email
@@ -375,7 +375,7 @@ exports.signup = function(req, res) {
                                         user:{
                                             name: newUser.user_settings.name,
                                             activation: config.hts.appURL+"/activate?id="+newUser.stats.activation_code,
-                                            keyToShare: keyToShare
+                                            //keyToShare: keyToShare
                                         },
                                         images:{
                                             fb_logo: "https://static.hashtagsell.com/logos/facebook/png/FB-f-Logo__white_50.png",
@@ -410,21 +410,21 @@ exports.signup = function(req, res) {
                                     });
 
                                     // Mark the OLD Secret Code as used
-                                    if(access_key.secret.type_of_key == "individual") {
-                                        console.log("This is individual key");
-                                        access_key.secret.expired = true;
-                                        access_key.secret.used_by = [newUser.local.email];
-                                        access_key.save();
-                                    } else if(access_key.secret.type_of_key == "group"){
-                                        console.log("This is group key");
-                                        access_key.secret.expired = false;
-                                        access_key.secret.used_by.push(newUser.local.email);
-                                        access_key.save();
-                                    } else { //This catches codes that were generated before we had types of keys
-                                        access_key.secret.expired = true;
-                                        access_key.secret.used_by = [newUser.local.email];
-                                        access_key.save();
-                                    }
+                                    //if(access_key.secret.type_of_key == "individual") {
+                                    //    console.log("This is individual key");
+                                    //    access_key.secret.expired = true;
+                                    //    access_key.secret.used_by = [newUser.local.email];
+                                    //    access_key.save();
+                                    //} else if(access_key.secret.type_of_key == "group"){
+                                    //    console.log("This is group key");
+                                    //    access_key.secret.expired = false;
+                                    //    access_key.secret.used_by.push(newUser.local.email);
+                                    //    access_key.save();
+                                    //} else { //This catches codes that were generated before we had types of keys
+                                    //    access_key.secret.expired = true;
+                                    //    access_key.secret.used_by = [newUser.local.email];
+                                    //    access_key.save();
+                                    //}
 
                                 }
                             });
@@ -433,8 +433,8 @@ exports.signup = function(req, res) {
                 }
 
             });
-        }
-    });
+    //    }
+    //});
 };
 
 

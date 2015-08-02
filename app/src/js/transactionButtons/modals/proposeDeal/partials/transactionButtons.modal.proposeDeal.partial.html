@@ -28,7 +28,7 @@
             <div class="controls">
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">@</span>
-                    <input class="form-control" type="text" id="location" name="location" ng-model="deal.location" required="true"/>
+                    <input autocomplete="false" class="form-control" type="text" id="location" name="location" ng-model="deal.location" typeahead="city.description for city in predictAddress($viewValue)" typeahead-on-select='setAddressComponents($item)' required="true" ng-click="deal.location = null"/>
                 </div>
             </div>
 

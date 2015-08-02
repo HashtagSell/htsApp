@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/10/15.
  */
-htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
+htsApp.factory('transactionFactory', ['Session', '$modal', '$rootScope', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $rootScope, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
 
     var transactionFactory = {};
 
@@ -10,7 +10,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -50,7 +50,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -89,7 +89,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -102,7 +102,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -138,7 +138,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         }
     };
@@ -173,7 +173,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         }
     };
@@ -184,7 +184,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if(!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 

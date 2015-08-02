@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $modal, $state, splashFactory, metaFactory) {
+htsApp.controller('splashController', ['$scope', '$rootScope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $rootScope, $modal, $state, splashFactory, metaFactory) {
 
     var metaCache = angular.copy(metaFactory.metatags);
     console.log(metaCache);
@@ -112,7 +112,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                     });
                 }
             } else {
-                authModalFactory.betaCheckModal($state.params);
+                $state.go('signup', {redirect: $rootScope.currentState});
             }
         };
 
@@ -201,7 +201,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                authModalFactory.betaCheckModal($state.params);
+                $state.go('signup', {redirect: $rootScope.currentState});
             }
         };
 
@@ -224,7 +224,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         };
 
         $scope.buyOnline = function (result) {
-            transactionFactory.buyNow(result);
+            transactionFactory.proposeDeal(result);
         };
 
         $scope.placeBid = function (result) {

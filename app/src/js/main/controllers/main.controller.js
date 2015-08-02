@@ -39,7 +39,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
 
 
-        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash') {
+        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash' && $rootScope.currentState !== 'signup' && $rootScope.currentState !== 'signin' && $rootScope.currentState !== 'forgot') {
             if ($rootScope.currentState === 'feed') {
                 $scope.sideNav.listView = true;
             } else {

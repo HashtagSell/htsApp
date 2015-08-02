@@ -8,13 +8,13 @@ htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFac
             var name = $scope.name;
 
             //Private Beta
-            var secret = $scope.secret;
+            //var secret = $scope.secret;
 
             var betaAgreement = $scope.betaAgreement;
 
-            console.log(email, password, secret, name, betaAgreement);
+            console.log(email, password, name, betaAgreement);
 
-            authFactory.signUp(email, password, name, secret, betaAgreement).then(function (response) {
+            authFactory.signUp(email, password, name, betaAgreement).then(function (response) {
 
                 console.log(response);
 

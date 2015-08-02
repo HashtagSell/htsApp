@@ -10,7 +10,11 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
         console.log('Dropdown is now: ', open);
     };
 
-    $scope.cachedOffers = angular.copy($scope.post.offers.results);
+    console.log('here is watchlist meeting post', $scope.post);
+
+    if($scope.post.external.source.code === 'HSHTG') {
+        $scope.cachedOffers = angular.copy($scope.post.offers.results);
+    }
 
     $scope.acceptedTime = {model :  undefined};
 

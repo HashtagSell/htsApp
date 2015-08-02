@@ -14,6 +14,7 @@ var htsApp = angular.module('htsApp', [
     'ui.router',
     'ct.ui.router.extras.core',
     'ct.ui.router.extras.dsr',
+    'ct.ui.router.extras.sticky',
     'ui.bootstrap',
     'mentio',
     'ui.bootstrap-slider',
@@ -108,11 +109,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            //$timeout(function() {
-            //    $state.go('signup', { 'redirect': redirect });
-            //});
+            $timeout(function() {
+                $state.go('signup', { 'redirect': redirect });
+            });
 
-            authModalFactory.betaCheckModal($state.params);
+            //authModalFactory.signUpModal($state.params);
 
             deferred.resolve();
 
@@ -187,30 +188,37 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('checkemail', {
             url: '/checkemail',
             params: { 'redirect': null },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.checkEmailModal($state.params);
-            }]
+            views: {
+                'modal': {
+                    controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
+                        authModalFactory.checkEmailModal($state.params);
+                    }]
+                }
+            }
+
         }).
         state('externalSplash', {
             url: "/ext/:id",
-            controller: 'splashController'
+            controller: 'splashController',
+            sticky: true
         }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
             controller: "feed.controller",
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'feed';
                 }
-            }
+            },
+            sticky: true
         }).
         state('feed.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         }).
         state('forgot', {
             url: '/forgot?msg',
@@ -218,20 +226,28 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'redirect': null,
                 'msg': null
             },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.forgotPasswordModal($state.params);
-            }]
+            views: {
+                'modal': {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.forgotPasswordModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.forgotPasswordModal($state.params);
+                        }
+                    }]
+                }
+            }
         }).
         state('myposts', {
             url: "/myposts",
             templateUrl: "js/myPosts/partials/myPosts.html",
             controller: 'myPosts.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'myposts';
                 }
-            }
+            },
+            sticky: true
         }).
         state('myposts.questions', {
             url: "/questions/:postingId"
@@ -241,18 +257,19 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('myposts.splash', {
             url: "/:id",
-            controller: 'splashController'
+            controller: 'splashController',
+            sticky: true
         }).
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'notifications';
                 }
-            }
+            },
+            sticky: true
         }).
         state('payment', {
             url: "/payment/:postingId/:offerId",
@@ -286,17 +303,21 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: 'js/profile/partials/profile.partial.html',
             controller: 'profile.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'profile';
                 }
-            }
+            },
+            sticky: true
         }).
         state('reset', {
             url: '/reset/:token/',
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.resetPasswordModal('signin', $state.params.token);
-            }]
+            views: {
+                modals: {
+                    controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
+                        authModalFactory.resetPasswordModal('signin', $state.params.token);
+                    }]
+                }
+            }
         }).
         state('results', {
             url: '/q/:q',
@@ -309,11 +330,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html",
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'results';
                 }
-            }
+            },
+            sticky: true
         }).
         state('results.splash', {
             url: "/:id",
@@ -325,7 +346,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         }).
         state('review', {
             url: "/review/:postingId/:offerId/:userId",
@@ -379,24 +401,47 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'email': null,
                 'tour': null
             },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                console.log($state.params);
-                authModalFactory.signInModal($state.params);
-            }]
+            views: {
+                'modal': {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signInModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.signInModal($state.params);
+                        }
+                    }]
+                }
+            }
         }).
         state('signup', {
             url: '/signup',
-            params: { 'redirect': null },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.signUpModal($state.params);
-            }]
+            views: {
+                'modal': {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signUpModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.signUpModal($state.params);
+                        }
+                    }]
+                }
+            },
+            params: { 'redirect': null }
         }).
         state('subscribe', {
             url: '/subscribe',
             params: { 'redirect': null },
-            controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
-                authModalFactory.subscribeModal($state.params);
-            }]
+            views : {
+                'modal': {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.subscribeModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.subscribeModal($state.params);
+                        }
+                    }]
+                }
+            }
         }).
         state('termsOfService', {
             url: "/terms-of-service",
@@ -412,11 +457,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: "js/watchlist/partials/watchlist.html",
             controller: 'watchlistController',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'watchlist';
                 }
-            }
+            },
+            sticky: true
         }).
         state('watchlist.questions', {
             url: "/questions/:postingId"
@@ -428,7 +473,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         });
 }]);
 
@@ -1745,8 +1791,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
             controller: 'signInModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function(){
@@ -1760,18 +1804,20 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
         }, function (reason) {
             console.log(reason);
             if(reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "forgot") {
-                //$state.go('forgot', {'redirect': params.redirect});
-                factory.forgotPasswordModal(params);
+                $state.go('forgot', {'redirect': params.redirect});
+                //factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             } else if (reason === "successful login" && params.redirect) {
                 $state.go(params.redirect);
             }  else if (reason === "successful login" && !params.redirect) {
                 $state.go('feed');
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1796,8 +1842,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/betaCheckModal/partials/betaCheck.html',
             controller: 'betaCheckModalController',
             size: 'lg',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -1805,11 +1849,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "subscribe") {
-                factory.subscribeModal(params);
-                //$state.go('subscribe', {'redirect': params.redirect});
+                //factory.subscribeModal(params);
+                $state.go('subscribe', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1833,8 +1877,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
             controller: 'signupModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -1842,17 +1884,19 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "forgot") {
-                //$state.go('forgot', {'redirect': params.redirect});
-                factory.forgotPasswordModal(params);
+                $state.go('forgot', {'redirect': params.redirect});
+                //factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             } else if (reason === "subscribe") {
-                //$state.go('subscribe', {'redirect': params.redirect});
-                factory.subscribeModal(params);
+                $state.go('subscribe', {'redirect': params.redirect});
+                //factory.subscribeModal(params);
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1875,8 +1919,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/subscribeModal/partials/subscribe.html',
             controller: 'subscribeModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -1884,14 +1926,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1914,8 +1956,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
             controller: 'checkEmailController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -1942,8 +1982,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
             controller: 'forgotPasswordController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function () {
@@ -1956,14 +1994,16 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -1985,8 +2025,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
             controller: 'resetPasswordModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 token: function () {
@@ -2165,13 +2203,13 @@ htsApp.controller('signupModalController', ['$scope', '$modalInstance', 'authFac
             var name = $scope.name;
 
             //Private Beta
-            var secret = $scope.secret;
+            //var secret = $scope.secret;
 
             var betaAgreement = $scope.betaAgreement;
 
-            console.log(email, password, secret, name, betaAgreement);
+            console.log(email, password, name, betaAgreement);
 
-            authFactory.signUp(email, password, name, secret, betaAgreement).then(function (response) {
+            authFactory.signUp(email, password, name, betaAgreement).then(function (response) {
 
                 console.log(response);
 
@@ -3020,11 +3058,27 @@ htsApp.factory('feedFactory', ['$http', '$stateParams', '$location', '$q', '$roo
 /**
  * Created by braddavis on 4/28/15.
  */
-htsApp.controller('feedbackController', ['$scope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, feedbackFactory, $http, ENV, Notification, Session) {
+htsApp.controller('feedbackController', ['$scope', '$state', '$rootScope', 'feedbackFactory', '$http', 'ENV', 'Notification', 'Session', function($scope, $state, $rootScope, feedbackFactory, $http, ENV, Notification, Session) {
 
     $scope.feedback = feedbackFactory.feedback;
 
     $scope.userObj = Session.userObj;
+
+    $scope.showFeedbackForm = function () {
+        if($scope.userObj.user_settings.loggedIn) {
+            $scope.feedback.form.visible = true;
+        } else {
+            $state.go('signup', {redirect: $rootScope.currentState});
+        }
+    };
+
+    $scope.hideFeedbackForm = function () {
+        if($scope.userObj.user_settings.loggedIn) {
+            $scope.feedback.form.visible = false;
+        } else {
+            $state.go('signup', {redirect: $rootScope.currentState});
+        }
+    };
 
     $scope.submitFeedback = function() {
 
@@ -3227,7 +3281,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
 
 
-        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash') {
+        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash' && $rootScope.currentState !== 'signup' && $rootScope.currentState !== 'signin' && $rootScope.currentState !== 'forgot') {
             if ($rootScope.currentState === 'feed') {
                 $scope.sideNav.listView = true;
             } else {
@@ -4657,34 +4711,28 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
     $scope.newPost = function () {
 
-        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
-
-            var modalInstance = $modal.open({
-                templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
-                controller: 'newPostModal',
-                size: 'lg',
-                keyboard: false,
-                backdrop: 'static',
-                resolve: {
-                    mentionsFactory: function () {
-                        return newPostFactory;
-                    }
+        var modalInstance = $modal.open({
+            templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
+            controller: 'newPostModal',
+            size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                mentionsFactory: function () {
+                    return newPostFactory;
                 }
-            });
+            }
+        });
 
-            modalInstance.result.then(function (dismissObj) {
+        modalInstance.result.then(function (dismissObj) {
 
-            }, function (dismissObj) {
-                if (dismissObj.reason === "stageOneSuccess") {
+        }, function (dismissObj) {
+            if (dismissObj.reason === "stageOneSuccess") {
 
-                    $scope.pushtoExternalService(dismissObj.post);
-                }
-                console.log('Modal dismissed at: ' + new Date());
-            });
-
-        } else {
-            $state.go('signup');
-        }
+                $scope.pushtoExternalService(dismissObj.post);
+            }
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
 
@@ -7846,6 +7894,7 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
         profile_photo: '//static.hashtagsell.com/htsApp/placeholders/user-placeholder.png',
         banner_photo: '//static.hashtagsell.com/htsApp/placeholders/header-placeholder.png',
         safe_search: true,
+        linkedAccounts: [],
         email_provider: [
             {
                 name : "Always Ask",
@@ -9547,7 +9596,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 /**
  * Created by braddavis on 11/15/14.
  */
-htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $modal, $state, splashFactory, metaFactory) {
+htsApp.controller('splashController', ['$scope', '$rootScope', '$modal', '$state', 'splashFactory', 'metaFactory', function ($scope, $rootScope, $modal, $state, splashFactory, metaFactory) {
 
     var metaCache = angular.copy(metaFactory.metatags);
     console.log(metaCache);
@@ -9658,7 +9707,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                     });
                 }
             } else {
-                authModalFactory.betaCheckModal($state.params);
+                $state.go('signup', {redirect: $rootScope.currentState});
             }
         };
 
@@ -9747,7 +9796,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
                 });
 
             } else {
-                authModalFactory.betaCheckModal($state.params);
+                $state.go('signup', {redirect: $rootScope.currentState});
             }
         };
 
@@ -9770,7 +9819,7 @@ htsApp.controller('splashController', ['$scope', '$modal', '$state', 'splashFact
         };
 
         $scope.buyOnline = function (result) {
-            transactionFactory.buyNow(result);
+            transactionFactory.proposeDeal(result);
         };
 
         $scope.placeBid = function (result) {
@@ -10245,7 +10294,7 @@ htsApp.directive('transactionButtons', function () {
 /**
  * Created by braddavis on 1/10/15.
  */
-htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
+htsApp.factory('transactionFactory', ['Session', '$modal', '$rootScope', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $rootScope, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
 
     var transactionFactory = {};
 
@@ -10254,7 +10303,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -10294,7 +10343,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -10333,7 +10382,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -10346,7 +10395,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -10382,7 +10431,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         }
     };
@@ -10417,7 +10466,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         } else {  //User is not logged in.
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         }
     };
@@ -10428,7 +10477,7 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$log', '$state', 'au
 
         if(!Session.userObj.user_settings.loggedIn) {
 
-            authModalFactory.betaCheckModal($state.params);
+            $state.go('signup', {redirect: $rootScope.currentState});
 
         } else {
 
@@ -10734,7 +10783,7 @@ htsApp.controller('placeOfferController', ['$scope', '$modalInstance', 'Session'
 /**
  * Created by braddavis on 1/4/15.
  */
-htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session', 'result', 'offerIndex', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', 'Notification', function ($scope, $modalInstance, Session, result, offerIndex, ENV, $filter, meetingsFactory, favesFactory, socketio, Notification) {
+htsApp.controller('proposeDealController', ['$scope', '$modalInstance', '$q', 'Session', 'result', 'offerIndex', 'ENV', '$filter', 'meetingsFactory', 'favesFactory', 'socketio', 'Notification', function ($scope, $modalInstance, $q, Session, result, offerIndex, ENV, $filter, meetingsFactory, favesFactory, socketio, Notification) {
 
     //Logged in user details
     $scope.userObj = Session.userObj;
@@ -10962,6 +11011,103 @@ htsApp.controller('proposeDealController', ['$scope', '$modalInstance', 'Session
                 });
             }
         }
+
+    };
+
+
+    $scope.predictAddress = function (address) {
+
+        return $scope.predictPlace(address).then(function (results) {
+            return results.map(function(item){
+                return item;
+            });
+        });
+
+    };
+
+
+
+
+
+    $scope.predictPlace = function (address) {
+
+        var defaultBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(37.79738, -122.52464),
+            new google.maps.LatLng(37.68879, -122.36122)
+        );
+
+        //need to set bounds to cornwall/bodmin
+        var locationRequest = {
+            input: address,
+            bounds: defaultBounds,
+            componentRestrictions: {country: 'US'}
+        };
+        var googlePlacesService = new google.maps.places.AutocompleteService();
+
+        var deferred = $q.defer();
+
+        //Get predictions from google
+        googlePlacesService.getPlacePredictions(locationRequest, function (predictions, status) {
+            deferred.resolve(predictions);
+        });
+
+        return deferred.promise;
+    };
+
+
+
+    $scope.setAddressComponents = function (placesObj){
+
+        $scope.deal.location = placesObj.description;
+        //var googleMaps = new google.maps.places.PlacesService(new google.maps.Map(document.createElement("map-canvas")));
+
+        //capture the place_id and send to google maps for metadata about the place
+        //var request = {
+        //    placeId: placesObj.place_id
+        //};
+
+        //googleMaps.getDetails(request, function (placeMetaData, status) {
+        //
+        //    console.log(placeMetaData);
+        //
+        //    $scope.$apply(function () {
+        //        $scope.deal.location = placeMetaData.formatted_address;
+        //    });
+        //
+            console.log('here is our deal', $scope.deal);
+
+            //for(var i = 0; i < placeMetaData.address_components.length; i++){
+            //    var component = placeMetaData.address_components[i];
+            //
+            //    console.log(component);
+            //
+            //    for(var j = 0; j < component.types.length; j++){
+            //        var componentType = component.types[j];
+            //
+            //        console.log($scope.subMerchant);
+            //
+            //        if(componentType === "locality"){
+            //            $scope.subMerchant[type].address.locality = component.long_name;
+            //            break;
+            //        } else if(componentType === "administrative_area_level_1"){
+            //            $scope.subMerchant[type].address.region = component.short_name;
+            //            break;
+            //        } else if(componentType === "route") {
+            //            street = component.long_name;
+            //            break;
+            //        } else if(componentType === "postal_code") {
+            //            $scope.subMerchant[type].address.postalCode = component.long_name;
+            //            break;
+            //        } else if(componentType === "street_number") {
+            //            street_number = component.long_name;
+            //            break;
+            //        }
+            //    }
+            //}
+            //
+            //$scope.subMerchant[type].address.streetAddress = street_number + ' ' + street;
+
+        //});
 
     };
 
@@ -12269,7 +12415,11 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
         console.log('Dropdown is now: ', open);
     };
 
-    $scope.cachedOffers = angular.copy($scope.post.offers.results);
+    console.log('here is watchlist meeting post', $scope.post);
+
+    if($scope.post.external.source.code === 'HSHTG') {
+        $scope.cachedOffers = angular.copy($scope.post.offers.results);
+    }
 
     $scope.acceptedTime = {model :  undefined};
 
@@ -13049,16 +13199,16 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                <br>\n" +
     "\n" +
-    "                <div class=\"controls\">\n" +
-    "                    <input class=\"form-control\" type=\"text\" id=\"secret\" placeholder=\"Early Access Code\" name=\"secret\" ng-model=\"secret\" required=\"true\"/>\n" +
+    "                <!--<div class=\"controls\">-->\n" +
+    "                    <!--<input class=\"form-control\" type=\"text\" id=\"secret\" placeholder=\"Early Access Code\" name=\"secret\" ng-model=\"secret\" required=\"true\"/>-->\n" +
     "                    <!--<span>-->\n" +
     "                        <!--<a href ng-click=\"dismiss('subscribe')\" style=\"position: relative; top: 3px;\">-->\n" +
     "                            <!--<small>I don't have an access code</small>-->\n" +
     "                        <!--</a>-->\n" +
     "                    <!--</span>-->\n" +
-    "                </div>\n" +
+    "                <!--</div>-->\n" +
     "\n" +
-    "                <br/>\n" +
+    "                <!--<br/>-->\n" +
     "\n" +
     "                <div class=\"controls\">\n" +
     "\n" +
@@ -14067,7 +14217,14 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "<div class=\"modal-footer\">\n" +
     "    <button class=\"btn\" ng-class=\"currentlyPublishing.publishing ? 'btn-warning' : 'btn-primary'\" ng-click=\"dismiss('stageTwoSuccess')\" ng-disabled=\"{{currentlyPublishing.publishing}}\">\n" +
-    "        <span ng-show=\"!currentlyPublishing.publishing\">Share</span>\n" +
+    "        <span ng-show=\"!currentlyPublishing.publishing && shareToggles.facebook ||\n" +
+    "         !currentlyPublishing.publishing && shareToggles.twitter ||\n" +
+    "         !currentlyPublishing.publishing && shareToggles.ebay ||\n" +
+    "         !currentlyPublishing.publishing && shareToggles.amazon\">Share</span>\n" +
+    "\n" +
+    "\n" +
+    "        <span ng-show=\"!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon\">Continue</span>\n" +
+    "\n" +
     "        <span ng-show=\"currentlyPublishing.publishing\">Please wait</span>\n" +
     "    </button>\n" +
     "</div>"
@@ -14085,7 +14242,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "    <div ng-show=\"!userPosts.data.length\" class=\"background-instructions\">\n" +
     "        <div class=\"inset-background-text\">\n" +
-    "            Coming soon!  We'll notify you when items you're looking for appear online. :)\n" +
+    "            Coming soon!  Tell us what you're looking for and we'll send you notifications.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "</div>\n" +
@@ -14821,22 +14978,23 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                            <!--SideNav-->\n" +
     "                            <div class=\"list-group splash-bs-side-nav ng-cloak\">\n" +
-    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.source_account\" ng-click=\"emailSeller(result)\" style=\"cursor: pointer\">\n" +
-    "                                    <i class=\"fa fa-envelope-square fa-fw fa-lg\"></i>&nbsp; Email seller\n" +
+    "                                <!--<a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.source_account\" ng-click=\"emailSeller(result)\" style=\"cursor: pointer\">-->\n" +
+    "                                    <!--<i class=\"fa fa-envelope-square fa-fw fa-lg\"></i>&nbsp; Email seller-->\n" +
+    "                                <!--</a>-->\n" +
+    "                                <!--<a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.phone\" ng-click=\"displayPhone(result)\" style=\"cursor: pointer\">-->\n" +
+    "                                    <!--<i class=\"fa fa-phone-square fa-fw fa-lg\"></i>&nbsp; Phone seller-->\n" +
+    "                                <!--</a>-->\n" +
+    "                                <a  class=\"list-group-item active\" ng-if=\"result.external.source.code === 'HSHTG' && result.user.merchantAccount.details.funding.destination == 'email' && result.askingPrice.value\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
+    "                                    <i class=\"fa fa-vimeo-square fa-fw fa-lg\"></i>&nbsp;\n" +
+    "                                    <span>Buy now</span>\n" +
     "                                </a>\n" +
-    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.phone\" ng-click=\"displayPhone(result)\" style=\"cursor: pointer\">\n" +
-    "                                    <i class=\"fa fa-phone-square fa-fw fa-lg\"></i>&nbsp; Phone seller\n" +
-    "                                </a>\n" +
-    "                                <a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG' && result.user.merchantAccount.details.funding.destination == 'email' && result.askingPrice.value\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer\">\n" +
-    "                                    <i class=\"fa fa-vimeo-square fa-fw fa-lg\"></i>&nbsp; Buy now\n" +
-    "                                </a>\n" +
-    "                                <a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG'\" ng-click=\"placeOffer(result)\" style=\"cursor: pointer\">\n" +
-    "                                    <i class=\"fa fa-calendar-o fa-fw fa-lg\"></i>&nbsp; Request a meeting\n" +
-    "                                </a>\n" +
-    "                                <a class=\"list-group-item\"  ng-if=\"result.external.source.code === 'E_BAY'\" ng-click=\"placeBid(result)\" style=\"cursor: pointer\">\n" +
+    "                                <!--<a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG'\" ng-click=\"placeOffer(result)\" style=\"cursor: pointer\">-->\n" +
+    "                                    <!--<i class=\"fa fa-calendar-o fa-fw fa-lg\"></i>&nbsp; Request a meeting-->\n" +
+    "                                <!--</a>-->\n" +
+    "                                <a class=\"list-group-item\"  ng-if=\"result.external.source.code === 'E_BAY'\" ng-click=\"placeBid(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
     "                                    <i class=\"fa fa-paypal fa-fw fa-lg\"></i>&nbsp; Bid on item\n" +
     "                                </a>\n" +
-    "                                <a class=\"list-group-item\" ng-click=\"toggleFave(result)\" style=\"cursor: pointer\">\n" +
+    "                                <a class=\"list-group-item\" ng-click=\"toggleFave(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
     "                                    <span ng-show=\"favorited\">\n" +
     "                                        <span ng-show=\"favorited\" ng-class=\"{starHighlighted: favorited, star: !favorited}\" class=\"fa fa-fw fa-lg\"></span>&nbsp; Remove from watch list\n" +
     "                                    </span>\n" +
@@ -14847,7 +15005,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                <!--<a class=\"list-group-item\" onclick=\"alert('spam reporting feature soon')\" style=\"cursor: pointer\">-->\n" +
     "                                    <!--<i class=\"fa fa-flag fa-fw fa-lg\"></i>&nbsp; Report-->\n" +
     "                                <!--</a>-->\n" +
-    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.url && result.external.source.code != 'HSHTG'\" ng-click=\"showOriginal(result)\" style=\"cursor: pointer\">\n" +
+    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.url && result.external.source.code != 'HSHTG'\" ng-click=\"showOriginal(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
     "                                    <i class=\"fa fa-external-link-square fa-fw fa-lg\"></i>&nbsp; Show original post\n" +
     "                                </a>\n" +
     "                            </div>\n" +
@@ -15328,7 +15486,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            <div class=\"controls\">\n" +
     "                <div class=\"input-group input-group-lg\">\n" +
     "                    <span class=\"input-group-addon\">@</span>\n" +
-    "                    <input class=\"form-control\" type=\"text\" id=\"location\" name=\"location\" ng-model=\"deal.location\" required=\"true\"/>\n" +
+    "                    <input autocomplete=\"false\" class=\"form-control\" type=\"text\" id=\"location\" name=\"location\" ng-model=\"deal.location\" typeahead=\"city.description for city in predictAddress($viewValue)\" typeahead-on-select='setAddressComponents($item)' required=\"true\" ng-click=\"deal.location = null\"/>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "\n" +
@@ -15497,7 +15655,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "    <div ng-show=\"!currentFaves.length\" class=\"background-instructions\">\n" +
     "        <div class=\"inset-background-text\">\n" +
-    "            Starred items appear in your Watch List. We'll notify you when Watch List items are sold or updated.\n" +
+    "            Items you've placed an offer on or starred live here.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -15510,17 +15668,17 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                <th>\n" +
     "\n" +
     "                </th>\n" +
-    "                <th colspan=\"4\" class=\"fave-batch-button\">\n" +
+    "                <th colspan=\"6\" class=\"fave-batch-button\">\n" +
     "\n" +
     "                    <dropdown-multiselect selectedlabels=\"selected_labels\" userlabels=\"UserLabels\" selectedfaves=\"checkboxes.items\">\n" +
     "\n" +
     "                    </dropdown-multiselect>\n" +
     "\n" +
     "                </th>\n" +
-    "                <th colspan=\"4\" class=\"fave-batch-button\" ng-model=\"batchContact\" ng-click=\"batchEmail(checkboxes)\">\n" +
-    "                    <i class=\"fa fa-envelope\">&nbsp;&nbsp;Contact Seller</i>\n" +
-    "                </th>\n" +
-    "                <th colspan=\"4\" class=\"fave-batch-button\" ng-model=\"batchTrash\" ng-click=\"batchRemoveFaves(checkboxes)\">\n" +
+    "                <!--<th colspan=\"4\" class=\"fave-batch-button\" ng-model=\"batchContact\" ng-click=\"batchEmail(checkboxes)\">-->\n" +
+    "                    <!--<i class=\"fa fa-envelope\">&nbsp;&nbsp;Contact Seller</i>-->\n" +
+    "                <!--</th>-->\n" +
+    "                <th colspan=\"6\" class=\"fave-batch-button\" ng-model=\"batchTrash\" ng-click=\"batchRemoveFaves(checkboxes)\">\n" +
     "                    <i class=\"fa fa-trash\">&nbsp;&nbsp;Trash</i>\n" +
     "                </th>\n" +
     "            </tr>\n" +

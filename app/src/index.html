@@ -56,7 +56,7 @@
 </head>
 
 <body ng-controller="mainController" ng-cloak class="container body-main">
-
+    <div ui-view="modal"></div>
     <div class="root" ui-view="root">
         <div class="navbar navbar-default nav-links navbar-fixed-top">
             <div class="container-fluid">
@@ -160,8 +160,8 @@
                             <img class='img-circle' ng-src={{userObj.user_settings.profile_photo}} width="38" height="38"/>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right" ng-if="!userObj.user_settings.loggedIn">
-                            <li><a ui-sref="signin">Sign In</a></li>
-                            <li><a ui-sref="signup">Create Account</a></li>
+                            <li><a ui-sref="signin()">Sign In</a></li>
+                            <li><a ui-sref="signup()">Create Account</a></li>
                         </ul>
                         <ul class="dropdown-menu dropdown-menu-right" ng-if="userObj.user_settings.loggedIn">
                             <li><a ui-sref="settings.account">User Settings</a></li>
@@ -195,8 +195,8 @@
                 <div ng-controller="newPostController" class="sellButton" style="cursor: pointer">
                     <div class="bs-username" ng-show="userObj.user_settings.name"> @{{userObj.user_settings.name}}</div>
                     <div class="bs-username" ng-show="!userObj.user_settings.name">
-                        <a ui-sref="signin">Sign In</a> /
-                        <a ui-sref="signup">Create Account</a>
+                        <a ui-sref="signin()">Sign In</a> /
+                        <a ui-sref="signup()">Create Account</a>
                     </div>
                     <button type="submit" class="btn btn-danger btn-sm btn-block" ng-click="newPost(); $event.stopPropagation();" analytics-on="click" analytics-event="Clicked sidebar sell button" tooltip="Sell an item" tooltip-trigger="mouseenter" tooltip-placement="bottom">#Sell it</button>
                 </div>
@@ -289,8 +289,8 @@
                     </div>
 
                     <div class="text-center feedback-link" ng-class="feedback.form.visible ? 'col-xs-12' : 'col-sm-4 col-xs-6'">
-                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="!feedback.form.visible">Provide Feedback</a>
-                        <a ng-click="feedback.form.visible = !feedback.form.visible" ng-show="feedback.form.visible">Close Feedback</a>
+                        <a ng-click="showFeedbackForm()" ng-show="!feedback.form.visible">Provide Feedback</a>
+                        <a ng-click="hideFeedbackForm()" ng-show="feedback.form.visible">Close Feedback</a>
                     </div>
 
 
@@ -338,6 +338,7 @@
     <script type="text/javascript" src="/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.core.min.js"></script>
     <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.dsr.min.js"></script>
+    <script type="text/javascript" src="/ui-router-extras/release/modular/ct-ui-router-extras.sticky.min.js"></script>
     <script type="text/javascript" src="/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js"></script>
     <!--<script type="text/javascript" src='/ment.io/dist/mentio.js'></script>-->
     <script type="text/javascript" src='/ment.io/src/mentio.directive.js'></script>

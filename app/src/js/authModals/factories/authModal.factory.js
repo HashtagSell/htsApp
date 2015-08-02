@@ -14,8 +14,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/signInModal/partials/signIn.html',
             controller: 'signInModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function(){
@@ -29,18 +27,20 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
         }, function (reason) {
             console.log(reason);
             if(reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "forgot") {
-                //$state.go('forgot', {'redirect': params.redirect});
-                factory.forgotPasswordModal(params);
+                $state.go('forgot', {'redirect': params.redirect});
+                //factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             } else if (reason === "successful login" && params.redirect) {
                 $state.go(params.redirect);
             }  else if (reason === "successful login" && !params.redirect) {
                 $state.go('feed');
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -65,8 +65,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/betaCheckModal/partials/betaCheck.html',
             controller: 'betaCheckModalController',
             size: 'lg',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -74,11 +72,11 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "subscribe") {
-                factory.subscribeModal(params);
-                //$state.go('subscribe', {'redirect': params.redirect});
+                //factory.subscribeModal(params);
+                $state.go('subscribe', {'redirect': params.redirect});
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -102,8 +100,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/signUpModal/partials/signUp.html',
             controller: 'signupModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -111,17 +107,19 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "forgot") {
-                //$state.go('forgot', {'redirect': params.redirect});
-                factory.forgotPasswordModal(params);
+                $state.go('forgot', {'redirect': params.redirect});
+                //factory.forgotPasswordModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             } else if (reason === "subscribe") {
-                //$state.go('subscribe', {'redirect': params.redirect});
-                factory.subscribeModal(params);
+                $state.go('subscribe', {'redirect': params.redirect});
+                //factory.subscribeModal(params);
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -144,8 +142,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/subscribeModal/partials/subscribe.html',
             controller: 'subscribeModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -153,14 +149,14 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -183,8 +179,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/checkEmailModal/partials/checkEmail.html',
             controller: 'checkEmailController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop'
         });
 
@@ -211,8 +205,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/forgotPasswordModal/partials/forgotPassword.html',
             controller: 'forgotPasswordController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 params: function () {
@@ -225,14 +217,16 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
 
         }, function (reason) {
             if(reason === "success"){
-                //$state.go('checkemail');
-                factory.checkEmailModal(params);
+                $state.go('checkemail');
+                //factory.checkEmailModal(params);
             } else if (reason === "signUp") {
-                //$state.go('signup', {'redirect': params.redirect});
-                factory.signUpModal(params);
+                $state.go('signup', {'redirect': params.redirect});
+                //factory.signUpModal(params);
             } else if (reason === "signIn") {
-                //$state.go('signin', {'redirect': params.redirect});
-                factory.signInModal(params);
+                $state.go('signin', {'redirect': params.redirect});
+                //factory.signInModal(params);
+            } else {
+                $state.go(params.redirect);
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -254,8 +248,6 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
             templateUrl: 'js/authModals/modals/resetPasswordModal/partials/resetPassword.html',
             controller: 'resetPasswordModalController',
             size: 'sm',
-            keyboard: false,
-            backdrop: 'static',
             backdropClass: 'translucent-modal-backdrop',
             resolve: {
                 token: function () {

@@ -14,6 +14,7 @@ var htsApp = angular.module('htsApp', [
     'ui.router',
     'ct.ui.router.extras.core',
     'ct.ui.router.extras.dsr',
+    'ct.ui.router.extras.sticky',
     'ui.bootstrap',
     'mentio',
     'ui.bootstrap-slider',
@@ -108,11 +109,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
 
         if (!Session.userObj.user_settings.loggedIn) {
 
-            //$timeout(function() {
-            //    $state.go('signup', { 'redirect': redirect });
-            //});
+            $timeout(function() {
+                $state.go('signup', { 'redirect': redirect });
+            });
 
-            authModalFactory.betaCheckModal($state.params);
+            //authModalFactory.signUpModal($state.params);
 
             deferred.resolve();
 
@@ -187,30 +188,37 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('checkemail', {
             url: '/checkemail',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.checkEmailModal($state.params);
+            views: {
+                'modal': {
+                    controller: function(authModalFactory, $state) {
+                        authModalFactory.checkEmailModal($state.params);
+                    }
+                }
             }
+
         }).
         state('externalSplash', {
             url: "/ext/:id",
-            controller: 'splashController'
+            controller: 'splashController',
+            sticky: true
         }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
             controller: "feed.controller",
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'feed';
                 }
-            }
+            },
+            sticky: true
         }).
         state('feed.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         }).
         state('forgot', {
             url: '/forgot?msg',
@@ -218,8 +226,16 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'redirect': null,
                 'msg': null
             },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.forgotPasswordModal($state.params);
+            views: {
+                'modal': {
+                    controller: function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.forgotPasswordModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.forgotPasswordModal($state.params);
+                        }
+                    }
+                }
             }
         }).
         state('myposts', {
@@ -227,11 +243,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: "js/myPosts/partials/myPosts.html",
             controller: 'myPosts.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'myposts';
                 }
-            }
+            },
+            sticky: true
         }).
         state('myposts.questions', {
             url: "/questions/:postingId"
@@ -241,18 +257,19 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('myposts.splash', {
             url: "/:id",
-            controller: 'splashController'
+            controller: 'splashController',
+            sticky: true
         }).
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'notifications';
                 }
-            }
+            },
+            sticky: true
         }).
         state('payment', {
             url: "/payment/:postingId/:offerId",
@@ -286,16 +303,20 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: 'js/profile/partials/profile.partial.html',
             controller: 'profile.controller',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'profile';
                 }
-            }
+            },
+            sticky: true
         }).
         state('reset', {
             url: '/reset/:token/',
-            controller: function(authModalFactory, $state) {
-                authModalFactory.resetPasswordModal('signin', $state.params.token);
+            views: {
+                modals: {
+                    controller: function(authModalFactory, $state) {
+                        authModalFactory.resetPasswordModal('signin', $state.params.token);
+                    }
+                }
             }
         }).
         state('results', {
@@ -309,11 +330,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             controller: 'results.controller',
             templateUrl: "js/results/partials/results_partial.html",
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'results';
                 }
-            }
+            },
+            sticky: true
         }).
         state('results.splash', {
             url: "/:id",
@@ -325,7 +346,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         }).
         state('review', {
             url: "/review/:postingId/:offerId/:userId",
@@ -379,23 +401,46 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'email': null,
                 'tour': null
             },
-            controller: function(authModalFactory, $state) {
-                console.log($state.params);
-                authModalFactory.signInModal($state.params);
+            views: {
+                'modal': {
+                    controller: function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signInModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.signInModal($state.params);
+                        }
+                    }
+                }
             }
         }).
         state('signup', {
             url: '/signup',
-            params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.signUpModal($state.params);
-            }
+            views: {
+                'modal': {
+                    controller: function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signUpModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.signUpModal($state.params);
+                        }
+                    }
+                }
+            },
+            params: { 'redirect': null }
         }).
         state('subscribe', {
             url: '/subscribe',
             params: { 'redirect': null },
-            controller: function(authModalFactory, $state) {
-                authModalFactory.subscribeModal($state.params);
+            views : {
+                'modal': {
+                    controller: function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.subscribeModal({'redirect': $rootScope.previousState});
+                        } else {
+                            authModalFactory.subscribeModal($state.params);
+                        }
+                    }
+                }
             }
         }).
         state('termsOfService', {
@@ -412,11 +457,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: "js/watchlist/partials/watchlist.html",
             controller: 'watchlistController',
             resolve: {
-                loginRequired: loginRequired,
                 redirect: function () {
                     return 'watchlist';
                 }
-            }
+            },
+            sticky: true
         }).
         state('watchlist.questions', {
             url: "/questions/:postingId"
@@ -428,7 +473,8 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom
+            onExit: leaveRoom,
+            sticky: true
         });
 }]);
 
