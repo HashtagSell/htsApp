@@ -139,10 +139,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             $scope.currentlyPublishing.amazon = true;
 
-            Notification.error({
-                title: "Amazon publishing error",
-                message: "Publish to amazon coming soon!",
-                delay: 10000
+            Notification.primary({
+                title: "Amazon coming soon",
+                message: "Publish to Amazon is almost there!",
+                delay: 15000
             });  //Send the webtoast
             deferred.resolve();
 

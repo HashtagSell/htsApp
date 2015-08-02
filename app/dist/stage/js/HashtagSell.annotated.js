@@ -3281,7 +3281,7 @@ htsApp.controller('mainController', ['$scope', '$rootScope', 'sideNavFactory', '
         sideNavFactory.settingsMenu[0].link = $rootScope.previousState;
 
 
-        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash' && $rootScope.currentState !== 'signup' && $rootScope.currentState !== 'signin' && $rootScope.currentState !== 'forgot') {
+        if($rootScope.currentState !== 'feed.splash' && $rootScope.currentState !== 'results.splash' && $rootScope.currentState !== 'signup' && $rootScope.currentState !== 'signin' && $rootScope.currentState !== 'forgot' && $rootScope.currentState !== 'checkemail') {
             if ($rootScope.currentState === 'feed') {
                 $scope.sideNav.listView = true;
             } else {
@@ -3551,35 +3551,28 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
 
     $scope.newPost = function () {
-
-        if($scope.userObj.user_settings.loggedIn) {//If the user is logged in
-
-            var modalInstance = $modal.open({
-                templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
-                controller: 'newPostModal',
-                size: 'lg',
-                keyboard: false,
-                backdrop: 'static',
-                resolve: {
-                    mentionsFactory: function () {
-                        return newPostFactory;
-                    }
+        var modalInstance = $modal.open({
+            templateUrl: 'js/newPost/modals/newPost/partials/newPost.html',
+            controller: 'newPostModal',
+            size: 'lg',
+            keyboard: false,
+            backdrop: 'static',
+            resolve: {
+                mentionsFactory: function () {
+                    return newPostFactory;
                 }
-            });
+            }
+        });
 
-            modalInstance.result.then(function (dismissObj) {
+        modalInstance.result.then(function (dismissObj) {
 
-            }, function (dismissObj) {
-                if (dismissObj.reason === "stageOneSuccess") {
+        }, function (dismissObj) {
+            if (dismissObj.reason === "stageOneSuccess") {
 
-                    $scope.pushtoExternalService(dismissObj.post);
-                }
-                console.log('Modal dismissed at: ' + new Date());
-            });
-
-        } else {
-            $state.go('signup');
-        }
+                $scope.pushtoExternalService(dismissObj.post);
+            }
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
 
@@ -6526,6 +6519,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 
         var priceSuggestionArray = [];
 
+        term = term.replace(/\D/g,'');
+
         var formattedPrice = $filter('currency')(term, '$', 0);
 
         priceSuggestionArray.push({suggestion: formattedPrice, rate: "flat_rate", value: term});
@@ -6702,10 +6697,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             $scope.currentlyPublishing.amazon = true;
 
-            Notification.error({
-                title: "Amazon publishing error",
-                message: "Publish to amazon coming soon!",
-                delay: 10000
+            Notification.primary({
+                title: "Amazon coming soon",
+                message: "Publish to Amazon is almost there!",
+                delay: 15000
             });  //Send the webtoast
             deferred.resolve();
 

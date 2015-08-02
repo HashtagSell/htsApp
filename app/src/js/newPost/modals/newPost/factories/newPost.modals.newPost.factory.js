@@ -768,6 +768,8 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 
         var priceSuggestionArray = [];
 
+        term = term.replace(/\D/g,'');
+
         var formattedPrice = $filter('currency')(term, '$', 0);
 
         priceSuggestionArray.push({suggestion: formattedPrice, rate: "flat_rate", value: term});
