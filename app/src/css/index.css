@@ -843,38 +843,50 @@ div.img-div{
 
 
 .mention-highlighter {
-    background: #ead1ce;
+    background: #f8d6d7;
+    background: linear-gradient(#f8d6d7, #f19b9c) repeat scroll 0% 0% transparent;
     background: -webkit-gradient(linear, center top, center bottom, from(#f8d6d7), to(#f19b9c));
     background: -webkit-linear-gradient(#f8d6d7, #f19b9c);
     -webkit-border-radius: 2px;
-    -webkit-box-shadow: 0 0 0 1px #ea898f;
+    -moz-border-radius: 2px;
+    -webkit-box-shadow: 0 0 0 1px #EA898F;
+    -moz-box-shadow: 0 0 0 1px #EA898F;
     font-weight: normal;
 }
 
 .mention-highlighter-price {
-    background: #d8dfea;
+    background: #BEDDC8;
+    background: linear-gradient(#BEDDC8, #95C7A4) repeat scroll 0% 0% transparent;
     background: -webkit-gradient(linear, center top, center bottom, from(#BEDDC8), to(#95C7A4));
     background: -webkit-linear-gradient(#BEDDC8, #95C7A4);
     -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
     -webkit-box-shadow: 0 0 0 1px #73BB89;
+    -moz-box-shadow: 0 0 0 1px #73BB89;
     font-weight: normal;
 }
 
 .mention-highlighter-price-high {
-    background: #d8dfea;
+    background: #FCD18D;
+    background: linear-gradient(#FCD18D, #F98E57) repeat scroll 0% 0% transparent;
     background: -webkit-gradient(linear,center top,center bottom,from(#FCD18D),to(#F98E57));
     background: -webkit-linear-gradient(#FCD18D,#F98E57);
     -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
     -webkit-box-shadow: 0 0 0 1px #FFB43E;
+    -moz-box-shadow: 0 0 0 1px #FFB43E;
     font-weight: normal;
 }
 
 .mention-highlighter-location {
-    background: #d8dfea;
-    background: -webkit-gradient(linear, center top, center bottom, from(#dce6f8), to(#bdcff1));
-    background: -webkit-linear-gradient(#dce6f8, #bdcff1);
+    background: #DCE6F8;
+    background: linear-gradient(#DCE6F8, #BDCFF1) repeat scroll 0% 0% transparent;
+    background: -webkit-gradient(linear, center top, center bottom, from(#DCE6F8), to(#BDCFF1));
+    background: -webkit-linear-gradient(#DCE6F8, #BDCFF1);
     -webkit-border-radius: 2px;
-    -webkit-box-shadow: 0 0 0 1px #a3bcea;
+    -moz-border-radius: 2px;
+    -webkit-box-shadow: 0 0 0 1px #A3BCEA;
+    -moz-box-shadow: 0 0 0 1px #A3BCEA;
     font-weight: normal;
 }
 

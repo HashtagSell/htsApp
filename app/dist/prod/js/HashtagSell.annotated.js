@@ -5781,20 +5781,20 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.getPricesTextRaw = function (selectedPrice) {
         if(!selectedPrice.demoText) {
             if (mentionsFactory.getPriceMetaData(selectedPrice)) {
-                if($scope.jsonObj.price_avg) {
-                    if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
-                        return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
-                    } else {
-                        var message = 'Your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
-                        $scope.alerts.banners.push({
-                            type: 'warning',
-                            msg: message
-                        });
-                        return '<span class="mention-highlighter-price mention-highlighter-price-high" tooltip-placement="bottom" tooltip="Higher than average price" tooltip-trigger="mouseenter" contentEditable="false">' + selectedPrice.suggestion + '</span>';
-                    }
-                } else {
+                //if($scope.jsonObj.price_avg) {
+                //    if (selectedPrice.value <= Math.floor($scope.jsonObj.price_avg)) {
+                //        return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                //    } else {
+                //        var message = 'Your price is higher than our calculated average: ' + $filter('currency')(Math.floor($scope.jsonObj.price_avg), '$', 0);
+                //        $scope.alerts.banners.push({
+                //            type: 'warning',
+                //            msg: message
+                //        });
+                //        return '<span class="mention-highlighter-price mention-highlighter-price-high" tooltip-placement="bottom" tooltip="Higher than average price" tooltip-trigger="mouseenter" contentEditable="false">' + selectedPrice.suggestion + '</span>';
+                //    }
+                //} else {
                     return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
-                }
+                //}
             } else {
                 //$scope.alerts.banners.push({
                 //    type: 'danger',
