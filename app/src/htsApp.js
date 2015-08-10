@@ -498,6 +498,12 @@ htsApp.directive('matchinput', function () {
 });
 
 
+
+htsApp.run(function() {
+    FastClick.attach(document.body);
+});
+
+
 //Convert phone numbers 1234567891 -> (123) 456-7891
 htsApp.filter('tel', function () {
     return function (tel) {

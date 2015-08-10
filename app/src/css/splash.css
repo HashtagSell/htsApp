@@ -188,11 +188,11 @@ a:hover {
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     .photo-carousel {
-        margin-left: 50px;
+        margin-left: 20%;
     }
 
     .photo-description-column {
-        padding-right: 50px;
+        padding-right: 40%;
     }
 
     .splash-profile-nav {
@@ -207,12 +207,12 @@ a:hover {
     }
 
     .details-column {
-        margin-left: 50px;
+        margin-left: 20%;
         padding-top: 13px;
     }
 
     .annotations-column {
-        margin-left: 50px;
+        margin-left: 20%;
     }
 }
 

@@ -53,6 +53,7 @@
     background-color: #595959;
     -webkit-transition: background 0.3s;
     transition: background 0.3s;
+    cursor: pointer;
 }
 
 
@@ -69,10 +70,10 @@
     background-position: 0 0;
 }
 
-.icon-mono.facebook:hover {
-    background-color: #3b5998;
-    background-position: 0 -96px;
-}
+/*.icon-mono.facebook:hover {*/
+    /*background-color: #3b5998;*/
+    /*background-position: 0 -96px;*/
+/*}*/
 
 .icon-mono.facebook.hold {
     background-color: #3b5998;
@@ -100,10 +101,10 @@
     background-position: -96px 0;
 }
 
-.icon-mono.twitter:hover {
-    background-color: #4099ff;
-    background-position: -96px -96px;
-}
+/*.icon-mono.twitter:hover {*/
+    /*background-color: #4099ff;*/
+    /*background-position: -96px -96px;*/
+/*}*/
 
 .icon-mono.twitter.hold {
     background-color: #4099ff;
@@ -127,10 +128,10 @@
     background-position: -192px 0;
 }
 
-.icon-mono.ebay:hover {
-    background-color: #d34836;
-    background-position: -192px -96px;
-}
+/*.icon-mono.ebay:hover {*/
+    /*background-color: #d34836;*/
+    /*background-position: -192px -96px;*/
+/*}*/
 
 .icon-mono.ebay.hold {
     background-color: #d34836;
@@ -149,15 +150,15 @@
 
 
 
-/* github */
+/* amazon */
 .icon-mono.amazon {
     background-position: -288px 0;
 }
 
-.icon-mono.amazon:hover {
-    background-color: #333333;
-    background-position: -288px -96px;
-}
+/*.icon-mono.amazon:hover {*/
+    /*background-color: #333333;*/
+    /*background-position: -288px -96px;*/
+/*}*/
 
 .icon-mono.amazon.hold {
     background-color: #333333;
@@ -176,15 +177,15 @@
 
 
 
-/* rss */
+/* online payment */
 .icon-mono.online-payment {
     background-position: -384px 0;
 }
 
-.icon-mono.online-payment:hover {
-    background-color: #009cde;
-    background-position: -384px -96px;
-}
+/*.icon-mono.online-payment:hover {*/
+    /*background-color: #009cde;*/
+    /*background-position: -384px -96px;*/
+/*}*/
 
 .icon-mono.online-payment.hold {
     background-color: #009cde;

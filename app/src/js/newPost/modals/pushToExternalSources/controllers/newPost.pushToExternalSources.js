@@ -51,7 +51,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         });
     };
 
-
     $scope.shareToggles = {
         facebook : false,
         twitter: false,

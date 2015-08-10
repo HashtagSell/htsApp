@@ -162,8 +162,8 @@
 .dz-preview-container {
   position: absolute;
   bottom: 15px;
-  left: 122px;
-  right: 89px;
+  left: 125px;
+  right: 94px;
   height: 45px;
   margin-bottom: 0px;
   border-radius: 0px;
@@ -186,7 +186,9 @@
   border: 1px solid #aaa;
   display: -webkit-inline-box;
   margin-top: 4px;
-  margin-left: 7px
+  margin-left: 7px;
+    display: -moz-deck;
+    display: -webkit-inline-box;
 }
 
 .dz-remove{

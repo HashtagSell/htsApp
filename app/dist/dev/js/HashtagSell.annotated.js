@@ -498,6 +498,12 @@ htsApp.directive('matchinput', function () {
 });
 
 
+
+htsApp.run(function() {
+    FastClick.attach(document.body);
+});
+
+
 //Convert phone numbers 1234567891 -> (123) 456-7891
 htsApp.filter('tel', function () {
     return function (tel) {
@@ -5593,6 +5599,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.validatePost = function () {
 
+        $scope.alerts.banners = [];
+
         var newPost = $scope.jsonObj;
 
         if (newPost.hashtags.length) {
@@ -6711,7 +6719,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
             });
         });
     };
-
 
     $scope.shareToggles = {
         facebook : false,
@@ -14299,7 +14306,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                <div>\n" +
     "                    <div style=\"position: absolute; bottom: 15px;\">\n" +
     "                        <button id=\"imageUpload\" class=\"btn btn-primary\" style=\"height: 45px; border-radius: 0px 0px 0px 4px;\">\n" +
-    "                            <i class=\"fa fa-camera\"> Add photo</i>\n" +
+    "                            <i class=\"fa fa-camera\"></i> Add photo\n" +
     "                        </button>\n" +
     "                    </div>\n" +
     "\n" +
@@ -14307,7 +14314,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                    <div style=\"position: absolute; right: 15px; bottom: 15px;\" class=\"sellModalButton\" popover-placement=\"left\" popover=\"Publish on Amazon, eBay, Craigslist, and HashtagSell!\" popover-trigger=\"show\">\n" +
     "                        <button class=\"btn btn-primary\" ng-click=\"validatePost()\" style=\"height: 45px; border-radius: 0px 0px 4px 0px;\">\n" +
-    "                            <i class=\"fa fa-slack\">Sell It</i>\n" +
+    "                            <i class=\"fa fa-slack\"></i> Sell It\n" +
     "                        </button>\n" +
     "                    </div>\n" +
     "                </div>\n" +
@@ -14406,7 +14413,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay\">\n" +
     "            <div ng-show=\"currentlyPublishing.ebay\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono amazon\"ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
+    "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
     "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
     "        <!--<div class=\"icon icon-mono online-payment\" ng-class=\"{ 'hold': onlinePayment.allow}\" ng-click=\"onlinePayment.allow = !onlinePayment.allow\">-->\n" +

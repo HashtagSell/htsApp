@@ -694,6 +694,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
     $scope.validatePost = function () {
 
+        $scope.alerts.banners = [];
+
         var newPost = $scope.jsonObj;
 
         if (newPost.hashtags.length) {
