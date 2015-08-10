@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -114,3 +114,24 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
     };
 
 }]);
+
+
+htsApp.directive('constructWishListOverlayMessage', function () {
+    return {
+        scope: {
+            offer: '=',
+            post: '='
+        },
+        restrict: 'EA',
+        link: function (scope, element, attr) {
+            console.log('scope', scope);
+            console.log('element', element);
+            console.log('attr', attr);
+            if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
+                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+            } else {
+                attr.$set('message', 'Offer sent to @' + scope.post.username );
+            }
+        }
+    };
+});

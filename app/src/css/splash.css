@@ -152,3 +152,138 @@ a:hover {
 .question-counter-block {
     height: 67px
 }
+
+
+
+
+.photo-carousel {
+    margin-left: 20px;
+}
+
+.photo-description-column {
+    padding-right: 20px;
+}
+
+.splash-profile-nav {
+    margin-top: 0px;
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 35px;
+}
+
+.details-column {
+    margin-left: 20px;
+    padding-top: 13px;
+}
+
+.annotations-column {
+    margin-left: 20px;
+}
+
+
+
+
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .photo-carousel {
+        margin-left: 50px;
+    }
+
+    .photo-description-column {
+        padding-right: 50px;
+    }
+
+    .splash-profile-nav {
+        position: absolute;
+        left: 60%;
+        top: 38px;
+        margin-top: 20px;
+        width: 280px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 0px;
+    }
+
+    .details-column {
+        margin-left: 50px;
+        padding-top: 13px;
+    }
+
+    .annotations-column {
+        margin-left: 50px;
+    }
+}
+
+/* Medium devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+
+    .photo-carousel {
+        margin-left: 20%;
+    }
+
+
+    .photo-description-column {
+        padding-right: 40%;
+    }
+
+
+    .splash-profile-nav {
+        position: absolute;
+        left: 60%;
+        top: 38px;
+        margin-top: 20px;
+        width: 280px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 0px;
+    }
+
+    .details-column {
+        margin-left: 20%;
+        padding-top: 13px;
+    }
+
+    .annotations-column {
+        margin-left: 20%;
+    }
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+    .photo-carousel {
+        margin-left: 20%;
+    }
+
+
+    .photo-description-column {
+        padding-right: 40%;
+    }
+
+
+    .splash-profile-nav {
+        position: absolute;
+        left: 60%;
+        top: 38px;
+        margin-top: 20px;
+        width: 280px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 0px;
+    }
+
+    .details-column {
+        margin-left: 20%;
+        padding-top: 13px;
+    }
+
+    .annotations-column {
+        margin-left: 20%;
+    }
+}
+
+
+
+

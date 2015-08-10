@@ -18,8 +18,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="photo-description-column" style="padding-right: 40%;">
-                            <div class="photocarousel" style="margin-left: 20%;">
+                        <div class="photo-description-column">
+                            <div class="photo-carousel">
                                 <div class="thumbnail" style="padding: 4px 4px 0px 4px;" ng-if="result.images.length">
                                     <div class="row">
                                         <div class="col-xs-12 splashCarousel">
@@ -70,7 +70,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="details-column" style="margin-left: 20%; padding-top: 13px;">
+                            <div class="annotations-column">
                                 <div ng-if="result.sanitized_annotations" class="row">
                                     <div ng-repeat="(key, value) in result.sanitized_annotations">
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
@@ -85,14 +85,14 @@
                                 </div>
                             </div>
                             <br>
-                            <div style="margin-left: 20%;">
+                            <div class="details-column">
                                 <h4>Description:</h4>
                                 <div style="line-height: 20px; padding-bottom: 75px;" ng-bind-html="result.body | cleanBody">
 
                                 </div>
                             </div>
                         </div>
-                        <div class="bs-profile-nav" style="position: absolute; left: 60%; top: 38px;">
+                        <div class="bs-profile-nav splash-profile-nav">
                             <splash-side-profile result="result">
                                 <div class="profile">
                                     <div class="profileCircle">
@@ -107,41 +107,40 @@
                             </splash-side-profile>
 
                             <!--SideNav-->
-                            <div class="list-group splash-bs-side-nav ng-cloak">
+                            <div class="list-group splash-bs-side-nav ng-cloak" ng-if="result.username !== userObj.user_settings.name">
                                 <!--<a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.source_account" ng-click="emailSeller(result)" style="cursor: pointer">-->
                                     <!--<i class="fa fa-envelope-square fa-fw fa-lg"></i>&nbsp; Email seller-->
                                 <!--</a>-->
                                 <!--<a class="list-group-item" ng-if="result.external.source.code == 'CRAIG' && result.annotations.phone" ng-click="displayPhone(result)" style="cursor: pointer">-->
                                     <!--<i class="fa fa-phone-square fa-fw fa-lg"></i>&nbsp; Phone seller-->
                                 <!--</a>-->
-                                <a  class="list-group-item active" ng-if="result.external.source.code === 'HSHTG' && result.user.merchantAccount.details.funding.destination == 'email' && result.askingPrice.value" ng-click="buyOnline(result)" style="cursor: pointer; font-size: 17px;">
-                                    <i class="fa fa-vimeo-square fa-fw fa-lg"></i>&nbsp;
-                                    <span>Buy now</span>
+                                <a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG' && result.askingPrice.value" ng-click="buyOnline(result)" style="cursor: pointer; font-size: 16px; text-align: center">
+                                    <span>Send An Offer</span>
                                 </a>
                                 <!--<a  class="list-group-item" ng-if="result.external.source.code === 'HSHTG'" ng-click="placeOffer(result)" style="cursor: pointer">-->
                                     <!--<i class="fa fa-calendar-o fa-fw fa-lg"></i>&nbsp; Request a meeting-->
                                 <!--</a>-->
-                                <a class="list-group-item"  ng-if="result.external.source.code === 'E_BAY'" ng-click="placeBid(result)" style="cursor: pointer; font-size: 17px;">
-                                    <i class="fa fa-paypal fa-fw fa-lg"></i>&nbsp; Bid on item
+                                <a class="list-group-item"  ng-if="result.external.source.code === 'E_BAY'" ng-click="placeBid(result)" style="cursor: pointer; font-size: 16px;">
+                                    <i class="fa fa-paypal fa-fw fa-lg"></i>&nbsp; Bid On Item
                                 </a>
-                                <a class="list-group-item" ng-click="toggleFave(result)" style="cursor: pointer; font-size: 17px;">
+                                <a class="list-group-item" ng-click="toggleFave(result)" style="cursor: pointer; font-size: 16px;">
                                     <span ng-show="favorited">
-                                        <span ng-show="favorited" ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Remove from watch list
+                                        <span ng-show="favorited" ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Remove From Watch List
                                     </span>
                                     <span ng-show="!favorited">
-                                        <span ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Add to watch list
+                                        <span ng-class="{starHighlighted: favorited, star: !favorited}" class="fa fa-fw fa-lg"></span>&nbsp; Add To Watch List
                                     </span>
                                 </a>
                                 <!--<a class="list-group-item" onclick="alert('spam reporting feature soon')" style="cursor: pointer">-->
                                     <!--<i class="fa fa-flag fa-fw fa-lg"></i>&nbsp; Report-->
                                 <!--</a>-->
-                                <a class="list-group-item" ng-if="result.external.source.url && result.external.source.code != 'HSHTG'" ng-click="showOriginal(result)" style="cursor: pointer; font-size: 17px;">
-                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Show original post
+                                <a class="list-group-item" ng-if="result.external.source.url && result.external.source.code != 'HSHTG'" ng-click="showOriginal(result)" style="cursor: pointer; font-size: 16px;">
+                                    <i class="fa fa-external-link-square fa-fw fa-lg"></i>&nbsp; Show Original Post
                                 </a>
                             </div>
 
 
-                            <div ng-if="result.external.source.code === 'HSHTG'" ng-init="getPostingIdQuestions()">
+                            <div ng-if="result.external.source.code === 'HSHTG' && result.username !== userObj.user_settings.name" ng-init="getPostingIdQuestions()">
                                 <p class="input-group">
                                     <input class="form-control" ng-model="qamodule.question" placeholder="Ask the seller a question" ng-enter="submitQuestion(qamodule.question)"/>
                                     <span class="input-group-btn">

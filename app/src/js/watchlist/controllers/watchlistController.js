@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 10/29/14.
  */
-htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
+htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', 'modalConfirmationService', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log, modalConfirmationService) {
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
 
@@ -42,8 +42,18 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
 
     //Called when user clicks on remove button next to favorite
     $scope.removeFave = function(item){
-        favesFactory.removeFave(item, function () {
-            favesFactory.refreshTable();
+
+        var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Remove',
+            headerText: 'Remove from Watch List?',
+            bodyText: 'You will no longer receive notifications relating to this item.'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            favesFactory.removeFave(item, function () {
+                favesFactory.refreshTable();
+            });
         });
     };
 

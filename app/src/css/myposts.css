@@ -86,33 +86,44 @@
 }
 
 .proposal-sent:after {
-    content: " ";
-    z-index: 10;
+    content: attr(message);
+    font-size: 30px;
+    text-align: center;
+    line-height: 300px;
+    color: #fff;
+    z-index: 2;
     display: block;
     position: absolute;
     height: 100%;
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,.5);
+    border-radius: 2px;
 }
 
 
 
-.proposal-accepted {
-    position: relative;
-}
+/*.proposal-accepted {*/
+    /*position: relative;*/
+    /*line-height:1.5em;*/
+/*}*/
 
 .proposal-accepted:after {
-    content: " ";
-    z-index: 10;
+    content: attr(message);
+    font-size: 30px;
+    text-align: center;
+    line-height: 300px;
+    color: #fff;
+    z-index: 2;
     display: block;
     position: absolute;
     height: 100%;
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(38, 25, 181, 0.5);
+    background: rgba(0,0,0,.5);
+    border-radius: 2px;
 }
 
 

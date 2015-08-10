@@ -20,7 +20,21 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
         } else { //Sub-merchant account is not active .. open modal and get sub-merchant details.
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/submerchant/modals/partials/submerchant.modal.partial.html'
+                templateUrl: 'js/submerchant/modals/partials/submerchant.modal.partial.html',
+                controller: function ($scope, $modalInstance, modalConfirmationService) {
+                    $scope.close = function () {
+                        var modalOptions = {
+                            closeButtonText: 'Go back',
+                            actionButtonText: 'Setup later',
+                            headerText: 'Setup online payment later?',
+                            bodyText: 'By not setting up online payment you can only deal in cash.'
+                        };
+
+                        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+                            $modalInstance.dismiss('abortSubMerchantModal');
+                        });
+                    };
+                }
             });
 
             modalInstance.result.then(function (reason, subMerchantResponse) {

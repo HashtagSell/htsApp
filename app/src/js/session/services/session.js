@@ -422,5 +422,27 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
     };
 
 
+    this.deleteAccount = function () {
+
+        var deferred = $q.defer();
+
+        $http({
+            url: '/user',
+            method: 'DELETE'
+        }).then(function (response) {
+
+                deferred.resolve(response);
+
+            },            //error
+            function (response, status, headers, config) {
+
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
+
+    };
+
+
     return this;
 }]);

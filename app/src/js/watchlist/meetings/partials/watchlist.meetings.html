@@ -1,9 +1,7 @@
 <div ng-repeat="offer in post.offers.results">
 
-
-
     <!--Meeting Requests Awaiting Response-->
-    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-if="userObj.user_settings.name === offer.username" ng-class="{ 'proposal-sent': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }">
+    <div style="border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;" class="col-md-10 col-xs-12" ng-if="userObj.user_settings.name === offer.username" ng-class="{ 'proposal-sent': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }" construct-wish-list-overlay-message offer="offer" post="post" message="css content string dynamically added">
         <div style="background-color: #ffffff; padding: 10px;">
             <div>
                 <img ng-src="{{offer.userProfile.profile_photo}}" height="40" style="position: relative; top: -12px;">

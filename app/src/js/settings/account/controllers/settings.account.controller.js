@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification) {
+htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', 'modalConfirmationService', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification, modalConfirmationService) {
 
     $scope.userObj = Session.userObj;
 
@@ -179,6 +179,34 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
     $scope.disconnectAmazon = function () {
         Session.setSessionValue('amazon', {}, function () {
             console.log('amazon account disconnected!');
+        });
+    };
+
+
+    $scope.deleteAccount = function () {
+
+
+        var modalOptions = {
+            closeButtonText: 'No',
+            actionButtonText: 'Yes',
+            headerText: 'Delete Account?',
+            bodyText: 'Are you sure you want to delete your HashtagSell account?  This action is permanent.'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+
+            Session.deleteAccount().then(function (response) {
+
+                console.log(response);
+
+                Session.destroy();
+
+            }, function (err) {
+
+                console.log(err);
+
+            });
+
         });
     };
 

@@ -8,7 +8,7 @@
 
     <div ng-show="!currentFaves.length" class="background-instructions">
         <div class="inset-background-text">
-            Items you've placed an offer on or starred live here.
+            Place an offer on an item, or star an item, and notifications will appear here.
         </div>
     </div>
 
@@ -92,7 +92,7 @@
                         <h4>No price</h4>
                     </td>
                     <td style="width:20px; vertical-align: middle;">
-                        <i class="fa fa-minus-circle fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="color:red; cursor: pointer;" tooltip="Remove from watch list" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
+                        <i class="fa fa-trash-o fa-2x" ng-click="removeFave(favorite); $event.stopPropagation();" style="cursor: pointer;" tooltip="Remove from watch list" tooltip-trigger="mouseenter" tooltip-placement="left"></i>
                     </td>
                 </tr>
 

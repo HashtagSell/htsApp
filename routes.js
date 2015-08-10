@@ -280,7 +280,7 @@ module.exports = function(app, passport) {
     app.get('/getUserSettings', isLoggedIn, user_settings_api.getUserSettings);
 
 
-
+    app.delete('/user', isLoggedIn, user_settings_api.deleteAccount);
 
     // =====================================
     // PRIVATE BETA ADMIN ACCESS

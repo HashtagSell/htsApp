@@ -350,6 +350,8 @@ exports.meetingAccepted = {
 
                         // found user that provided feedback
                     } else if (sellerUserObj) {
+                        console.log('HERE IS SELLER OBJ');
+                        console.log(sellerUserObj);
                         done(null, buyerUserObj, sellerUserObj);
                     }
                 });

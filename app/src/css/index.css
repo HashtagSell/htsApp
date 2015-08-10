@@ -511,9 +511,6 @@ div.img-div{
 
 
 
-
-
-
 @media screen and (max-width: 992px) {
 
     .navbar-brand {
@@ -597,7 +594,7 @@ div.img-div{
 @media screen and (max-width: 767px) {
 
     .navbar-brand {
-        padding: 9px 22px;
+        padding: 9px 0px;
     }
 
     .overlay {

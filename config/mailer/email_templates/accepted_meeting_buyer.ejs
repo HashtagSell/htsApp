@@ -73,6 +73,10 @@
                                                     <b>Where:</b> <%= emailObj.acceptedProposal.where %>
                                                     <br>
                                                     <br>
+                                                    <b>How Much:</b> $<%= emailObj.post.askingPrice.value %>
+                                                    <br>
+                                                    <br>
+                                                    <% if (emailObj.sellerUserObj.user_settings.merchantAccount.response.status === "active") { %>
                                                     You're welcome to pay with cash, or use our safe and easy online payment option.
                                                     <br>
                                                     <div style="text-align: center;">
@@ -85,6 +89,9 @@
                                                             Pay with Venmo
                                                         </a>
                                                     </div>
+                                                    <% } else{ %>
+                                                    Please bring cash with you as this seller is currently only accepting cash transactions.
+                                                    <% } %>
                                                     <br>
                                                     We'll send you another reminder email 24 hours before your scheduled appointment.
                                                     <br>

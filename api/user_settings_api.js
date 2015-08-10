@@ -76,3 +76,22 @@ exports.getUserSettings = function(req, res) {
         }
     });
 };
+
+
+
+exports.deleteAccount = function (req, res) {
+
+    var id = req.user._id;
+
+    User.findOne({'_id': id}, function (err, user) {
+
+        // if there are any errors, return the error before anything else
+        if (err)
+            return res.json({error: err});
+
+        // if no user is found, return the message
+        if (!user)
+            return res.json({error: "No user found with that email."});
+
+    }).remove().exec();
+};

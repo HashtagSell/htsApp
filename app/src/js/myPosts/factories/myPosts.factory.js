@@ -39,15 +39,19 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
                             var offer = post.offers.results[k];
 
-                            unreadCount++;
 
-                            for(var l = 0; l < offer.proposals.length; l++){
-                                var proposedTime = offer.proposals[l];
 
-                                if(proposedTime.acceptedAt){ //if question does not have answer
-                                    unreadCount--;
-                                }
+                            //for(var l = 0; l < offer.proposals.length; l++){
+                            //    var proposedTime = offer.proposals[l];
+                            //
+                            //    if(proposedTime.acceptedAt){ //if question does not have answer
+                            //        unreadCount--;
+                            //    }
+                            //
+                            //}
 
+                            if(!offer.proposals[offer.proposals.length-1].isOwnerReply && !offer.proposals[offer.proposals.length-1].acceptedAt){
+                                unreadCount++;
                             }
 
                         }

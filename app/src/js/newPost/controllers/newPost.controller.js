@@ -1,4 +1,4 @@
-htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
+htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', 'myPostsFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory, myPostsFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -35,6 +35,8 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
         var modalInstance = $modal.open({
             templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
+            keyboard: false,
+            backdrop: 'static',
             resolve: {
                 newPost : function () {
                     return post;
@@ -46,7 +48,9 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
         }, function (dismissObj) {
             if(dismissObj.reason === "stageTwoSuccess"){
-                $scope.congrats(dismissObj);
+                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+                    $state.go('myposts');
+                });
             }
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -55,26 +59,26 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
 
 
-    $scope.congrats = function (postingObj) {
-
-        var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
-            controller: 'newPostCongrats',
-            resolve: {
-                newPost: function () {
-                    return postingObj;
-                }
-            }
-        });
-
-        modalInstance.result.then(function () {
-
-        }, function (reason) {
-            if(reason === "dismiss"){
-                $state.go('myposts');
-                console.log('Modal dismissed at: ' + new Date());
-            }
-        });
-    };
+    //$scope.congrats = function (postingObj) {
+    //
+    //    var modalInstance = $modal.open({
+    //        templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
+    //        controller: 'newPostCongrats',
+    //        resolve: {
+    //            newPost: function () {
+    //                return postingObj;
+    //            }
+    //        }
+    //    });
+    //
+    //    modalInstance.result.then(function () {
+    //
+    //    }, function (reason) {
+    //        if(reason === "dismiss"){
+    //            $state.go('myposts');
+    //            console.log('Modal dismissed at: ' + new Date());
+    //        }
+    //    });
+    //};
 
 }]);

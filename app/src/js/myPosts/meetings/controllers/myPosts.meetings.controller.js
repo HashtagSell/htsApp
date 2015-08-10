@@ -123,3 +123,25 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
     }
 
 }]);
+
+
+
+htsApp.directive('constructMyPostsOverlayMessage', function () {
+    return {
+        scope: {
+            offer: '=',
+            post: '='
+        },
+        restrict: 'EA',
+        link: function (scope, element, attr) {
+            console.log('scope', scope);
+            console.log('element', element);
+            console.log('attr', attr);
+            if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
+                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+            } else {
+                attr.$set('message', 'Offer sent to @' + scope.offer.username );
+            }
+        }
+    };
+});

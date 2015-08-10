@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -172,40 +172,49 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
         console.log(post);
 
-        myPostsFactory.deletePost(post).then(function(response){
+        var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Delete Post',
+            headerText: 'Delete Your Post?',
+            bodyText: 'Are you sure you want to delete this post?'
+        };
 
-            if(response.status === 204) {
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            myPostsFactory.deletePost(post).then(function(response){
 
-                socketio.leavePostingRoom(post.postingId, 'postingOwner');
+                if(response.status === 204) {
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function(response){
+                    socketio.leavePostingRoom(post.postingId, 'postingOwner');
 
-                    if(response.status === 200) {
+                    myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function(response){
 
-                    } else {
+                        if(response.status === 200) {
 
-                        Notification.error({
-                            title: 'Whoops',
-                            message: 'Please notify support.  We coulnd\'t refresh your myPosts list after deleting an item.' ,
-                            delay: 10000
-                        });  //Send the webtoast
+                        } else {
 
-                        alert('could not refresh myPost list after deleting item.  contact support.');
+                            Notification.error({
+                                title: 'Whoops',
+                                message: 'Please notify support.  We coulnd\'t refresh your myPosts list after deleting an item.' ,
+                                delay: 10000
+                            });  //Send the webtoast
 
-                    }
+                            alert('could not refresh myPost list after deleting item.  contact support.');
 
-                });
+                        }
 
-            } else {
+                    });
 
-                Notification.error({
-                    title: 'Whoops',
-                    message: 'Please notify support.  We coulnd\'t delete your item for some reason.' ,
-                    delay: 10000
-                });  //Send the webtoast
+                } else {
 
-            }
+                    Notification.error({
+                        title: 'Whoops',
+                        message: 'Please notify support.  We coulnd\'t delete your item for some reason.' ,
+                        delay: 10000
+                    });  //Send the webtoast
 
+                }
+
+            });
         });
     };
 

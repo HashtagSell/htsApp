@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService) {
 
 
     $scope.showDemo = false;
@@ -596,8 +596,18 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     $scope.dismiss = function (reason) {
-        $scope.resetAll();
-        $modalInstance.dismiss(reason);
+
+        var modalOptions = {
+            closeButtonText: 'No',
+            actionButtonText: 'Yes',
+            headerText: 'Cancel New Post?',
+            bodyText: 'Your new post has not been saved.  Are you sure you want to cancel your new post?'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            $scope.resetAll();
+            $modalInstance.dismiss(reason);
+        });
     };
 
     //Wait until modalinstance initialized then setup dropzone

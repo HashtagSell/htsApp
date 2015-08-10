@@ -3492,9 +3492,63 @@ htsApp.factory('metaFactory', function () {
     return factory;
 });
 /**
+ * Created by braddavis on 8/9/15.
+ */
+htsApp.service('modalConfirmationService', ['$modal',
+    function ($modal) {
+
+        var modalDefaults = {
+            backdrop: true,
+            keyboard: true,
+            modalFade: true,
+            templateUrl: 'js/modalConfirmation/partials/modalConfirmation.html'
+        };
+
+        var modalOptions = {
+            closeButtonText: 'Close',
+            actionButtonText: 'OK',
+            headerText: 'Proceed?',
+            bodyText: 'Perform this action?'
+        };
+
+        this.showModal = function (customModalDefaults, customModalOptions) {
+            if (!customModalDefaults) customModalDefaults = {};
+            customModalDefaults.backdrop = 'static';
+            return this.show(customModalDefaults, customModalOptions);
+        };
+
+        this.show = function (customModalDefaults, customModalOptions) {
+            //Create temp objects to work with since we're in a singleton service
+            var tempModalDefaults = {};
+            var tempModalOptions = {};
+
+            //Map angular-ui modal custom defaults to modal defaults defined in service
+            angular.extend(tempModalDefaults, modalDefaults, customModalDefaults);
+
+            //Map modal.html $scope custom properties to defaults defined in service
+            angular.extend(tempModalOptions, modalOptions, customModalOptions);
+
+            if (!tempModalDefaults.controller) {
+                tempModalDefaults.controller = function ($scope, $modalInstance) {
+                    $scope.modalOptions = tempModalOptions;
+                    $scope.modalOptions.ok = function (result) {
+                        $modalInstance.close(result);
+                    };
+                    $scope.modalOptions.close = function (result) {
+                        $modalInstance.dismiss('cancel');
+                    };
+                };
+            }
+
+            return $modal.open(tempModalDefaults).result;
+        };
+
+    }]);
+
+/**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -3665,40 +3719,49 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
         console.log(post);
 
-        myPostsFactory.deletePost(post).then(function(response){
+        var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Delete Post',
+            headerText: 'Delete Your Post?',
+            bodyText: 'Are you sure you want to delete this post?'
+        };
 
-            if(response.status === 204) {
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            myPostsFactory.deletePost(post).then(function(response){
 
-                socketio.leavePostingRoom(post.postingId, 'postingOwner');
+                if(response.status === 204) {
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function(response){
+                    socketio.leavePostingRoom(post.postingId, 'postingOwner');
 
-                    if(response.status === 200) {
+                    myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function(response){
 
-                    } else {
+                        if(response.status === 200) {
 
-                        Notification.error({
-                            title: 'Whoops',
-                            message: 'Please notify support.  We coulnd\'t refresh your myPosts list after deleting an item.' ,
-                            delay: 10000
-                        });  //Send the webtoast
+                        } else {
 
-                        alert('could not refresh myPost list after deleting item.  contact support.');
+                            Notification.error({
+                                title: 'Whoops',
+                                message: 'Please notify support.  We coulnd\'t refresh your myPosts list after deleting an item.' ,
+                                delay: 10000
+                            });  //Send the webtoast
 
-                    }
+                            alert('could not refresh myPost list after deleting item.  contact support.');
 
-                });
+                        }
 
-            } else {
+                    });
 
-                Notification.error({
-                    title: 'Whoops',
-                    message: 'Please notify support.  We coulnd\'t delete your item for some reason.' ,
-                    delay: 10000
-                });  //Send the webtoast
+                } else {
 
-            }
+                    Notification.error({
+                        title: 'Whoops',
+                        message: 'Please notify support.  We coulnd\'t delete your item for some reason.' ,
+                        delay: 10000
+                    });  //Send the webtoast
 
+                }
+
+            });
         });
     };
 
@@ -3799,15 +3862,19 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
                             var offer = post.offers.results[k];
 
-                            unreadCount++;
 
-                            for(var l = 0; l < offer.proposals.length; l++){
-                                var proposedTime = offer.proposals[l];
 
-                                if(proposedTime.acceptedAt){ //if question does not have answer
-                                    unreadCount--;
-                                }
+                            //for(var l = 0; l < offer.proposals.length; l++){
+                            //    var proposedTime = offer.proposals[l];
+                            //
+                            //    if(proposedTime.acceptedAt){ //if question does not have answer
+                            //        unreadCount--;
+                            //    }
+                            //
+                            //}
 
+                            if(!offer.proposals[offer.proposals.length-1].isOwnerReply && !offer.proposals[offer.proposals.length-1].acceptedAt){
+                                unreadCount++;
                             }
 
                         }
@@ -4153,6 +4220,28 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
     }
 
 }]);
+
+
+
+htsApp.directive('constructMyPostsOverlayMessage', function () {
+    return {
+        scope: {
+            offer: '=',
+            post: '='
+        },
+        restrict: 'EA',
+        link: function (scope, element, attr) {
+            console.log('scope', scope);
+            console.log('element', element);
+            console.log('attr', attr);
+            if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
+                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+            } else {
+                attr.$set('message', 'Offer sent to @' + scope.offer.username );
+            }
+        }
+    };
+});
 /**
  * Created by braddavis on 4/1/15.
  */
@@ -4698,7 +4787,7 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
     return factory;
 }]);
-htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory) {
+htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFactory', 'Session', 'authModalFactory', 'myPostsFactory', function ($scope, $modal, $state, newPostFactory, Session, authModalFactory, myPostsFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -4735,6 +4824,8 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
         var modalInstance = $modal.open({
             templateUrl: 'js/newPost/modals/pushToExternalSources/partials/newPost.pushToExternalSources.html',
             controller: 'pushNewPostToExternalSources',
+            keyboard: false,
+            backdrop: 'static',
             resolve: {
                 newPost : function () {
                     return post;
@@ -4746,7 +4837,9 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
         }, function (dismissObj) {
             if(dismissObj.reason === "stageTwoSuccess"){
-                $scope.congrats(dismissObj);
+                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+                    $state.go('myposts');
+                });
             }
             console.log('Modal dismissed at: ' + new Date());
         });
@@ -4755,27 +4848,27 @@ htsApp.controller('newPostController', ['$scope', '$modal', '$state', 'newPostFa
 
 
 
-    $scope.congrats = function (postingObj) {
-
-        var modalInstance = $modal.open({
-            templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
-            controller: 'newPostCongrats',
-            resolve: {
-                newPost: function () {
-                    return postingObj;
-                }
-            }
-        });
-
-        modalInstance.result.then(function () {
-
-        }, function (reason) {
-            if(reason === "dismiss"){
-                $state.go('myposts');
-                console.log('Modal dismissed at: ' + new Date());
-            }
-        });
-    };
+    //$scope.congrats = function (postingObj) {
+    //
+    //    var modalInstance = $modal.open({
+    //        templateUrl: 'js/newPost/modals/congrats/partials/newPost.congrats.html',
+    //        controller: 'newPostCongrats',
+    //        resolve: {
+    //            newPost: function () {
+    //                return postingObj;
+    //            }
+    //        }
+    //    });
+    //
+    //    modalInstance.result.then(function () {
+    //
+    //    }, function (reason) {
+    //        if(reason === "dismiss"){
+    //            $state.go('myposts');
+    //            console.log('Modal dismissed at: ' + new Date());
+    //        }
+    //    });
+    //};
 
 }]);
 
@@ -4807,7 +4900,7 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService) {
 
 
     $scope.showDemo = false;
@@ -5402,8 +5495,18 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     };
 
     $scope.dismiss = function (reason) {
-        $scope.resetAll();
-        $modalInstance.dismiss(reason);
+
+        var modalOptions = {
+            closeButtonText: 'No',
+            actionButtonText: 'Yes',
+            headerText: 'Cancel New Post?',
+            bodyText: 'Your new post has not been saved.  Are you sure you want to cancel your new post?'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            $scope.resetAll();
+            $modalInstance.dismiss(reason);
+        });
     };
 
     //Wait until modalinstance initialized then setup dropzone
@@ -8305,12 +8408,34 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
     };
 
 
+    this.deleteAccount = function () {
+
+        var deferred = $q.defer();
+
+        $http({
+            url: '/user',
+            method: 'DELETE'
+        }).then(function (response) {
+
+                deferred.resolve(response);
+
+            },            //error
+            function (response, status, headers, config) {
+
+                deferred.reject(response);
+            });
+
+        return deferred.promise;
+
+    };
+
+
     return this;
 }]);
 /**
  * Created by braddavis on 11/29/14.
  */
-htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification) {
+htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', 'modalConfirmationService', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification, modalConfirmationService) {
 
     $scope.userObj = Session.userObj;
 
@@ -8488,6 +8613,34 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
     $scope.disconnectAmazon = function () {
         Session.setSessionValue('amazon', {}, function () {
             console.log('amazon account disconnected!');
+        });
+    };
+
+
+    $scope.deleteAccount = function () {
+
+
+        var modalOptions = {
+            closeButtonText: 'No',
+            actionButtonText: 'Yes',
+            headerText: 'Delete Account?',
+            bodyText: 'Are you sure you want to delete your HashtagSell account?  This action is permanent.'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+
+            Session.deleteAccount().then(function (response) {
+
+                console.log(response);
+
+                Session.destroy();
+
+            }, function (err) {
+
+                console.log(err);
+
+            });
+
         });
     };
 
@@ -9231,105 +9384,106 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 
         console.log('emitted update-offer request', emit);
 
-        //TODO: Need the offer object to include the sellers username
-        if(emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
+        if(!emit.offer.proposals[emit.offer.proposals.length - 1].acceptedAt) {
 
-            favesFactory.checkFave(emit.posting, function (favorited) {
+            //TODO: Need the offer object to include the sellers username
+            if (emit.username === socketio.cachedUsername) { //If currently logged in user is the user who caused the emit then inform them the their meeting request is sent
 
-                if(favorited){ //The user sending the meeting request already has the item in their watchlist
+                favesFactory.checkFave(emit.posting, function (favorited) {
 
-                    if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply){
+                    if (favorited) { //The user sending the meeting request already has the item in their watchlist
 
-                        favesFactory.updateFavorite(emit, function () {
+                        if (emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply) {
 
-                            var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+                            favesFactory.updateFavorite(emit, function () {
 
-                            Notification.primary({
-                                title: '<a href=' + url + '>Counter Offer Received</a>',
-                                message: '<a href=' + url + '>The seller has responded with a counter offer</a>',
-                                delay: 10000
-                            });  //Send the webtoast
+                                var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
-                        });
+                                Notification.primary({
+                                    title: '<a href=' + url + '>Counter Offer Received</a>',
+                                    message: '<a href=' + url + '>The seller has responded with a counter offer</a>',
+                                    delay: 10000
+                                });  //Send the webtoast
 
-                    } else {
+                            });
 
-                        favesFactory.updateFavorite(emit, function () {
+                        } else {
+
+                            favesFactory.updateFavorite(emit, function () {
+
+                                var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                                Notification.primary({
+                                    title: '<a href=' + url + '>Counter Offer Sent!</a>',
+                                    message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
+                                    delay: 10000
+                                });  //Send the webtoast
+
+                            });
+                        }
+
+                    } else { //The user sending the meeting request does not have this item in their watchlist.
+
+                        favesFactory.addFave(emit.posting, function () {
 
                             var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
 
                             Notification.primary({
                                 title: '<a href=' + url + '>Counter Offer Sent!</a>',
-                                message: '<a href=' + url + '>This watchlist item has been updated. You\'ll be notified when the seller responds.</a>',
+                                message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
                                 delay: 10000
                             });  //Send the webtoast
 
                         });
+
                     }
 
-                } else { //The user sending the meeting request does not have this item in their watchlist.
+                });
 
-                    favesFactory.addFave(emit.posting, function(){
 
-                        var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+            } else if (emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
+
+
+                if (emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply) {
+
+                    //Update owners meeting request and notify them.
+                    myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                        var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
 
                         Notification.primary({
-                            title: '<a href=' + url + '>Counter Offer Sent!</a>',
-                            message: '<a href=' + url + '>This item has been added to your watchlist. You\'ll be notified when the seller responds.</a>',
+                            title: '<a href=' + url + '>Counter Offer Sent</a>',
+                            message: '<a href=' + url + '>You\'ll be notified when the buyer responds.</a>',
                             delay: 10000
                         });  //Send the webtoast
 
                     });
 
+                } else {
+
+                    //Update owners meeting request and notify them.
+                    myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                        var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                        Notification.primary({
+                            title: '<a href=' + url + '>Counter Offer Received</a>',
+                            message: '<a href=' + url + '>@' + emit.username + ' has updated their offer.</a>',
+                            delay: 10000
+                        });  //Send the webtoast
+
+                    });
                 }
 
-            });
-
-
-
-        } else if(emit.posting.username === socketio.cachedUsername) { //If the currently logged in user owns the item the meeting request was placed on
-
-
-
-            if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply){
-
-                //Update owners meeting request and notify them.
-                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
-
-                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
-
-                    Notification.primary({
-                        title: '<a href=' + url + '>Counter Offer Sent</a>',
-                        message: '<a href=' + url + '>You\'ll be notified when the buyer responds.</a>',
-                        delay: 10000
-                    });  //Send the webtoast
-
-                });
-
-            } else {
-
-                //Update owners meeting request and notify them.
-                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
-
-                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
-
-                    Notification.primary({
-                        title: '<a href=' + url + '>Counter Offer Received</a>',
-                        message: '<a href=' + url + '>@' + emit.username + ' has updated their offer.</a>',
-                        delay: 10000
-                    });  //Send the webtoast
-
-                });
             }
 
+            console.log(
+                '%s sent a counter offer %s regarding postingId: "%s"',
+                emit.username,
+                emit.proposals,
+                emit.posting.postingId
+            );
         }
-
-        console.log(
-            '%s sent a counter offer %s regarding postingId: "%s"',
-            emit.username,
-            emit.proposals,
-            emit.posting.postingId
-        );
     });
 
 
@@ -9504,7 +9658,7 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
 
                 Notification.primary({
                     title: '<a href=' + url + '>Offer Cancelled</a>',
-                    message: '<a href=' + url + '>@' + emit.username + ' Had cancel their offer.</a>',
+                    message: '<a href=' + url + '>@' + emit.username + ' Had tocancel their offer.</a>',
                     delay: 10000
                 });  //Send the webtoast
 
@@ -10207,7 +10361,21 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
         } else { //Sub-merchant account is not active .. open modal and get sub-merchant details.
 
             var modalInstance = $modal.open({
-                templateUrl: 'js/submerchant/modals/partials/submerchant.modal.partial.html'
+                templateUrl: 'js/submerchant/modals/partials/submerchant.modal.partial.html',
+                controller: ['$scope', '$modalInstance', 'modalConfirmationService', function ($scope, $modalInstance, modalConfirmationService) {
+                    $scope.close = function () {
+                        var modalOptions = {
+                            closeButtonText: 'Go back',
+                            actionButtonText: 'Setup later',
+                            headerText: 'Setup online payment later?',
+                            bodyText: 'By not setting up online payment you can only deal in cash.'
+                        };
+
+                        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+                            $modalInstance.dismiss('abortSubMerchantModal');
+                        });
+                    };
+                }]
             });
 
             modalInstance.result.then(function (reason, subMerchantResponse) {
@@ -11979,7 +12147,7 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 /**
  * Created by braddavis on 10/29/14.
  */
-htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log) {
+htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory', 'splashFactory', '$state', 'ngTableParams', '$filter', 'Session', 'quickComposeFactory', '$modal', '$log', 'modalConfirmationService', function($scope, $rootScope, favesFactory, splashFactory, $state, ngTableParams, $filter, Session, quickComposeFactory, $modal, $log, modalConfirmationService) {
 
     $scope.currentFaves = Session.userObj.user_settings.favorites;
 
@@ -12020,8 +12188,18 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
 
     //Called when user clicks on remove button next to favorite
     $scope.removeFave = function(item){
-        favesFactory.removeFave(item, function () {
-            favesFactory.refreshTable();
+
+        var modalOptions = {
+            closeButtonText: 'Cancel',
+            actionButtonText: 'Remove',
+            headerText: 'Remove from Watch List?',
+            bodyText: 'You will no longer receive notifications relating to this item.'
+        };
+
+        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+            favesFactory.removeFave(item, function () {
+                favesFactory.refreshTable();
+            });
         });
     };
 
@@ -12401,7 +12579,7 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -12514,6 +12692,27 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', 'Session', 'meetin
     };
 
 }]);
+
+
+htsApp.directive('constructWishListOverlayMessage', function () {
+    return {
+        scope: {
+            offer: '=',
+            post: '='
+        },
+        restrict: 'EA',
+        link: function (scope, element, attr) {
+            console.log('scope', scope);
+            console.log('element', element);
+            console.log('attr', attr);
+            if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
+                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+            } else {
+                attr.$set('message', 'Offer sent to @' + scope.post.username );
+            }
+        }
+    };
+});
 /**
  * Created by braddavis on 4/1/15.
  */
@@ -13767,10 +13966,26 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
   );
 
 
+  $templateCache.put('js/modalConfirmation/partials/modalConfirmation.html',
+    "<div class=\"modal-header\">\n" +
+    "    <h3>{{modalOptions.headerText}}</h3>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <p>{{modalOptions.bodyText}}</p>\n" +
+    "</div>\n" +
+    "<div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" class=\"btn\"\n" +
+    "            data-ng-click=\"modalOptions.close()\">{{modalOptions.closeButtonText}}</button>\n" +
+    "    <button class=\"btn btn-primary\"\n" +
+    "            data-ng-click=\"modalOptions.ok();\">{{modalOptions.actionButtonText}}</button>\n" +
+    "</div>"
+  );
+
+
   $templateCache.put('js/myPosts/meetings/partials/myPosts.meetings.html',
     "<div ng-repeat=\"offer in post.offers.results\">\n" +
     "\n" +
-    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-class=\"{ 'proposal-sent': offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }\">\n" +
+    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-class=\"{ 'proposal-sent': offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }\" ng-class=\"{ 'proposal-sent': offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }\" construct-my-posts-overlay-message offer=\"offer\" post=\"post\" message=\"css content string dynamically added\">\n" +
     "        <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
     "            <div>\n" +
     "                <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
@@ -13906,8 +14121,8 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                </div>\n" +
     "\n" +
     "                                <div style=\"float: right;\">\n" +
-    "                                    <i class=\"fa fa-minus-circle fa-2x\" ng-click=\"deletePost(post); $event.stopPropagation();\" style=\"color:red; margin-right: 20px;\" tooltip=\"Delete post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
-    "                                    <i class=\"fa fa-pencil-square-o fa-2x\" ng-click=\"editPost(post); $event.stopPropagation();\" style=\"color:#494949; margin-right: 20px;\" tooltip=\"Edit post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
+    "                                    <i class=\"fa fa-trash-o fa-2x\" ng-click=\"deletePost(post); $event.stopPropagation();\" style=\"margin-right: 20px;\" tooltip=\"Delete post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
+    "                                    <i class=\"fa fa-pencil-square-o fa-2x\" ng-click=\"editPost(post); $event.stopPropagation();\" style=\"margin-right: 20px;\" tooltip=\"Edit post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
     "                                </div>\n" +
     "                            </td>\n" +
     "                        </tr>\n" +
@@ -14218,7 +14433,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "         !currentlyPublishing.publishing && shareToggles.amazon\">Share</span>\n" +
     "\n" +
     "\n" +
-    "        <span ng-show=\"!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon\">Continue</span>\n" +
+    "        <span ng-show=\"!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon\">Continue without sharing</span>\n" +
     "\n" +
     "        <span ng-show=\"currentlyPublishing.publishing\">Please wait</span>\n" +
     "    </button>\n" +
@@ -14584,23 +14799,23 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "<div class=\"container\">\n" +
     "    <form class=\"form-horizontal\">\n" +
-    "        <div class=\"form-group has-feedback\" ng-class=\"safeSearchUpdated ? 'has-success' : ''\">\n" +
-    "            <label class=\"col-sm-2 control-label\">Safe Search</label>\n" +
-    "            <div class=\"col-sm-2\">\n" +
-    "                <select class=\"form-control\" ng-model=\"safeSearch\" ng-options=\"opt for opt in options.safeSearch\" ng-change=\"setSafeSearch(safeSearch)\"></select>\n" +
-    "                <span ng-show=\"safeSearchUpdated\" class=\"glyphicon glyphicon-ok form-control-feedback\" aria-hidden=\"true\"></span>\n" +
-    "                <!--<i ng-show=\"safeSearchUpdated\" class=\"fa fa-check-circle fa-2x safeSearch-checkmark\"></i>-->\n" +
-    "            </div>\n" +
-    "        </div>\n" +
+    "        <!--<div class=\"form-group has-feedback\" ng-class=\"safeSearchUpdated ? 'has-success' : ''\">-->\n" +
+    "            <!--<label class=\"col-sm-2 control-label\">Safe Search</label>-->\n" +
+    "            <!--<div class=\"col-sm-2\">-->\n" +
+    "                <!--<select class=\"form-control\" ng-model=\"safeSearch\" ng-options=\"opt for opt in options.safeSearch\" ng-change=\"setSafeSearch(safeSearch)\"></select>-->\n" +
+    "                <!--<span ng-show=\"safeSearchUpdated\" class=\"glyphicon glyphicon-ok form-control-feedback\" aria-hidden=\"true\"></span>-->\n" +
+    "                <!--&lt;!&ndash;<i ng-show=\"safeSearchUpdated\" class=\"fa fa-check-circle fa-2x safeSearch-checkmark\"></i>&ndash;&gt;-->\n" +
+    "            <!--</div>-->\n" +
+    "        <!--</div>-->\n" +
     "\n" +
-    "        <div class=\"form-group has-feedback\" ng-class=\"defaultEmailUpdated ? 'has-success' : ''\">\n" +
-    "            <label class=\"col-sm-2 control-label\">Default Email</label>\n" +
-    "            <div class=\"col-sm-2\">\n" +
-    "                <select class=\"form-control\" ng-model=\"defaultEmail\" ng-options=\"opt.value as opt.name for opt in options.defaultEmail\" ng-change=\"setDefaultEmail(defaultEmail)\"></select>\n" +
-    "                <span ng-show=\"defaultEmailUpdated\" class=\"glyphicon glyphicon-ok form-control-feedback\" aria-hidden=\"true\"></span>\n" +
-    "                <!--<i ng-show=\"defaultEmailUpdated\" class=\"fa fa-check-circle fa-2x defaultEmail-checkmark\"></i>-->\n" +
-    "            </div>\n" +
-    "        </div>\n" +
+    "        <!--<div class=\"form-group has-feedback\" ng-class=\"defaultEmailUpdated ? 'has-success' : ''\">-->\n" +
+    "            <!--<label class=\"col-sm-2 control-label\">Default Email</label>-->\n" +
+    "            <!--<div class=\"col-sm-2\">-->\n" +
+    "                <!--<select class=\"form-control\" ng-model=\"defaultEmail\" ng-options=\"opt.value as opt.name for opt in options.defaultEmail\" ng-change=\"setDefaultEmail(defaultEmail)\"></select>-->\n" +
+    "                <!--<span ng-show=\"defaultEmailUpdated\" class=\"glyphicon glyphicon-ok form-control-feedback\" aria-hidden=\"true\"></span>-->\n" +
+    "                <!--&lt;!&ndash;<i ng-show=\"defaultEmailUpdated\" class=\"fa fa-check-circle fa-2x defaultEmail-checkmark\"></i>&ndash;&gt;-->\n" +
+    "            <!--</div>-->\n" +
+    "        <!--</div>-->\n" +
     "\n" +
     "        <div class=\"form-group\">\n" +
     "\n" +
@@ -14610,7 +14825,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            </div>\n" +
     "            <div class=\"col-sm-5\" ng-show=\"userObj.user_settings.linkedAccounts.facebook.id\">\n" +
     "                <!--<img ng-src=\"http://graph.facebook.com/v2.3/{{userObj.user_settings.linkedAccounts.facebook.id}}/picture\">-->\n" +
-    "                <a ng-click=\"disconnectFacebook()\"><small>Disconnect my Facebook</small></a>\n" +
+    "                <a ng-click=\"disconnectFacebook()\" class=\"btn btn-primary btn-sm\">Disconnect my Facebook</a>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "\n" +
@@ -14620,21 +14835,29 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                <a href=\"/auth/twitter\" target=\"_self\" class=\"btn btn-info btn-sm\"><span class=\"fa fa-twitter\"></span> Link Twitter</a>\n" +
     "            </div>\n" +
     "            <div class=\"col-sm-5\" ng-show=\"userObj.user_settings.linkedAccounts.twitter.id\">\n" +
-    "                <a ng-click=\"disconnectTwitter()\"><small>Disconnect my Twitter</small></a>\n" +
+    "                <a ng-click=\"disconnectTwitter()\" class=\"btn btn-info btn-sm\">Disconnect my Twitter</a>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "\n" +
     "        <div class=\"form-group\">\n" +
     "            <label class=\"col-sm-2 control-label\">eBay</label>\n" +
     "            <div class=\"col-sm-5\" ng-show=\"!userObj.user_settings.linkedAccounts.ebay.eBayAuthToken\">\n" +
-    "                <button ng-click=\"getEbaySessionID()\" ng-disabled=\"ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 1: Sign In</button>\n" +
-    "                <button ng-click=\"getEbayToken()\" ng-disabled=\"!ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 2: Link Accounts</button>\n" +
+    "                <a ng-click=\"getEbaySessionID()\" target=\"_self\" class=\"btn btn-warning btn-sm\"> Link Ebay</a>\n" +
+    "                <!--<button ng-click=\"getEbaySessionID()\" ng-disabled=\"ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 1: Sign In</button>-->\n" +
+    "                <!--<button ng-click=\"getEbayToken()\" ng-disabled=\"!ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 2: Link Accounts</button>-->\n" +
     "                <div>\n" +
     "                    <small ng-show=\"ebay.err\" class=\"text-danger\">{{ebay.err}}</small>\n" +
     "                </div>\n" +
     "            </div>\n" +
     "            <div class=\"col-sm-5\" ng-show=\"userObj.user_settings.linkedAccounts.ebay.eBayAuthToken\">\n" +
-    "                <a ng-click=\"disconnectEbay()\"><small>Disconnect my eBay</small></a>\n" +
+    "                <a ng-click=\"disconnectEbay()\" class=\"btn btn-warning btn-sm\">Disconnect my eBay</a>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"form-group\">\n" +
+    "            <label class=\"col-sm-2 control-label\">Delete Account</label>\n" +
+    "            <div class=\"col-sm-5\">\n" +
+    "                <a ng-click=\"deleteAccount()\" target=\"_self\" class=\"btn btn-danger btn-sm\"> Delete Entire Account</a>\n" +
     "            </div>\n" +
     "        </div>\n" +
     "\n" +
@@ -14883,8 +15106,8 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                </ul>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
-    "                        <div class=\"photo-description-column\" style=\"padding-right: 40%;\">\n" +
-    "                            <div class=\"photocarousel\" style=\"margin-left: 20%;\">\n" +
+    "                        <div class=\"photo-description-column\">\n" +
+    "                            <div class=\"photo-carousel\">\n" +
     "                                <div class=\"thumbnail\" style=\"padding: 4px 4px 0px 4px;\" ng-if=\"result.images.length\">\n" +
     "                                    <div class=\"row\">\n" +
     "                                        <div class=\"col-xs-12 splashCarousel\">\n" +
@@ -14935,7 +15158,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                    </div>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
-    "                            <div class=\"details-column\" style=\"margin-left: 20%; padding-top: 13px;\">\n" +
+    "                            <div class=\"annotations-column\">\n" +
     "                                <div ng-if=\"result.sanitized_annotations\" class=\"row\">\n" +
     "                                    <div ng-repeat=\"(key, value) in result.sanitized_annotations\">\n" +
     "                                        <div class=\"col-lg-4 col-md-4 col-sm-4 col-xs-4\">\n" +
@@ -14950,14 +15173,14 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                </div>\n" +
     "                            </div>\n" +
     "                            <br>\n" +
-    "                            <div style=\"margin-left: 20%;\">\n" +
+    "                            <div class=\"details-column\">\n" +
     "                                <h4>Description:</h4>\n" +
     "                                <div style=\"line-height: 20px; padding-bottom: 75px;\" ng-bind-html=\"result.body | cleanBody\">\n" +
     "\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
-    "                        <div class=\"bs-profile-nav\" style=\"position: absolute; left: 60%; top: 38px;\">\n" +
+    "                        <div class=\"bs-profile-nav splash-profile-nav\">\n" +
     "                            <splash-side-profile result=\"result\">\n" +
     "                                <div class=\"profile\">\n" +
     "                                    <div class=\"profileCircle\">\n" +
@@ -14972,41 +15195,40 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                            </splash-side-profile>\n" +
     "\n" +
     "                            <!--SideNav-->\n" +
-    "                            <div class=\"list-group splash-bs-side-nav ng-cloak\">\n" +
+    "                            <div class=\"list-group splash-bs-side-nav ng-cloak\" ng-if=\"result.username !== userObj.user_settings.name\">\n" +
     "                                <!--<a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.source_account\" ng-click=\"emailSeller(result)\" style=\"cursor: pointer\">-->\n" +
     "                                    <!--<i class=\"fa fa-envelope-square fa-fw fa-lg\"></i>&nbsp; Email seller-->\n" +
     "                                <!--</a>-->\n" +
     "                                <!--<a class=\"list-group-item\" ng-if=\"result.external.source.code == 'CRAIG' && result.annotations.phone\" ng-click=\"displayPhone(result)\" style=\"cursor: pointer\">-->\n" +
     "                                    <!--<i class=\"fa fa-phone-square fa-fw fa-lg\"></i>&nbsp; Phone seller-->\n" +
     "                                <!--</a>-->\n" +
-    "                                <a  class=\"list-group-item active\" ng-if=\"result.external.source.code === 'HSHTG' && result.user.merchantAccount.details.funding.destination == 'email' && result.askingPrice.value\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
-    "                                    <i class=\"fa fa-vimeo-square fa-fw fa-lg\"></i>&nbsp;\n" +
-    "                                    <span>Buy now</span>\n" +
+    "                                <a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG' && result.askingPrice.value\" ng-click=\"buyOnline(result)\" style=\"cursor: pointer; font-size: 16px; text-align: center\">\n" +
+    "                                    <span>Send An Offer</span>\n" +
     "                                </a>\n" +
     "                                <!--<a  class=\"list-group-item\" ng-if=\"result.external.source.code === 'HSHTG'\" ng-click=\"placeOffer(result)\" style=\"cursor: pointer\">-->\n" +
     "                                    <!--<i class=\"fa fa-calendar-o fa-fw fa-lg\"></i>&nbsp; Request a meeting-->\n" +
     "                                <!--</a>-->\n" +
-    "                                <a class=\"list-group-item\"  ng-if=\"result.external.source.code === 'E_BAY'\" ng-click=\"placeBid(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
-    "                                    <i class=\"fa fa-paypal fa-fw fa-lg\"></i>&nbsp; Bid on item\n" +
+    "                                <a class=\"list-group-item\"  ng-if=\"result.external.source.code === 'E_BAY'\" ng-click=\"placeBid(result)\" style=\"cursor: pointer; font-size: 16px;\">\n" +
+    "                                    <i class=\"fa fa-paypal fa-fw fa-lg\"></i>&nbsp; Bid On Item\n" +
     "                                </a>\n" +
-    "                                <a class=\"list-group-item\" ng-click=\"toggleFave(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
+    "                                <a class=\"list-group-item\" ng-click=\"toggleFave(result)\" style=\"cursor: pointer; font-size: 16px;\">\n" +
     "                                    <span ng-show=\"favorited\">\n" +
-    "                                        <span ng-show=\"favorited\" ng-class=\"{starHighlighted: favorited, star: !favorited}\" class=\"fa fa-fw fa-lg\"></span>&nbsp; Remove from watch list\n" +
+    "                                        <span ng-show=\"favorited\" ng-class=\"{starHighlighted: favorited, star: !favorited}\" class=\"fa fa-fw fa-lg\"></span>&nbsp; Remove From Watch List\n" +
     "                                    </span>\n" +
     "                                    <span ng-show=\"!favorited\">\n" +
-    "                                        <span ng-class=\"{starHighlighted: favorited, star: !favorited}\" class=\"fa fa-fw fa-lg\"></span>&nbsp; Add to watch list\n" +
+    "                                        <span ng-class=\"{starHighlighted: favorited, star: !favorited}\" class=\"fa fa-fw fa-lg\"></span>&nbsp; Add To Watch List\n" +
     "                                    </span>\n" +
     "                                </a>\n" +
     "                                <!--<a class=\"list-group-item\" onclick=\"alert('spam reporting feature soon')\" style=\"cursor: pointer\">-->\n" +
     "                                    <!--<i class=\"fa fa-flag fa-fw fa-lg\"></i>&nbsp; Report-->\n" +
     "                                <!--</a>-->\n" +
-    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.url && result.external.source.code != 'HSHTG'\" ng-click=\"showOriginal(result)\" style=\"cursor: pointer; font-size: 17px;\">\n" +
-    "                                    <i class=\"fa fa-external-link-square fa-fw fa-lg\"></i>&nbsp; Show original post\n" +
+    "                                <a class=\"list-group-item\" ng-if=\"result.external.source.url && result.external.source.code != 'HSHTG'\" ng-click=\"showOriginal(result)\" style=\"cursor: pointer; font-size: 16px;\">\n" +
+    "                                    <i class=\"fa fa-external-link-square fa-fw fa-lg\"></i>&nbsp; Show Original Post\n" +
     "                                </a>\n" +
     "                            </div>\n" +
     "\n" +
     "\n" +
-    "                            <div ng-if=\"result.external.source.code === 'HSHTG'\" ng-init=\"getPostingIdQuestions()\">\n" +
+    "                            <div ng-if=\"result.external.source.code === 'HSHTG' && result.username !== userObj.user_settings.name\" ng-init=\"getPostingIdQuestions()\">\n" +
     "                                <p class=\"input-group\">\n" +
     "                                    <input class=\"form-control\" ng-model=\"qamodule.question\" placeholder=\"Ask the seller a question\" ng-enter=\"submitQuestion(qamodule.question)\"/>\n" +
     "                                    <span class=\"input-group-btn\">\n" +
@@ -15064,7 +15286,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "<body>\n" +
     "    <div class=\"modal-header\">\n" +
     "\n" +
-    "        <button type=\"button\" class=\"close\" ng-click=\"$dismiss('abortSubMerchantModal')\"><span aria-hidden=\"true\">&times;</span></button>\n" +
+    "        <button type=\"button\" class=\"close\" ng-click=\"close()\"><span aria-hidden=\"true\">&times;</span></button>\n" +
     "\n" +
     "        <h3 id=\"myModalLabel\" style=\"font-weight: 100 !important;\">How do we send you money?</h3>\n" +
     "\n" +
@@ -15555,10 +15777,8 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
   $templateCache.put('js/watchlist/meetings/partials/watchlist.meetings.html',
     "<div ng-repeat=\"offer in post.offers.results\">\n" +
     "\n" +
-    "\n" +
-    "\n" +
     "    <!--Meeting Requests Awaiting Response-->\n" +
-    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-if=\"userObj.user_settings.name === offer.username\" ng-class=\"{ 'proposal-sent': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }\">\n" +
+    "    <div style=\"border: 1px solid; border-color: #e5e6e9 #dfe0e4 #d0d1d5; margin-bottom: 20px; padding: 0px;\" class=\"col-md-10 col-xs-12\" ng-if=\"userObj.user_settings.name === offer.username\" ng-class=\"{ 'proposal-sent': !offer.proposals[cachedOffers[$index].proposals.length - 1].isOwnerReply, 'proposal-accepted': offer.proposals[cachedOffers[$index].proposals.length - 1].acceptedAt }\" construct-wish-list-overlay-message offer=\"offer\" post=\"post\" message=\"css content string dynamically added\">\n" +
     "        <div style=\"background-color: #ffffff; padding: 10px;\">\n" +
     "            <div>\n" +
     "                <img ng-src=\"{{offer.userProfile.profile_photo}}\" height=\"40\" style=\"position: relative; top: -12px;\">\n" +
@@ -15650,7 +15870,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "    <div ng-show=\"!currentFaves.length\" class=\"background-instructions\">\n" +
     "        <div class=\"inset-background-text\">\n" +
-    "            Items you've placed an offer on or starred live here.\n" +
+    "            Place an offer on an item, or star an item, and notifications will appear here.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +
@@ -15734,7 +15954,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                        <h4>No price</h4>\n" +
     "                    </td>\n" +
     "                    <td style=\"width:20px; vertical-align: middle;\">\n" +
-    "                        <i class=\"fa fa-minus-circle fa-2x\" ng-click=\"removeFave(favorite); $event.stopPropagation();\" style=\"color:red; cursor: pointer;\" tooltip=\"Remove from watch list\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
+    "                        <i class=\"fa fa-trash-o fa-2x\" ng-click=\"removeFave(favorite); $event.stopPropagation();\" style=\"cursor: pointer;\" tooltip=\"Remove from watch list\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"left\"></i>\n" +
     "                    </td>\n" +
     "                </tr>\n" +
     "\n" +
