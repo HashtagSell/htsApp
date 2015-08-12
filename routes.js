@@ -283,7 +283,7 @@ module.exports = function(app, passport) {
 
     app.delete('/user', isLoggedIn, user_settings_api.deleteAccount);
 
-
+    //Admin accounts can lookup entire user details.
     app.get('/users/:username', isAdmin, function(req, res){
         user_settings_api.adminLookupAccount(req, res);
     });
