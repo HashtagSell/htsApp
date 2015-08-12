@@ -267,7 +267,8 @@ module.exports = function(app, passport) {
     // USER API ============================
     // =====================================
 
-    //Get all data associated with username
+
+    //Get all public data associated with username
     app.get('/getprofile', function(req, res){
         activate.getProfile(req, res);
     });
@@ -281,6 +282,11 @@ module.exports = function(app, passport) {
 
 
     app.delete('/user', isLoggedIn, user_settings_api.deleteAccount);
+
+
+    app.get('/users/:username', isAdmin, function(req, res){
+        user_settings_api.adminLookupAccount(req, res);
+    });
 
     // =====================================
     // PRIVATE BETA ADMIN ACCESS

@@ -70,12 +70,37 @@ exports.getUserSettings = function(req, res) {
 
             // found user that needs activation
         } else if (user) {
-
             res.json(user.user_settings);
 
         }
     });
 };
+
+
+
+exports.adminLookupAccount = function(req, res) {
+
+    //Search our users collection by the username and update their user_settings object
+    User.findOne({ 'user_settings.name': req.params.username }, function (err, user) {
+
+        //systematic error. Redirect to page so user can report error.
+        if (err) {
+            console.log("error");
+            res.json({error : err});
+
+            // if no user is found, then this is a bad activation id
+        } else if (!user) {
+
+            res.json({error : "username not found"});
+
+            // found user that needs activation
+        } else if (user) {
+            res.json(user);
+
+        }
+    });
+};
+
 
 
 
