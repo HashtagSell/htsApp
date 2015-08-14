@@ -119,7 +119,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
                 $state.go('subscribe', {'redirect': params.redirect});
                 //factory.subscribeModal(params);
             } else {
-                $state.go(params.redirect);
+                $state.go(params.redirect, {}, { reload: true });
             }
             $log.info('Modal dismissed at: ' + new Date());
         });

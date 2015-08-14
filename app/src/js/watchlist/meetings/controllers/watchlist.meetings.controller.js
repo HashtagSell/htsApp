@@ -57,7 +57,11 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
 
                     //myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
-                    Notification.primary({title: "Proposal Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+                    Notification.primary({
+                        title: "Sent Offer Acceptanace!",
+                        message: "We've notified @" + offer.username + ".  Expect an email shortly.",
+                        delay: 7000
+                    });
 
                 } else {
 

@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', 'socketio', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService, socketio) {
 
 
     $scope.showDemo = false;
@@ -779,6 +779,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 }).error(function(err){
                     console.log('precache error:', err);
                 });
+
+                //Owner joins the socket.io room
+                socketio.joinPostingRoom(posting.postingId, 'postingOwner');
 
                 $scope.resetAll();
             }).

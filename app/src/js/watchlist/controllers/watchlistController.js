@@ -193,7 +193,7 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -212,7 +212,7 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 

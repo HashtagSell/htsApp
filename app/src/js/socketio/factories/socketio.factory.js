@@ -545,24 +545,82 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     socketio.postingSocket.on('accept-offer', function (emit) {
         console.log('emitted meeting acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
 
-            favesFactory.updateFavorite(emit, function(){
-                console.log('silently updated watchlist');
-            });
+        if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply) {
 
-            //TODO: open posting in splash screen.
-            var url =  '"/watchlist/meetings/' + emit.posting.postingId + '"';
+            if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
 
-            Notification.primary({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>', delay: 10000});  //Send the webtoast
+                favesFactory.updateFavorite(emit, function () {
+                    console.log('silently updated watchlist');
+                });
 
+                //TODO: open posting in splash screen.
+                var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your offer.</a>',
+                    message: '<a href=' + url + '>Congrats! The seller has accepted your offer.  We\'ll send you a reminder email your way.</a>',
+                    delay: 10000
+                });  //Send the webtoast
+
+            } else if (emit.username !== emit.posting.username) { //if the owner of the posting is not the same person who accepted the offer then update.
+
+                //Update owners my posts and notify them
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+
+                });
+
+            }
+            console.log(
+                'OWNER accepted meeting request on postingId %s',
+                emit.posting.username,
+                emit.posting.postingId
+            );
+
+        } else {
+
+            if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
+
+                favesFactory.updateFavorite(emit, function () {
+                    console.log('silently updated watchlist');
+                });
+
+                //TODO: open posting in splash screen.
+                //var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+                //
+                //Notification.primary({
+                //    title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your offer.</a>',
+                //    message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>',
+                //    delay: 10000
+                //});  //Send the webtoast
+
+                //alert("I'm the buyer");
+
+            } else if (emit.username !== emit.posting.username) { //if the owner of the posting is not the same person who accepted the offer then update.
+
+                //Update owners my posts and notify them
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                    Notification.primary({
+                        title: '<a href=' + url + '>@' + emit.username + ' accepted your offer.</a>',
+                        message: '<a href=' + url + '>Congrats! The buyer has accepted your offer.  We\'ll send you a reminder email your way.</a>',
+                        delay: 10000
+                    });  //Send the webtoast
+
+                });
+
+                //alert("I'm the owner");
+
+            }
+            console.log(
+                'OWNER accepted meeting request on postingId %s',
+                emit.posting.username,
+                emit.posting.postingId
+            );
         }
-
-        console.log(
-            '%s accepted meeting request on postingId %s : "%s"',
-            emit.posting.username,
-            emit.posting.postingId
-        );
 
     });
 

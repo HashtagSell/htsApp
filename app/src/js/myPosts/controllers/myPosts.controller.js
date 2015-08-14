@@ -97,7 +97,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -116,7 +116,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 

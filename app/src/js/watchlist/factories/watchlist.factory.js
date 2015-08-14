@@ -56,7 +56,7 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
         });
 
         //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
-        if(matchingIndexes.length > 0){
+        if(matchingIndexes.length > 0) {
             currentFavorites.splice(matchingIndexes[0],1);
 
             Session.setSessionValue("favorites", currentFavorites, callback);

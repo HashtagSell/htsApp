@@ -199,26 +199,18 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('externalSplash', {
             url: "/ext/:id",
-            controller: 'splashController',
-            sticky: true
+            controller: 'splashController'
         }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
-            controller: "feed.controller",
-            resolve: {
-                redirect: function () {
-                    return 'feed';
-                }
-            },
-            sticky: true
+            controller: "feed.controller"
         }).
         state('feed.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom,
-            sticky: true
+            onExit: leaveRoom
         }).
         state('forgot', {
             url: '/forgot?msg',
@@ -241,34 +233,40 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('myposts', {
             url: "/myposts",
             templateUrl: "js/myPosts/partials/myPosts.html",
-            controller: 'myPosts.controller',
-            resolve: {
-                redirect: function () {
-                    return 'myposts';
-                }
-            },
-            sticky: true
+            controller: 'myPosts.controller'
         }).
         state('myposts.questions', {
-            url: "/questions/:postingId"
+            url: "/questions/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.questions';
+                }
+            }
         }).
         state('myposts.meetings', {
-            url: "/meetings/:postingId"
+            url: "/meetings/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.meetings';
+                }
+            }
         }).
         state('myposts.splash', {
             url: "/:id",
             controller: 'splashController',
-            sticky: true
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.splash';
+                }
+            }
         }).
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
-            resolve: {
-                redirect: function () {
-                    return 'notifications';
-                }
-            },
             sticky: true
         }).
         state('payment', {
@@ -303,11 +301,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: 'js/profile/partials/profile.partial.html',
             controller: 'profile.controller',
             resolve: {
+                loginRequired: loginRequired,
                 redirect: function () {
                     return 'profile';
                 }
-            },
-            sticky: true
+            }
         }).
         state('reset', {
             url: '/reset/:token/',
@@ -328,13 +326,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'price': null
             },
             controller: 'results.controller',
-            templateUrl: "js/results/partials/results_partial.html",
-            resolve: {
-                redirect: function () {
-                    return 'results';
-                }
-            },
-            sticky: true
+            templateUrl: "js/results/partials/results_partial.html"
         }).
         state('results.splash', {
             url: "/:id",
@@ -346,8 +338,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom,
-            sticky: true
+            onExit: leaveRoom
         }).
         state('review', {
             url: "/review/:postingId/:offerId/:userId",
@@ -366,33 +357,51 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('settings', {
             url: "/settings",
-            templateUrl: "js/settings/settings_partial.html",
-            resolve: {
-                loginRequired: loginRequired,
-                redirect: function () {
-                    return 'settings';
-                }
-            }
+            templateUrl: "js/settings/settings_partial.html"
         }).
         state('settings.account', {
             url: "/account",
             templateUrl: "js/settings/account/partials/settings.account_partial.html",
-            controller: "settings.account.controller"
+            controller: "settings.account.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.account';
+                }
+            }
         }).
         state('settings.password', {
             url: "/password",
             templateUrl: "js/settings/password/partials/settings.password_partial.html",
-            controller: "settings.password.controller"
+            controller: "settings.password.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.password';
+                }
+            }
         }).
         state('settings.profile', {
             url: "/profile",
             templateUrl: "js/settings/profile/partials/settings.profile_partial.html",
-            controller: "settings.profile.controller"
+            controller: "settings.profile.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.profile';
+                }
+            }
         }).
         state('settings.payment', {
             url: "/payment",
             templateUrl: "js/settings/payment/partials/settings.payment_partial.html",
-            controller: "settings.payment.controller"
+            controller: "settings.payment.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.payment';
+                }
+            }
         }).
         state('signin', {
             url: '/signin?email&tour',
@@ -455,26 +464,37 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('watchlist', {
             url: "/watchlist",
             templateUrl: "js/watchlist/partials/watchlist.html",
-            controller: 'watchlistController',
-            resolve: {
-                redirect: function () {
-                    return 'watchlist';
-                }
-            },
-            sticky: true
+            controller: 'watchlistController'
         }).
         state('watchlist.questions', {
-            url: "/questions/:postingId"
+            url: "/questions/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.questions';
+                }
+            }
         }).
         state('watchlist.meetings', {
-            url: "/meetings/:postingId"
+            url: "/meetings/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.meetings';
+                }
+            }
         }).
         state('watchlist.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
             onExit: leaveRoom,
-            sticky: true
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.splash';
+                }
+            }
         });
 }]);
 
@@ -1902,7 +1922,7 @@ htsApp.factory('authModalFactory', ['Session', '$modal', '$log', '$state', '$roo
                 $state.go('subscribe', {'redirect': params.redirect});
                 //factory.subscribeModal(params);
             } else {
-                $state.go(params.redirect);
+                $state.go(params.redirect, {}, { reload: true });
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
@@ -3650,7 +3670,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -3669,7 +3689,7 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -4156,7 +4176,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
                     myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
                     Notification.primary({
-                        title: "Proposal Accepted!",
+                        title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });
@@ -4906,7 +4926,7 @@ htsApp.controller('newPostCongrats', ['$scope', '$modal', '$modalInstance', 'new
 /**
  * Created by braddavis on 1/6/15.
  */
-htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService) {
+htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$timeout', '$state', '$modal', '$filter', 'mentionsFactory', '$templateCache', 'ENV', 'Session', 'Notification', 'modalConfirmationService', 'socketio', function ($scope, $http, $q, $modalInstance, $timeout, $state, $modal, $filter, mentionsFactory, $templateCache, ENV, Session, Notification, modalConfirmationService, socketio) {
 
 
     $scope.showDemo = false;
@@ -5684,6 +5704,9 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 }).error(function(err){
                     console.log('precache error:', err);
                 });
+
+                //Owner joins the socket.io room
+                socketio.joinPostingRoom(posting.postingId, 'postingOwner');
 
                 $scope.resetAll();
             }).
@@ -8326,10 +8349,14 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
                 if (response.data.success) {
 
-                    deferred.resolve();
                     if (callback) {
                         callback(response);
                     }
+
+                    console.log('UPDATE SERVER DONE');
+
+                    deferred.resolve();
+
 
                 } else {
 
@@ -8347,6 +8374,9 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     //Adds all users setting to HTML5 session storage
     this.create = function (data) {
+
+        console.log('CREATE START');
+
         console.log('Updating local storage with', data);
         data.user_settings.loggedIn = true;
         this.userObj.user_settings = data.user_settings; //ONLY ADD USER_SETTING PROPERTY TO OBJECT OTHERWISE BINDING FAILS AND UI DOES NOT LIVE UPDATE.
@@ -8354,6 +8384,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
         console.log('data about to be written to local storage', this.userObj);
 
         $window.localStorage.hts_storage = angular.toJson(this.userObj.user_settings);
+
+        console.log('CREATE DONE');
     };
 
     //Clears all users settings from HTML5 session storage on logout
@@ -9608,24 +9640,82 @@ htsApp.factory('socketio', ['ENV', 'myPostsFactory', 'Notification', 'favesFacto
     socketio.postingSocket.on('accept-offer', function (emit) {
         console.log('emitted meeting acceptance', emit);
 
-        if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
 
-            favesFactory.updateFavorite(emit, function(){
-                console.log('silently updated watchlist');
-            });
+        if(emit.offer.proposals[emit.offer.proposals.length - 1].isOwnerReply) {
 
-            //TODO: open posting in splash screen.
-            var url =  '"/watchlist/meetings/' + emit.posting.postingId + '"';
+            if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
 
-            Notification.primary({title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your meeting.</a>', message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>', delay: 10000});  //Send the webtoast
+                favesFactory.updateFavorite(emit, function () {
+                    console.log('silently updated watchlist');
+                });
 
+                //TODO: open posting in splash screen.
+                var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+
+                Notification.primary({
+                    title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your offer.</a>',
+                    message: '<a href=' + url + '>Congrats! The seller has accepted your offer.  We\'ll send you a reminder email your way.</a>',
+                    delay: 10000
+                });  //Send the webtoast
+
+            } else if (emit.username !== emit.posting.username) { //if the owner of the posting is not the same person who accepted the offer then update.
+
+                //Update owners my posts and notify them
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+
+                });
+
+            }
+            console.log(
+                'OWNER accepted meeting request on postingId %s',
+                emit.posting.username,
+                emit.posting.postingId
+            );
+
+        } else {
+
+            if (emit.username === socketio.cachedUsername) { //if currently logged in same user who placed the accepted meeting request
+
+                favesFactory.updateFavorite(emit, function () {
+                    console.log('silently updated watchlist');
+                });
+
+                //TODO: open posting in splash screen.
+                //var url = '"/watchlist/meetings/' + emit.posting.postingId + '"';
+                //
+                //Notification.primary({
+                //    title: '<a href=' + url + '>@' + emit.posting.username + ' accepted your offer.</a>',
+                //    message: '<a href=' + url + '>Congrats! Your meeting request has been accepted.  We\'ll send you a reminder email you way.</a>',
+                //    delay: 10000
+                //});  //Send the webtoast
+
+                //alert("I'm the buyer");
+
+            } else if (emit.username !== emit.posting.username) { //if the owner of the posting is not the same person who accepted the offer then update.
+
+                //Update owners my posts and notify them
+                myPostsFactory.getAllUserPosts(socketio.cachedUsername).then(function (response) { //Have the owner lookup all their items they're selling and the associated questions, meeting requests, etc etc.  The owner app view updates realtime.
+
+                    var url = '"/myposts/meetings/' + emit.posting.postingId + '"';
+
+                    Notification.primary({
+                        title: '<a href=' + url + '>@' + emit.username + ' accepted your offer.</a>',
+                        message: '<a href=' + url + '>Congrats! The buyer has accepted your offer.  We\'ll send you a reminder email your way.</a>',
+                        delay: 10000
+                    });  //Send the webtoast
+
+                });
+
+                //alert("I'm the owner");
+
+            }
+            console.log(
+                'OWNER accepted meeting request on postingId %s',
+                emit.posting.username,
+                emit.posting.postingId
+            );
         }
-
-        console.log(
-            '%s accepted meeting request on postingId %s : "%s"',
-            emit.posting.username,
-            emit.posting.postingId
-        );
 
     });
 
@@ -12346,7 +12436,7 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -12365,7 +12455,7 @@ htsApp.controller('watchlistController', ['$scope', '$rootScope', 'favesFactory'
                 questions: false,
                 meetings: false
             };
-            $state.go($rootScope.previousState);
+            $state.go('^');
         }
     };
 
@@ -12428,7 +12518,7 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
         });
 
         //If we have index of matching item then remove the favorite.  If we do not have index of existing favorite than add it.
-        if(matchingIndexes.length > 0){
+        if(matchingIndexes.length > 0) {
             currentFavorites.splice(matchingIndexes[0],1);
 
             Session.setSessionValue("favorites", currentFavorites, callback);
@@ -12642,7 +12732,11 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
 
                     //myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
-                    Notification.primary({title: "Proposal Accepted!", message: "We've notified @" + offer.username + ".  Expect an email shortly.", delay: 7000});
+                    Notification.primary({
+                        title: "Sent Offer Acceptanace!",
+                        message: "We've notified @" + offer.username + ".  Expect an email shortly.",
+                        delay: 7000
+                    });
 
                 } else {
 

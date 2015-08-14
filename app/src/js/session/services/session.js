@@ -333,10 +333,14 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
                 if (response.data.success) {
 
-                    deferred.resolve();
                     if (callback) {
                         callback(response);
                     }
+
+                    console.log('UPDATE SERVER DONE');
+
+                    deferred.resolve();
+
 
                 } else {
 
@@ -354,6 +358,9 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
 
     //Adds all users setting to HTML5 session storage
     this.create = function (data) {
+
+        console.log('CREATE START');
+
         console.log('Updating local storage with', data);
         data.user_settings.loggedIn = true;
         this.userObj.user_settings = data.user_settings; //ONLY ADD USER_SETTING PROPERTY TO OBJECT OTHERWISE BINDING FAILS AND UI DOES NOT LIVE UPDATE.
@@ -361,6 +368,8 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
         console.log('data about to be written to local storage', this.userObj);
 
         $window.localStorage.hts_storage = angular.toJson(this.userObj.user_settings);
+
+        console.log('CREATE DONE');
     };
 
     //Clears all users settings from HTML5 session storage on logout

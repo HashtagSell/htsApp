@@ -199,26 +199,18 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('externalSplash', {
             url: "/ext/:id",
-            controller: 'splashController',
-            sticky: true
+            controller: 'splashController'
         }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
-            controller: "feed.controller",
-            resolve: {
-                redirect: function () {
-                    return 'feed';
-                }
-            },
-            sticky: true
+            controller: "feed.controller"
         }).
         state('feed.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom,
-            sticky: true
+            onExit: leaveRoom
         }).
         state('forgot', {
             url: '/forgot?msg',
@@ -241,34 +233,40 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('myposts', {
             url: "/myposts",
             templateUrl: "js/myPosts/partials/myPosts.html",
-            controller: 'myPosts.controller',
-            resolve: {
-                redirect: function () {
-                    return 'myposts';
-                }
-            },
-            sticky: true
+            controller: 'myPosts.controller'
         }).
         state('myposts.questions', {
-            url: "/questions/:postingId"
+            url: "/questions/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.questions';
+                }
+            }
         }).
         state('myposts.meetings', {
-            url: "/meetings/:postingId"
+            url: "/meetings/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.meetings';
+                }
+            }
         }).
         state('myposts.splash', {
             url: "/:id",
             controller: 'splashController',
-            sticky: true
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'myposts.splash';
+                }
+            }
         }).
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
             controller: 'notifications.controller',
-            resolve: {
-                redirect: function () {
-                    return 'notifications';
-                }
-            },
             sticky: true
         }).
         state('payment', {
@@ -303,11 +301,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             templateUrl: 'js/profile/partials/profile.partial.html',
             controller: 'profile.controller',
             resolve: {
+                loginRequired: loginRequired,
                 redirect: function () {
                     return 'profile';
                 }
-            },
-            sticky: true
+            }
         }).
         state('reset', {
             url: '/reset/:token/',
@@ -328,13 +326,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 'price': null
             },
             controller: 'results.controller',
-            templateUrl: "js/results/partials/results_partial.html",
-            resolve: {
-                redirect: function () {
-                    return 'results';
-                }
-            },
-            sticky: true
+            templateUrl: "js/results/partials/results_partial.html"
         }).
         state('results.splash', {
             url: "/:id",
@@ -346,8 +338,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             controller: 'splashController',
             onEnter: joinRoom,
-            onExit: leaveRoom,
-            sticky: true
+            onExit: leaveRoom
         }).
         state('review', {
             url: "/review/:postingId/:offerId/:userId",
@@ -366,33 +357,51 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         }).
         state('settings', {
             url: "/settings",
-            templateUrl: "js/settings/settings_partial.html",
-            resolve: {
-                loginRequired: loginRequired,
-                redirect: function () {
-                    return 'settings';
-                }
-            }
+            templateUrl: "js/settings/settings_partial.html"
         }).
         state('settings.account', {
             url: "/account",
             templateUrl: "js/settings/account/partials/settings.account_partial.html",
-            controller: "settings.account.controller"
+            controller: "settings.account.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.account';
+                }
+            }
         }).
         state('settings.password', {
             url: "/password",
             templateUrl: "js/settings/password/partials/settings.password_partial.html",
-            controller: "settings.password.controller"
+            controller: "settings.password.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.password';
+                }
+            }
         }).
         state('settings.profile', {
             url: "/profile",
             templateUrl: "js/settings/profile/partials/settings.profile_partial.html",
-            controller: "settings.profile.controller"
+            controller: "settings.profile.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.profile';
+                }
+            }
         }).
         state('settings.payment', {
             url: "/payment",
             templateUrl: "js/settings/payment/partials/settings.payment_partial.html",
-            controller: "settings.payment.controller"
+            controller: "settings.payment.controller",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'settings.payment';
+                }
+            }
         }).
         state('signin', {
             url: '/signin?email&tour',
@@ -455,26 +464,37 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('watchlist', {
             url: "/watchlist",
             templateUrl: "js/watchlist/partials/watchlist.html",
-            controller: 'watchlistController',
-            resolve: {
-                redirect: function () {
-                    return 'watchlist';
-                }
-            },
-            sticky: true
+            controller: 'watchlistController'
         }).
         state('watchlist.questions', {
-            url: "/questions/:postingId"
+            url: "/questions/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.questions';
+                }
+            }
         }).
         state('watchlist.meetings', {
-            url: "/meetings/:postingId"
+            url: "/meetings/:postingId",
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.meetings';
+                }
+            }
         }).
         state('watchlist.splash', {
             url: "/:id",
             controller: 'splashController',
             onEnter: joinRoom,
             onExit: leaveRoom,
-            sticky: true
+            resolve: {
+                loginRequired: loginRequired,
+                redirect: function () {
+                    return 'watchlist.splash';
+                }
+            }
         });
 }]);
 

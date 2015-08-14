@@ -53,7 +53,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
                     myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
                     Notification.primary({
-                        title: "Proposal Accepted!",
+                        title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });
