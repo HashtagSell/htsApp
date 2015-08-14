@@ -138,7 +138,7 @@ htsApp.directive('constructMyPostsOverlayMessage', function () {
             console.log('element', element);
             console.log('attr', attr);
             if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
-                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+                attr.$set('message', 'Awesome!  We\'ll send you a reminder email with details.');
             } else {
                 attr.$set('message', 'Offer sent to @' + scope.offer.username );
             }

@@ -4261,7 +4261,7 @@ htsApp.directive('constructMyPostsOverlayMessage', function () {
             console.log('element', element);
             console.log('attr', attr);
             if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
-                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+                attr.$set('message', 'Awesome!  We\'ll send you a reminder email with details.');
             } else {
                 attr.$set('message', 'Offer sent to @' + scope.offer.username );
             }
@@ -10462,10 +10462,10 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
                 controller: ['$scope', '$modalInstance', 'modalConfirmationService', function ($scope, $modalInstance, modalConfirmationService) {
                     $scope.close = function () {
                         var modalOptions = {
-                            closeButtonText: 'Go back',
-                            actionButtonText: 'Setup later',
-                            headerText: 'Setup online payment later?',
-                            bodyText: 'By not setting up online payment you can only deal in cash.'
+                            closeButtonText: 'Connect my Venmo',
+                            actionButtonText: 'I only accept cash',
+                            headerText: 'Accept Cash Only?',
+                            bodyText: 'HashtagSell uses Venmo for free online transactions. To accept Venmo payments you need to set up an account.'
                         };
 
                         modalConfirmationService.showModal({}, modalOptions).then(function (result) {
@@ -12807,7 +12807,7 @@ htsApp.directive('constructWishListOverlayMessage', function () {
             console.log('element', element);
             console.log('attr', attr);
             if(scope.offer.proposals[scope.offer.proposals.length - 1].acceptedAt){
-                attr.$set('message', 'Offer accepted!  We\'ll send you a reminder email with details.');
+                attr.$set('message', 'Awesome!  We\'ll send you a reminder email with details.');
             } else {
                 attr.$set('message', 'Offer sent to @' + scope.post.username );
             }
@@ -15389,7 +15389,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "        <button type=\"button\" class=\"close\" ng-click=\"close()\"><span aria-hidden=\"true\">&times;</span></button>\n" +
     "\n" +
-    "        <h3 id=\"myModalLabel\" style=\"font-weight: 100 !important;\">How do we send you money?</h3>\n" +
+    "        <h3 id=\"myModalLabel\">How do we send you money?</h3>\n" +
     "\n" +
     "    </span>\n" +
     "    </div>\n" +

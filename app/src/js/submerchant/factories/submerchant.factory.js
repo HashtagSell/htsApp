@@ -24,10 +24,10 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
                 controller: function ($scope, $modalInstance, modalConfirmationService) {
                     $scope.close = function () {
                         var modalOptions = {
-                            closeButtonText: 'Go back',
-                            actionButtonText: 'Setup later',
-                            headerText: 'Setup online payment later?',
-                            bodyText: 'By not setting up online payment you can only deal in cash.'
+                            closeButtonText: 'Connect my Venmo',
+                            actionButtonText: 'I only accept cash',
+                            headerText: 'Accept Cash Only?',
+                            bodyText: 'HashtagSell uses Venmo for free online transactions. To accept Venmo payments you need to set up an account.'
                         };
 
                         modalConfirmationService.showModal({}, modalOptions).then(function (result) {
