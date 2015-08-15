@@ -413,11 +413,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             views: {
                 'modal': {
                     controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
-                        //if(!$state.params.redirect) {
-                        //    authModalFactory.signInModal({'redirect': $rootScope.previousState});
-                        //} else {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signInModal({'redirect': $rootScope.previousState});
+                        } else {
                             authModalFactory.signInModal($state.params);
-                        //}
+                        }
                     }]
                 }
             }
@@ -427,11 +427,11 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             views: {
                 'modal': {
                     controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
-                        //if(!$state.params.redirect) {
-                        //    authModalFactory.signUpModal({'redirect': $rootScope.previousState});
-                        //} else {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signUpModal({'redirect': $rootScope.previousState});
+                        } else {
                             authModalFactory.signUpModal($state.params);
-                        //}
+                        }
                     }]
                 }
             },

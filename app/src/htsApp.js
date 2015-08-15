@@ -190,9 +190,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: { 'redirect': null },
             views: {
                 'modal': {
-                    controller: function(authModalFactory, $state) {
+                    controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                         authModalFactory.checkEmailModal($state.params);
-                    }
+                    }]
                 }
             }
 
@@ -220,13 +220,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             views: {
                 'modal': {
-                    controller: function(authModalFactory, $state, $rootScope) {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
                         if(!$state.params.redirect) {
                             authModalFactory.forgotPasswordModal({'redirect': $rootScope.previousState});
                         } else {
                             authModalFactory.forgotPasswordModal($state.params);
                         }
-                    }
+                    }]
                 }
             }
         }).
@@ -311,9 +311,9 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: '/reset/:token/',
             views: {
                 modals: {
-                    controller: function(authModalFactory, $state) {
+                    controller: ['authModalFactory', '$state', function(authModalFactory, $state) {
                         authModalFactory.resetPasswordModal('signin', $state.params.token);
-                    }
+                    }]
                 }
             }
         }).
@@ -412,13 +412,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             },
             views: {
                 'modal': {
-                    controller: function(authModalFactory, $state, $rootScope) {
-                        //if(!$state.params.redirect) {
-                        //    authModalFactory.signInModal({'redirect': $rootScope.previousState});
-                        //} else {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signInModal({'redirect': $rootScope.previousState});
+                        } else {
                             authModalFactory.signInModal($state.params);
-                        //}
-                    }
+                        }
+                    }]
                 }
             }
         }).
@@ -426,13 +426,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             url: '/signup',
             views: {
                 'modal': {
-                    controller: function(authModalFactory, $state, $rootScope) {
-                        //if(!$state.params.redirect) {
-                        //    authModalFactory.signUpModal({'redirect': $rootScope.previousState});
-                        //} else {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
+                        if(!$state.params.redirect) {
+                            authModalFactory.signUpModal({'redirect': $rootScope.previousState});
+                        } else {
                             authModalFactory.signUpModal($state.params);
-                        //}
-                    }
+                        }
+                    }]
                 }
             },
             params: { 'redirect': null }
@@ -442,13 +442,13 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             params: { 'redirect': null },
             views : {
                 'modal': {
-                    controller: function(authModalFactory, $state, $rootScope) {
+                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
                         if(!$state.params.redirect) {
                             authModalFactory.subscribeModal({'redirect': $rootScope.previousState});
                         } else {
                             authModalFactory.subscribeModal($state.params);
                         }
-                    }
+                    }]
                 }
             }
         }).
