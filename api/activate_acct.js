@@ -36,7 +36,7 @@ exports.id = function(req, res) {
         } else if (!user) {
 
             console.log("not a real id");
-            res.redirect('/forgot?msg=Account already activated.');
+            res.redirect('/forgot?msg=Account already activated');
 
 
             // found user that needs activation
@@ -50,7 +50,7 @@ exports.id = function(req, res) {
                 if (err) {
                     throw err;
                 } else {
-                    res.redirect('/signin?email=' + user.local.email + '&tour=true');
+                    res.redirect('/signin?email=' + user.local.email);
                 }
             });
 
