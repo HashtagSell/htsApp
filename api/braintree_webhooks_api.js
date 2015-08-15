@@ -11,13 +11,25 @@ var request = require('request');
 
 var braintree_api = require('./braintree_api.js');
 
+
 //Braintree config
-var gateway = braintree.connect({
-    environment: braintree.Environment.Sandbox,
-    merchantId: env.braintree.merchant_id,
-    publicKey: env.braintree.public_key,
-    privateKey: env.braintree.private_key
-});
+var gateway = '';
+
+if(process.env.NODE_ENV === "DEVELOPMENT" || process.env.NODE_ENV === "STAGING") {
+    gateway = braintree.connect({
+        environment: braintree.Environment.Sandbox,
+        merchantId: env.braintree.merchant_id,
+        publicKey: env.braintree.public_key,
+        privateKey: env.braintree.private_key
+    });
+} else if(process.env.NODE_ENV === "PRODUCTION") {
+    gateway = braintree.connect({
+        environment: braintree.Environment.Production,
+        merchantId: env.braintree.merchant_id,
+        publicKey: env.braintree.public_key,
+        privateKey: env.braintree.private_key
+    });
+}
 
 
 exports.verify = function (req, res) {
