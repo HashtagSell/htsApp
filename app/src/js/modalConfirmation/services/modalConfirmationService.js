@@ -35,7 +35,7 @@ htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
             angular.extend(tempModalOptions, modalOptions, customModalOptions);
 
             if (!tempModalDefaults.controller) {
-                tempModalDefaults.controller = function ($scope, $modalInstance) {
+                tempModalDefaults.controller = ('modalController', ['$scope', '$modalInstance', function ($scope, $modalInstance) {
                     $scope.modalOptions = tempModalOptions;
                     $scope.modalOptions.ok = function (result) {
                         $modalInstance.close(result);
@@ -43,7 +43,7 @@ htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
                     $scope.modalOptions.close = function (result) {
                         $modalInstance.dismiss('cancel');
                     };
-                };
+                }]);
             }
 
             return $modal.open(tempModalDefaults).result;
