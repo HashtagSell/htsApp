@@ -604,7 +604,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             bodyText: 'Your new post has not been saved.  Are you sure you want to cancel your new post?'
         };
 
-        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+        modalConfirmationService.showModal({}, modalOptions).then(function () {
             $scope.resetAll();
             $modalInstance.dismiss(reason);
         });

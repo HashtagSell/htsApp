@@ -266,8 +266,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
-            controller: 'notifications.controller',
-            sticky: true
+            controller: 'notifications.controller'
         }).
         state('payment', {
             url: "/payment/:postingId/:offerId",

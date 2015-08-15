@@ -1,8 +1,7 @@
 /**
  * Created by braddavis on 8/9/15.
  */
-htsApp.service('modalConfirmationService', ['$modal',
-    function ($modal) {
+htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
 
         var modalDefaults = {
             backdrop: true,

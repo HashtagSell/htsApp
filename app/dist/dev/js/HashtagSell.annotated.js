@@ -266,8 +266,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
         state('notifications', {
             url: "/notifications",
             templateUrl: "js/notifications/partials/notifications.html",
-            controller: 'notifications.controller',
-            sticky: true
+            controller: 'notifications.controller'
         }).
         state('payment', {
             url: "/payment/:postingId/:offerId",
@@ -3520,8 +3519,7 @@ htsApp.factory('metaFactory', function () {
 /**
  * Created by braddavis on 8/9/15.
  */
-htsApp.service('modalConfirmationService', ['$modal',
-    function ($modal) {
+htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
 
         var modalDefaults = {
             backdrop: true,
@@ -5529,7 +5527,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             bodyText: 'Your new post has not been saved.  Are you sure you want to cancel your new post?'
         };
 
-        modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+        modalConfirmationService.showModal({}, modalOptions).then(function () {
             $scope.resetAll();
             $modalInstance.dismiss(reason);
         });
