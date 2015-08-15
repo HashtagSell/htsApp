@@ -1402,6 +1402,8 @@ htsApp.directive('subMerchant', function () {
                     existingSubMerchant: $scope.recoveredMerchantAccount.response.id
                 }).success(function (response) {
 
+                    console.log('submit submerchant response', response);
+
                     if (!response.success) {
                         $scope.alerts.push({msg: response.message, type: 'danger'});
                     } else {
@@ -1410,18 +1412,25 @@ htsApp.directive('subMerchant', function () {
                                 msg: 'Congrats! Your seller account is pending approval, but don\'t let this stop you from posting now.',
                                 type: 'success'
                             });
-
-
-                            if($scope.$dismiss){ //This directive is loaded in a modal and we need to close that modal.
-                                $scope.$dismiss("subMerchantModalSuccess", response);
-                            }
-
-                            //Update browser session since user now has submerchant account.
-                            Session.getUserFromServer().then(function (response) {
-                                Session.create(response);
+                        } else if (response.merchantAccount.status === "active") {
+                            $scope.alerts.push({
+                                msg: 'Congrats! Your seller account is active.',
+                                type: 'success'
                             });
-
                         }
+
+                        //Update browser session since user now has submerchant account.
+                        Session.getUserFromServer().then(function (response) {
+
+                            console.log('getuserfromserverresponse', response);
+
+                            Session.create(response);
+                        });
+
+                        if($scope.$dismiss){ //This directive is loaded in a modal and we need to close that modal.
+                            $scope.$dismiss("subMerchantModalSuccess", response);
+                        }
+
                     }
                 }).error(function (err) {
                     $scope.alerts.push({msg: err.message, type: 'danger'});

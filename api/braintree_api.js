@@ -136,39 +136,40 @@ exports.createSubMerchant = function(req, res) {
                     if (!user)
                         return res.json({error: "No user found with that Id."});
 
-                    if (user)
+                    if (user) {
 
                         user.user_settings.merchantAccount.details = subMerchantParams;
 
-                    user.user_settings.merchantAccount.response = {
-                        id: result.merchantAccount.id,
-                        status: result.merchantAccount.status,
-                        currencyIsoCode: result.merchantAccount.currencyIsoCode,
-                        subMerchantAccount: result.merchantAccount.subMerchantAccount,
-                        masterMerchantAccount: {
-                            id: result.merchantAccount.masterMerchantAccount.id,
-                            status: result.merchantAccount.masterMerchantAccount.status,
-                            currencyIsoCode: result.merchantAccount.masterMerchantAccount.currencyIsoCode,
-                            subMerchantAccount: result.merchantAccount.masterMerchantAccount.subMerchantAccount
-                        }
-                    };
-
-                    user.save(function (err) {
-                        if (err) {
-                            throw err;
-                        } else {
-
-                            res.send(result);
-
-                            //Simulate webook from braintree if running in dev.
-                            if (process.env.NODE_ENV === "DEVELOPMENT" || process.env.NODE_ENV === "STAGING") {
-
-                                var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountApproved', result.merchantAccount.id);
-
-                                braintree_webhook.digest(sampleSubMerchantApproved);
+                        user.user_settings.merchantAccount.response = {
+                            id: result.merchantAccount.id,
+                            status: result.merchantAccount.status,
+                            currencyIsoCode: result.merchantAccount.currencyIsoCode,
+                            subMerchantAccount: result.merchantAccount.subMerchantAccount,
+                            masterMerchantAccount: {
+                                id: result.merchantAccount.masterMerchantAccount.id,
+                                status: result.merchantAccount.masterMerchantAccount.status,
+                                currencyIsoCode: result.merchantAccount.masterMerchantAccount.currencyIsoCode,
+                                subMerchantAccount: result.merchantAccount.masterMerchantAccount.subMerchantAccount
                             }
-                        }
-                    });
+                        };
+
+                        user.save(function (err) {
+                            if (err) {
+                                throw err;
+                            } else {
+
+                                res.send(result);
+
+                                //Simulate webook from braintree if running in dev.
+                                if (process.env.NODE_ENV === "DEVELOPMENT" || process.env.NODE_ENV === "STAGING") {
+
+                                    var sampleSubMerchantApproved = gateway.webhookTesting.sampleNotification('WebhookNotification.Kind.SubMerchantAccountApproved', result.merchantAccount.id);
+
+                                    braintree_webhook.digest(sampleSubMerchantApproved);
+                                }
+                            }
+                        });
+                    }
                 });
             } else {
                 res.send(result);

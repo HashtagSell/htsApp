@@ -13,7 +13,7 @@ htsApp.factory('subMerchantFactory', ['$q', '$http', '$modal', '$log', 'ENV', 'S
 
         console.log('here is merchant account info', merchantAccount);
 
-        if(merchantAccount.response.status === 'active') {
+        if(merchantAccount.response.status === 'active' || merchantAccount.response.status === 'pending') {
 
             deferred.resolve(merchantAccount);
 
