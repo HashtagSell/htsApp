@@ -90,9 +90,9 @@ module.exports = function(grunt) {
                         facebookAuth: 'https://www.hashtagsell.com/auth/facebook',
                         twitterAuth: 'https://www.hashtagsell.com/auth/twitter',
                         ebayAuth: 'https://www.hashtagsell.com/auth/ebay',
-                        ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
-                        ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '459229800909426'
+                        ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
+                        ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
+                        fbAppId: '367469320085475'
                     },
                     clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
                 }
