@@ -197,10 +197,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             }
 
         }).
-        state('externalSplash', {
-            url: "/ext/:id",
-            controller: 'splashController'
-        }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
@@ -435,21 +431,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             },
             params: { 'redirect': null }
-        }).
-        state('subscribe', {
-            url: '/subscribe',
-            params: { 'redirect': null },
-            views : {
-                'modal': {
-                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
-                        if(!$state.params.redirect) {
-                            authModalFactory.subscribeModal({'redirect': $rootScope.previousState});
-                        } else {
-                            authModalFactory.subscribeModal($state.params);
-                        }
-                    }]
-                }
-            }
         }).
         state('termsOfService', {
             url: "/terms-of-service",

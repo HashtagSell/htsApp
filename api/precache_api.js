@@ -13,7 +13,7 @@ exports.recache = function (req, res) {
 
     var recacheUrl = env.prerender_io.url + 'recache';
     var prerenderToken = env.prerender_io.token;
-    var urlToPrerender = env.hts.appURL + '/ext/' + postingId;
+    var urlToPrerender = env.hts.appURL + '/feed/' + postingId;
 
     console.log('prerender token:', prerenderToken);
     console.log('urlToPrerender', urlToPrerender);

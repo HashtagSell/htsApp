@@ -197,10 +197,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             }
 
         }).
-        state('externalSplash', {
-            url: "/ext/:id",
-            controller: 'splashController'
-        }).
         state('feed', {
             url: "/feed",
             templateUrl: "js/feed/partials/feed.partial.html",
@@ -435,21 +431,6 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
                 }
             },
             params: { 'redirect': null }
-        }).
-        state('subscribe', {
-            url: '/subscribe',
-            params: { 'redirect': null },
-            views : {
-                'modal': {
-                    controller: ['authModalFactory', '$state', '$rootScope', function(authModalFactory, $state, $rootScope) {
-                        if(!$state.params.redirect) {
-                            authModalFactory.subscribeModal({'redirect': $rootScope.previousState});
-                        } else {
-                            authModalFactory.subscribeModal($state.params);
-                        }
-                    }]
-                }
-            }
         }).
         state('termsOfService', {
             url: "/terms-of-service",
@@ -11780,14 +11761,14 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
             if(newPost.images.length) {
                 fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
                     access_token: facebook.token,
                 };
             } else {
                 fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/ext/' + newPost.postingId,
-                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
                     access_token: facebook.token
                 };
             }
@@ -11880,13 +11861,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
                                 fbPost = {
                                     message: newPost.plainTextBody,
                                     picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
                                     access_token: facebookCreds.token
                                 };
                             } else {
                                 fbPost = {
                                     message: newPost.plainTextBody,
-                                    link: ENV.htsAppUrl + '/ext/' + newPost.postingId,
+                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
                                     access_token: facebookCreds.token
                                 };
                             }
@@ -15978,7 +15959,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "    <div ng-show=\"!currentFaves.length\" class=\"background-instructions\">\n" +
     "        <div class=\"inset-background-text\">\n" +
-    "            Place an offer on an item, or star an item, and notifications will appear here.\n" +
+    "            Place an offer on an item, or star an item, and it will appear here.\n" +
     "        </div>\n" +
     "    </div>\n" +
     "\n" +

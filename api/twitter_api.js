@@ -45,12 +45,12 @@ exports.publishToTwitter = function (req, res) {
 
                             if(!posting.geo.coordinates) {
                                 tweetWithPhoto = {
-                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/feed/' + posting.postingId,
                                     media_ids: media.media_id_string
                                 };
                             } else {
                                 tweetWithPhoto = {
-                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                                    status: posting.plainTextBody.substring(0, 55) + '... ' + configAuth.hts.appURL + '/feed/' + posting.postingId,
                                     media_ids: media.media_id_string,
                                     lat: posting.geo.coordinates[1],
                                     long: posting.geo.coordinates[0],
@@ -85,11 +85,11 @@ exports.publishToTwitter = function (req, res) {
 
         if(!posting.geo.coordinates) {
             tweet = {
-                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId
+                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/feed/' + posting.postingId
             };
         } else {
             tweet = {
-                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/ext/' + posting.postingId,
+                status: posting.plainTextBody.substring(0, 78) + '... ' + configAuth.hts.appURL + '/feed/' + posting.postingId,
                 lat: posting.geo.coordinates[1],
                 long: posting.geo.coordinates[0],
                 display_coordinates: true
