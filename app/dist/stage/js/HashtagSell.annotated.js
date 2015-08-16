@@ -14354,7 +14354,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            <div class=\"hts-input-container\">\n" +
     "                <div id=\"htsPost\"\n" +
     "                     ng-class=\"jsonObj.category_name ? 'col-md-10' : 'col-md-12' \"\n" +
-    "                     class=\"hts-input\" style=\"clear:both;\"\n" +
+    "                     class=\"hts-input needsclick\" style=\"clear:both;\"\n" +
     "                     mentio\n" +
     "                     contenteditable\n" +
     "                     sellbox\n" +
