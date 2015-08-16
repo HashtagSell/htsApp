@@ -180,12 +180,12 @@
                 <div ng-controller="sideProfile" class="profile" style="background-image : url({{userObj.user_settings.banner_photo}});">
                     <span class="sideNavTriggerBannerImageUpload fa-stack">
                         <i class="fa fa-circle fa-stack-2x"></i>
-                        <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="bannerDropzoneConfig"></i>
+                        <i class="fa fa-camera fa-stack-1x fa-inverse needsclick" dropzone="bannerDropzoneConfig"></i>
                     </span>
                     <div class="profileCircle">
                         <span class="sideNavTriggerProfileImageUpload fa-stack">
                             <i class="fa fa-circle fa-stack-2x"></i>
-                            <i class="fa fa-camera fa-stack-1x fa-inverse" dropzone="profileDropzoneConfig"></i>
+                            <i class="fa fa-camera fa-stack-1x fa-inverse needsclick" dropzone="profileDropzoneConfig"></i>
                         </span>
                         <img class='bs-profile-image' ng-src={{userObj.user_settings.profile_photo}} width="70px;" height="70px;"/>
                     </div>

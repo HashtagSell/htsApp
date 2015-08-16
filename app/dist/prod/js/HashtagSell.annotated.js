@@ -14387,7 +14387,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            <div class=\"inset-toolbar\">\n" +
     "                <div>\n" +
     "                    <div style=\"position: absolute; bottom: 15px;\">\n" +
-    "                        <button id=\"imageUpload\" class=\"btn btn-primary\" style=\"height: 45px; border-radius: 0px 0px 0px 4px;\">\n" +
+    "                        <button id=\"imageUpload\" class=\"btn btn-primary needsclick\" style=\"height: 45px; border-radius: 0px 0px 0px 4px;\">\n" +
     "                            <i class=\"fa fa-camera\"></i> Add photo\n" +
     "                        </button>\n" +
     "                    </div>\n" +
@@ -15088,7 +15088,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            <div class=\"col-sm-5\">\n" +
     "\n" +
     "                <div ng-hide=\"bindingObj.currentlyUploadingProfilePhoto\" style=\"cursor: pointer\">\n" +
-    "                    <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width=\"90px;\"/>\n" +
+    "                    <img class='triggerProfileImageUpload needsclick' ng-src={{userObj.user_settings.profile_photo}} width=\"90px;\"/>\n" +
     "                </div>\n" +
     "\n" +
     "                <div ng-show=\"bindingObj.currentlyUploadingProfilePhoto\" id=\"profilePreview\" dropzone=\"profileDropzoneConfig\">\n" +
@@ -15102,7 +15102,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "            <div class=\"col-sm-5\">\n" +
     "                <div ng-hide=\"bindingObj.currentlyUploadingBannerPhoto\" style=\"cursor: pointer\">\n" +
-    "                    <img class='triggerBannerImageUpload img-rounded' ng-src={{userObj.user_settings.banner_photo}} width=\"190px;\"/>\n" +
+    "                    <img class='triggerBannerImageUpload img-rounded needsclick' ng-src={{userObj.user_settings.banner_photo}} width=\"190px;\"/>\n" +
     "                </div>\n" +
     "\n" +
     "                <div ng-show=\"bindingObj.currentlyUploadingBannerPhoto\" id=\"bannerPreview\" dropzone=\"bannerDropzoneConfig\">\n" +

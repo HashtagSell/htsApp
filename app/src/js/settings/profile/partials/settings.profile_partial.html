@@ -12,7 +12,7 @@
             <div class="col-sm-5">
 
                 <div ng-hide="bindingObj.currentlyUploadingProfilePhoto" style="cursor: pointer">
-                    <img class='triggerProfileImageUpload' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
+                    <img class='triggerProfileImageUpload needsclick' ng-src={{userObj.user_settings.profile_photo}} width="90px;"/>
                 </div>
 
                 <div ng-show="bindingObj.currentlyUploadingProfilePhoto" id="profilePreview" dropzone="profileDropzoneConfig">
@@ -26,7 +26,7 @@
 
             <div class="col-sm-5">
                 <div ng-hide="bindingObj.currentlyUploadingBannerPhoto" style="cursor: pointer">
-                    <img class='triggerBannerImageUpload img-rounded' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
+                    <img class='triggerBannerImageUpload img-rounded needsclick' ng-src={{userObj.user_settings.banner_photo}} width="190px;"/>
                 </div>
 
                 <div ng-show="bindingObj.currentlyUploadingBannerPhoto" id="bannerPreview" dropzone="bannerDropzoneConfig">
