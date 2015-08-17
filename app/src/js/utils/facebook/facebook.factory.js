@@ -11,8 +11,6 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         var facebook = Session.getSessionValue('facebook');
 
-        console.log('facebook tokens', facebook);
-
         //Strips HTML from string.
         function strip(html){
             var tmp = document.createElement("DIV");
@@ -39,185 +37,70 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         newPost.plainTextBody = strip(bodyElem.html());
 
+        var fbPost = null;
 
-        var currentDate = new Date();
-
-        //WE already have facebook token for user.. just post to facebook.
-        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
-        if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
-
-            var fbPost = null;
-
-            if(newPost.images.length) {
-                fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                    access_token: facebook.token
-                };
-            } else {
-                fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    access_token: facebook.token
-                };
-            }
-
-            console.log('here is our fb post object: ', fbPost);
-
-
-            ezfb.api('/me/feed', 'post', fbPost, function (response) {
-
-                if (response.error) {
-
-                    deferred.reject(response);
-
-                } else {
-
-                    console.log('here is our facebook success response: ', response);
-
-                    var payload = {
-                        facebook: response
-                    };
-
-                    if (newPost.twitter) {
-                        payload.twitter = newPost.twitter;
-                    }
-
-                    if (newPost.amazon) {
-                        payload.amazon = newPost.amazon;
-                    }
-
-                    if (newPost.ebay) {
-                        payload.ebay = newPost.ebay;
-                    }
-
-                    if (newPost.craigslist) {
-                        payload.craigslist = newPost.craigslist;
-                    }
-
-                    if (newPost.payment) {
-                        payload.payment = newPost.payment;
-                    }
-
-                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                            deferred.resolve(response);
-
-                    }).error(function (response) {
-
-                            deferred.reject(response);
-                    });
-
-                }
-            });
-
-        } else { //No facebook token for user.
-
-            /**
-             * Calling FB.login with required permissions specified
-             * https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0
-             */
-
-            ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
-                console.log('res AuthResponse', res);
-
-                if (res.authResponse) {
-
-                    var t = new Date();
-                    t.setSeconds(res.authResponse.expiresIn);
-
-                    var facebookCreds = {};
-                    facebookCreds.id = res.authResponse.userID;
-                    facebookCreds.token = res.authResponse.accessToken;
-                    facebookCreds.tokenExpiration = t;
-
-                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
-                        //$scope.apiMe = res;
-                        console.log('apiMe', res);
-
-                        facebookCreds.email = res.email;
-                        facebookCreds.name = res.first_name + ' ' + res.last_name;
-
-                        console.log(facebookCreds);
-
-                        Session.setSessionValue('facebook', facebookCreds, function () {  //persist the facebook token in database so we don't have to do this again
-
-
-
-                            var fbPost = null;
-
-                            if(newPost.images.length) {
-                                fbPost = {
-                                    message: newPost.plainTextBody,
-                                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                                    access_token: facebookCreds.token
-                                };
-                            } else {
-                                fbPost = {
-                                    message: newPost.plainTextBody,
-                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                                    access_token: facebookCreds.token
-                                };
-                            }
-
-
-                            ezfb.api('/me/feed', 'post', fbPost, function (response) {
-
-                                if (response.error) {
-
-                                    deferred.reject(response);
-
-                                } else {
-
-                                    var payload = {
-                                        facebook: response
-                                    };
-
-                                    if (newPost.twitter) {
-                                        payload.twitter = newPost.twitter;
-                                    }
-
-                                    if (newPost.amazon) {
-                                        payload.amazon = newPost.amazon;
-                                    }
-
-                                    if (newPost.ebay) {
-                                        payload.ebay = newPost.ebay;
-                                    }
-
-                                    if (newPost.craigslist) {
-                                        payload.craigslist = newPost.craigslist;
-                                    }
-
-                                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                                        deferred.resolve(response);
-
-                                    }).error(function (response) {
-
-                                        deferred.reject(response);
-                                    });
-
-                                }
-                            });
-
-                        });
-
-                    });
-
-                } else {
-                    deferred.reject(
-                        {
-                            error: {
-                                message: 'Could not login to Facebook Account'
-                            }
-                        }
-                    );
-                }
-            }, {scope: 'email, publish_actions'});
-
+        if(newPost.images.length) {
+            fbPost = {
+                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                picture: newPost.images[0].full || newPost.images[0].thumbnail,
+                access_token: facebook.token
+            };
+        } else {
+            fbPost = {
+                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                access_token: facebook.token
+            };
         }
+
+        console.log('here is our fb post object: ', fbPost);
+
+
+        ezfb.api('/me/feed', 'post', fbPost, function (response) {
+
+            if (response.error) {
+
+                deferred.reject(response);
+
+            } else {
+
+                console.log('here is our facebook success response: ', response);
+
+                var payload = {
+                    facebook: response
+                };
+
+                if (newPost.twitter) {
+                    payload.twitter = newPost.twitter;
+                }
+
+                if (newPost.amazon) {
+                    payload.amazon = newPost.amazon;
+                }
+
+                if (newPost.ebay) {
+                    payload.ebay = newPost.ebay;
+                }
+
+                if (newPost.craigslist) {
+                    payload.craigslist = newPost.craigslist;
+                }
+
+                if (newPost.payment) {
+                    payload.payment = newPost.payment;
+                }
+
+                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                        deferred.resolve(response);
+
+                }).error(function (response) {
+
+                        deferred.reject(response);
+                });
+
+            }
+        });
 
         return deferred.promise;
     };
@@ -235,45 +118,69 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
     factory.checkIfTokenValid = function () {
 
+        var deferred = $q.defer();
+
         var facebook = Session.getSessionValue('facebook');
 
         console.log('facebook tokens', facebook);
 
-
+        var currentDate = new Date();
         //WE already have facebook token for user.. just post to facebook.
-        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
         if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
 
         } else {
-
             ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
                 console.log('res AuthResponse', res);
 
                 if (res.authResponse) {
+                    if(res.authResponse.grantedScopes === 'email,contact_email,publish_actions,public_profile') {
+                        var t = new Date();
+                        t.setSeconds(res.authResponse.expiresIn);
 
-                    var t = new Date();
-                    t.setSeconds(res.authResponse.expiresIn);
+                        var facebookCreds = {
+                            id: res.authResponse.userID,
+                            token: res.authResponse.accessToken,
+                            tokenExpiration: t
+                        };
 
-                    var facebookCreds = {};
-                    facebookCreds.id = res.authResponse.userID;
-                    facebookCreds.token = res.authResponse.accessToken;
-                    facebookCreds.tokenExpiration = t;
+                        ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
+                            if (!res || res.error) {
+                                deferred.reject({
+                                    message: "Facebook failed to hand back user credentials",
+                                    delay: 10000
+                                });
+                            } else {
+                                console.log('apiMe', res);
 
-                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
-                        //$scope.apiMe = res;
-                        console.log('apiMe', res);
+                                facebookCreds.email = res.email;
+                                facebookCreds.name = res.first_name + ' ' + res.last_name;
 
-                        facebookCreds.email = res.email;
-                        facebookCreds.name = res.first_name + ' ' + res.last_name;
+                                console.log(facebookCreds);
 
-                        console.log(facebookCreds);
-
-                        Session.setSessionValue('facebook', facebookCreds, function () {
+                                Session.setSessionValue('facebook', facebookCreds, function () { //persist the facebook token in database so we don't have to do this again
+                                    deferred.resolve();
+                                });
+                            }
                         });
-                    }); //persist the facebook token in database so we don't have to do this again
+                    } else {
+                        deferred.reject({
+                            message: "Need correct Facebook permissions to publish",
+                            delay: 10000
+                        });
+                    }
+                } else {  //user cancelled
+                    deferred.reject({
+                        message: "Could not complete Facebook login.",
+                        delay: 10000
+                    });
                 }
+            }, {
+                scope: 'email, publish_actions',
+                return_scopes: true
             });
         }
+
+        return deferred.promise;
     };
 
 

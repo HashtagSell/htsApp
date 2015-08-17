@@ -6744,7 +6744,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
     $scope.checkIfFacebookTokenValid = function () {
-        facebookFactory.checkIfTokenValid();
+        if($scope.shareToggles.facebook) {
+            facebookFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.facebook = false;
+
+                Notification.error(response);  //Send the webtoast
+            });
+        }
     };
 
 
@@ -6782,7 +6790,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
 
     $scope.checkIfTwitterTokenValid = function () {
-        twitterFactory.checkIfTokenValid();
+        if($scope.shareToggles.twitter) {
+            twitterFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.twitter = false;
+
+                Notification.error(response);  //Send the webtoast
+            });
+        }
     };
 
 
@@ -6843,7 +6859,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
 
     $scope.checkIfEbayTokenValid = function () {
-        ebayFactory.checkIfTokenValid();
+        if($scope.shareToggles.ebay) {
+            ebayFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.ebay = false;
+
+                Notification.error(response);  //Send the webtoast;
+            });
+        }
     };
 
 
@@ -8477,112 +8501,112 @@ htsApp.service('Session', ['$window', '$http', '$q', '$state', function ($window
  */
 htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window', 'Session', 'ebayFactory', 'facebookFactory', 'twitterFactory', 'Notification', 'modalConfirmationService', function ($scope, $timeout, $window, Session, ebayFactory, facebookFactory, twitterFactory, Notification, modalConfirmationService) {
 
-    $scope.userObj = Session.userObj;
+    //$scope.userObj = Session.userObj;
 
-    $scope.options = {
-        safeSearch: ['On', 'Off'],
-        defaultEmail: [
-            {name : "Always Ask", value: "ask"},
-            {name : "Gmail", value : "gmail"},
-            {name : "Yahoo", value : "yahoo"},
-            {name : "Hotmail", value : "hotmail"},
-            {name : "AOL", value : "aol"},
-            {name : "Use Default Mail Client", value : "mailto"}
-        ],
-        location: ['Approximate', 'Exact']
-    };
+    //$scope.options = {
+    //    safeSearch: ['On', 'Off'],
+    //    defaultEmail: [
+    //        {name : "Always Ask", value: "ask"},
+    //        {name : "Gmail", value : "gmail"},
+    //        {name : "Yahoo", value : "yahoo"},
+    //        {name : "Hotmail", value : "hotmail"},
+    //        {name : "AOL", value : "aol"},
+    //        {name : "Use Default Mail Client", value : "mailto"}
+    //    ],
+    //    location: ['Approximate', 'Exact']
+    //};
+    //
+    //$scope.defaultEmail = Session.userObj.user_settings.email_provider[0].value;
 
-    $scope.defaultEmail = Session.userObj.user_settings.email_provider[0].value;
-
-    $scope.getSafeSearch = function(){
-        //var value = Session.getSessionValue('safe_search');
-        if (Session.userObj.user_settings.safe_search){
-            return $scope.options.safeSearch[0];
-        } else {
-            return $scope.options.safeSearch[1];
-        }
-    };
-    $scope.safeSearch = $scope.getSafeSearch();
-    $scope.setSafeSearch = function(selection){
-
-        if(selection === "On"){
-            Session.setSessionValue('safe_search', true, function(){
-                $scope.safeSearchUpdated = true;
-
-                $timeout(function () {
-
-                    $scope.safeSearchUpdated = false;
-                }, 3000);
-            });
-        } else if (selection === "Off") {
-            Session.setSessionValue('safe_search', false, function(){
-                $scope.safeSearchUpdated = true;
-
-                $timeout(function () {
-
-                    $scope.safeSearchUpdated = false;
-                }, 3000);
-            });
-        }
-
-    };
-
-
-    var buildDefaultEmail = function (selection) {
-        //var value = Session.getSessionValue('email_provider');
-        switch (selection) {
-            case 'ask':
-                return [{name : "Always Ask", value: "ask"}];
-            case 'gmail':
-                return [{name : "Gmail", value : "gmail"}];
-            case 'yahoo':
-                return [{name : "Yahoo", value : "yahoo"}];
-            case 'hotmail':
-                return [{name : "Hotmail", value : "hotmail"}];
-            case 'aol':
-                return [{name : "AOL", value : "aol"}];
-            case 'mailto':
-                return [{name : "Use Default Mail Client", value : "mailto"}];
-        }
-    };
+    //$scope.getSafeSearch = function(){
+    //    //var value = Session.getSessionValue('safe_search');
+    //    if (Session.userObj.user_settings.safe_search){
+    //        return $scope.options.safeSearch[0];
+    //    } else {
+    //        return $scope.options.safeSearch[1];
+    //    }
+    //};
+    //$scope.safeSearch = $scope.getSafeSearch();
+    //$scope.setSafeSearch = function(selection){
+    //
+    //    if(selection === "On"){
+    //        Session.setSessionValue('safe_search', true, function(){
+    //            $scope.safeSearchUpdated = true;
+    //
+    //            $timeout(function () {
+    //
+    //                $scope.safeSearchUpdated = false;
+    //            }, 3000);
+    //        });
+    //    } else if (selection === "Off") {
+    //        Session.setSessionValue('safe_search', false, function(){
+    //            $scope.safeSearchUpdated = true;
+    //
+    //            $timeout(function () {
+    //
+    //                $scope.safeSearchUpdated = false;
+    //            }, 3000);
+    //        });
+    //    }
+    //
+    //};
 
 
-    $scope.setDefaultEmail = function(selection){
-
-        selection = buildDefaultEmail(selection);
-
-        Session.setSessionValue('email_provider', selection, function () {
-            $scope.defaultEmailUpdated = true;
-
-            $timeout(function () {
-                $scope.defaultEmailUpdated = false;
-            }, 3000);
-        });
-
-    };
-
-
-
-    $scope.getLocation = function(){
-        //var value = Session.getSessionValue('location_type');
-        switch (Session.userObj.user_settings.location_type) {
-            case 'Approximate':
-                return $scope.options.location[0];
-            case 'Exact':
-                return $scope.options.location[1];
-        }
-    };
-    $scope.location = $scope.getLocation();
-    $scope.setLocation = function(selection){
-        Session.setSessionValue('location_type', selection, function(){
-            $scope.locationUpdated = true;
-
-            $timeout(function () {
-
-                $scope.locationUpdated = false;
-            }, 3000);
-        });
-    };
+    //var buildDefaultEmail = function (selection) {
+    //    //var value = Session.getSessionValue('email_provider');
+    //    switch (selection) {
+    //        case 'ask':
+    //            return [{name : "Always Ask", value: "ask"}];
+    //        case 'gmail':
+    //            return [{name : "Gmail", value : "gmail"}];
+    //        case 'yahoo':
+    //            return [{name : "Yahoo", value : "yahoo"}];
+    //        case 'hotmail':
+    //            return [{name : "Hotmail", value : "hotmail"}];
+    //        case 'aol':
+    //            return [{name : "AOL", value : "aol"}];
+    //        case 'mailto':
+    //            return [{name : "Use Default Mail Client", value : "mailto"}];
+    //    }
+    //};
+    //
+    //
+    //$scope.setDefaultEmail = function(selection){
+    //
+    //    selection = buildDefaultEmail(selection);
+    //
+    //    Session.setSessionValue('email_provider', selection, function () {
+    //        $scope.defaultEmailUpdated = true;
+    //
+    //        $timeout(function () {
+    //            $scope.defaultEmailUpdated = false;
+    //        }, 3000);
+    //    });
+    //
+    //};
+    //
+    //
+    //
+    //$scope.getLocation = function(){
+    //    //var value = Session.getSessionValue('location_type');
+    //    switch (Session.userObj.user_settings.location_type) {
+    //        case 'Approximate':
+    //            return $scope.options.location[0];
+    //        case 'Exact':
+    //            return $scope.options.location[1];
+    //    }
+    //};
+    //$scope.location = $scope.getLocation();
+    //$scope.setLocation = function(selection){
+    //    Session.setSessionValue('location_type', selection, function(){
+    //        $scope.locationUpdated = true;
+    //
+    //        $timeout(function () {
+    //
+    //            $scope.locationUpdated = false;
+    //        }, 3000);
+    //    });
+    //};
 
 
 
@@ -8593,47 +8617,19 @@ htsApp.controller('settings.account.controller', ['$scope', '$timeout', '$window
 
 
         ebayFactory.getEbaySessionID().then(function (response) {
-            //if (response.status === 200) {
-            //    $scope.ebay.sessionId = response.data.GetSessionIDResponse.SessionID;
-            //} else {
-            //    console.log('ebay link not working');
-            //}
-
-            Session.setSessionValue('ebay', response.data.ebay, function () {
-                Notification.primary({
-                    message: 'Successfully linked to eBay!',
-                    delay: 10000
-                });  //Send the webtoast
-            });
+            Session.setSessionValue('ebay', response.data.ebay, function () {});
         }, function(errResponse) {
             $scope.ebay.sessionId = errResponse.data.sessionId;
             $scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
 
             Notification.error({
-                title: 'Manually link eBay account',
-                message: 'After completing eBay authorization please click the big red button below.',
+                title: 'Ebay auth failed',
+                message: 'Please try again.',
                 delay: 10000
             });  //Send the webtoast
         });
 
     };
-
-
-    $scope.getEbayToken = function () {
-        ebayFactory.manuallyGetEbayToken($scope.ebay.sessionId).then(function (response) {
-            console.log(response);
-            if(!response.data.success) {
-                $scope.ebay.sessionId = false;
-                $scope.ebay.err = response.data.ebay.Errors.LongMessage;
-            } else {
-                Session.setSessionValue('ebay', response.data.ebay, function () {
-                    console.log('ebay account connected!');
-                });
-            }
-        });
-    };
-
-
 
 
     $scope.disconnectFacebook = function () {
@@ -11526,8 +11522,6 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
         var deferred = $q.defer();
 
-        var ebay = Session.getSessionValue('ebay');
-
         var payload = {
             "ebay": true
         };
@@ -11552,49 +11546,15 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             payload.payment = newPost.payment;
         }
 
-
-        //We already have ebay token for user.. just push to ebay
-        if(!factory.isEmpty(ebay)) {
-
-            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
-                success(function (response) {
-                    deferred.resolve(response);
-                }).
-                error(function (response) {
-
-                    deferred.reject(response);
-
-                });
-
-        } else {
-
-            factory.getEbaySessionID().then(function (response) {
-                Session.setSessionValue('ebay', response.data.ebay, function () {
-
-                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
-                        success(function (response) {
-                            deferred.resolve(response);
-                        }).
-                        error(function (response) {
-
-                            deferred.reject(response);
-
-                        });
-                });
-            }, function(errResponse) {
-                //$scope.ebay.sessionId = errResponse.data.sessionId;
-                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
-
-                Notification.error({
-                    title: 'Ebay time out',
-                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
-                    delay: 10000
-                });  //Send the webtoast
-
+        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
+            success(function (response) {
                 deferred.resolve(response);
-            });
+            }).
+            error(function (response) {
 
-        }
+                deferred.reject(response);
+
+            });
 
         return deferred.promise;
     };
@@ -11619,60 +11579,54 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             var attemptCount = 0;
 
             var fetchTokenInterval = $interval(function () {
-                $http({
-                    method: 'GET',
-                    url: ENV.ebayAuth + '/fetchToken',
-                    params: {'sessionId' : sessionId}
-                }).then(function (response) {
+                if(!w.closed) {
+                    $http({
+                        method: 'GET',
+                        url: ENV.ebayAuth + '/fetchToken',
+                        params: {'sessionId': sessionId}
+                    }).then(function (response) {
 
-                    console.log(response);
+                        console.log(response);
 
-                    if(response.data.success) {
+                        if (response.data.success) {
 
-                        w.close();
+                            w.close();
 
-                        $interval.cancel(fetchTokenInterval);
-                        deferred.resolve(response);
+                            $interval.cancel(fetchTokenInterval);
+                            deferred.resolve(response);
 
-                    } else if(attemptCount === 500) {
+                        } else if (attemptCount === 30) {
 
-                        $interval.cancel(fetchTokenInterval);
+                            $interval.cancel(fetchTokenInterval);
 
-                        response.data.sessionId = sessionId;
+                            w.close();
 
-                        deferred.reject(response);
+                            response.data.sessionId = sessionId;
 
-                    } else {
+                            deferred.reject({
+                                message: "Ebay login timed out.  Please try again.",
+                                delay: 10000
+                            });
 
-                        attemptCount++;
-                        console.log(attemptCount);
+                        } else {
 
-                    }
+                            attemptCount++;
+                            console.log(attemptCount);
 
-                });
+                        }
+
+                    });
+                } else {
+
+                    $interval.cancel(fetchTokenInterval);
+                    deferred.reject({
+                        message: "Looks like you closed the Ebay login window.  Please try again.",
+                        delay: 10000
+                    });
+                }
             }, 2000);
 
             //deferred.resolve(response);
-
-        }, function (err) {
-            deferred.reject(err);
-        });
-
-        return deferred.promise;
-    };
-
-
-    factory.manuallyGetEbayToken = function (sessionId) {
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'GET',
-            url: ENV.ebayAuth + '/fetchToken',
-            params: {'sessionId' : sessionId}
-        }).then(function (response) {
-
-            deferred.resolve(response);
 
         }, function (err) {
             deferred.reject(err);
@@ -11691,30 +11645,27 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
 
     factory.checkIfTokenValid = function () {
+
+        var deferred = $q.defer();
+
         var ebay = Session.getSessionValue('ebay');
 
         //We already have ebay token for user.. just push to ebay
-        if(!factory.isEmpty(ebay)) {
-
-        } else {
+        if(factory.isEmpty(ebay)){
 
             factory.getEbaySessionID().then(function (response) {
                 Session.setSessionValue('ebay', response.data.ebay, function () {
 
                 });
             }, function(errResponse) {
-                //$scope.ebay.sessionId = errResponse.data.sessionId;
-                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
 
-                Notification.error({
-                    title: 'Ebay time out',
-                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
-                    delay: 10000
-                });  //Send the webtoast
-
-                deferred.resolve(response);
+                deferred.reject(errResponse);
             });
+        } else {
+            deferred.resolve();
         }
+
+        return deferred.promise;
     };
 
 
@@ -11759,8 +11710,6 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         var facebook = Session.getSessionValue('facebook');
 
-        console.log('facebook tokens', facebook);
-
         //Strips HTML from string.
         function strip(html){
             var tmp = document.createElement("DIV");
@@ -11787,185 +11736,70 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         newPost.plainTextBody = strip(bodyElem.html());
 
+        var fbPost = null;
 
-        var currentDate = new Date();
-
-        //WE already have facebook token for user.. just post to facebook.
-        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
-        if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
-
-            var fbPost = null;
-
-            if(newPost.images.length) {
-                fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                    access_token: facebook.token
-                };
-            } else {
-                fbPost = {
-                    message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                    access_token: facebook.token
-                };
-            }
-
-            console.log('here is our fb post object: ', fbPost);
-
-
-            ezfb.api('/me/feed', 'post', fbPost, function (response) {
-
-                if (response.error) {
-
-                    deferred.reject(response);
-
-                } else {
-
-                    console.log('here is our facebook success response: ', response);
-
-                    var payload = {
-                        facebook: response
-                    };
-
-                    if (newPost.twitter) {
-                        payload.twitter = newPost.twitter;
-                    }
-
-                    if (newPost.amazon) {
-                        payload.amazon = newPost.amazon;
-                    }
-
-                    if (newPost.ebay) {
-                        payload.ebay = newPost.ebay;
-                    }
-
-                    if (newPost.craigslist) {
-                        payload.craigslist = newPost.craigslist;
-                    }
-
-                    if (newPost.payment) {
-                        payload.payment = newPost.payment;
-                    }
-
-                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                            deferred.resolve(response);
-
-                    }).error(function (response) {
-
-                            deferred.reject(response);
-                    });
-
-                }
-            });
-
-        } else { //No facebook token for user.
-
-            /**
-             * Calling FB.login with required permissions specified
-             * https://developers.facebook.com/docs/reference/javascript/FB.login/v2.0
-             */
-
-            ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
-                console.log('res AuthResponse', res);
-
-                if (res.authResponse) {
-
-                    var t = new Date();
-                    t.setSeconds(res.authResponse.expiresIn);
-
-                    var facebookCreds = {};
-                    facebookCreds.id = res.authResponse.userID;
-                    facebookCreds.token = res.authResponse.accessToken;
-                    facebookCreds.tokenExpiration = t;
-
-                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
-                        //$scope.apiMe = res;
-                        console.log('apiMe', res);
-
-                        facebookCreds.email = res.email;
-                        facebookCreds.name = res.first_name + ' ' + res.last_name;
-
-                        console.log(facebookCreds);
-
-                        Session.setSessionValue('facebook', facebookCreds, function () {  //persist the facebook token in database so we don't have to do this again
-
-
-
-                            var fbPost = null;
-
-                            if(newPost.images.length) {
-                                fbPost = {
-                                    message: newPost.plainTextBody,
-                                    picture: newPost.images[0].full || newPost.images[0].thumbnail,
-                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                                    access_token: facebookCreds.token
-                                };
-                            } else {
-                                fbPost = {
-                                    message: newPost.plainTextBody,
-                                    link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
-                                    access_token: facebookCreds.token
-                                };
-                            }
-
-
-                            ezfb.api('/me/feed', 'post', fbPost, function (response) {
-
-                                if (response.error) {
-
-                                    deferred.reject(response);
-
-                                } else {
-
-                                    var payload = {
-                                        facebook: response
-                                    };
-
-                                    if (newPost.twitter) {
-                                        payload.twitter = newPost.twitter;
-                                    }
-
-                                    if (newPost.amazon) {
-                                        payload.amazon = newPost.amazon;
-                                    }
-
-                                    if (newPost.ebay) {
-                                        payload.ebay = newPost.ebay;
-                                    }
-
-                                    if (newPost.craigslist) {
-                                        payload.craigslist = newPost.craigslist;
-                                    }
-
-                                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                                        deferred.resolve(response);
-
-                                    }).error(function (response) {
-
-                                        deferred.reject(response);
-                                    });
-
-                                }
-                            });
-
-                        });
-
-                    });
-
-                } else {
-                    deferred.reject(
-                        {
-                            error: {
-                                message: 'Could not login to Facebook Account'
-                            }
-                        }
-                    );
-                }
-            }, {scope: 'email, publish_actions'});
-
+        if(newPost.images.length) {
+            fbPost = {
+                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                picture: newPost.images[0].full || newPost.images[0].thumbnail,
+                access_token: facebook.token
+            };
+        } else {
+            fbPost = {
+                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                access_token: facebook.token
+            };
         }
+
+        console.log('here is our fb post object: ', fbPost);
+
+
+        ezfb.api('/me/feed', 'post', fbPost, function (response) {
+
+            if (response.error) {
+
+                deferred.reject(response);
+
+            } else {
+
+                console.log('here is our facebook success response: ', response);
+
+                var payload = {
+                    facebook: response
+                };
+
+                if (newPost.twitter) {
+                    payload.twitter = newPost.twitter;
+                }
+
+                if (newPost.amazon) {
+                    payload.amazon = newPost.amazon;
+                }
+
+                if (newPost.ebay) {
+                    payload.ebay = newPost.ebay;
+                }
+
+                if (newPost.craigslist) {
+                    payload.craigslist = newPost.craigslist;
+                }
+
+                if (newPost.payment) {
+                    payload.payment = newPost.payment;
+                }
+
+                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+
+                        deferred.resolve(response);
+
+                }).error(function (response) {
+
+                        deferred.reject(response);
+                });
+
+            }
+        });
 
         return deferred.promise;
     };
@@ -11983,45 +11817,69 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
     factory.checkIfTokenValid = function () {
 
+        var deferred = $q.defer();
+
         var facebook = Session.getSessionValue('facebook');
 
         console.log('facebook tokens', facebook);
 
-
+        var currentDate = new Date();
         //WE already have facebook token for user.. just post to facebook.
-        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
         if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
 
         } else {
-
             ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
                 console.log('res AuthResponse', res);
 
                 if (res.authResponse) {
+                    if(res.authResponse.grantedScopes === 'email,contact_email,publish_actions,public_profile') {
+                        var t = new Date();
+                        t.setSeconds(res.authResponse.expiresIn);
 
-                    var t = new Date();
-                    t.setSeconds(res.authResponse.expiresIn);
+                        var facebookCreds = {
+                            id: res.authResponse.userID,
+                            token: res.authResponse.accessToken,
+                            tokenExpiration: t
+                        };
 
-                    var facebookCreds = {};
-                    facebookCreds.id = res.authResponse.userID;
-                    facebookCreds.token = res.authResponse.accessToken;
-                    facebookCreds.tokenExpiration = t;
+                        ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
+                            if (!res || res.error) {
+                                deferred.reject({
+                                    message: "Facebook failed to hand back user credentials",
+                                    delay: 10000
+                                });
+                            } else {
+                                console.log('apiMe', res);
 
-                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
-                        //$scope.apiMe = res;
-                        console.log('apiMe', res);
+                                facebookCreds.email = res.email;
+                                facebookCreds.name = res.first_name + ' ' + res.last_name;
 
-                        facebookCreds.email = res.email;
-                        facebookCreds.name = res.first_name + ' ' + res.last_name;
+                                console.log(facebookCreds);
 
-                        console.log(facebookCreds);
-
-                        Session.setSessionValue('facebook', facebookCreds, function () {
+                                Session.setSessionValue('facebook', facebookCreds, function () { //persist the facebook token in database so we don't have to do this again
+                                    deferred.resolve();
+                                });
+                            }
                         });
-                    }); //persist the facebook token in database so we don't have to do this again
+                    } else {
+                        deferred.reject({
+                            message: "Need correct Facebook permissions to publish",
+                            delay: 10000
+                        });
+                    }
+                } else {  //user cancelled
+                    deferred.reject({
+                        message: "Could not complete Facebook login.",
+                        delay: 10000
+                    });
                 }
+            }, {
+                scope: 'email, publish_actions',
+                return_scopes: true
             });
         }
+
+        return deferred.promise;
     };
 
 
@@ -12128,146 +11986,56 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
         newPost.plainTextBody = strip(bodyElem.html());
 
-        //We already have twitter token for user.. just post to twitter.
-        if(!factory.isEmpty(twitter)) {
+        $http({
+            method: 'POST',
+            url: ENV.htsAppUrl + '/publishTweet',
+            data: {
+                'posting': newPost,
+                'token': twitter.token,
+                'tokenSecret': twitter.tokenSecret
+            }
+        }).then(function (response) {
 
-            $http({
-                method: 'POST',
-                url: ENV.htsAppUrl + '/publishTweet',
-                data: {
-                    'posting': newPost,
-                    'token': twitter.token,
-                    'tokenSecret': twitter.tokenSecret
+            var payload = {
+                twitter: {
+                    id: response.data.id
                 }
-            }).then(function (response) {
+            };
 
-                var payload = {
-                    twitter: {
-                        id: response.data.id
-                    }
-                };
+            if (newPost.facebook) {
+                payload.facebook = newPost.facebook;
+            }
 
-                if (newPost.facebook) {
-                    payload.facebook = newPost.facebook;
-                }
+            if (newPost.amazon) {
+                payload.amazon = newPost.amazon;
+            }
 
-                if (newPost.amazon) {
-                    payload.amazon = newPost.amazon;
-                }
+            if (newPost.ebay) {
+                payload.ebay = newPost.ebay;
+            }
 
-                if (newPost.ebay) {
-                    payload.ebay = newPost.ebay;
-                }
+            if (newPost.craigslist) {
+                payload.craigslist = newPost.craigslist;
+            }
 
-                if (newPost.craigslist) {
-                    payload.craigslist = newPost.craigslist;
-                }
+            if (newPost.payment) {
+                payload.payment = newPost.payment;
+            }
 
-                if (newPost.payment) {
-                    payload.payment = newPost.payment;
-                }
+            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
 
-                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+                deferred.resolve(response);
 
-                    deferred.resolve(response);
+            }).error(function (response) {
 
-                }).error(function (response) {
-
-                    deferred.reject(response);
-                });
-
-            }, function (err) {
-
-                deferred.reject(err);
-
+                deferred.reject(response);
             });
 
-        } else { //No twitter token for user.
+        }, function (err) {
 
-            var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
+            deferred.reject(err);
 
-            var attemptCount = 0;
-
-            var fetchTokenInterval = $interval(function () {
-
-                Session.getUserFromServer().then(function (response) {
-
-                    console.log(response);
-
-                    if(response.user_settings.linkedAccounts.twitter.token) {
-
-                        $interval.cancel(fetchTokenInterval);
-
-                        w.close();
-
-                        Session.create(response);
-
-                        $http({
-                            method: 'POST',
-                            url: ENV.htsAppUrl + '/publishTweet',
-                            data: {
-                                'posting': newPost,
-                                'token': response.user_settings.linkedAccounts.twitter.token,
-                                'tokenSecret': response.user_settings.linkedAccounts.twitter.tokenSecret
-                            }
-                        }).then(function (response) {
-
-                            var payload = {
-                                twitter: {
-                                    id: response.data.id
-                                }
-                            };
-
-                            if (newPost.facebook) {
-                                payload.facebook = newPost.facebook;
-                            }
-
-                            if (newPost.amazon) {
-                                payload.amazon = newPost.amazon;
-                            }
-
-                            if (newPost.ebay) {
-                                payload.ebay = newPost.ebay;
-                            }
-
-                            if (newPost.craigslist) {
-                                payload.craigslist = newPost.craigslist;
-                            }
-
-                            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                                deferred.resolve(response);
-
-                            }).error(function (response) {
-
-                                deferred.reject(response);
-                            });
-
-                        }, function (err) {
-
-                            deferred.reject(err);
-
-                        });
-
-
-                    } else if(attemptCount === 50) {
-
-                        $interval.cancel(fetchTokenInterval);
-
-                        deferred.reject(response);
-
-                    } else {
-
-                        attemptCount++;
-                        console.log(attemptCount);
-
-                    }
-
-                });
-
-            }, 2000);
-
-        }
+        });
 
         return deferred.promise;
     };
@@ -12283,49 +12051,65 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
     factory.checkIfTokenValid = function () {
 
+        var deferred = $q.defer();
+
         var twitter = Session.getSessionValue('twitter');
 
-        //We already have twitter token for user.. just post to twitter.
-        if(!factory.isEmpty(twitter)) {
-
-        } else { //No twitter token for user.
+        if(factory.isEmpty(twitter)) { //No twitter token for user.
 
             var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
 
             var attemptCount = 0;
 
             var fetchTokenInterval = $interval(function () {
+                if(!w.closed) {
+                    Session.getUserFromServer().then(function (response) {
 
-                Session.getUserFromServer().then(function (response) {
+                        console.log(response);
 
-                    console.log(response);
+                        if (response.user_settings.linkedAccounts.twitter.token) {
 
-                    if(response.user_settings.linkedAccounts.twitter.token) {
+                            $interval.cancel(fetchTokenInterval);
 
-                        $interval.cancel(fetchTokenInterval);
+                            w.close();
 
-                        w.close();
+                            Session.create(response);
 
-                        Session.create(response);
+                        } else if (attemptCount === 30) {
 
-                    } else if(attemptCount === 50) {
+                            $interval.cancel(fetchTokenInterval);
 
-                        $interval.cancel(fetchTokenInterval);
+                            w.close();
 
-                        deferred.reject(response);
+                            deferred.reject({
+                                message: "Twitter login timed out.  Please try again.",
+                                delay: 10000
+                            });
 
-                    } else {
+                        } else {
 
-                        attemptCount++;
-                        console.log(attemptCount);
+                            attemptCount++;
+                            console.log(attemptCount);
 
-                    }
+                        }
 
-                });
+                    });
+                } else {
+
+                    $interval.cancel(fetchTokenInterval);
+                    deferred.reject({
+                        message: "Looks like you closed the Twitter login window.  Please try again.",
+                        delay: 10000
+                    });
+
+                }
 
             }, 2000);
-
+        } else {
+            deferred.resolve();
         }
+
+        return deferred.promise;
     };
 
 
@@ -15060,8 +14844,6 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            <label class=\"col-sm-2 control-label\">eBay</label>\n" +
     "            <div class=\"col-sm-5\" ng-show=\"!userObj.user_settings.linkedAccounts.ebay.eBayAuthToken\">\n" +
     "                <a ng-click=\"getEbaySessionID()\" target=\"_self\" class=\"btn btn-warning btn-sm\"> Link Ebay</a>\n" +
-    "                <!--<button ng-click=\"getEbaySessionID()\" ng-disabled=\"ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 1: Sign In</button>-->\n" +
-    "                <!--<button ng-click=\"getEbayToken()\" ng-disabled=\"!ebay.sessionId\" class=\"btn btn-info btn-sm\">Step 2: Link Accounts</button>-->\n" +
     "                <div>\n" +
     "                    <small ng-show=\"ebay.err\" class=\"text-danger\">{{ebay.err}}</small>\n" +
     "                </div>\n" +

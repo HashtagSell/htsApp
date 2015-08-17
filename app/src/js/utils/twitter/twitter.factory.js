@@ -37,146 +37,56 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
         newPost.plainTextBody = strip(bodyElem.html());
 
-        //We already have twitter token for user.. just post to twitter.
-        if(!factory.isEmpty(twitter)) {
+        $http({
+            method: 'POST',
+            url: ENV.htsAppUrl + '/publishTweet',
+            data: {
+                'posting': newPost,
+                'token': twitter.token,
+                'tokenSecret': twitter.tokenSecret
+            }
+        }).then(function (response) {
 
-            $http({
-                method: 'POST',
-                url: ENV.htsAppUrl + '/publishTweet',
-                data: {
-                    'posting': newPost,
-                    'token': twitter.token,
-                    'tokenSecret': twitter.tokenSecret
+            var payload = {
+                twitter: {
+                    id: response.data.id
                 }
-            }).then(function (response) {
+            };
 
-                var payload = {
-                    twitter: {
-                        id: response.data.id
-                    }
-                };
+            if (newPost.facebook) {
+                payload.facebook = newPost.facebook;
+            }
 
-                if (newPost.facebook) {
-                    payload.facebook = newPost.facebook;
-                }
+            if (newPost.amazon) {
+                payload.amazon = newPost.amazon;
+            }
 
-                if (newPost.amazon) {
-                    payload.amazon = newPost.amazon;
-                }
+            if (newPost.ebay) {
+                payload.ebay = newPost.ebay;
+            }
 
-                if (newPost.ebay) {
-                    payload.ebay = newPost.ebay;
-                }
+            if (newPost.craigslist) {
+                payload.craigslist = newPost.craigslist;
+            }
 
-                if (newPost.craigslist) {
-                    payload.craigslist = newPost.craigslist;
-                }
+            if (newPost.payment) {
+                payload.payment = newPost.payment;
+            }
 
-                if (newPost.payment) {
-                    payload.payment = newPost.payment;
-                }
+            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
 
-                $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
+                deferred.resolve(response);
 
-                    deferred.resolve(response);
+            }).error(function (response) {
 
-                }).error(function (response) {
-
-                    deferred.reject(response);
-                });
-
-            }, function (err) {
-
-                deferred.reject(err);
-
+                deferred.reject(response);
             });
 
-        } else { //No twitter token for user.
+        }, function (err) {
 
-            var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
+            deferred.reject(err);
 
-            var attemptCount = 0;
-
-            var fetchTokenInterval = $interval(function () {
-
-                Session.getUserFromServer().then(function (response) {
-
-                    console.log(response);
-
-                    if(response.user_settings.linkedAccounts.twitter.token) {
-
-                        $interval.cancel(fetchTokenInterval);
-
-                        w.close();
-
-                        Session.create(response);
-
-                        $http({
-                            method: 'POST',
-                            url: ENV.htsAppUrl + '/publishTweet',
-                            data: {
-                                'posting': newPost,
-                                'token': response.user_settings.linkedAccounts.twitter.token,
-                                'tokenSecret': response.user_settings.linkedAccounts.twitter.tokenSecret
-                            }
-                        }).then(function (response) {
-
-                            var payload = {
-                                twitter: {
-                                    id: response.data.id
-                                }
-                            };
-
-                            if (newPost.facebook) {
-                                payload.facebook = newPost.facebook;
-                            }
-
-                            if (newPost.amazon) {
-                                payload.amazon = newPost.amazon;
-                            }
-
-                            if (newPost.ebay) {
-                                payload.ebay = newPost.ebay;
-                            }
-
-                            if (newPost.craigslist) {
-                                payload.craigslist = newPost.craigslist;
-                            }
-
-                            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-
-                                deferred.resolve(response);
-
-                            }).error(function (response) {
-
-                                deferred.reject(response);
-                            });
-
-                        }, function (err) {
-
-                            deferred.reject(err);
-
-                        });
-
-
-                    } else if(attemptCount === 50) {
-
-                        $interval.cancel(fetchTokenInterval);
-
-                        deferred.reject(response);
-
-                    } else {
-
-                        attemptCount++;
-                        console.log(attemptCount);
-
-                    }
-
-                });
-
-            }, 2000);
-
-        }
+        });
 
         return deferred.promise;
     };
@@ -192,49 +102,65 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
 
     factory.checkIfTokenValid = function () {
 
+        var deferred = $q.defer();
+
         var twitter = Session.getSessionValue('twitter');
 
-        //We already have twitter token for user.. just post to twitter.
-        if(!factory.isEmpty(twitter)) {
-
-        } else { //No twitter token for user.
+        if(factory.isEmpty(twitter)) { //No twitter token for user.
 
             var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
 
             var attemptCount = 0;
 
             var fetchTokenInterval = $interval(function () {
+                if(!w.closed) {
+                    Session.getUserFromServer().then(function (response) {
 
-                Session.getUserFromServer().then(function (response) {
+                        console.log(response);
 
-                    console.log(response);
+                        if (response.user_settings.linkedAccounts.twitter.token) {
 
-                    if(response.user_settings.linkedAccounts.twitter.token) {
+                            $interval.cancel(fetchTokenInterval);
 
-                        $interval.cancel(fetchTokenInterval);
+                            w.close();
 
-                        w.close();
+                            Session.create(response);
 
-                        Session.create(response);
+                        } else if (attemptCount === 30) {
 
-                    } else if(attemptCount === 50) {
+                            $interval.cancel(fetchTokenInterval);
 
-                        $interval.cancel(fetchTokenInterval);
+                            w.close();
 
-                        deferred.reject(response);
+                            deferred.reject({
+                                message: "Twitter login timed out.  Please try again.",
+                                delay: 10000
+                            });
 
-                    } else {
+                        } else {
 
-                        attemptCount++;
-                        console.log(attemptCount);
+                            attemptCount++;
+                            console.log(attemptCount);
 
-                    }
+                        }
 
-                });
+                    });
+                } else {
+
+                    $interval.cancel(fetchTokenInterval);
+                    deferred.reject({
+                        message: "Looks like you closed the Twitter login window.  Please try again.",
+                        delay: 10000
+                    });
+
+                }
 
             }, 2000);
-
+        } else {
+            deferred.resolve();
         }
+
+        return deferred.promise;
     };
 
 

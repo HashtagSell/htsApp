@@ -10,8 +10,6 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
         var deferred = $q.defer();
 
-        var ebay = Session.getSessionValue('ebay');
-
         var payload = {
             "ebay": true
         };
@@ -36,49 +34,15 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             payload.payment = newPost.payment;
         }
 
-
-        //We already have ebay token for user.. just push to ebay
-        if(!factory.isEmpty(ebay)) {
-
-            $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
-                success(function (response) {
-                    deferred.resolve(response);
-                }).
-                error(function (response) {
-
-                    deferred.reject(response);
-
-                });
-
-        } else {
-
-            factory.getEbaySessionID().then(function (response) {
-                Session.setSessionValue('ebay', response.data.ebay, function () {
-
-                    $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
-                        success(function (response) {
-                            deferred.resolve(response);
-                        }).
-                        error(function (response) {
-
-                            deferred.reject(response);
-
-                        });
-                });
-            }, function(errResponse) {
-                //$scope.ebay.sessionId = errResponse.data.sessionId;
-                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
-
-                Notification.error({
-                    title: 'Ebay time out',
-                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
-                    delay: 10000
-                });  //Send the webtoast
-
+        $http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).
+            success(function (response) {
                 deferred.resolve(response);
-            });
+            }).
+            error(function (response) {
 
-        }
+                deferred.reject(response);
+
+            });
 
         return deferred.promise;
     };
@@ -103,60 +67,54 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
             var attemptCount = 0;
 
             var fetchTokenInterval = $interval(function () {
-                $http({
-                    method: 'GET',
-                    url: ENV.ebayAuth + '/fetchToken',
-                    params: {'sessionId' : sessionId}
-                }).then(function (response) {
+                if(!w.closed) {
+                    $http({
+                        method: 'GET',
+                        url: ENV.ebayAuth + '/fetchToken',
+                        params: {'sessionId': sessionId}
+                    }).then(function (response) {
 
-                    console.log(response);
+                        console.log(response);
 
-                    if(response.data.success) {
+                        if (response.data.success) {
 
-                        w.close();
+                            w.close();
 
-                        $interval.cancel(fetchTokenInterval);
-                        deferred.resolve(response);
+                            $interval.cancel(fetchTokenInterval);
+                            deferred.resolve(response);
 
-                    } else if(attemptCount === 500) {
+                        } else if (attemptCount === 30) {
 
-                        $interval.cancel(fetchTokenInterval);
+                            $interval.cancel(fetchTokenInterval);
 
-                        response.data.sessionId = sessionId;
+                            w.close();
 
-                        deferred.reject(response);
+                            response.data.sessionId = sessionId;
 
-                    } else {
+                            deferred.reject({
+                                message: "Ebay login timed out.  Please try again.",
+                                delay: 10000
+                            });
 
-                        attemptCount++;
-                        console.log(attemptCount);
+                        } else {
 
-                    }
+                            attemptCount++;
+                            console.log(attemptCount);
 
-                });
+                        }
+
+                    });
+                } else {
+
+                    $interval.cancel(fetchTokenInterval);
+                    deferred.reject({
+                        message: "Looks like you closed the Ebay login window.  Please try again.",
+                        delay: 10000
+                    });
+                }
             }, 2000);
 
             //deferred.resolve(response);
-
-        }, function (err) {
-            deferred.reject(err);
-        });
-
-        return deferred.promise;
-    };
-
-
-    factory.manuallyGetEbayToken = function (sessionId) {
-
-        var deferred = $q.defer();
-
-        $http({
-            method: 'GET',
-            url: ENV.ebayAuth + '/fetchToken',
-            params: {'sessionId' : sessionId}
-        }).then(function (response) {
-
-            deferred.resolve(response);
 
         }, function (err) {
             deferred.reject(err);
@@ -175,30 +133,27 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
 
     factory.checkIfTokenValid = function () {
+
+        var deferred = $q.defer();
+
         var ebay = Session.getSessionValue('ebay');
 
         //We already have ebay token for user.. just push to ebay
-        if(!factory.isEmpty(ebay)) {
-
-        } else {
+        if(factory.isEmpty(ebay)){
 
             factory.getEbaySessionID().then(function (response) {
                 Session.setSessionValue('ebay', response.data.ebay, function () {
 
                 });
             }, function(errResponse) {
-                //$scope.ebay.sessionId = errResponse.data.sessionId;
-                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
 
-                Notification.error({
-                    title: 'Ebay time out',
-                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
-                    delay: 10000
-                });  //Send the webtoast
-
-                deferred.resolve(response);
+                deferred.reject(errResponse);
             });
+        } else {
+            deferred.resolve();
         }
+
+        return deferred.promise;
     };
 
 

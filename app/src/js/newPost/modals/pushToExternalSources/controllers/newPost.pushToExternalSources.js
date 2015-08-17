@@ -64,7 +64,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
     $scope.checkIfFacebookTokenValid = function () {
-        facebookFactory.checkIfTokenValid();
+        if($scope.shareToggles.facebook) {
+            facebookFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.facebook = false;
+
+                Notification.error(response);  //Send the webtoast
+            });
+        }
     };
 
 
@@ -102,7 +110,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
 
     $scope.checkIfTwitterTokenValid = function () {
-        twitterFactory.checkIfTokenValid();
+        if($scope.shareToggles.twitter) {
+            twitterFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.twitter = false;
+
+                Notification.error(response);  //Send the webtoast
+            });
+        }
     };
 
 
@@ -163,7 +179,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
 
     $scope.checkIfEbayTokenValid = function () {
-        ebayFactory.checkIfTokenValid();
+        if($scope.shareToggles.ebay) {
+            ebayFactory.checkIfTokenValid().then(function () {
+
+            }, function (response) {
+                $scope.shareToggles.ebay = false;
+
+                Notification.error(response);  //Send the webtoast;
+            });
+        }
     };
 
 
