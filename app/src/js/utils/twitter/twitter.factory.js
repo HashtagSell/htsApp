@@ -190,7 +190,52 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
     };
 
 
+    factory.checkIfTokenValid = function () {
 
+        var twitter = Session.getSessionValue('twitter');
+
+        //We already have twitter token for user.. just post to twitter.
+        if(!factory.isEmpty(twitter)) {
+
+        } else { //No twitter token for user.
+
+            var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
+
+            var attemptCount = 0;
+
+            var fetchTokenInterval = $interval(function () {
+
+                Session.getUserFromServer().then(function (response) {
+
+                    console.log(response);
+
+                    if(response.user_settings.linkedAccounts.twitter.token) {
+
+                        $interval.cancel(fetchTokenInterval);
+
+                        w.close();
+
+                        Session.create(response);
+
+                    } else if(attemptCount === 50) {
+
+                        $interval.cancel(fetchTokenInterval);
+
+                        deferred.reject(response);
+
+                    } else {
+
+                        attemptCount++;
+                        console.log(attemptCount);
+
+                    }
+
+                });
+
+            }, 2000);
+
+        }
+    };
 
 
     // Speed up calls to hasOwnProperty

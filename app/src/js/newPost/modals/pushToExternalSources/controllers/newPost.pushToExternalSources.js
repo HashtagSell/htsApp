@@ -26,13 +26,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 $scope.currentlyPublishing.twitter = false;
 
-                $scope.publishToAmazon().then(function(){
+                $scope.publishToEbay().then(function(){
 
-                    $scope.currentlyPublishing.amazon = false;
+                    $scope.currentlyPublishing.ebay = false;
 
-                   $scope.publishToEbay().then(function(){
+                   $scope.publishToAmazon().then(function(){
 
-                       $scope.currentlyPublishing.ebay = false;
+                       $scope.currentlyPublishing.amazon = false;
 
                        $scope.publishToCraigslist().then(function(){
 
@@ -61,6 +61,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.onlinePayment = {
         allow: true
+    };
+
+    $scope.checkIfFacebookTokenValid = function () {
+        facebookFactory.checkIfTokenValid();
     };
 
 
@@ -94,6 +98,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
+    };
+
+
+    $scope.checkIfTwitterTokenValid = function () {
+        twitterFactory.checkIfTokenValid();
     };
 
 
@@ -152,6 +161,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         return deferred.promise;
     };
 
+
+    $scope.checkIfEbayTokenValid = function () {
+        ebayFactory.checkIfTokenValid();
+    };
 
 
     $scope.publishToEbay = function () {

@@ -233,6 +233,52 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
 
 
+    factory.checkIfTokenValid = function () {
+
+        var facebook = Session.getSessionValue('facebook');
+
+        console.log('facebook tokens', facebook);
+
+
+        //WE already have facebook token for user.. just post to facebook.
+        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
+        if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
+
+        } else {
+
+            ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
+                console.log('res AuthResponse', res);
+
+                if (res.authResponse) {
+
+                    var t = new Date();
+                    t.setSeconds(res.authResponse.expiresIn);
+
+                    var facebookCreds = {};
+                    facebookCreds.id = res.authResponse.userID;
+                    facebookCreds.token = res.authResponse.accessToken;
+                    facebookCreds.tokenExpiration = t;
+
+                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
+                        //$scope.apiMe = res;
+                        console.log('apiMe', res);
+
+                        facebookCreds.email = res.email;
+                        facebookCreds.name = res.first_name + ' ' + res.last_name;
+
+                        console.log(facebookCreds);
+
+                        Session.setSessionValue('facebook', facebookCreds, function () {
+                        });
+                    }); //persist the facebook token in database so we don't have to do this again
+                }
+            });
+        }
+    };
+
+
+
+
 
     // Speed up calls to hasOwnProperty
     var hasOwnProperty = Object.prototype.hasOwnProperty;

@@ -6706,13 +6706,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                 $scope.currentlyPublishing.twitter = false;
 
-                $scope.publishToAmazon().then(function(){
+                $scope.publishToEbay().then(function(){
 
-                    $scope.currentlyPublishing.amazon = false;
+                    $scope.currentlyPublishing.ebay = false;
 
-                   $scope.publishToEbay().then(function(){
+                   $scope.publishToAmazon().then(function(){
 
-                       $scope.currentlyPublishing.ebay = false;
+                       $scope.currentlyPublishing.amazon = false;
 
                        $scope.publishToCraigslist().then(function(){
 
@@ -6741,6 +6741,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.onlinePayment = {
         allow: true
+    };
+
+    $scope.checkIfFacebookTokenValid = function () {
+        facebookFactory.checkIfTokenValid();
     };
 
 
@@ -6774,6 +6778,11 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
+    };
+
+
+    $scope.checkIfTwitterTokenValid = function () {
+        twitterFactory.checkIfTokenValid();
     };
 
 
@@ -6832,6 +6841,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         return deferred.promise;
     };
 
+
+    $scope.checkIfEbayTokenValid = function () {
+        ebayFactory.checkIfTokenValid();
+    };
 
 
     $scope.publishToEbay = function () {
@@ -11677,8 +11690,32 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
 
 
+    factory.checkIfTokenValid = function () {
+        var ebay = Session.getSessionValue('ebay');
 
+        //We already have ebay token for user.. just push to ebay
+        if(!factory.isEmpty(ebay)) {
 
+        } else {
+
+            factory.getEbaySessionID().then(function (response) {
+                Session.setSessionValue('ebay', response.data.ebay, function () {
+
+                });
+            }, function(errResponse) {
+                //$scope.ebay.sessionId = errResponse.data.sessionId;
+                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
+
+                Notification.error({
+                    title: 'Ebay time out',
+                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
+                    delay: 10000
+                });  //Send the webtoast
+
+                deferred.resolve(response);
+            });
+        }
+    };
 
 
     // Speed up calls to hasOwnProperty
@@ -11944,6 +11981,52 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
 
 
+    factory.checkIfTokenValid = function () {
+
+        var facebook = Session.getSessionValue('facebook');
+
+        console.log('facebook tokens', facebook);
+
+
+        //WE already have facebook token for user.. just post to facebook.
+        //if(!factory.isEmpty(facebook) && facebook.tokenExpiration > currentDate || !facebook.tokenExpiration) {
+        if((!factory.isEmpty(facebook)  &&  facebook.tokenExpiration > currentDate) || (!factory.isEmpty(facebook)  &&  !facebook.tokenExpiration)) {
+
+        } else {
+
+            ezfb.login(function (res) { //login to facebook with scope email, and publish_actions
+                console.log('res AuthResponse', res);
+
+                if (res.authResponse) {
+
+                    var t = new Date();
+                    t.setSeconds(res.authResponse.expiresIn);
+
+                    var facebookCreds = {};
+                    facebookCreds.id = res.authResponse.userID;
+                    facebookCreds.token = res.authResponse.accessToken;
+                    facebookCreds.tokenExpiration = t;
+
+                    ezfb.api('/me', function (res) {  //Get email address from user now that we are authenticated
+                        //$scope.apiMe = res;
+                        console.log('apiMe', res);
+
+                        facebookCreds.email = res.email;
+                        facebookCreds.name = res.first_name + ' ' + res.last_name;
+
+                        console.log(facebookCreds);
+
+                        Session.setSessionValue('facebook', facebookCreds, function () {
+                        });
+                    }); //persist the facebook token in database so we don't have to do this again
+                }
+            });
+        }
+    };
+
+
+
+
 
     // Speed up calls to hasOwnProperty
     var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -12198,7 +12281,52 @@ htsApp.factory('twitterFactory', ['$q', '$http', '$window', '$interval', 'ENV', 
     };
 
 
+    factory.checkIfTokenValid = function () {
 
+        var twitter = Session.getSessionValue('twitter');
+
+        //We already have twitter token for user.. just post to twitter.
+        if(!factory.isEmpty(twitter)) {
+
+        } else { //No twitter token for user.
+
+            var w = $window.open(ENV.htsAppUrl + "/auth/twitter", "", "width=1020, height=500");
+
+            var attemptCount = 0;
+
+            var fetchTokenInterval = $interval(function () {
+
+                Session.getUserFromServer().then(function (response) {
+
+                    console.log(response);
+
+                    if(response.user_settings.linkedAccounts.twitter.token) {
+
+                        $interval.cancel(fetchTokenInterval);
+
+                        w.close();
+
+                        Session.create(response);
+
+                    } else if(attemptCount === 50) {
+
+                        $interval.cancel(fetchTokenInterval);
+
+                        deferred.reject(response);
+
+                    } else {
+
+                        attemptCount++;
+                        console.log(attemptCount);
+
+                    }
+
+                });
+
+            }, 2000);
+
+        }
+    };
 
 
     // Speed up calls to hasOwnProperty
@@ -14486,13 +14614,13 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "<div class=\"modal-body\">\n" +
     "\n" +
     "    <!--<div class=\"component\">-->\n" +
-    "        <div class=\"icon icon-mono facebook\" ng-class=\"{ 'hold': shareToggles.facebook}\" ng-click=\"shareToggles.facebook = !shareToggles.facebook\">\n" +
+    "        <div class=\"icon icon-mono facebook\" ng-class=\"{ 'hold': shareToggles.facebook}\" ng-click=\"shareToggles.facebook = !shareToggles.facebook; checkIfFacebookTokenValid();\">\n" +
     "            <div ng-show=\"currentlyPublishing.facebook\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono twitter\" ng-class=\"{ 'hold': shareToggles.twitter}\" ng-click=\"shareToggles.twitter = !shareToggles.twitter\">\n" +
+    "        <div class=\"icon icon-mono twitter\" ng-class=\"{ 'hold': shareToggles.twitter}\" ng-click=\"shareToggles.twitter = !shareToggles.twitter; checkIfTwitterTokenValid()\">\n" +
     "            <div ng-show=\"currentlyPublishing.twitter\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay\">\n" +
+    "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()\">\n" +
     "            <div ng-show=\"currentlyPublishing.ebay\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
     "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +

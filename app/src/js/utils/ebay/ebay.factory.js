@@ -174,8 +174,32 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
 
 
+    factory.checkIfTokenValid = function () {
+        var ebay = Session.getSessionValue('ebay');
 
+        //We already have ebay token for user.. just push to ebay
+        if(!factory.isEmpty(ebay)) {
 
+        } else {
+
+            factory.getEbaySessionID().then(function (response) {
+                Session.setSessionValue('ebay', response.data.ebay, function () {
+
+                });
+            }, function(errResponse) {
+                //$scope.ebay.sessionId = errResponse.data.sessionId;
+                //$scope.ebay.err = errResponse.data.ebay.Errors.LongMessage;
+
+                Notification.error({
+                    title: 'Ebay time out',
+                    message: 'Please connect your ebay account from you user settings.  Sorry for inconvenience.',
+                    delay: 10000
+                });  //Send the webtoast
+
+                deferred.resolve(response);
+            });
+        }
+    };
 
 
     // Speed up calls to hasOwnProperty

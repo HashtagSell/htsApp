@@ -4,13 +4,13 @@
 <div class="modal-body">
 
     <!--<div class="component">-->
-        <div class="icon icon-mono facebook" ng-class="{ 'hold': shareToggles.facebook}" ng-click="shareToggles.facebook = !shareToggles.facebook">
+        <div class="icon icon-mono facebook" ng-class="{ 'hold': shareToggles.facebook}" ng-click="shareToggles.facebook = !shareToggles.facebook; checkIfFacebookTokenValid();">
             <div ng-show="currentlyPublishing.facebook" class="circ-spinner"></div>
         </div>
-        <div class="icon icon-mono twitter" ng-class="{ 'hold': shareToggles.twitter}" ng-click="shareToggles.twitter = !shareToggles.twitter">
+        <div class="icon icon-mono twitter" ng-class="{ 'hold': shareToggles.twitter}" ng-click="shareToggles.twitter = !shareToggles.twitter; checkIfTwitterTokenValid()">
             <div ng-show="currentlyPublishing.twitter" class="circ-spinner"></div>
         </div>
-        <div class="icon icon-mono ebay" ng-class="{ 'hold': shareToggles.ebay}" ng-click="shareToggles.ebay = !shareToggles.ebay">
+        <div class="icon icon-mono ebay" ng-class="{ 'hold': shareToggles.ebay}" ng-click="shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()">
             <div ng-show="currentlyPublishing.ebay" class="circ-spinner"></div>
         </div>
         <div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon">
