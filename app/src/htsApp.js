@@ -989,7 +989,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
         template: "<span class='dropdown' dropdown>"+
         "<i class='fa fa-tags dropdown-toggle' dropdown-toggle ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
         "<ul class='dropdown-menu'>"+
-        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
+        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Label'/>" +
         "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
         "       <a ng-click='setSelectedItem()'>" +
         "           <span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}" +

@@ -989,7 +989,7 @@ htsApp.directive('dropdownMultiselect', ['favesFactory', function (favesFactory)
         template: "<span class='dropdown' dropdown>"+
         "<i class='fa fa-tags dropdown-toggle' dropdown-toggle ng-click='open=!open;openDropdown()'>&nbsp;&nbsp;#Label</i>"+
         "<ul class='dropdown-menu'>"+
-        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Labels'/>" +
+        "   <input ng-model='query' type='text' autofocus class='labels-input' placeholder='Filter or Create New Label'/>" +
         "   <li ng-repeat='label in userlabels | filter:query' class='label-list'>" +
         "       <a ng-click='setSelectedItem()'>" +
         "           <span ng-click='deleteLabel($event)' class='fa fa-minus-circle pull-left delete-label'></span>#{{label.name}}" +
@@ -2511,6 +2511,12 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
 
     $scope.queryObj = awesomeBarFactory.queryObj;
+
+
+    $scope.handlePaste = function ($event) {
+        $event.preventDefault();
+        $scope.queryObj.q = $event.originalEvent.clipboardData.getData('text/plain');
+    };
 
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
@@ -5492,6 +5498,11 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
             ]
         }
     ];
+
+    $scope.handlePaste = function ($event) {
+        $event.preventDefault();
+        $scope.jsonObj.body = $event.originalEvent.clipboardData.getData('text/plain');
+    };
 
 
     //TODO: Handle auctions
@@ -11522,8 +11533,12 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
         var deferred = $q.defer();
 
+        var ebay = Session.getSessionValue('ebay');
+
         var payload = {
-            "ebay": true
+            "ebay": {
+                "token": ebay.eBayAuthToken
+            }
         };
 
         if (newPost.facebook) {
@@ -14270,6 +14285,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                     mentio\n" +
     "                     contenteditable\n" +
     "                     sellbox\n" +
+    "                     ng-paste=\"handlePaste($event)\"\n" +
     "                     ng-focus=\"clearPlaceholder()\"\n" +
     "                     mentio-require-leading-space=\"false\"\n" +
     "                     mentio-macros=\"macros\"\n" +

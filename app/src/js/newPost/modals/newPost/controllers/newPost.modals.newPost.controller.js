@@ -580,6 +580,11 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         }
     ];
 
+    $scope.handlePaste = function ($event) {
+        $event.preventDefault();
+        $scope.jsonObj.body = $event.originalEvent.clipboardData.getData('text/plain');
+    };
+
 
     //TODO: Handle auctions
     $scope.macros = {

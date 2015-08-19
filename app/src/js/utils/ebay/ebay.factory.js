@@ -10,8 +10,12 @@ htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout
 
         var deferred = $q.defer();
 
+        var ebay = Session.getSessionValue('ebay');
+
         var payload = {
-            "ebay": true
+            "ebay": {
+                "token": ebay.eBayAuthToken
+            }
         };
 
         if (newPost.facebook) {

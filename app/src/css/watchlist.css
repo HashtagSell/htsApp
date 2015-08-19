@@ -6,6 +6,10 @@ li.label-list:hover span.delete-label{
     visibility: visible;
 }
 
+.labels-input {
+    margin: 5px;
+}
+
 .ng-table-pager {
     display: none;
 }

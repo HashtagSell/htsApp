@@ -10,6 +10,12 @@ htsApp.controller('awesomeBarController', ['$window', '$scope', '$location', 'aw
 
     $scope.queryObj = awesomeBarFactory.queryObj;
 
+
+    $scope.handlePaste = function ($event) {
+        $event.preventDefault();
+        $scope.queryObj.q = $event.originalEvent.clipboardData.getData('text/plain');
+    };
+
     //Redirects to results page with correct params
     $scope.awesomeBarSubmit = function () {
 
