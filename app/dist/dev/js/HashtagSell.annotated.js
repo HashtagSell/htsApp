@@ -11755,13 +11755,13 @@ htsApp.factory('facebookFactory', ['$q', 'ENV', '$http', 'Session', 'ezfb', func
 
         if(newPost.images.length) {
             fbPost = {
-                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                message: newPost.plainTextBody + ENV.htsAppUrl + '/feed/' + newPost.postingId,
                 picture: newPost.images[0].full || newPost.images[0].thumbnail,
                 access_token: facebook.token
             };
         } else {
             fbPost = {
-                message: newPost.plainTextBody + '... ' + ENV.htsAppUrl + '/feed/' + newPost.postingId,
+                message: newPost.plainTextBody + ENV.htsAppUrl + '/feed/' + newPost.postingId,
                 link: ENV.htsAppUrl + '/feed/' + newPost.postingId,
                 access_token: facebook.token
             };
