@@ -5745,6 +5745,16 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     //========= # Products =========
     $scope.searchProducts = function (term) {
         if (term) {
+            if(!$scope.alerts.banners.length){
+                $scope.alerts.banners.push({
+                    type: 'warning',
+                    msg: 'Please select a product from the suggestion list'
+                });
+                //console.log(angular.element(document.querySelector('#mentioMenu')));
+                $timeout(function () {
+                    $(window).trigger('resize');
+                }, 1);
+            }
             mentionsFactory.predictProduct(term).then(function (results) {
                 $scope.products = results;
                 //console.log("Here is scope.products", $scope.products);
@@ -5765,12 +5775,14 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
         console.log('============================');
         if(!product.demoText) {
             if (mentionsFactory.getProductMetaData(product)) {
+                $scope.alerts.banners = [];
                 return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
             } else {
                 //$scope.alerts.banners.push({
                 //    type: 'danger',
                 //    msg: 'Duplicate hashtags not necessary'
                 //});
+                $scope.alerts.banners = [];
                 return '<span class="mention-highlighter" contentEditable="false">#' + product.value + '</span>';
             }
         }
@@ -5784,6 +5796,15 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
 
         if (term) {
             if($scope.isEmpty($scope.jsonObj.location)) {
+                if(!$scope.alerts.banners.length){
+                    $scope.alerts.banners.push({
+                        type: 'warning',
+                        msg: 'Please select a location from the suggestion list'
+                    });
+                }
+                $timeout(function () {
+                    $(window).trigger('resize');
+                }, 1);
                 mentionsFactory.predictPlace(term).then(function (results) {
                     $scope.places = results;
                     //console.log("Here is scope.places", $scope.places);
@@ -5802,6 +5823,8 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.getPlacesTextRaw = function (selectedPlace) {
         if(!selectedPlace.demoText) {
             if (mentionsFactory.getPlaceMetaData(selectedPlace)) {
+                $scope.alerts.banners = [];
+
                 return '<span class="mention-highlighter-location" contentEditable="false">@' + selectedPlace.description + '</span>';
             } else {
                 $scope.alerts.banners.push({
@@ -5816,6 +5839,15 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
     $scope.searchPrice = function (term) {
         if (term) {
             if($scope.isEmpty($scope.jsonObj.price)) {
+                if(!$scope.alerts.banners.length){
+                    $scope.alerts.banners.push({
+                        type: 'warning',
+                        msg: 'Please select a price from the suggestion list'
+                    });
+                }
+                $timeout(function () {
+                    $(window).trigger('resize');
+                }, 1);
                 $scope.prices = mentionsFactory.predictPrice(term);
                 //console.log("here is scope.prices", $scope.prices);
             }
@@ -5844,6 +5876,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 //        return '<span class="mention-highlighter-price mention-highlighter-price-high" tooltip-placement="bottom" tooltip="Higher than average price" tooltip-trigger="mouseenter" contentEditable="false">' + selectedPrice.suggestion + '</span>';
                 //    }
                 //} else {
+                $scope.alerts.banners = [];
                     return '<span class="mention-highlighter-price" contentEditable="false">' + selectedPrice.suggestion + '</span>';
                 //}
             } else {
@@ -5851,6 +5884,7 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                 //    type: 'danger',
                 //    msg: 'Please only use one $ symbol in your post.'
                 //});
+                $scope.alerts.banners = [];
                 console.log('new post Controller sees priceMetaData returned false.');
             }
         }

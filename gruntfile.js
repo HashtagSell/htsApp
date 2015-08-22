@@ -545,7 +545,7 @@ module.exports = function(grunt) {
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
     grunt.registerTask('start', 'Run htsApp locally with all api dependencies', function () {
-        grunt.task.run(['build-htsApp-dev', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'shell:startNotificationApi', 'concurrent']);
+        grunt.task.run(['build-htsApp-dev', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent']);
     });
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE

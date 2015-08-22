@@ -1,5 +1,5 @@
 #!/bin/sh
-if lsof -Pi :4043 -sTCP:LISTEN -t >/dev/null ; then
+if lsof -Pi :4444 -sTCP:LISTEN -t >/dev/null ; then
 
     cd api/notification-svc
     echo "Stopping Notification API"
