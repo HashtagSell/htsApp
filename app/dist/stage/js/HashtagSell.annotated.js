@@ -4697,6 +4697,27 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
 
                 });
+                //var timestamp = Date.now();
+                //
+                //var notification = {
+                //    posting: post,
+                //    question: response.data,
+                //    username: username,
+                //    timestamp: timestamp
+                //};
+                //
+                //console.log('here is notification', notification);
+                //
+                //
+                //$http.post(ENV.notificationAPI + '/question', notification).success(function(response){
+                //
+                //    console.log('here is notification response', response);
+                //
+                //}).error(function(err){
+                //
+                //    console.log('notification error', err);
+                //
+                //});
 
 
                 deferred.resolve(response);

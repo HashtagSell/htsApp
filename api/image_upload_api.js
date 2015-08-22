@@ -350,7 +350,7 @@ exports.profileImage = function (req, res) {
             User.findOne({'local.email': req.user.local.email}, function (err, user) {
 
                 // if there are any errors, return the error before anything else
-                console.log(user);
+                //console.log(user);
 
                 if (err) {
 

@@ -67,7 +67,7 @@ exports.forgotPassword = function(req, res){
 
     var email = req.body.email.toLowerCase();
 
-    console.log(email);
+    //console.log(email);
 
     User.findOne({ 'local.email': email }, function (err, user) {
 
@@ -126,7 +126,7 @@ exports.forgotPassword = function(req, res){
                         console.log(error);
                         return res.json({success: false, message: "Could not send forgot password email.  Please contact support."})
                     }else{
-                        console.log('Message sent: ' + info.response);
+                        //console.log('Message sent: ' + info.response);
                         return res.json({success: true})
                     }
                 });
@@ -152,7 +152,7 @@ exports.reset = function(req, res){
         User.findOne({'local.resetPasswordToken': token}, function (err, user) {
 
             // if there are any errors, return the error before anything else
-            console.log(user);
+            //console.log(user);
 
             if (err) {
                 console.log(err);
@@ -202,7 +202,7 @@ exports.reset = function(req, res){
         User.findOne({'local.email': email}, function (err, user) {
 
             // if there are any errors, return the error before anything else
-            console.log(user);
+            //console.log(user);
 
             if (err) {
                 console.log(err);
@@ -271,7 +271,7 @@ exports.signup = function(req, res) {
     var username = req.body.name.toLowerCase();
     var betaAgreement = req.body.betaAgreement;
 
-    console.log(email, password, username, betaAgreement);
+    //console.log(email, password, username, betaAgreement);
 
 
     //Early_Access_Keys.findOne({ 'secret.key' : secret }, function(err, access_key){

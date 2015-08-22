@@ -4,6 +4,7 @@ var port     = (process.env.PORT || 8081);
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
+var compress = require('compression');
 
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -15,6 +16,8 @@ var MongoStore   = require('connect-mongo')(session);
 var common   = require('./config/common.js');
 var env  = common.config();
 
+//Enable Gzip
+app.use(compress());
 
 // Connect to Mongo db =====================================
 mongoose.connect(env.mongo.url); // connect to our database

@@ -1785,7 +1785,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:4043/v1/postings/',userAPI:'http://localhost:4043/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:4044/postings',realtimeUserAPI:'http://localhost:4044/users',groupingsAPI:'http://localhost:4043/v1/groupings/',annotationsAPI:'http://localhost:4043/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:4444/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -4697,6 +4697,27 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
 
 
                 });
+                //var timestamp = Date.now();
+                //
+                //var notification = {
+                //    posting: post,
+                //    question: response.data,
+                //    username: username,
+                //    timestamp: timestamp
+                //};
+                //
+                //console.log('here is notification', notification);
+                //
+                //
+                //$http.post(ENV.notificationAPI + '/question', notification).success(function(response){
+                //
+                //    console.log('here is notification response', response);
+                //
+                //}).error(function(err){
+                //
+                //    console.log('notification error', err);
+                //
+                //});
 
 
                 deferred.resolve(response);

@@ -102,7 +102,7 @@ exports.meetingProposed = {
                     if(err){
                         done(err);
                     }else{
-                        console.log(info);
+                        //console.log(info);
                         done(null);
                     }
                 });
@@ -196,7 +196,7 @@ exports.meetingUpdated = {
                     if(err){
                         done(err);
                     }else{
-                        console.log(info);
+                        //console.log(info);
                         done(null);
                     }
                 });
@@ -350,8 +350,8 @@ exports.meetingAccepted = {
 
                         // found user that provided feedback
                     } else if (sellerUserObj) {
-                        console.log('HERE IS SELLER OBJ');
-                        console.log(sellerUserObj);
+                        //console.log('HERE IS SELLER OBJ');
+                        //console.log(sellerUserObj);
                         done(null, buyerUserObj, sellerUserObj);
                     }
                 });
@@ -504,8 +504,8 @@ exports.transactionCompleted = function (sellerUsername, buyerUsername, offerId,
 
         function (buyerUserObj, sellerUserObj, done) {
 
-            console.log('here is buyeruserobj');
-            console.log(buyerUserObj);
+            //console.log('here is buyeruserobj');
+            //console.log(buyerUserObj);
 
             var emailObj = {
                 images: {

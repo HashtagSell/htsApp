@@ -30,6 +30,7 @@ module.exports = function(grunt) {
                         annotationsAPI: 'http://localhost:4043/v1/annotations',
                         feedbackAPI: 'http://localhost:8081/feedback',
                         paymentAPI: 'http://localhost:8081/payments',
+                        notificationAPI: 'http://localhost:4444/v1/queues',
                         precacheAPI: 'http://localhost:8081/precache',
                         facebookAuth: 'http://localhost:8081/auth/facebook',
                         twitterAuth: 'http://localhost:8081/auth/twitter',
@@ -471,6 +472,24 @@ module.exports = function(grunt) {
                     failOnError: true
                 }
             },
+            startNotificationApi: {
+                command: './shell-scripts/startNotificationApiIfNotRunning.sh',
+                options: {
+                    async: true,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
+            stopNotificationApi: {
+                command: './shell-scripts/stopNotificationApi.sh',
+                options: {
+                    async: false,
+                    stdout: true,
+                    stderr: true,
+                    failOnError: true
+                }
+            },
             //start posting ingestion
             startSync: {
                 command: './shell-scripts/startSyncAgentIfNotRunning.sh',
@@ -526,11 +545,11 @@ module.exports = function(grunt) {
 
     //START htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
     grunt.registerTask('start', 'Run htsApp locally with all api dependencies', function () {
-        grunt.task.run(['build-htsApp-dev', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'concurrent']);
+        grunt.task.run(['build-htsApp-dev', 'shell:startMongo', 'shell:startFreeGeoIp', 'shell:startPostingApi', 'shell:startPrerenderServer', 'shell:startRealTimeApi', 'shell:startNotificationApi', 'concurrent']);
     });
 
     //STOP htsApp in DEV local host.  THIS STARTS ALL APIS LOCALLY ON YOUR MACHINE
-    grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi']);
+    grunt.registerTask('stop', ['shell:stopMongo', 'shell:stopFreeGeoIp', 'shell:stopPostingApi', 'shell:stopPrerenderServer', 'shell:stopRealTimeApi', 'shell:stopNotificationApi']);
 
 
     grunt.registerTask('build-htsApp-dev', ['clean:dev', 'file-creator:gitignore', 'ngconstant:dev', 'jshint', 'ngAnnotate:dev', 'ngtemplates:dev', 'cssmin:dev', 'targethtml:dev']);

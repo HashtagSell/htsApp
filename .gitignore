@@ -48,6 +48,7 @@ api/posting-api
 api/posting-sync-agent
 api/realtime-svc
 api/user-api
+api/notification-svc
 
 app/dist/dev
 
