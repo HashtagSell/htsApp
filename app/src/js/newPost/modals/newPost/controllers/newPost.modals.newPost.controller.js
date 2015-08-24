@@ -861,10 +861,10 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                         type: 'warning',
                         msg: 'Please select a location from the suggestion list'
                     });
+                    $timeout(function () {
+                        $(window).trigger('resize');
+                    }, 1);
                 }
-                $timeout(function () {
-                    $(window).trigger('resize');
-                }, 1);
                 mentionsFactory.predictPlace(term).then(function (results) {
                     $scope.places = results;
                     //console.log("Here is scope.places", $scope.places);
@@ -904,10 +904,10 @@ htsApp.controller('newPostModal', ['$scope', '$http', '$q', '$modalInstance', '$
                         type: 'warning',
                         msg: 'Please select a price from the suggestion list'
                     });
+                    $timeout(function () {
+                        $(window).trigger('resize');
+                    }, 1);
                 }
-                $timeout(function () {
-                    $(window).trigger('resize');
-                }, 1);
                 $scope.prices = mentionsFactory.predictPrice(term);
                 //console.log("here is scope.prices", $scope.prices);
             }
