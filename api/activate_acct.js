@@ -404,7 +404,7 @@ exports.signup = function(req, res) {
                                         if(err){
                                             return res.json({ success : false, message: "could not send activation email.  Please email support."});
                                         }else{
-                                            console.log(info);
+                                            //console.log(info);
                                             return res.json({ success : true});
                                         }
                                     });

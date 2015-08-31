@@ -77,13 +77,13 @@ htsApp.factory('qaFactory', ['$http', '$rootScope', 'ENV', '$q', 'utilsFactory',
                 };
 
                 //Send email to owner of posting and user potential buyer
-                $http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: questionObj}).success(function(response){
-
-
-                }).error(function(data){
-
-
-                });
+                //$http.post(ENV.htsAppUrl + '/email/question-asked/instant-reminder', {questionAsked: questionObj}).success(function(response){
+                //
+                //
+                //}).error(function(data){
+                //
+                //
+                //});
                 //var timestamp = Date.now();
                 //
                 //var notification = {

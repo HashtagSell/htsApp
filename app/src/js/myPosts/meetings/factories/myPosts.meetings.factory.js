@@ -39,21 +39,6 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
             console.log('heres our offer response', offerResponse);
 
-            var emailObj = {
-                post: post,
-                offer: offerResponse.data
-            };
-
-            //Send email to owner of posting and user potential buyer
-            $http.post(ENV.htsAppUrl + '/email/meeting-proposed/instant-reminder', {proposedMeeting: emailObj}).success(function(response){
-
-
-            }).error(function(data){
-
-
-            });
-
-
             deferred.resolve(offerResponse);
 
         }, function (err, status, headers, config) {
@@ -74,29 +59,11 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
         console.log('HERES THE ACCEPTED POST', post);
         console.log('HERES THE ACCEPTED OFFER', offer);
 
-        var emailObj = {
-            post: post,
-            offer: offer,
-            acceptedProposal: acceptedProposal
-        };
-
-        console.log('HERES THE EMAIL OBJ', emailObj);
-
         $http({
             method: 'POST',
             url: ENV.postingAPI + post.postingId + "/offers/" + offer.offerId + "/accept",
             data: acceptedProposal
         }).then(function (response, status, headers, config) {
-
-            //Send email to owner of posting and user potential buyer
-            $http.post(ENV.htsAppUrl + '/email/meeting-accepted/instant-reminder', {acceptedMeeting: emailObj}).success(function(response){
-
-
-            }).error(function(data){
-
-
-            });
-
 
             deferred.resolve(response);
 
@@ -183,35 +150,35 @@ htsApp.factory('meetingsFactory', ['$http', '$rootScope', '$q', 'ENV', 'Session'
 
             console.log('heres our updated offer response', updatedOfferResponse);
 
-            var userToEmail;
-            var notifySeller;
-
-            //check if the most recent offer was proposed by owner or buyer
-            if(updatedOfferResponse.data.proposals[updatedOfferResponse.data.proposals.length - 1].isOwnerReply){//owner sent updated offer
-                userToEmail = updatedOfferResponse.data.username;
-                notifySeller = false;
-            } else {
-                userToEmail = post.username;
-                notifySeller = true;
-            }
-
-            var emailObj = {
-                post: post,
-                offer: updatedOfferResponse.data,
-                user: {
-                    notifySeller: notifySeller,
-                    email: userToEmail
-                }
-            };
-
-            //Send email to owner of posting and user potential buyer
-            $http.post(ENV.htsAppUrl + '/email/meeting-updated/instant-reminder', {updatedMeeting: emailObj}).success(function(response){
-
-
-            }).error(function(data){
-
-
-            });
+            //var userToEmail;
+            //var notifySeller;
+            //
+            ////check if the most recent offer was proposed by owner or buyer
+            //if(updatedOfferResponse.data.proposals[updatedOfferResponse.data.proposals.length - 1].isOwnerReply){//owner sent updated offer
+            //    userToEmail = updatedOfferResponse.data.username;
+            //    notifySeller = false;
+            //} else {
+            //    userToEmail = post.username;
+            //    notifySeller = true;
+            //}
+            //
+            //var emailObj = {
+            //    post: post,
+            //    offer: updatedOfferResponse.data,
+            //    user: {
+            //        notifySeller: notifySeller,
+            //        email: userToEmail
+            //    }
+            //};
+            //
+            ////Send email to owner of posting and user potential buyer
+            //$http.post(ENV.htsAppUrl + '/email/meeting-updated/instant-reminder', {updatedMeeting: emailObj}).success(function(response){
+            //
+            //
+            //}).error(function(data){
+            //
+            //
+            //});
 
 
             deferred.resolve(updatedOfferResponse);

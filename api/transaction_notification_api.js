@@ -282,7 +282,7 @@ exports.questionAsked = {
                     if(err){
                         done(err);
                     }else{
-                        console.log(info);
+                        //console.log(info);
                         done(null);
                     }
                 });
@@ -413,7 +413,7 @@ exports.meetingAccepted = {
                     if(err){
                         done(err);
                     }else{
-                        console.log(info);
+                        //console.log(info);
                         done(null, buyerUserObj, compiled_html_buyer, plain_text_buyer);
                     }
                 });
@@ -435,7 +435,7 @@ exports.meetingAccepted = {
                     if(err){
                         done(err);
                     }else{
-                        console.log(info);
+                        //console.log(info);
                         done(null);
                     }
                 });
@@ -556,7 +556,7 @@ exports.transactionCompleted = function (sellerUsername, buyerUsername, offerId,
                 if(err){
                     done(err);
                 }else{
-                    console.log(info);
+                    //console.log(info);
                     done(null, buyerUserObj, compiled_html_buyer, plain_text_buyer);
                 }
             });
@@ -578,7 +578,7 @@ exports.transactionCompleted = function (sellerUsername, buyerUsername, offerId,
                 if(err){
                     done(err);
                 }else{
-                    console.log(info);
+                    //console.log(info);
                     done(null);
                 }
             });

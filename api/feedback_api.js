@@ -102,7 +102,7 @@ exports.submit = function(req, res){
                 if(err){
                     done(err);
                 }else{
-                    console.log(info);
+                    //console.log(info);
                     done(null, user, feedback);
                 }
             });
@@ -126,7 +126,7 @@ exports.submit = function(req, res){
                 if(err){
                     done(err);
                 }else{
-                    console.log(info);
+                    //console.log(info);
                     done(null, 'done');
                 }
             });

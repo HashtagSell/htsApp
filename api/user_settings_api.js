@@ -16,8 +16,6 @@ exports.push = function(req, res) {
 
     var updatedUserSettings = req.body.userSettings;
 
-    console.log(updatedUserSettings);
-
     //Search our users collection by the username and update their user_settings object
     User.findOne({ 'user_settings.name': updatedUserSettings.name }, function (err, user) {
 

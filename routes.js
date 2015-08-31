@@ -44,8 +44,6 @@ module.exports = function(app, passport) {
     var image_upload_api = require('./api/image_upload_api');
     app.post('/upload', isLoggedIn, function(req, res) {
 
-        console.log(req.files);
-
         if (req.files.profilePhoto || req.files.bannerPhoto) { // based on param the user is updating profile photo
             image_upload_api.profileImage(req, res);
 
@@ -80,7 +78,7 @@ module.exports = function(app, passport) {
                         "twitter" : req.user.twitter || {},
                         "ebay" : req.user.ebay || {},
                         "amazon" : req.user.amazon || {}
-                    })
+                    });
             });
         })(req, res);
     });
@@ -126,7 +124,7 @@ module.exports = function(app, passport) {
     // route for facebook authentication and login
     app.get('/auth/facebook', function(res, req, next){
         passport.authenticate('facebook', { scope : ['email', 'publish_actions']}, function(res, req, next){
-            console.log('okay');
+
         })(res, req, next);
 
     });
@@ -154,12 +152,8 @@ module.exports = function(app, passport) {
     app.get('/auth/twitter', function(res, req, next){
 
         passport.authenticate('twitter', function(res, req, next){
-            console.log('twitter Okay');
+
         })(res, req, next);
-
-
-        console.log(res);
-        console.log('res above');
 
     });
 
@@ -329,8 +323,6 @@ function isLoggedIn(req, res, next) {
 
 // route middleware to make sure a user is logged in
 function isAdmin(req, res, next) {
-
-    console.log("checking if admin");
     // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         var role = req.user.local.role;
