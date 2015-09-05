@@ -464,7 +464,8 @@ exports.getProfile = function(req, res){
                             'profile_photo': user.user_settings.profile_photo,
                             'banner_photo': user.user_settings.banner_photo,
                             'email' : user.local.email,
-                            'name': user.user_settings.name
+                            'name': user.user_settings.name,
+                            'fundingEmail': user.user_settings.merchantAccount.details.funding.email
                         }
                     }
                 );

@@ -1785,7 +1785,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',notificationAPI:'http://staging-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
@@ -12670,7 +12670,7 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
                     //myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
                     Notification.primary({
-                        title: "Sent Offer Acceptanace!",
+                        title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });

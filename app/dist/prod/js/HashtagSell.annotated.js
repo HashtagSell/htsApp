@@ -1785,7 +1785,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475'})
+.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',notificationAPI:'http://production-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475'})
 
 .constant('clientTokenPath', 'https://www.hashtagsell.com/payments/client_token')
 
@@ -12670,7 +12670,7 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
                     //myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
 
                     Notification.primary({
-                        title: "Sent Offer Acceptanace!",
+                        title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });
