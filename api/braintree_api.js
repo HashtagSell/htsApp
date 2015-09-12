@@ -188,7 +188,7 @@ exports.createSubMerchant = function(req, res) {
 
     var subMerchantParams = req.body.subMerchant;
     subMerchantParams.masterMerchantAccountId = env.braintree.master_merchant_account_id;
-    subMerchantParams.id = req.user.user_settings.name;
+    //subMerchantParams.id = req.user.user_settings.name;
 
     var existingBraintreeSubMerchantId = req.body.existingSubMerchant;
 

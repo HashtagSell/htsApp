@@ -465,6 +465,7 @@ exports.getProfile = function(req, res){
                             'banner_photo': user.user_settings.banner_photo,
                             'email' : user.local.email,
                             'name': user.user_settings.name,
+                            'id': user._id,
                             'fundingEmail': user.user_settings.merchantAccount.details.funding.email
                         }
                     }

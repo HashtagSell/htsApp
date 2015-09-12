@@ -32,4 +32,10 @@ htsApp.controller('peerReviewController', ['$scope', '$http', '$stateParams', 'E
 
 
     $scope.alerts = [];
+
+    $scope.submitReview = function () {
+
+        console.log($scope.reviewForm);
+
+    };
 }]);

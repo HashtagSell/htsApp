@@ -7185,6 +7185,12 @@ htsApp.controller('peerReviewController', ['$scope', '$http', '$stateParams', 'E
 
 
     $scope.alerts = [];
+
+    $scope.submitReview = function () {
+
+        console.log($scope.reviewForm);
+
+    };
 }]);
 /**
  * Created by braddavis on 4/5/15.
@@ -14661,7 +14667,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                <textarea ng-model=\"reviewForm.comment\" class=\"form-control\" rows=\"5\" placeholder=\"Optional Feedback\"></textarea>\n" +
     "\n" +
     "            </form>\n" +
-    "            <button type=\"submit\" class=\"btn btn-lg btn-primary btn-block submit-button\">Submit</button>\n" +
+    "            <button type=\"submit\" class=\"btn btn-lg btn-primary btn-block submit-button\" ng-click=\"submitReview()\">Submit</button>\n" +
     "        </div>\n" +
     "\n" +
     "    </div>\n" +
