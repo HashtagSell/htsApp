@@ -336,7 +336,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onExit: leaveRoom
         }).
         state('review', {
-            url: "/review/:postingId/:offerId/:userId",
+            url: "/review/:offerId/:userId",
             views: {
                 'root': {
                     controller: 'peerReviewController',

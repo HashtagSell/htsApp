@@ -73,6 +73,7 @@ module.exports = function(app, passport) {
                 }
                 return res.json({
                         "success" : true,
+                        "id": req.user._id,
                         "user_settings" : req.user.user_settings || {},
                         "facebook" : req.user.facebook || {},
                         "twitter" : req.user.twitter || {},

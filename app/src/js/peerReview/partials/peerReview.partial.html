@@ -65,8 +65,10 @@
         </div>
 
         <div class="reviewee-photo-container">
-            <img ng-show="reviewee.user.profile_photo" ng-src="{{reviewee.user.profile_photo}}" class="img-circle reviewee-photo">
+            <img ng-show="reviewee.profile_photo" ng-src="{{reviewee.profile_photo}}" class="img-circle reviewee-photo">
         </div>
+
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
         <div ng-show="!alerts.length">
             <form class="peer-review-container">

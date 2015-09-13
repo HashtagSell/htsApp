@@ -336,7 +336,7 @@ htsApp.config(['$httpProvider', '$stateProvider', '$urlRouterProvider', '$toolti
             onExit: leaveRoom
         }).
         state('review', {
-            url: "/review/:postingId/:offerId/:userId",
+            url: "/review/:offerId/:userId",
             views: {
                 'root': {
                     controller: 'peerReviewController',
@@ -1785,7 +1785,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',notificationAPI:'http://staging-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://staging-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',notificationAPI:'http://staging-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',transactionsAPI:'https://staging.hashtagsell.com/v1/transactions/',reviewsAPI:'https://staging.hashtagsell.com/v1/reviews/',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
@@ -4167,12 +4167,39 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
                 if (response.status === 201) {
 
-                    myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+                    myPostsFactory.getAllUserPosts($scope.userObj.user_settings.name);
 
                     Notification.primary({
                         title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
+                    });
+
+                    var transactionRequirements = {
+                        "buyer" : offer.userProfile,
+                        "buyerUsername" : offer.username,
+                        "offerId" : offer.offerId,
+                        "postingId" : $scope.post.postingId,
+                        "seller" : {
+                            "name": $scope.userObj.user_settings.name,
+                            "banner_photo" : $scope.userObj.user_settings.banner_photo,
+                            "profile_photo" : $scope.userObj.user_settings.profile_photo
+                        },
+                        "sellerUsername" : $scope.userObj.user_settings.name
+                    };
+
+                    transactionFactory.createTransaction(transactionRequirements).then(function (response) {
+
+                        console.log(response);
+
+                    }, function (err) {
+
+                        Notification.error({
+                            title: "Failed to append transaction ID",
+                            message: "Please inform support.  Sorry for the trouble.",
+                            delay: 7000
+                        });
+
                     });
 
                 } else {
@@ -4217,7 +4244,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
                     socketio.sendMessage(recipient, offer.response);
                 }
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+                myPostsFactory.getAllUserPosts($scope.userObj.user_settings.name);
 
             } else {
 
@@ -7161,25 +7188,50 @@ htsApp.controller('peerReviewController', ['$scope', '$http', '$stateParams', 'E
 
     (function(){
 
-        var postingId = $stateParams.postingId;
         var offerId = $stateParams.offerId;
         var userId = $stateParams.userId;
 
         $scope.reviewForm = {
+            isBuyer: null,
+            username: null,
+            transactionId: null,
             rating: 0,
             comment: null
         };
 
-        //Lookup reviewee profile details
-        $http.get(ENV.htsAppUrl + '/getProfile', {
-            params: {
-                userId: userId
+        //Lookup transaction details
+        $http.get(ENV.transactionsAPI + offerId).success(function(transaction){
+            $scope.transaction = transaction;
+            console.log('transaction', transaction);
+
+            if(transaction.seller.id) {
+                if (transaction.seller.id === userId) {
+                    $scope.reviewee = transaction.seller;
+                    $scope.reviewForm.isBuyer = false;
+                    $scope.reviewForm.username = transaction.sellerUsername;
+                    $scope.reviewForm.transactionId = transaction.transactionId;
+                } else {
+                    $scope.reviewee = transaction.buyer;
+                    $scope.reviewForm.isBuyer = true;
+                    $scope.reviewForm.username = transaction.buyerUsername;
+                    $scope.reviewForm.transactionId = transaction.transactionId;
+                }
+            } else if(transaction.buyer.id) {
+                if(transaction.buyer.id === userId) {
+                    $scope.reviewee = transaction.buyer;
+                    $scope.reviewForm.isBuyer = true;
+                    $scope.reviewForm.username = transaction.buyerUsername;
+                    $scope.reviewForm.transactionId = transaction.transactionId;
+                } else {
+                    $scope.reviewee = transaction.seller;
+                    $scope.reviewForm.isBuyer = false;
+                    $scope.reviewForm.username = transaction.sellerUsername;
+                    $scope.reviewForm.transactionId = transaction.transactionId;
+                }
             }
-        }).success(function(revieweeProfile){
-            $scope.reviewee = revieweeProfile;
-            console.log('revieweeProfile profile', revieweeProfile);
+
         }).error(function(err){
-            alert('could not lookup reviewees profile.  please inform support');
+            alert('could not lookup transaction profile.  please inform support');
         });
     })();
 
@@ -7189,6 +7241,23 @@ htsApp.controller('peerReviewController', ['$scope', '$http', '$stateParams', 'E
     $scope.submitReview = function () {
 
         console.log($scope.reviewForm);
+
+        //Submit Review details
+        $http.post(ENV.reviewsAPI, $scope.reviewForm).success(function(review){
+
+            console.log(review);
+            $scope.alerts.push(
+                { type: 'success', msg: 'Wooo hoo! Thanks for using HashtagSell.' }
+            );
+
+        }).error(function(err){
+
+            console.log(err);
+
+            $scope.alerts.push(
+                { type: 'error', msg: err }
+            );
+        });
 
     };
 }]);
@@ -10590,101 +10659,101 @@ htsApp.directive('transactionButtons', function () {
 /**
  * Created by braddavis on 1/10/15.
  */
-htsApp.factory('transactionFactory', ['Session', '$modal', '$rootScope', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$state', function (Session, $modal, $rootScope, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $state) {
+htsApp.factory('transactionFactory', ['Session', '$modal', '$rootScope', '$log', '$state', 'authModalFactory', 'quickComposeFactory', 'splashFactory', '$window', '$http', '$q', 'ENV', function (Session, $modal, $rootScope, $log, $state, authModalFactory, quickComposeFactory, splashFactory, $window, $http, $q, ENV) {
 
     var transactionFactory = {};
 
-    transactionFactory.quickCompose = function (result) {
-        console.log('item we clicked on', result);
-
-        if (!Session.userObj.user_settings.loggedIn) {
-
-            $state.go('signup', {redirect: $rootScope.currentState});
-
-        } else {
-
-            if (Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
-
-                var modalInstance = $modal.open({
-                    templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
-                    controller: 'quickComposeController',
-                    resolve: {
-                        result: function () {
-                            return result;
-                        }
-                    }
-                });
-
-                modalInstance.result.then(function (reason) {
-
-                }, function (reason) {
-                    console.log(reason);
-                    if (reason === "signUp") {
-                        authModalFactory.signUpModal();
-                    }
-                    $log.info('Modal dismissed at: ' + new Date());
-                });
-
-            } else {  //User already set their default email provider
-
-                quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, result);
-
-            }
-        }
-
-    };
-
-
-    transactionFactory.displayPhone = function (result) {
-
-        if (!Session.userObj.user_settings.loggedIn) {
-
-            $state.go('signup', {redirect: $rootScope.currentState});
-
-        } else {
-
-            var modalInstance = $modal.open({
-                templateUrl: 'js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
-                controller: 'phoneModalController',
-                resolve: {
-                    result: function () {
-                        return result;
-                    }
-                }
-            });
-
-            modalInstance.result.then(function (reason) {
-
-            }, function (reason) {
-                console.log(reason);
-                if (reason === "signUp") {
-                    authModalFactory.signUpModal();
-                }
-                $log.info('Modal dismissed at: ' + new Date());
-            });
-        }
-
-    };
-
-    //CL item does not have phone and email so we open splash detailed view.
-    transactionFactory.openSplash = function (result) {
-        splashFactory.result = result;
-        $state.go('results.splash', {id: result.external.source.url});
-    };
-
-
-    //Ebay item.  Button links to item on ebay
-    transactionFactory.placeBid = function (result) {
-
-        if (!Session.userObj.user_settings.loggedIn) {
-
-            $state.go('signup', {redirect: $rootScope.currentState});
-
-        } else {
-
-            $window.open(result.external.source.url);
-        }
-    };
+    //transactionFactory.quickCompose = function (result) {
+    //    console.log('item we clicked on', result);
+    //
+    //    if (!Session.userObj.user_settings.loggedIn) {
+    //
+    //        $state.go('signup', {redirect: $rootScope.currentState});
+    //
+    //    } else {
+    //
+    //        if (Session.userObj.user_settings.email_provider[0].value === "ask") {  //If user needs to pick their email provider
+    //
+    //            var modalInstance = $modal.open({
+    //                templateUrl: 'js/transactionButtons/modals/email/partials/transactionButtons.modal.email.partial.html',
+    //                controller: 'quickComposeController',
+    //                resolve: {
+    //                    result: function () {
+    //                        return result;
+    //                    }
+    //                }
+    //            });
+    //
+    //            modalInstance.result.then(function (reason) {
+    //
+    //            }, function (reason) {
+    //                console.log(reason);
+    //                if (reason === "signUp") {
+    //                    authModalFactory.signUpModal();
+    //                }
+    //                $log.info('Modal dismissed at: ' + new Date());
+    //            });
+    //
+    //        } else {  //User already set their default email provider
+    //
+    //            quickComposeFactory.generateMailTo(Session.userObj.user_settings.email_provider[0].value, result);
+    //
+    //        }
+    //    }
+    //
+    //};
+    //
+    //
+    //transactionFactory.displayPhone = function (result) {
+    //
+    //    if (!Session.userObj.user_settings.loggedIn) {
+    //
+    //        $state.go('signup', {redirect: $rootScope.currentState});
+    //
+    //    } else {
+    //
+    //        var modalInstance = $modal.open({
+    //            templateUrl: 'js/transactionButtons/modals/phone/partials/transactionButtons.modal.phone.partial.html',
+    //            controller: 'phoneModalController',
+    //            resolve: {
+    //                result: function () {
+    //                    return result;
+    //                }
+    //            }
+    //        });
+    //
+    //        modalInstance.result.then(function (reason) {
+    //
+    //        }, function (reason) {
+    //            console.log(reason);
+    //            if (reason === "signUp") {
+    //                authModalFactory.signUpModal();
+    //            }
+    //            $log.info('Modal dismissed at: ' + new Date());
+    //        });
+    //    }
+    //
+    //};
+    //
+    ////CL item does not have phone and email so we open splash detailed view.
+    //transactionFactory.openSplash = function (result) {
+    //    splashFactory.result = result;
+    //    $state.go('results.splash', {id: result.external.source.url});
+    //};
+    //
+    //
+    ////Ebay item.  Button links to item on ebay
+    //transactionFactory.placeBid = function (result) {
+    //
+    //    if (!Session.userObj.user_settings.loggedIn) {
+    //
+    //        $state.go('signup', {redirect: $rootScope.currentState});
+    //
+    //    } else {
+    //
+    //        $window.open(result.external.source.url);
+    //    }
+    //};
 
 
     transactionFactory.showOriginal = function (result) {
@@ -10807,6 +10876,31 @@ htsApp.factory('transactionFactory', ['Session', '$modal', '$rootScope', '$log',
                 $log.info('Modal dismissed at: ' + new Date());
             });
         }
+    };
+
+
+
+    transactionFactory.createTransaction = function (newTransactionRequirements) {
+
+        var deferred = $q.defer();
+
+        $http({
+            method: 'POST',
+            url: ENV.transactionsAPI,
+            data: newTransactionRequirements
+        }).then(function (response, status, headers, config) {
+
+            deferred.resolve(response);
+
+
+        }, function (err, status, headers, config) {
+
+            deferred.reject(err);
+
+        });
+
+        return deferred.promise;
+
     };
 
     return transactionFactory;
@@ -12619,7 +12713,7 @@ htsApp.factory('favesFactory', ['Session', 'myPostsFactory', function (Session, 
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', 'profileFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory, profileFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -12680,6 +12774,48 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });
+
+                    profileFactory.getUserProfile($scope.post.username).then(function (response) {
+
+                        var transactionRequirements = {
+                            "buyer" : {
+                                "name": $scope.userObj.user_settings.name,
+                                "banner_photo" : $scope.userObj.user_settings.banner_photo,
+                                "profile_photo" : $scope.userObj.user_settings.profile_photo
+                            },
+                            "buyerUsername" : $scope.userObj.user_settings.name,
+                            "offerId" : offer.offerId,
+                            "postingId" : $scope.post.postingId,
+                            "seller" : response.data.user,
+                            "sellerUsername" : $scope.post.username
+                        };
+
+
+                        transactionFactory.createTransaction(transactionRequirements).then(function (response) {
+
+                            console.log(response);
+
+                        }, function (err) {
+
+                            Notification.error({
+                                title: "Failed to append transaction ID",
+                                message: "Please inform support of your.  Sorry for the trouble.",
+                                delay: 7000
+                            });
+
+                        });
+
+
+                    }, function (err) {
+
+                        Notification.error({
+                            title: "Failed to lookup seller profile",
+                            message: "Please inform support.  Sorry for the trouble.",
+                            delay: 7000
+                        });
+
+                    });
+
 
                 } else {
 
@@ -14653,8 +14789,10 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        </div>\n" +
     "\n" +
     "        <div class=\"reviewee-photo-container\">\n" +
-    "            <img ng-show=\"reviewee.user.profile_photo\" ng-src=\"{{reviewee.user.profile_photo}}\" class=\"img-circle reviewee-photo\">\n" +
+    "            <img ng-show=\"reviewee.profile_photo\" ng-src=\"{{reviewee.profile_photo}}\" class=\"img-circle reviewee-photo\">\n" +
     "        </div>\n" +
+    "\n" +
+    "        <alert ng-repeat=\"alert in alerts\" type=\"{{alert.type}}\" close=\"closeAlert($index)\">{{alert.msg}}</alert>\n" +
     "\n" +
     "        <div ng-show=\"!alerts.length\">\n" +
     "            <form class=\"peer-review-container\">\n" +

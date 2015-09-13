@@ -50,12 +50,39 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
 
                 if (response.status === 201) {
 
-                    myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+                    myPostsFactory.getAllUserPosts($scope.userObj.user_settings.name);
 
                     Notification.primary({
                         title: "Sent Offer Acceptance!",
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
+                    });
+
+                    var transactionRequirements = {
+                        "buyer" : offer.userProfile,
+                        "buyerUsername" : offer.username,
+                        "offerId" : offer.offerId,
+                        "postingId" : $scope.post.postingId,
+                        "seller" : {
+                            "name": $scope.userObj.user_settings.name,
+                            "banner_photo" : $scope.userObj.user_settings.banner_photo,
+                            "profile_photo" : $scope.userObj.user_settings.profile_photo
+                        },
+                        "sellerUsername" : $scope.userObj.user_settings.name
+                    };
+
+                    transactionFactory.createTransaction(transactionRequirements).then(function (response) {
+
+                        console.log(response);
+
+                    }, function (err) {
+
+                        Notification.error({
+                            title: "Failed to append transaction ID",
+                            message: "Please inform support.  Sorry for the trouble.",
+                            delay: 7000
+                        });
+
                     });
 
                 } else {
@@ -100,7 +127,7 @@ htsApp.controller('myPosts.meetings.controller', ['$scope', 'meetingsFactory', '
                     socketio.sendMessage(recipient, offer.response);
                 }
 
-                myPostsFactory.getAllUserPosts(Session.userObj.user_settings.name);
+                myPostsFactory.getAllUserPosts($scope.userObj.user_settings.name);
 
             } else {
 

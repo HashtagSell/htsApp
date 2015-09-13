@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/22/15.
  */
-htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory) {
+htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Session', 'meetingsFactory', 'Notification', 'favesFactory', 'transactionFactory', 'profileFactory', function ($scope, $element, Session, meetingsFactory, Notification, favesFactory, transactionFactory, profileFactory) {
 
     $scope.userObj = Session.userObj;
 
@@ -62,6 +62,48 @@ htsApp.controller('watchlist.meetings.controller', ['$scope', '$element', 'Sessi
                         message: "We've notified @" + offer.username + ".  Expect an email shortly.",
                         delay: 7000
                     });
+
+                    profileFactory.getUserProfile($scope.post.username).then(function (response) {
+
+                        var transactionRequirements = {
+                            "buyer" : {
+                                "name": $scope.userObj.user_settings.name,
+                                "banner_photo" : $scope.userObj.user_settings.banner_photo,
+                                "profile_photo" : $scope.userObj.user_settings.profile_photo
+                            },
+                            "buyerUsername" : $scope.userObj.user_settings.name,
+                            "offerId" : offer.offerId,
+                            "postingId" : $scope.post.postingId,
+                            "seller" : response.data.user,
+                            "sellerUsername" : $scope.post.username
+                        };
+
+
+                        transactionFactory.createTransaction(transactionRequirements).then(function (response) {
+
+                            console.log(response);
+
+                        }, function (err) {
+
+                            Notification.error({
+                                title: "Failed to append transaction ID",
+                                message: "Please inform support of your.  Sorry for the trouble.",
+                                delay: 7000
+                            });
+
+                        });
+
+
+                    }, function (err) {
+
+                        Notification.error({
+                            title: "Failed to lookup seller profile",
+                            message: "Please inform support.  Sorry for the trouble.",
+                            delay: 7000
+                        });
+
+                    });
+
 
                 } else {
 
