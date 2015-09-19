@@ -1665,7 +1665,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                     for(var j = 0; j < day.hours.length; j++) {
                         var hour = day.hours[j];
                         if(hour.selected){
-                            proposedTimes.push(hour.value.format());
+                            proposedTimes.push(hour.value);
                         }
                     }
 
@@ -1678,50 +1678,6 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
             scope.back = function () {
                 scope.selectedDay = null;
             };
-
-            //scope.getAllDeclinedTimes = function () {
-            //    for (var i = 0; i < scope.offers.proposals.length; i++) {
-            //        var proposal = scope.offers.proposals[i];
-            //
-            //        for (var j = 0; j < proposal.when.length; j++) {
-            //            var previouslyProposedTime = proposal.when[j];
-            //
-            //            previouslyDeclinedTimes.push(previouslyProposedTime);
-            //        }
-            //
-            //    }
-            //};
-
-
-
-            //var checkIfPreviouslyDeclined = function(timestamp){
-            //    return previouslyDeclinedTimes.indexOf(timestamp) > -1;
-            //};
-            //
-            //
-            //var checkIfEntireDayBlocked = function () {
-            //    for(var i = 0; i < scope.days.length; i++){
-            //        var day = scope.days[i];
-            //
-            //        var dayBlocked = true;
-            //
-            //        for(var j = 0; j < day.hours.length; j++) {
-            //            var hour = day.hours[j];
-            //
-            //            if(!hour.disabled){
-            //                dayBlocked = false;
-            //                break;
-            //            }
-            //        }
-            //
-            //        if(dayBlocked){
-            //            day.disabled = true;
-            //        }
-            //
-            //    }
-            //};
-
-            console.log('test');
 
             //Init the array of objects used to build the days and hours of the week buyer and sellers can choose from.
             (function(){
@@ -1762,13 +1718,6 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                                 value: moment().add(i, 'days').startOf('day').hours(j),
                                 selected: false
                             };
-
-                            //{
-                                //                    name: moment().add(4, 'days').startOf('day').hours(22).format('ha z'),
-                                //                    value: moment().add(4, 'days').startOf('day').hours(22),
-                                //                    selected: false,
-                                //                    disabled: checkIfPreviouslyDeclined(moment().add(4, 'days').startOf('day').hours(22).format())
-                                //                }
 
                             day.hours.push(hour);
 
