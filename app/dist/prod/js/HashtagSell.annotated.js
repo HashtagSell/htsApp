@@ -15851,7 +15851,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            </div>\n" +
     "\n" +
     "            <br>\n" +
-    "\n" +
+    "            {{deal.when}}\n" +
     "            <booking-system></booking-system>\n" +
     "\n" +
     "            <div ng-show=\"error.when\">\n" +
