@@ -1687,7 +1687,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 for (var i = 0; i < 5; i++) {
                     var day = {
                         name: moment().add(i, 'days').format('dddd').trim(),
-                        value: moment().add(i, 'days'),
+                        value: moment.utc().add(i, 'days').format(),
                         selected: false,
                         hours: []
                     };
@@ -1705,7 +1705,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                                  hour = {
                                     name: moment().startOf('day').hours(j).format('ha z').trim(),
-                                    value: moment().startOf('day').hours(j),
+                                    value: moment.utc().startOf('day').hours(j).format(),
                                     selected: false
                                 };
 
@@ -1715,7 +1715,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                             hour = {
                                 name: moment().add(i, 'days').startOf('day').hours(j).format('ha z').trim(),
-                                value: moment().add(i, 'days').startOf('day').hours(j),
+                                value: moment.utc().add(i, 'days').startOf('day').hours(j).format(),
                                 selected: false
                             };
 

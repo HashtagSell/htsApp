@@ -1687,7 +1687,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 for (var i = 0; i < 5; i++) {
                     var day = {
                         name: moment().add(i, 'days').format('dddd').trim(),
-                        value: moment().add(i, 'days'),
+                        value: moment.utc().add(i, 'days').format(),
                         selected: false,
                         hours: []
                     };
@@ -1705,7 +1705,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                                  hour = {
                                     name: moment().startOf('day').hours(j).format('ha z').trim(),
-                                    value: moment().startOf('day').hours(j),
+                                    value: moment.utc().startOf('day').hours(j).format(),
                                     selected: false
                                 };
 
@@ -1715,7 +1715,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                             hour = {
                                 name: moment().add(i, 'days').startOf('day').hours(j).format('ha z').trim(),
-                                value: moment().add(i, 'days').startOf('day').hours(j),
+                                value: moment.utc().add(i, 'days').startOf('day').hours(j).format(),
                                 selected: false
                             };
 
@@ -13627,7 +13627,6 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "</div>\n" +
     "\n" +
     "\n" +
-    "\n" +
     "<div ng-show=\"selectedDay\">\n" +
     "    <h4 style=\"text-align: center; cursor: pointer;\" ng-click=\"back()\">\n" +
     "        <i class=\"fa fa-arrow-left\"></i>{{selectedDay.name}}\n" +
@@ -14155,7 +14154,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                    <div class=\"btn-group\" role=\"group\">\n" +
     "                        <label class=\"btn btn-default btn-lg\" disabled=\"true\"><i class=\"fa fa-clock-o\"></i></label>\n" +
-    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a'}}</label>\n" +
+    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a' : 'UTC'}}</label>\n" +
     "                    </div>\n" +
     "\n" +
     "                    <div ng-show=\"errors.message\">\n" +
@@ -15851,7 +15850,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "            </div>\n" +
     "\n" +
     "            <br>\n" +
-    "            {{deal.when}}\n" +
+    "\n" +
     "            <booking-system></booking-system>\n" +
     "\n" +
     "            <div ng-show=\"error.when\">\n" +
@@ -15958,7 +15957,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                    <div class=\"btn-group\" role=\"group\">\n" +
     "                        <label class=\"btn btn-default btn-lg\" disabled=\"true\"><i class=\"fa fa-clock-o\"></i></label>\n" +
-    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a'}}</label>\n" +
+    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a' : 'UTC'}}</label>\n" +
     "                    </div>\n" +
     "\n" +
     "                    <div ng-show=\"errors.message\">\n" +

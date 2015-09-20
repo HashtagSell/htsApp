@@ -51,7 +51,7 @@
 
                     <div class="btn-group" role="group">
                         <label class="btn btn-default btn-lg" disabled="true"><i class="fa fa-clock-o"></i></label>
-                        <label class="btn btn-default btn-lg" ng-repeat="proposedTime in offer.proposals[offer.proposals.length - 1].when" btn-radio="proposedTime" ng-model="acceptedTime.model" ng-change="errors.message = null">{{proposedTime | date:'MMM d, h:mm a'}}</label>
+                        <label class="btn btn-default btn-lg" ng-repeat="proposedTime in offer.proposals[offer.proposals.length - 1].when" btn-radio="proposedTime" ng-model="acceptedTime.model" ng-change="errors.message = null">{{proposedTime | date:'MMM d, h:mm a' : 'UTC'}}</label>
                     </div>
 
                     <div ng-show="errors.message">
