@@ -1679,6 +1679,11 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 scope.selectedDay = null;
             };
 
+            scope.utcTime = moment.utc().format();
+            scope.utcTimePlusDay = moment.utc().add(1, 'days').format();
+
+            scope.momentTime = moment().format();
+
             //Init the array of objects used to build the days and hours of the week buyer and sellers can choose from.
             (function(){
 
@@ -1687,7 +1692,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 for (var i = 0; i < 5; i++) {
                     var day = {
                         name: moment().add(i, 'days').format('dddd').trim(),
-                        value: moment.utc().add(i, 'days').format(),
+                        value: moment().add(i, 'days').format(),
                         selected: false,
                         hours: []
                     };
@@ -1705,7 +1710,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                                  hour = {
                                     name: moment().startOf('day').hours(j).format('ha z').trim(),
-                                    value: moment.utc().startOf('day').hours(j).format(),
+                                    value: moment().startOf('day').hours(j).format(),
                                     selected: false
                                 };
 
@@ -1715,7 +1720,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                             hour = {
                                 name: moment().add(i, 'days').startOf('day').hours(j).format('ha z').trim(),
-                                value: moment.utc().add(i, 'days').startOf('day').hours(j).format(),
+                                value: moment().add(i, 'days').startOf('day').hours(j).format(),
                                 selected: false
                             };
 

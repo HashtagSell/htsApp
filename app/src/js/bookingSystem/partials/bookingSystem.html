@@ -4,6 +4,12 @@
     <label class="btn btn-default btn-lg" ng-repeat="day in days" ng-click="daySelected($index)">{{day.name}}</label>
 </div>
 
+<br>
+UTC: {{utcTime}}
+<br>
+UTC + 1 day: {{utcTimePlusDay}}
+<br>
+moment.js: {{momentTime}}
 
 <div ng-show="selectedDay">
     <h4 style="text-align: center; cursor: pointer;" ng-click="back()">

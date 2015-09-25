@@ -1679,6 +1679,11 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 scope.selectedDay = null;
             };
 
+            scope.utcTime = moment.utc().format();
+            scope.utcTimePlusDay = moment.utc().add(1, 'days').format();
+
+            scope.momentTime = moment().format();
+
             //Init the array of objects used to build the days and hours of the week buyer and sellers can choose from.
             (function(){
 
@@ -1687,7 +1692,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
                 for (var i = 0; i < 5; i++) {
                     var day = {
                         name: moment().add(i, 'days').format('dddd').trim(),
-                        value: moment.utc().add(i, 'days').format(),
+                        value: moment().add(i, 'days').format(),
                         selected: false,
                         hours: []
                     };
@@ -1705,7 +1710,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                                  hour = {
                                     name: moment().startOf('day').hours(j).format('ha z').trim(),
-                                    value: moment.utc().startOf('day').hours(j).format(),
+                                    value: moment().startOf('day').hours(j).format(),
                                     selected: false
                                 };
 
@@ -1715,7 +1720,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 
                             hour = {
                                 name: moment().add(i, 'days').startOf('day').hours(j).format('ha z').trim(),
-                                value: moment.utc().add(i, 'days').startOf('day').hours(j).format(),
+                                value: moment().add(i, 'days').startOf('day').hours(j).format(),
                                 selected: false
                             };
 
@@ -3831,17 +3836,6 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
                             var offer = post.offers.results[k];
 
-
-
-                            //for(var l = 0; l < offer.proposals.length; l++){
-                            //    var proposedTime = offer.proposals[l];
-                            //
-                            //    if(proposedTime.acceptedAt){ //if question does not have answer
-                            //        unreadCount--;
-                            //    }
-                            //
-                            //}
-
                             if(!offer.proposals[offer.proposals.length-1].isOwnerReply && !offer.proposals[offer.proposals.length-1].acceptedAt){
                                 unreadCount++;
                             }
@@ -3865,20 +3859,9 @@ htsApp.factory('myPostsFactory', ['$http', 'ENV', '$q', 'utilsFactory', 'sideNav
 
         var deferred = $q.defer();
 
-        var params = {
-            filters: {
-                mandatory: {
-                    exact: {
-                        username: username
-                    }
-                }
-            }
-        };
-
-
         $http({
             method: 'GET',
-            url: ENV.postingAPI + utilsFactory.bracketNotationURL(params)
+            url: ENV.userAPI + username + '/postings'
         }).then(function (response) {
 
             var allUserPosts = response.data.results;
@@ -13626,6 +13609,12 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "    <label class=\"btn btn-default btn-lg\" ng-repeat=\"day in days\" ng-click=\"daySelected($index)\">{{day.name}}</label>\n" +
     "</div>\n" +
     "\n" +
+    "<br>\n" +
+    "UTC: {{utcTime}}\n" +
+    "<br>\n" +
+    "UTC + 1 day: {{utcTimePlusDay}}\n" +
+    "<br>\n" +
+    "moment.js: {{momentTime}}\n" +
     "\n" +
     "<div ng-show=\"selectedDay\">\n" +
     "    <h4 style=\"text-align: center; cursor: pointer;\" ng-click=\"back()\">\n" +
@@ -14154,7 +14143,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                    <div class=\"btn-group\" role=\"group\">\n" +
     "                        <label class=\"btn btn-default btn-lg\" disabled=\"true\"><i class=\"fa fa-clock-o\"></i></label>\n" +
-    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a' : 'UTC'}}</label>\n" +
+    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a'}}</label>\n" +
     "                    </div>\n" +
     "\n" +
     "                    <div ng-show=\"errors.message\">\n" +
@@ -15957,7 +15946,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "\n" +
     "                    <div class=\"btn-group\" role=\"group\">\n" +
     "                        <label class=\"btn btn-default btn-lg\" disabled=\"true\"><i class=\"fa fa-clock-o\"></i></label>\n" +
-    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a' : 'UTC'}}</label>\n" +
+    "                        <label class=\"btn btn-default btn-lg\" ng-repeat=\"proposedTime in offer.proposals[offer.proposals.length - 1].when\" btn-radio=\"proposedTime\" ng-model=\"acceptedTime.model\" ng-change=\"errors.message = null\">{{proposedTime | date:'MMM d, h:mm a'}}</label>\n" +
     "                    </div>\n" +
     "\n" +
     "                    <div ng-show=\"errors.message\">\n" +
