@@ -295,4 +295,14 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
     };
 
+
+    //Craigslist MGMT
+    $scope.showCraigslistPost = function (post) {
+        $window.open(post.craigslist.public);
+    };
+
+    $scope.removeEbayPost = function (post) {
+
+    };
+
 }]);

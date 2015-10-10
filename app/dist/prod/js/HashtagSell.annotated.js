@@ -3816,6 +3816,16 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
 
     };
 
+
+    //Craigslist MGMT
+    $scope.showCraigslistPost = function (post) {
+        $window.open(post.craigslist.public);
+    };
+
+    $scope.removeEbayPost = function (post) {
+
+    };
+
 }]);
 /**
  * Created by braddavis on 3/31/15.
@@ -14247,6 +14257,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "                                    <span ng-show=\"post.facebook\" class=\"label label-primary\" ng-click=\"showFacebookPost(post); $event.stopPropagation();\" tooltip=\"Show Facebook post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"bottom\" style=\"font-weight: inherit;\">Facebook</span>\n" +
     "                                    <span ng-show=\"post.twitter\" class=\"label label-info\" ng-click=\"showTwitterPost(post); $event.stopPropagation();\" tooltip=\"Show Twitter Post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"bottom\" style=\"font-weight: inherit;\">Twitter</span>\n" +
     "                                    <span ng-show=\"post.ebay\" class=\"label label-warning\" ng-click=\"showEbayPost(post); $event.stopPropagation();\" tooltip=\"Show Ebay Post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"bottom\" style=\"font-weight: inherit;\">Ebay</span>\n" +
+    "                                    <span ng-show=\"post.craigslist\" class=\"label label-primary\" ng-click=\"showCraigslistPost(post); $event.stopPropagation();\" tooltip=\"Show Craigslist Post\" tooltip-trigger=\"mouseenter\" tooltip-placement=\"bottom\" style=\"font-weight: inherit;\">Craigslist</span>\n" +
     "                                </h4>\n" +
     "\n" +
     "                                <!--<div ng-bind-html=\"post.body\"/>-->\n" +
