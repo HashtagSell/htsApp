@@ -16,9 +16,9 @@
         <div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon">
             <div ng-show="currentlyPublishing.amazon" class="circ-spinner"></div>
         </div>
-        <!--<div class="icon icon-mono online-payment" ng-class="{ 'hold': onlinePayment.allow}" ng-click="onlinePayment.allow = !onlinePayment.allow">-->
-            <!--<div ng-show="currentlyPublishing.onlinePayment" class="circ-spinner"></div>-->
-        <!--</div>-->
+        <div class="icon icon-mono craigslist" ng-class="{ 'hold': shareToggles.craigslist}" ng-click="shareToggles.craigslist = !shareToggles.craigslist">
+            <div ng-show="currentlyPublishing.craigslist" class="circ-spinner"></div>
+        </div>
     <!--</div>-->
 
     <h3 id="instructions">Boost your post's visibility and allow online payment.</h3>
@@ -26,7 +26,7 @@
     <h3 id="twitterBlurb">Share to your twitter timeline for friends to see.</h3>
     <h3 id="ebayBlurb">Share to your existing Ebay account.</h3>
     <h3 id="amazonBlurb">Coming soon!  Share to Amazon.</h3>
-    <!--<h3 id="onlinePaymentBlurb">Allow buyer to send online payment.</h3>-->
+    <h3 id="craigslistBlurb">Share to your existing Craigslist account.</h3>
 
     <!--{{shareToggles}}-->
     <!--{{onlinePayment}}-->
@@ -37,10 +37,11 @@
         <span ng-show="!currentlyPublishing.publishing && shareToggles.facebook ||
          !currentlyPublishing.publishing && shareToggles.twitter ||
          !currentlyPublishing.publishing && shareToggles.ebay ||
-         !currentlyPublishing.publishing && shareToggles.amazon">Share</span>
+         !currentlyPublishing.publishing && shareToggles.amazon ||
+         !currentlyPublishing.publishing && shareToggles.craigslist">Share</span>
 
 
-        <span ng-show="!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon">Continue without sharing</span>
+        <span ng-show="!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon && !shareToggles.craigslist">Continue without sharing</span>
 
         <span ng-show="currentlyPublishing.publishing">Please wait</span>
     </button>

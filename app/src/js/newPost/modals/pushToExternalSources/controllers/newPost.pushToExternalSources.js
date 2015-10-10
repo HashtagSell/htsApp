@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -247,11 +247,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             $scope.currentlyPublishing.craigslist = true;
 
-            Notification.error({
-                title: "Craigslist publishing error",
-                message: "push to craiglist coming soon!",
-                delay: 10000
-            });  //Send the webtoast
+            console.log('here is what we send to extension', newPost);
+
+            $window.postMessage({
+                'cmd' : 'create',
+                'data' : newPost
+            }, "*");
+
             deferred.resolve();
 
         } else {

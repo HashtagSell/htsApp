@@ -48,7 +48,7 @@
  * ...
  */
 .icon-mono {
-    background: url("//static.hashtagsell.com/htsApp/external-marketplaces/external-services.png");
+    background: url("//static.hashtagsell.com/htsApp/external-marketplaces/external-services-1.png");
     /*background-image: url("http://static.hashtagsell.com/logos/newPost+Icons/icons1.svg"), none;*/
     background-color: #595959;
     -webkit-transition: background 0.3s;
@@ -178,25 +178,25 @@
 
 
 /* online payment */
-.icon-mono.online-payment {
+.icon-mono.craigslist {
     background-position: -384px 0;
 }
 
-/*.icon-mono.online-payment:hover {*/
+/*.icon-mono.craigstlist:hover {*/
     /*background-color: #009cde;*/
     /*background-position: -384px -96px;*/
 /*}*/
 
-.icon-mono.online-payment.hold {
+.icon-mono.craigslist.hold {
     background-color: #009cde;
     background-position: -384px -96px;
 }
 
-#onlinePaymentBlurb {
+#craigslistBlurb {
     display: none;
 }
 
-.icon-mono.online-payment:hover ~ #onlinePaymentBlurb {
+.icon-mono.craigslist:hover ~ #craigslistBlurb {
     display: block;
 }
 

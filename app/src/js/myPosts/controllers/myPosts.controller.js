@@ -180,6 +180,28 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
         };
 
         modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+
+
+            if(post.twitter){
+                console.log('purge tweet from twitter');
+            }
+
+            if(post.facebook){
+                console.log('purge post from facebook');
+            }
+
+            if(post.amazon){
+                console.log('purge item from amazon');
+            }
+
+            if(post.craigslist){
+                $window.postMessage({
+                    'cmd' : 'delete',
+                    'data' : post
+                }, "*");
+            }
+
+
             myPostsFactory.deletePost(post).then(function(response){
 
                 if(response.status === 204) {

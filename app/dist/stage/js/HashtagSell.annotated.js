@@ -3701,6 +3701,28 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
         };
 
         modalConfirmationService.showModal({}, modalOptions).then(function (result) {
+
+
+            if(post.twitter){
+                console.log('purge tweet from twitter');
+            }
+
+            if(post.facebook){
+                console.log('purge post from facebook');
+            }
+
+            if(post.amazon){
+                console.log('purge item from amazon');
+            }
+
+            if(post.craigslist){
+                $window.postMessage({
+                    'cmd' : 'delete',
+                    'data' : post
+                }, "*");
+            }
+
+
             myPostsFactory.deletePost(post).then(function(response){
 
                 if(response.status === 204) {
@@ -6673,7 +6695,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -6919,11 +6941,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             $scope.currentlyPublishing.craigslist = true;
 
-            Notification.error({
-                title: "Craigslist publishing error",
-                message: "push to craiglist coming soon!",
-                delay: 10000
-            });  //Send the webtoast
+            console.log('here is what we send to extension', newPost);
+
+            $window.postMessage({
+                'cmd' : 'create',
+                'data' : newPost
+            }, "*");
+
             deferred.resolve();
 
         } else {
@@ -14527,9 +14551,9 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
     "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <!--<div class=\"icon icon-mono online-payment\" ng-class=\"{ 'hold': onlinePayment.allow}\" ng-click=\"onlinePayment.allow = !onlinePayment.allow\">-->\n" +
-    "            <!--<div ng-show=\"currentlyPublishing.onlinePayment\" class=\"circ-spinner\"></div>-->\n" +
-    "        <!--</div>-->\n" +
+    "        <div class=\"icon icon-mono craigslist\" ng-class=\"{ 'hold': shareToggles.craigslist}\" ng-click=\"shareToggles.craigslist = !shareToggles.craigslist\">\n" +
+    "            <div ng-show=\"currentlyPublishing.craigslist\" class=\"circ-spinner\"></div>\n" +
+    "        </div>\n" +
     "    <!--</div>-->\n" +
     "\n" +
     "    <h3 id=\"instructions\">Boost your post's visibility and allow online payment.</h3>\n" +
@@ -14537,7 +14561,7 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "    <h3 id=\"twitterBlurb\">Share to your twitter timeline for friends to see.</h3>\n" +
     "    <h3 id=\"ebayBlurb\">Share to your existing Ebay account.</h3>\n" +
     "    <h3 id=\"amazonBlurb\">Coming soon!  Share to Amazon.</h3>\n" +
-    "    <!--<h3 id=\"onlinePaymentBlurb\">Allow buyer to send online payment.</h3>-->\n" +
+    "    <h3 id=\"craigslistBlurb\">Share to your existing Craigslist account.</h3>\n" +
     "\n" +
     "    <!--{{shareToggles}}-->\n" +
     "    <!--{{onlinePayment}}-->\n" +
@@ -14548,10 +14572,11 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <span ng-show=\"!currentlyPublishing.publishing && shareToggles.facebook ||\n" +
     "         !currentlyPublishing.publishing && shareToggles.twitter ||\n" +
     "         !currentlyPublishing.publishing && shareToggles.ebay ||\n" +
-    "         !currentlyPublishing.publishing && shareToggles.amazon\">Share</span>\n" +
+    "         !currentlyPublishing.publishing && shareToggles.amazon ||\n" +
+    "         !currentlyPublishing.publishing && shareToggles.craigslist\">Share</span>\n" +
     "\n" +
     "\n" +
-    "        <span ng-show=\"!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon\">Continue without sharing</span>\n" +
+    "        <span ng-show=\"!currentlyPublishing.publishing && !shareToggles.facebook && !shareToggles.twitter && !shareToggles.ebay && !shareToggles.amazon && !shareToggles.craigslist\">Continue without sharing</span>\n" +
     "\n" +
     "        <span ng-show=\"currentlyPublishing.publishing\">Please wait</span>\n" +
     "    </button>\n" +
