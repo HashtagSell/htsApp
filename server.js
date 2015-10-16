@@ -1,10 +1,15 @@
 var express  = require('express');
 var app      = express();
 var port     = (process.env.PORT || 8081);
+var websocketPort = (process.env.WEBSOCKET_PORT || 8082);
+
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
 var compress = require('compression');
+
+var httpProxy = require('http-proxy');
+var apiProxy = httpProxy.createProxyServer();
 
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -27,12 +32,73 @@ mongoose.connect(env.mongo.url); // connect to our database
 require('./config/passport/passport.js')(passport); // passport for configuration
 
 
-//Uses prerender.io service to generate html pages for search engines and crawlers.
+//Uses prerender.io service to generate html pages for search engines and crawlers.  Proxy requests to APIs from client.
 if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderServiceUrl', env.prerender_io.url).set('prerenderToken', env.prerender_io.token));
-} else { //use prerender.io service
+
+    var postingAPI = 'http://localhost:4043',
+        notificationAPI = 'http://localhost:4444',
+        realtimeAPI = 'ws://localhost:4044';
+
+} else if(process.env.NODE_ENV === "STAGING") { //use prerender.io service
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
+
+
+    var postingAPI = 'https://staging-posting-api.hashtagsell.com',
+        notificationAPI = 'http://staging-notification-svc.hashtagsell.com',
+        realtimeAPI = 'ws://staging-realtime-svc.hashtagsell.com';
+
+
+} else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
+    app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
+
+    var postingAPI = 'https://production-posting-api.hashtagsell.com',
+        notificationAPI = 'http://production-notification-svc.hashtagsell.com',
+        realtime = 'ws://production-realtime-svc.hashtagsell.com';
 }
+
+
+
+app.all("/v1/postings/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/users/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/groupings/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/annotations/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/transactions/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/reviews/*", function(req, res) {
+    console.log('redirecting to posting api');
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
+app.all("/v1/queues/*", function(req, res) {
+    console.log('redirecting to notification api');
+    apiProxy.web(req, res, {target: notificationAPI});
+});
+
+//Socket.io proxy server on 8082
+httpProxy.createServer({
+    target: realtimeAPI,
+    ws: true
+}).listen(websocketPort);
 
 
 //force HTTPS if request is coming from production or staging
