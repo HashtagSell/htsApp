@@ -44,9 +44,9 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
 
-    var postingAPI = 'http://localhost:8882',
-        notificationAPI = 'http://localhost:8884',
-        realtimeAPI = 'ws://localhost:8881';
+    var postingAPI = 'http://127.0.0.1:8882',
+        notificationAPI = 'http://127.0.0.1:8884',
+        realtimeAPI = 'ws://127.0.0.1:8881';
 
 
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
@@ -60,37 +60,37 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
 
 app.all("/v1/postings/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/users/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/groupings/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/annotations/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/transactions/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/reviews/*", function(req, res) {
-    console.log('redirecting to posting api');
+    console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
 app.all("/v1/queues/*", function(req, res) {
-    console.log('redirecting to notification api');
+    console.log('redirecting to notification api', notificationAPI);
     apiProxy.web(req, res, {target: notificationAPI});
 });
 
