@@ -44,9 +44,9 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
 
-    var postingAPI = 'http://127.0.0.1:8882',
-        notificationAPI = 'http://127.0.0.1:8884',
-        realtimeAPI = 'ws://127.0.0.1:8881';
+    var postingAPI = 'https://staging-posting-api.hashtagsell.com',
+        notificationAPI = 'https://staging-notification-svc.hashtagsell.com',
+        realtimeAPI = 'ws://staging-realtime-svc.hashtagsell.com';
 
 
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
