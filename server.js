@@ -44,7 +44,7 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
 
-    var postingAPI = 'http://localhost:8082',
+    var postingAPI = 'http://localhost:8882',
         notificationAPI = 'http://localhost:8884',
         realtimeAPI = 'ws://localhost:8881';
 
