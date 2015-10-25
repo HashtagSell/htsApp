@@ -46,15 +46,15 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
     var postingAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8882',
         notificationAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8884',
-        realtimeAPI = 'wss://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8881';
+        realtimeAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8881';
 
 
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
-    var postingAPI = 'https://production-posting-api.hashtagsell.com',
-        notificationAPI = 'https://production-notification-svc.hashtagsell.com',
-        realtime = 'ws://production-realtime-svc.hashtagsell.com';
+    var postingAPI = 'http://production-posting-api.hashtagsell.com',
+        notificationAPI = 'http://production-notification-svc.hashtagsell.com',
+        realtime = 'http://production-realtime-svc.hashtagsell.com';
 }
 
 
