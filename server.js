@@ -44,9 +44,9 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
 
-    var postingAPI = 'http://ec2-52-11-249-169.us-west-2.compute.amazonaws.com:8882',
-        notificationAPI = 'http://ec2-52-11-249-169.us-west-2.compute.amazonaws.com:8884',
-        realtimeAPI = 'wss://ec2-52-11-249-169.us-west-2.compute.amazonaws.com:8881';
+    var postingAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8882',
+        notificationAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8884',
+        realtimeAPI = 'wss://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8881';
 
 
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
