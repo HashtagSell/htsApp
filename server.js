@@ -59,38 +59,38 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
 
 
-app.all("/v1/postings/*", function(req, res) {
+app.all("/v1/postings*", function(req, res) {
     console.log('redirecting to posting api', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/users/*", function(req, res) {
-    console.log('redirecting to posting api', postingAPI);
+app.all("/v1/users*", function(req, res) {
+    console.log('redirecting to posting api user endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/groupings/*", function(req, res) {
-    console.log('redirecting to posting api', postingAPI);
+app.all("/v1/groupings*", function(req, res) {
+    console.log('redirecting to posting api groupings endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/annotations/*", function(req, res) {
-    console.log('redirecting to posting api', postingAPI);
+app.all("/v1/annotations*", function(req, res) {
+    console.log('redirecting to posting api annotations endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/transactions/*", function(req, res) {
-    console.log('redirecting to posting api', postingAPI);
+app.all("/v1/transactions*", function(req, res) {
+    console.log('redirecting to posting api transactions endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/reviews/*", function(req, res) {
-    console.log('redirecting to posting api', postingAPI);
+app.all("/v1/reviews*", function(req, res) {
+    console.log('redirecting to posting api reviews endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});
 });
 
-app.all("/v1/queues/*", function(req, res) {
-    console.log('redirecting to notification api', notificationAPI);
+app.all("/v1/queues*", function(req, res) {
+    console.log('redirecting to notification api queues endpoint', notificationAPI);
     apiProxy.web(req, res, {target: notificationAPI});
 });
 

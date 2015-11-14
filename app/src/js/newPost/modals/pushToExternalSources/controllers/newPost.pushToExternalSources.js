@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -9,8 +9,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         twitter: false,
         amazon: false,
         ebay: false,
-        craigslist: false,
-        onlinePayment: false
+        craigslist: false
     };
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
@@ -38,12 +37,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                            $scope.currentlyPublishing.craigslist = false;
 
-                           $scope.setupOnlinePayment().then(function() {
+                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
 
-                               $scope.currentlyPublishing.onlinePayment = false;
-
-                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
-                           });
                        });
                    });
                 });
@@ -57,10 +52,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         ebay: false,
         amazon: false,
         craigslist: false
-    };
-
-    $scope.onlinePayment = {
-        allow: true
     };
 
     $scope.checkIfFacebookTokenValid = function () {
@@ -155,6 +146,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
+
+    $scope.warnAmazonComingSoon = function () {
+        alert('Hang tight!  Publishing to Amazon is coming soon!');
+        $scope.shareToggles.amazon = false;
+    };
+
+
     $scope.publishToAmazon = function () {
 
         var deferred = $q.defer();
@@ -238,6 +236,21 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
+    $scope.confirmCraigslistCalifornia = function () {
+
+        craigslistFactory.checkForExtension(ENV.extensionId, ENV.extensionVersion, newPost).then(function (resp) {
+
+            console.log('Craiglist is good to go!');
+
+        }, function (err) {
+
+            $scope.shareToggles.craigslist = false;
+
+            alert(err);
+        });
+
+    };
+
 
     $scope.publishToCraigslist = function () {
 
@@ -249,65 +262,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             console.log('here is what we send to extension', newPost);
 
-            $window.postMessage({
-                'cmd' : 'create',
-                'data' : newPost
-            }, "*");
-
-            deferred.resolve();
-
-        } else {
-            deferred.resolve();
-        }
-
-        return deferred.promise;
-    };
-
-
-    $scope.setupOnlinePayment = function () {
-
-        var deferred = $q.defer();
-
-        if($scope.onlinePayment.allow) {
-
-            $scope.currentlyPublishing.onlinePayment = true;
-
-            subMerchantFactory.validateSubMerchant(newPost).then(function(response){
-
+            craigslistFactory.publishToCraigslist(newPost).then(function (response) {
                 console.log(response);
-
-                //var payload = {
-                //    payment: response
-                //};
-                //
-                //if (newPost.facebook) {
-                //    payload.facebook = newPost.facebook;
-                //}
-                //
-                //if (newPost.amazon) {
-                //    payload.amazon = newPost.amazon;
-                //}
-                //
-                //if (newPost.craigslist) {
-                //    payload.craigslist = newPost.craigslist;
-                //}
-                //
-                //$http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-                //
-                //    deferred.resolve(response);
-                //
-                //}).error(function (response) {
-                //
-                //    deferred.reject(response);
-                //});
-
-                deferred.resolve(response);
-
             }, function (err) {
-
-                console.log('error', err);
-
-                deferred.resolve();
+                console.log(err);
             });
 
         } else {
@@ -315,7 +273,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
-
     };
 
 }]);

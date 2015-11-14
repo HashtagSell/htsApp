@@ -13,10 +13,10 @@
         <div class="icon icon-mono ebay" ng-class="{ 'hold': shareToggles.ebay}" ng-click="shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()">
             <div ng-show="currentlyPublishing.ebay" class="circ-spinner"></div>
         </div>
-        <div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon">
+        <div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()">
             <div ng-show="currentlyPublishing.amazon" class="circ-spinner"></div>
         </div>
-        <div class="icon icon-mono craigslist" ng-class="{ 'hold': shareToggles.craigslist}" ng-click="shareToggles.craigslist = !shareToggles.craigslist">
+        <div id="clPub" class="icon icon-mono craigslist" ng-class="{ 'hold': shareToggles.craigslist}" ng-click="shareToggles.craigslist = !shareToggles.craigslist; confirmCraigslistCalifornia()">
             <div ng-show="currentlyPublishing.craigslist" class="circ-spinner"></div>
         </div>
     <!--</div>-->

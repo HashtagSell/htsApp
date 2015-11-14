@@ -39,7 +39,9 @@ module.exports = function(grunt) {
                         ebayAuth: 'http://localhost:8081/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '367471540085253'
+                        fbAppId: '367471540085253',
+                        extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
+                        extensionVersion: '0.2'
                     },
                     clientTokenPath: 'http://localhost:8081/payments/client_token'
                 }
@@ -70,7 +72,9 @@ module.exports = function(grunt) {
                         ebayAuth: 'https://staging.hashtagsell.com/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '459229800909426'
+                        fbAppId: '459229800909426',
+                        extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
+                        extensionVersion: '0.2'
                     },
                     clientTokenPath: 'https://staging.hashtagsell.com/payments/client_token'
                 }
@@ -101,7 +105,9 @@ module.exports = function(grunt) {
                         ebayAuth: 'https://www.hashtagsell.com/auth/ebay',
                         ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
-                        fbAppId: '367469320085475'
+                        fbAppId: '367469320085475',
+                        extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
+                        extensionVersion: '0.2'
                     },
                     clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
                 }

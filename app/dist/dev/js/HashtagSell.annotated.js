@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.2'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -6705,7 +6705,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -6713,8 +6713,7 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         twitter: false,
         amazon: false,
         ebay: false,
-        craigslist: false,
-        onlinePayment: false
+        craigslist: false
     };
 
     //Passes the newPost object with the selected external sources to the Josh's api.  Upon success passes resulting post obj to congrats.
@@ -6742,12 +6741,8 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
                            $scope.currentlyPublishing.craigslist = false;
 
-                           $scope.setupOnlinePayment().then(function() {
+                           $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
 
-                               $scope.currentlyPublishing.onlinePayment = false;
-
-                               $modalInstance.dismiss({reason: reason, post: newPost}); //Close the modal and display success!
-                           });
                        });
                    });
                 });
@@ -6761,10 +6756,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         ebay: false,
         amazon: false,
         craigslist: false
-    };
-
-    $scope.onlinePayment = {
-        allow: true
     };
 
     $scope.checkIfFacebookTokenValid = function () {
@@ -6859,6 +6850,13 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
+
+    $scope.warnAmazonComingSoon = function () {
+        alert('Hang tight!  Publishing to Amazon is coming soon!');
+        $scope.shareToggles.amazon = false;
+    };
+
+
     $scope.publishToAmazon = function () {
 
         var deferred = $q.defer();
@@ -6942,6 +6940,21 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
     };
 
 
+    $scope.confirmCraigslistCalifornia = function () {
+
+        craigslistFactory.checkForExtension(ENV.extensionId, ENV.extensionVersion, newPost).then(function (resp) {
+
+            console.log('Craiglist is good to go!');
+
+        }, function (err) {
+
+            $scope.shareToggles.craigslist = false;
+
+            alert(err);
+        });
+
+    };
+
 
     $scope.publishToCraigslist = function () {
 
@@ -6953,65 +6966,10 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
             console.log('here is what we send to extension', newPost);
 
-            $window.postMessage({
-                'cmd' : 'create',
-                'data' : newPost
-            }, "*");
-
-            deferred.resolve();
-
-        } else {
-            deferred.resolve();
-        }
-
-        return deferred.promise;
-    };
-
-
-    $scope.setupOnlinePayment = function () {
-
-        var deferred = $q.defer();
-
-        if($scope.onlinePayment.allow) {
-
-            $scope.currentlyPublishing.onlinePayment = true;
-
-            subMerchantFactory.validateSubMerchant(newPost).then(function(response){
-
+            craigslistFactory.publishToCraigslist(newPost).then(function (response) {
                 console.log(response);
-
-                //var payload = {
-                //    payment: response
-                //};
-                //
-                //if (newPost.facebook) {
-                //    payload.facebook = newPost.facebook;
-                //}
-                //
-                //if (newPost.amazon) {
-                //    payload.amazon = newPost.amazon;
-                //}
-                //
-                //if (newPost.craigslist) {
-                //    payload.craigslist = newPost.craigslist;
-                //}
-                //
-                //$http.post(ENV.postingAPI + newPost.postingId + '/publish', payload).success(function (response) {
-                //
-                //    deferred.resolve(response);
-                //
-                //}).error(function (response) {
-                //
-                //    deferred.reject(response);
-                //});
-
-                deferred.resolve(response);
-
             }, function (err) {
-
-                console.log('error', err);
-
-                deferred.resolve();
+                console.log(err);
             });
 
         } else {
@@ -7019,7 +6977,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         }
 
         return deferred.promise;
-
     };
 
 }]);
@@ -11610,6 +11567,78 @@ htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, EN
     return factory;
 }]);
 /**
+ * Created by braddavis on 10/30/15.
+ */
+htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function ($q, $http, $window, ENV) {
+
+    var factory = {};
+
+
+    factory.checkForExtension = function (extensionId, requiredVersion, post) {
+
+        var deferred = $q.defer();
+
+        var message;
+
+        var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        var isChrome = !!$window.chrome && !isOpera;
+
+        if (!isChrome) {
+
+            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
+            deferred.reject(message);
+            return deferred.promise;
+        }
+
+        if(post.location.country !== 'USA' && post.location.state !== 'CA') {
+
+            message = "Sorry we can only publish to Craigslist in California during this time.";
+            deferred.reject(message);
+            return deferred.promise;
+        }
+
+        chrome.runtime.sendMessage(extensionId, { message: "version" }, function (versionResponse) {
+
+            if (versionResponse === undefined || versionResponse === null) {
+
+                message = "Please install the HashtagSell extension";
+                deferred.reject(message);
+            }
+
+            if (parseFloat(versionResponse) < parseFloat(requiredVersion)) {
+
+                message = "Please update the HashtagSell extension";
+                deferred.reject(message);
+            }
+
+
+            deferred.resolve();
+        });
+
+        return deferred.promise;
+    };
+
+
+
+    factory.publishToCraigslist = function (newPost) {
+
+        var deferred = $q.defer();
+
+        $window.postMessage({
+            'cmd': 'create',
+            'data': newPost
+        }, "*");
+
+        deferred.resolve();
+
+        return deferred.promise;
+    };
+
+
+    return factory;
+
+}]);
+/**
  * Created by braddavis on 4/23/15.
  */
 htsApp.factory('ebayFactory', ['$q', '$http', '$window', '$rootScope', '$timeout',  '$interval', 'ENV', 'Session', 'Notification', function ($q, $http, $window, $rootScope, $timeout, $interval, ENV, Session, Notification) {
@@ -14559,10 +14588,10 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()\">\n" +
     "            <div ng-show=\"currentlyPublishing.ebay\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon\">\n" +
+    "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()\">\n" +
     "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono craigslist\" ng-class=\"{ 'hold': shareToggles.craigslist}\" ng-click=\"shareToggles.craigslist = !shareToggles.craigslist\">\n" +
+    "        <div id=\"clPub\" class=\"icon icon-mono craigslist\" ng-class=\"{ 'hold': shareToggles.craigslist}\" ng-click=\"shareToggles.craigslist = !shareToggles.craigslist; confirmCraigslistCalifornia()\">\n" +
     "            <div ng-show=\"currentlyPublishing.craigslist\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
     "    <!--</div>-->\n" +
