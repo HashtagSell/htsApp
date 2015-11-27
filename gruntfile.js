@@ -106,7 +106,7 @@ module.exports = function(grunt) {
                         ebayRuName: 'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367469320085475',
-                        extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
+                        extensionId: 'ndhgbcgocbakghhnbbdamfpebkfnpkhl',
                         extensionVersion: '0.2'
                     },
                     clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
