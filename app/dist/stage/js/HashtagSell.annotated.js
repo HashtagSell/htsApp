@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging.hashtagsell.com/v1/postings/',userAPI:'https://staging.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',notificationAPI:'https://staging.hashtagsell.com/v1/queues',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',transactionsAPI:'https://staging.hashtagsell.com/v1/transactions/',reviewsAPI:'https://staging.hashtagsell.com/v1/reviews/',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.2'})
+.constant('ENV', {name:'staging',htsAppUrl:'https://staging.hashtagsell.com',postingAPI:'https://staging.hashtagsell.com/v1/postings/',userAPI:'https://staging.hashtagsell.com/v1/users/',utilsApi:'https://staging.hashtagsell.com/utils/',realtimePostingAPI:'https://staging-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://staging-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://staging.hashtagsell.com/v1/groupings/',annotationsAPI:'https://staging.hashtagsell.com/v1/annotations',feedbackAPI:'https://staging.hashtagsell.com/feedback',paymentAPI:'https://staging.hashtagsell.com/payments',notificationAPI:'https://staging.hashtagsell.com/v1/queues',precacheAPI:'https://staging.hashtagsell.com/precache',facebookAuth:'https://staging.hashtagsell.com/auth/facebook',transactionsAPI:'https://staging.hashtagsell.com/v1/transactions/',reviewsAPI:'https://staging.hashtagsell.com/v1/reviews/',twitterAuth:'https://staging.hashtagsell.com/auth/twitter',ebayAuth:'https://staging.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'459229800909426',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.2',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'https://staging.hashtagsell.com/payments/client_token')
 
@@ -6942,15 +6942,46 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.confirmCraigslistCalifornia = function () {
 
-        craigslistFactory.checkForExtension(ENV.extensionId, ENV.extensionVersion, newPost).then(function (resp) {
 
-            console.log('Craiglist is good to go!');
+        var message;
 
+        var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        var isChrome = !!$window.chrome && !isOpera;
+
+        if (!isChrome) {
+
+            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
+            alert(message);
+        }
+
+        if(newPost.location.country !== 'USA' && newPost.location.state !== 'CA') {
+
+            message = "Sorry we can only publish to Craigslist in California during this time.";
+            alert(message);
+        }
+
+        chrome.runtime.sendMessage(ENV.extensionId, { message: "version" }, function (versionResponse) {
+
+            if (versionResponse === undefined || versionResponse === null) {
+                message = "Extension not installed";
+                alert(message);
+            }
+
+            if (parseFloat(versionResponse) < parseFloat(ENV.extensionVersion)) {
+
+                message = "Please update the HashtagSell extension";
+                alert(message);
+            }
+
+        });
+
+
+        chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
+            console.log(success);
+            $scope.shareToggles.craigslist = true;
         }, function (err) {
-
+            console.log(err);
             $scope.shareToggles.craigslist = false;
-
-            alert(err);
         });
 
     };

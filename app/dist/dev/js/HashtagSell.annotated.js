@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.2'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.2',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -6942,15 +6942,46 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.confirmCraigslistCalifornia = function () {
 
-        craigslistFactory.checkForExtension(ENV.extensionId, ENV.extensionVersion, newPost).then(function (resp) {
 
-            console.log('Craiglist is good to go!');
+        var message;
 
+        var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        var isChrome = !!$window.chrome && !isOpera;
+
+        if (!isChrome) {
+
+            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
+            alert(message);
+        }
+
+        if(newPost.location.country !== 'USA' && newPost.location.state !== 'CA') {
+
+            message = "Sorry we can only publish to Craigslist in California during this time.";
+            alert(message);
+        }
+
+        chrome.runtime.sendMessage(ENV.extensionId, { message: "version" }, function (versionResponse) {
+
+            if (versionResponse === undefined || versionResponse === null) {
+                message = "Extension not installed";
+                alert(message);
+            }
+
+            if (parseFloat(versionResponse) < parseFloat(ENV.extensionVersion)) {
+
+                message = "Please update the HashtagSell extension";
+                alert(message);
+            }
+
+        });
+
+
+        chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
+            console.log(success);
+            $scope.shareToggles.craigslist = true;
         }, function (err) {
-
+            console.log(err);
             $scope.shareToggles.craigslist = false;
-
-            alert(err);
         });
 
     };
