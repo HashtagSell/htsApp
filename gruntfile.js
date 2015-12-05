@@ -41,7 +41,7 @@ module.exports = function(grunt) {
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367471540085253',
                         extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
-                        extensionVersion: '0.2',
+                        extensionVersion: '0.3',
                         extensionInstallationUrl: 'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'
                     },
                     clientTokenPath: 'http://localhost:8081/payments/client_token'
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '459229800909426',
                         extensionId: 'ndhgbcgocbakghhnbbdamfpebkfnpkhl',
-                        extensionVersion: '0.2',
+                        extensionVersion: '0.3',
                         extensionInstallationUrl: 'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'
                     },
                     clientTokenPath: 'https://staging.hashtagsell.com/payments/client_token'
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
                         ebaySignIn: 'https://signin.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367469320085475',
                         extensionId: 'ndhgbcgocbakghhnbbdamfpebkfnpkhl',
-                        extensionVersion: '0.2',
+                        extensionVersion: '0.3',
                         extensionInstallationUrl: 'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'
                     },
                     clientTokenPath: 'https://www.hashtagsell.com/payments/client_token'
