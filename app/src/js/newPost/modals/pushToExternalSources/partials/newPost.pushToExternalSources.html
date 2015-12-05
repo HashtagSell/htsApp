@@ -13,19 +13,20 @@
         <div class="icon icon-mono ebay" ng-class="{ 'hold': shareToggles.ebay}" ng-click="shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()">
             <div ng-show="currentlyPublishing.ebay" class="circ-spinner"></div>
         </div>
-        <div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()">
-            <div ng-show="currentlyPublishing.amazon" class="circ-spinner"></div>
-        </div>
+        <!--<div class="icon icon-mono amazon" ng-class="{ 'hold': shareToggles.amazon}" ng-click="shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()">-->
+            <!--<div ng-show="currentlyPublishing.amazon" class="circ-spinner"></div>-->
+        <!--</div>-->
         <div id="clPub" class="icon icon-mono craigslist" ng-class="{ 'hold': shareToggles.craigslist}" ng-click="shareToggles.craigslist = !shareToggles.craigslist; confirmCraigslistCalifornia()">
             <div ng-show="currentlyPublishing.craigslist" class="circ-spinner"></div>
         </div>
     <!--</div>-->
 
-    <h3 id="instructions">Boost your post's visibility and allow online payment.</h3>
+    <h3 id="instructions">Boost your post's visibility by sharing your post.</h3>
+    <!--<h3 id="instructions">Boost your post's visibility and allow online payment.</h3>-->
     <h3 id="facebookBlurb">Share to your facebook timeline for friends to see.</h3>
     <h3 id="twitterBlurb">Share to your twitter timeline for friends to see.</h3>
     <h3 id="ebayBlurb">Share to your existing Ebay account.</h3>
-    <h3 id="amazonBlurb">Coming soon!  Share to Amazon.</h3>
+    <!--<h3 id="amazonBlurb">Coming soon!  Share to Amazon.</h3>-->
     <h3 id="craigslistBlurb">Share to your existing Craigslist account.</h3>
 
     <!--{{shareToggles}}-->

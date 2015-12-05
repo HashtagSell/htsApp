@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', '$timeout', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV, $timeout) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -238,47 +238,60 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.confirmCraigslistCalifornia = function () {
 
-
-        var message;
+        var install = false;
 
         var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
         var isChrome = !!$window.chrome && !isOpera;
 
         if (!isChrome) {
 
-            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
-            alert(message);
+            Notification.error({
+                title: 'Please Install Google Chrome',
+                message: 'Publish to Craigslist requires Google Chrome.  Sorry for the inconvenience!',
+                delay: 10000
+            });  //Send the webtoast
+            $scope.shareToggles.craigslist = false;
+            return;
         }
 
         if(newPost.location.country !== 'USA' && newPost.location.state !== 'CA') {
 
-            message = "Sorry we can only publish to Craigslist in California during this time.";
-            alert(message);
+            Notification.error({
+                title: newPost.location.state + ' coming soon!',
+                message: "Sorry we can only publish to Craigslist in California during this time.",
+                delay: 10000
+            });  //Send the webtoast
+            $scope.shareToggles.craigslist = false;
+            return;
         }
 
-        chrome.runtime.sendMessage(ENV.extensionId, { message: "version" }, function (versionResponse) {
 
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "version" }, function (versionResponse) {
+            console.log(versionResponse);
             if (versionResponse === undefined || versionResponse === null) {
-                message = "Extension not installed";
-                alert(message);
+                install = true;
             }
 
             if (parseFloat(versionResponse) < parseFloat(ENV.extensionVersion)) {
-
-                message = "Please update the HashtagSell extension";
-                alert(message);
+                install = true;
             }
-
         });
 
+        $timeout(function () {
+            if(install) {
+                chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
+                    $scope.shareToggles.craigslist = true;
+                }, function (err) {
+                    $scope.shareToggles.craigslist = false;
+                    Notification.error({
+                        title: 'Failed to install extension',
+                        message: err,
+                        delay: 10000
+                    });  //Send the webtoast
+                });
+            }
+        }, 1000);
 
-        chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
-            console.log(success);
-            $scope.shareToggles.craigslist = true;
-        }, function (err) {
-            console.log(err);
-            $scope.shareToggles.craigslist = false;
-        });
 
     };
 
@@ -290,8 +303,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if($scope.shareToggles.craigslist) {
 
             $scope.currentlyPublishing.craigslist = true;
-
-            console.log('here is what we send to extension', newPost);
 
             craigslistFactory.publishToCraigslist(newPost).then(function (response) {
                 console.log(response);

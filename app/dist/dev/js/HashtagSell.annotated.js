@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.2',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.2',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -6705,7 +6705,7 @@ htsApp.factory('newPostFactory', ['$q', '$http', '$timeout', '$filter', 'ENV', '
 /**
  * Created by braddavis on 2/25/15.
  */
-htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV) {
+htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalInstance', '$q', '$http', '$window', 'newPost', 'Notification', 'facebookFactory', 'ebayFactory', 'twitterFactory', 'subMerchantFactory', 'craigslistFactory', 'ENV', '$timeout', function ($scope, $modal, $modalInstance, $q, $http, $window, newPost, Notification, facebookFactory, ebayFactory, twitterFactory, subMerchantFactory, craigslistFactory, ENV, $timeout) {
 
     $scope.currentlyPublishing = {
         publishing: false,
@@ -6942,47 +6942,60 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
 
     $scope.confirmCraigslistCalifornia = function () {
 
-
-        var message;
+        var install = false;
 
         var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
         var isChrome = !!$window.chrome && !isOpera;
 
         if (!isChrome) {
 
-            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
-            alert(message);
+            Notification.error({
+                title: 'Please Install Google Chrome',
+                message: 'Publish to Craigslist requires Google Chrome.  Sorry for the inconvenience!',
+                delay: 10000
+            });  //Send the webtoast
+            $scope.shareToggles.craigslist = false;
+            return;
         }
 
         if(newPost.location.country !== 'USA' && newPost.location.state !== 'CA') {
 
-            message = "Sorry we can only publish to Craigslist in California during this time.";
-            alert(message);
+            Notification.error({
+                title: newPost.location.state + ' coming soon!',
+                message: "Sorry we can only publish to Craigslist in California during this time.",
+                delay: 10000
+            });  //Send the webtoast
+            $scope.shareToggles.craigslist = false;
+            return;
         }
 
-        chrome.runtime.sendMessage(ENV.extensionId, { message: "version" }, function (versionResponse) {
 
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "version" }, function (versionResponse) {
+            console.log(versionResponse);
             if (versionResponse === undefined || versionResponse === null) {
-                message = "Extension not installed";
-                alert(message);
+                install = true;
             }
 
             if (parseFloat(versionResponse) < parseFloat(ENV.extensionVersion)) {
-
-                message = "Please update the HashtagSell extension";
-                alert(message);
+                install = true;
             }
-
         });
 
+        $timeout(function () {
+            if(install) {
+                chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
+                    $scope.shareToggles.craigslist = true;
+                }, function (err) {
+                    $scope.shareToggles.craigslist = false;
+                    Notification.error({
+                        title: 'Failed to install extension',
+                        message: err,
+                        delay: 10000
+                    });  //Send the webtoast
+                });
+            }
+        }, 1000);
 
-        chrome.webstore.install(ENV.extensionInstallationUrl, function (success) {
-            console.log(success);
-            $scope.shareToggles.craigslist = true;
-        }, function (err) {
-            console.log(err);
-            $scope.shareToggles.craigslist = false;
-        });
 
     };
 
@@ -6994,8 +7007,6 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
         if($scope.shareToggles.craigslist) {
 
             $scope.currentlyPublishing.craigslist = true;
-
-            console.log('here is what we send to extension', newPost);
 
             craigslistFactory.publishToCraigslist(newPost).then(function (response) {
                 console.log(response);
@@ -11605,49 +11616,49 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
     var factory = {};
 
 
-    factory.checkForExtension = function (extensionId, requiredVersion, post) {
-
-        var deferred = $q.defer();
-
-        var message;
-
-        var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-        var isChrome = !!$window.chrome && !isOpera;
-
-        if (!isChrome) {
-
-            message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
-            deferred.reject(message);
-            return deferred.promise;
-        }
-
-        if(post.location.country !== 'USA' && post.location.state !== 'CA') {
-
-            message = "Sorry we can only publish to Craigslist in California during this time.";
-            deferred.reject(message);
-            return deferred.promise;
-        }
-
-        chrome.runtime.sendMessage(extensionId, { message: "version" }, function (versionResponse) {
-
-            if (versionResponse === undefined || versionResponse === null) {
-
-                message = "Please install the HashtagSell extension";
-                deferred.reject(message);
-            }
-
-            if (parseFloat(versionResponse) < parseFloat(requiredVersion)) {
-
-                message = "Please update the HashtagSell extension";
-                deferred.reject(message);
-            }
-
-
-            deferred.resolve();
-        });
-
-        return deferred.promise;
-    };
+    //factory.checkForExtension = function (extensionId, requiredVersion, post) {
+    //
+    //    var deferred = $q.defer();
+    //
+    //    var message;
+    //
+    //    var isOpera = !!$window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+    //    var isChrome = !!$window.chrome && !isOpera;
+    //
+    //    if (!isChrome) {
+    //
+    //        message = "Sorry, Craigslist publishing only works in Chrome at this time. :(  Install Chrome?";
+    //        deferred.reject(message);
+    //        return deferred.promise;
+    //    }
+    //
+    //    if(post.location.country !== 'USA' && post.location.state !== 'CA') {
+    //
+    //        message = "Sorry we can only publish to Craigslist in California during this time.";
+    //        deferred.reject(message);
+    //        return deferred.promise;
+    //    }
+    //
+    //    chrome.runtime.sendMessage(extensionId, { message: "version" }, function (versionResponse) {
+    //
+    //        if (versionResponse === undefined || versionResponse === null) {
+    //
+    //            message = "Please install the HashtagSell extension";
+    //            deferred.reject(message);
+    //        }
+    //
+    //        if (parseFloat(versionResponse) < parseFloat(requiredVersion)) {
+    //
+    //            message = "Please update the HashtagSell extension";
+    //            deferred.reject(message);
+    //        }
+    //
+    //
+    //        deferred.resolve();
+    //    });
+    //
+    //    return deferred.promise;
+    //};
 
 
 
@@ -11655,10 +11666,10 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        $window.postMessage({
-            'cmd': 'create',
-            'data': newPost
-        }, "*");
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "kickstart", data: newPost }, function (response) {
+            console.log(response);
+        });
+
 
         deferred.resolve();
 
@@ -14619,19 +14630,20 @@ htsApp.factory('watchlistQuestionsFactory', ['$http', '$rootScope', 'ENV', '$q',
     "        <div class=\"icon icon-mono ebay\" ng-class=\"{ 'hold': shareToggles.ebay}\" ng-click=\"shareToggles.ebay = !shareToggles.ebay; checkIfEbayTokenValid()\">\n" +
     "            <div ng-show=\"currentlyPublishing.ebay\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
-    "        <div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()\">\n" +
-    "            <div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>\n" +
-    "        </div>\n" +
+    "        <!--<div class=\"icon icon-mono amazon\" ng-class=\"{ 'hold': shareToggles.amazon}\" ng-click=\"shareToggles.amazon = !shareToggles.amazon; warnAmazonComingSoon()\">-->\n" +
+    "            <!--<div ng-show=\"currentlyPublishing.amazon\" class=\"circ-spinner\"></div>-->\n" +
+    "        <!--</div>-->\n" +
     "        <div id=\"clPub\" class=\"icon icon-mono craigslist\" ng-class=\"{ 'hold': shareToggles.craigslist}\" ng-click=\"shareToggles.craigslist = !shareToggles.craigslist; confirmCraigslistCalifornia()\">\n" +
     "            <div ng-show=\"currentlyPublishing.craigslist\" class=\"circ-spinner\"></div>\n" +
     "        </div>\n" +
     "    <!--</div>-->\n" +
     "\n" +
-    "    <h3 id=\"instructions\">Boost your post's visibility and allow online payment.</h3>\n" +
+    "    <h3 id=\"instructions\">Boost your post's visibility by sharing your post.</h3>\n" +
+    "    <!--<h3 id=\"instructions\">Boost your post's visibility and allow online payment.</h3>-->\n" +
     "    <h3 id=\"facebookBlurb\">Share to your facebook timeline for friends to see.</h3>\n" +
     "    <h3 id=\"twitterBlurb\">Share to your twitter timeline for friends to see.</h3>\n" +
     "    <h3 id=\"ebayBlurb\">Share to your existing Ebay account.</h3>\n" +
-    "    <h3 id=\"amazonBlurb\">Coming soon!  Share to Amazon.</h3>\n" +
+    "    <!--<h3 id=\"amazonBlurb\">Coming soon!  Share to Amazon.</h3>-->\n" +
     "    <h3 id=\"craigslistBlurb\">Share to your existing Craigslist account.</h3>\n" +
     "\n" +
     "    <!--{{shareToggles}}-->\n" +

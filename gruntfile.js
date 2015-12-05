@@ -40,7 +40,7 @@ module.exports = function(grunt) {
                         ebayRuName: 'HashtagSell__In-HashtagS-e6d2-4-sdojf',
                         ebaySignIn: 'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',
                         fbAppId: '367471540085253',
-                        extensionId: 'ndhgbcgocbakghhnbbdamfpebkfnpkhl',
+                        extensionId: 'mkmbbnhbbnijlenfebjdmcibglbnajfg',
                         extensionVersion: '0.2',
                         extensionInstallationUrl: 'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'
                     },
