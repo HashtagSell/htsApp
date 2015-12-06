@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',notificationAPI:'http://production-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',transactionsAPI:'https://www.hashtagsell.com/v1/transactions/',reviewsAPI:'https://www.hashtagsell.com/v1/reviews/',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.3',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',notificationAPI:'http://production-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',transactionsAPI:'https://www.hashtagsell.com/v1/transactions/',reviewsAPI:'https://www.hashtagsell.com/v1/reviews/',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.4',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'https://www.hashtagsell.com/payments/client_token')
 
@@ -3522,7 +3522,7 @@ htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', 'ENV', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService, ENV) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -3718,7 +3718,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             if(post.craigslist){
                 $window.postMessage({
                     'cmd' : 'delete',
-                    'data' : post
+                    'data' : post,
+                    'dest' : ENV.postingAPI
                 }, "*");
             }
 
@@ -11666,7 +11667,12 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "kickstart", data: newPost }, function (response) {
+        //$window.postMessage({
+        //    'cmd': 'create',
+        //    'data': newPost
+        //}, "*");
+
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
             console.log(response);
         });
 

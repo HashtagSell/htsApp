@@ -56,7 +56,12 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "kickstart", data: newPost }, function (response) {
+        //$window.postMessage({
+        //    'cmd': 'create',
+        //    'data': newPost
+        //}, "*");
+
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
             console.log(response);
         });
 

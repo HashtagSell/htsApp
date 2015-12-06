@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', 'ENV', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService, ENV) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -197,7 +197,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             if(post.craigslist){
                 $window.postMessage({
                     'cmd' : 'delete',
-                    'data' : post
+                    'data' : post,
+                    'dest' : ENV.postingAPI
                 }, "*");
             }
 

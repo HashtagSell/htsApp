@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.2',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.3',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -3522,7 +3522,7 @@ htsApp.service('modalConfirmationService', ['$modal', function ($modal) {
 /**
  * Created by braddavis on 2/21/15.
  */
-htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService) {
+htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$modal', '$window', 'myPostsFactory', 'Session', 'socketio', 'ngTableParams', 'newPostFactory', 'Notification', 'splashFactory', '$state', 'modalConfirmationService', 'ENV', function ($scope, $rootScope, $filter, $modal, $window, myPostsFactory, Session, socketio, ngTableParams, newPostFactory, Notification, splashFactory, $state, modalConfirmationService, ENV) {
 
     $scope.userPosts = myPostsFactory.userPosts;
 
@@ -3718,7 +3718,8 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             if(post.craigslist){
                 $window.postMessage({
                     'cmd' : 'delete',
-                    'data' : post
+                    'data' : post,
+                    'dest' : ENV.postingAPI
                 }, "*");
             }
 
@@ -11666,7 +11667,12 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "kickstart", data: newPost }, function (response) {
+        //$window.postMessage({
+        //    'cmd': 'create',
+        //    'data': newPost
+        //}, "*");
+
+        chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
             console.log(response);
         });
 
