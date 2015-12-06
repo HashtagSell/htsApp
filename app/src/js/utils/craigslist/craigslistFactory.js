@@ -1,7 +1,7 @@
 /**
  * Created by braddavis on 10/30/15.
  */
-htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function ($q, $http, $window, ENV) {
+htsApp.factory('craigslistFactory', ['$q', 'ENV', function ($q, ENV) {
 
     var factory = {};
 
@@ -56,17 +56,14 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        //$window.postMessage({
-        //    'cmd': 'create',
-        //    'data': newPost
-        //}, "*");
-
         chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
-            console.log(response);
+            if(response.success) {
+                deferred.resolve();
+            } else {
+                deferred.reject(response);
+            }
         });
 
-
-        deferred.resolve();
 
         return deferred.promise;
     };

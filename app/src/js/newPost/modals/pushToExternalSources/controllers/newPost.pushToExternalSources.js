@@ -305,9 +305,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
             $scope.currentlyPublishing.craigslist = true;
 
             craigslistFactory.publishToCraigslist(newPost).then(function (response) {
-                console.log(response);
+                console.log('craigslistFactory.publishToCraigslist response', response);
+                deferred.resolve();
             }, function (err) {
-                console.log(err);
+                Notification.error({
+                    title: 'Craigslist publishing error',
+                    message: err.error,
+                    delay: 10000
+                });  //Send the webtoast
+                deferred.resolve();
             });
 
         } else {

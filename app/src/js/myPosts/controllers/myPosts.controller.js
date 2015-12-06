@@ -195,11 +195,14 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             }
 
             if(post.craigslist){
-                $window.postMessage({
-                    'cmd' : 'delete',
-                    'data' : post,
-                    'dest' : ENV.postingAPI
-                }, "*");
+                chrome.runtime.sendMessage(ENV.extensionId,
+                    {
+                        cmd: "delete",
+                        data: post,
+                        dest: ENV.postingAPI
+                    }, function (response) {
+
+                });
             }
 
 

@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.3',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.4',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -3716,11 +3716,14 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             }
 
             if(post.craigslist){
-                $window.postMessage({
-                    'cmd' : 'delete',
-                    'data' : post,
-                    'dest' : ENV.postingAPI
-                }, "*");
+                chrome.runtime.sendMessage(ENV.extensionId,
+                    {
+                        cmd: "delete",
+                        data: post,
+                        dest: ENV.postingAPI
+                    }, function (response) {
+
+                });
             }
 
 
@@ -7010,9 +7013,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
             $scope.currentlyPublishing.craigslist = true;
 
             craigslistFactory.publishToCraigslist(newPost).then(function (response) {
-                console.log(response);
+                console.log('craigslistFactory.publishToCraigslist response', response);
+                deferred.resolve();
             }, function (err) {
-                console.log(err);
+                Notification.error({
+                    title: 'Craigslist publishing error',
+                    message: err.error,
+                    delay: 10000
+                });  //Send the webtoast
+                deferred.resolve();
             });
 
         } else {
@@ -11612,7 +11621,7 @@ htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, EN
 /**
  * Created by braddavis on 10/30/15.
  */
-htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function ($q, $http, $window, ENV) {
+htsApp.factory('craigslistFactory', ['$q', 'ENV', function ($q, ENV) {
 
     var factory = {};
 
@@ -11667,17 +11676,14 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        //$window.postMessage({
-        //    'cmd': 'create',
-        //    'data': newPost
-        //}, "*");
-
         chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
-            console.log(response);
+            if(response.success) {
+                deferred.resolve();
+            } else {
+                deferred.reject(response);
+            }
         });
 
-
-        deferred.resolve();
 
         return deferred.promise;
     };

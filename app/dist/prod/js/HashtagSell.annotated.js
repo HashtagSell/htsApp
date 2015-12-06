@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',notificationAPI:'http://production-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',transactionsAPI:'https://www.hashtagsell.com/v1/transactions/',reviewsAPI:'https://www.hashtagsell.com/v1/reviews/',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.4',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'production',htsAppUrl:'https://www.hashtagsell.com',postingAPI:'https://production-posting-api.hashtagsell.com/v1/postings/',userAPI:'https://production-posting-api.hashtagsell.com/v1/users/',utilsApi:'https://www.hashtagsell.com/utils/',realtimePostingAPI:'https://production-realtime-svc.hashtagsell.com/postings',realtimeUserAPI:'https://production-realtime-svc.hashtagsell.com/users',groupingsAPI:'https://production-posting-api.hashtagsell.com/v1/groupings/',annotationsAPI:'https://production-posting-api.hashtagsell.com/v1/annotations',feedbackAPI:'https://www.hashtagsell.com/feedback',paymentAPI:'https://www.hashtagsell.com/payments',notificationAPI:'http://production-notification-svc.hashtagsell.com/v1/queues',precacheAPI:'https://www.hashtagsell.com/precache',facebookAuth:'https://www.hashtagsell.com/auth/facebook',transactionsAPI:'https://www.hashtagsell.com/v1/transactions/',reviewsAPI:'https://www.hashtagsell.com/v1/reviews/',twitterAuth:'https://www.hashtagsell.com/auth/twitter',ebayAuth:'https://www.hashtagsell.com/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-70ae-4-hkrcxmxws',ebaySignIn:'https://signin.ebay.com/ws/eBayISAPI.dll',fbAppId:'367469320085475',extensionId:'ndhgbcgocbakghhnbbdamfpebkfnpkhl',extensionVersion:'0.5',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'https://www.hashtagsell.com/payments/client_token')
 
@@ -3716,11 +3716,14 @@ htsApp.controller('myPosts.controller', ['$scope', '$rootScope', '$filter', '$mo
             }
 
             if(post.craigslist){
-                $window.postMessage({
-                    'cmd' : 'delete',
-                    'data' : post,
-                    'dest' : ENV.postingAPI
-                }, "*");
+                chrome.runtime.sendMessage(ENV.extensionId,
+                    {
+                        cmd: "delete",
+                        data: post,
+                        dest: ENV.postingAPI
+                    }, function (response) {
+
+                });
             }
 
 
@@ -7010,9 +7013,15 @@ htsApp.controller('pushNewPostToExternalSources', ['$scope', '$modal', '$modalIn
             $scope.currentlyPublishing.craigslist = true;
 
             craigslistFactory.publishToCraigslist(newPost).then(function (response) {
-                console.log(response);
+                console.log('craigslistFactory.publishToCraigslist response', response);
+                deferred.resolve();
             }, function (err) {
-                console.log(err);
+                Notification.error({
+                    title: 'Craigslist publishing error',
+                    message: err.error,
+                    delay: 10000
+                });  //Send the webtoast
+                deferred.resolve();
             });
 
         } else {
@@ -11612,7 +11621,7 @@ htsApp.factory('categoryFactory', ['$http', '$q', 'ENV', function ($http, $q, EN
 /**
  * Created by braddavis on 10/30/15.
  */
-htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function ($q, $http, $window, ENV) {
+htsApp.factory('craigslistFactory', ['$q', 'ENV', function ($q, ENV) {
 
     var factory = {};
 
@@ -11667,17 +11676,14 @@ htsApp.factory('craigslistFactory', ['$q', '$http', '$window', 'ENV', function (
 
         var deferred = $q.defer();
 
-        //$window.postMessage({
-        //    'cmd': 'create',
-        //    'data': newPost
-        //}, "*");
-
         chrome.runtime.sendMessage(ENV.extensionId, { cmd: "create", data: newPost, dest: ENV.postingAPI }, function (response) {
-            console.log(response);
+            if(response.success) {
+                deferred.resolve();
+            } else {
+                deferred.reject(response);
+            }
         });
 
-
-        deferred.resolve();
 
         return deferred.promise;
     };
