@@ -48,10 +48,15 @@ exports.geolocateIp = function(req, res){
             console.log("Check if private IP");
             console.log("***************************");
 
-            if(req.connection.remoteAddress) {
+            var originIp = req.headers['x-forwarded-for'] ||
+                req.connection.remoteAddress ||
+                req.socket.remoteAddress ||
+                req.connection.socket.remoteAddress;
+
+            if(originIp) {
 
                 var result = {
-                    clientIp: req.connection.remoteAddress
+                    clientIp: originIp
                 };
 
                 console.log(result.clientIp);
