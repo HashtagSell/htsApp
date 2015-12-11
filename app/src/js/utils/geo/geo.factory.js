@@ -16,7 +16,7 @@ htsApp.factory('geoFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV) {
         }).error(function (response) {
 
             var err = {
-                message: 'Whoops.. We can\'t find any results in ' + userLocationObject.freeGeoIp.city,
+                message: 'Whoops.. We can\'t find any results in ' + response.freeGeoIp.city,
                 error: response
             };
 
