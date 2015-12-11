@@ -106,11 +106,6 @@ app.all("/json*", function(req, res) {
     console.log('requesters ip', requestorsIPAddress);
     console.log('url before', req.url);
 
-    req.url = req.url + requestorsIPAddress;
-
-    console.log('url after', req.url);
-
-
     apiProxy.web(req, res, {target: freeGeoIp});
 });
 
