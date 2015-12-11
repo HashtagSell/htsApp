@@ -99,6 +99,7 @@ app.all("/v1/queues*", function(req, res) {
 
 
 app.all("/json*", function(req, res) {
+    console.log('redirecting to freeGeoIp endpoint', freeGeoIp);
     apiProxy.web(req, res, {target: freeGeoIp});
 });
 
