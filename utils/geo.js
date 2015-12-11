@@ -54,6 +54,7 @@ exports.geolocateIp = function(req, res){
                     clientIp: req.connection.remoteAddress
                 };
 
+                console.log(result.clientIp);
                 var spoofedIp = "216.38.134.18";
 
                 var parts = result.clientIp.split('.');
