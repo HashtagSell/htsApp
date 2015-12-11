@@ -6,6 +6,7 @@ var Promise = require('promise');
 var sys = require('sys');
 var exec = require('child_process').exec;
 var CityCodeModel = require("../config/database/models/3TapsCityCode.js");
+var util = require('util');
 
 
 exports.reverseGeocode = function(req, res){
@@ -59,7 +60,6 @@ exports.geolocateIp = function(req, res){
                     clientIp: originIp
                 };
 
-                console.log(result.clientIp);
                 var spoofedIp = "216.38.134.18";
 
                 var parts = result.clientIp.split('.');
