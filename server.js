@@ -52,9 +52,9 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
 
-    var postingAPI = 'http://production-posting-api.hashtagsell.com',
-        notificationAPI = 'http://production-notification-svc.hashtagsell.com',
-        realtime = 'http://production-realtime-svc.hashtagsell.com';
+    var postingAPI = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8882',
+        notificationAPI = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8884',
+        realtime = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8881';
 }
 
 
