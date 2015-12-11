@@ -101,6 +101,8 @@ app.all("/v1/queues*", function(req, res) {
 app.all("/json*", function(req, res) {
     console.log('redirecting to freeGeoIp', freeGeoIp);
 
+    console.log('headers', req.headers);
+
     var requestorsIPAddress = req.connection.remoteAddress;
 
     console.log('requesters ip', requestorsIPAddress);
