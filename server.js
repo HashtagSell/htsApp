@@ -38,7 +38,8 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
     var postingAPI = 'http://localhost:4043',
         notificationAPI = 'http://localhost:4444',
-        realtimeAPI = 'ws://localhost:4044';
+        realtimeAPI = 'ws://localhost:4044',
+        freeGeoIp = 'http://localhost:8080';
 
 } else if(process.env.NODE_ENV === "STAGING") { //use prerender.io service
     app.use(require('prerender-node').set('prerenderToken', env.prerender_io.token));
@@ -46,7 +47,8 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
     var postingAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8882',
         notificationAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8884',
-        realtimeAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8881';
+        realtimeAPI = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8881',
+        freeGeoIp = 'http://ec2-52-26-231-204.us-west-2.compute.amazonaws.com:8081';
 
 
 } else if(process.env.NODE_ENV === "PRODUCTION") { //use prerender.io service
@@ -54,7 +56,8 @@ if(process.env.NODE_ENV === "DEVELOPMENT") { //Run the local prerender server
 
     var postingAPI = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8882',
         notificationAPI = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8884',
-        realtime = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8881';
+        realtimeAPI = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8881',
+        freeGeoIp = 'http://ec2-52-10-26-55.us-west-2.compute.amazonaws.com:8081';
 }
 
 
@@ -92,6 +95,12 @@ app.all("/v1/reviews*", function(req, res) {
 app.all("/v1/queues*", function(req, res) {
     console.log('redirecting to notification api queues endpoint', notificationAPI);
     apiProxy.web(req, res, {target: notificationAPI});
+});
+
+
+app.all("/json*", function(req, res) {
+    console.log('redirecting to freeGeoIp', freeGeoIp);
+    apiProxy.web(req, res, {target: freeGeoIp});
 });
 
 //Socket.io proxy server on 8082
