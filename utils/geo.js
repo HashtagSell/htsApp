@@ -155,6 +155,8 @@ exports.geolocateIp = function(req, res){
 
             var cityCommaState = result.freeGeoIp.city + ', ' + result.freeGeoIp.region_code;
 
+            console.log('looking up', cityCommaState);
+
             //Convert San Francisco, CA into USA-SFO_SNF 3Taps city code by looking up in database
             CityCodeModel.findOne({ 'full_name': cityCommaState }, function (err, cityMetadata) {
 
