@@ -73,8 +73,7 @@ exports.geolocateIp = function(req, res){
                 if (parts[0] === '10' ||
                     (parts[0] === '172' && (parseInt(parts[1], 10) >= 16 && parseInt(parts[1], 10) <= 31)) ||
                     (parts[0] === '192' && parts[1] === 168) ||
-                    (result.clientIp === "127.0.0.1") ||
-                    (result.clientIp.indexOf(":") > -1)
+                    (result.clientIp === "127.0.0.1"))
                 ) {
 
                     result.clientIp = spoofedIp;
@@ -162,7 +161,11 @@ exports.geolocateIp = function(req, res){
             console.log("Get Relevant 3taps Location Data");
             console.log("***************************");
 
-            var cityCommaState = result.freeGeoIp.city + ', ' + result.freeGeoIp.region_code;
+
+            var cityCommaState = "San Francisco, CA";
+            if(result.freeGeoIp.city  && result.freeGeoIp.region_code) {
+                cityCommaState = result.freeGeoIp.city + ', ' + result.freeGeoIp.region_code;
+            }
 
             console.log('looking up', cityCommaState);
 
