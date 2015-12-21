@@ -49,6 +49,8 @@ exports.geolocateIp = function(req, res){
             console.log("Check if private IP");
             console.log("***************************");
 
+            console.log(req.headers);
+
             var originIp = req.headers['x-forwarded-for'] ||
                 req.connection.remoteAddress ||
                 req.socket.remoteAddress ||
