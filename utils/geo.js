@@ -169,8 +169,6 @@ exports.geolocateIp = function(req, res){
 
                 } else if (!cityMetadata) {
 
-                    res.send({error: cityCommaState + 'not found'});
-
 
                     var err = {
                         message: cityCommaState + 'not found'
