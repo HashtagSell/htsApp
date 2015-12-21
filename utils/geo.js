@@ -51,6 +51,10 @@ exports.geolocateIp = function(req, res){
 
             console.log(req.headers);
 
+            console.log('req.connection!!!!');
+
+            console.log(req.connection);
+
             var originIp = req.headers['x-forwarded-for'] ||
                 req.connection.remoteAddress ||
                 req.socket.remoteAddress ||
