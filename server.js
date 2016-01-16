@@ -77,6 +77,11 @@ app.all("/v1/groupings*", function(req, res) {
     apiProxy.web(req, res, {target: postingAPI});
 });
 
+app.all("/v1/publishers*", function(req, res) {
+    console.log('redirecting to posting api publishing endpoint', postingAPI);
+    apiProxy.web(req, res, {target: postingAPI});
+});
+
 app.all("/v1/annotations*", function(req, res) {
     console.log('redirecting to posting api annotations endpoint', postingAPI);
     apiProxy.web(req, res, {target: postingAPI});

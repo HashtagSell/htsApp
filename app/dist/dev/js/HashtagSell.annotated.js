@@ -1739,7 +1739,7 @@ htsApp.directive('bookingSystem', ['$timeout', function ($timeout) {
 }]);
 angular.module('globalVars', [])
 
-.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.4',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
+.constant('ENV', {name:'development',htsAppUrl:'http://localhost:8081',postingAPI:'http://localhost:8081/v1/postings/',userAPI:'http://localhost:8081/v1/users/',utilsApi:'http://localhost:8081/utils/',realtimePostingAPI:'http://localhost:8082/postings',realtimeUserAPI:'http://localhost:8082/users',groupingsAPI:'http://localhost:8081/v1/groupings/',annotationsAPI:'http://localhost:8081/v1/annotations',feedbackAPI:'http://localhost:8081/feedback',paymentAPI:'http://localhost:8081/payments',notificationAPI:'http://localhost:8081/v1/queues',precacheAPI:'http://localhost:8081/precache',facebookAuth:'http://localhost:8081/auth/facebook',transactionsAPI:'http://localhost:8081/v1/transactions/',reviewsAPI:'http://localhost:8081/v1/reviews/',twitterAuth:'http://localhost:8081/auth/twitter',ebayAuth:'http://localhost:8081/auth/ebay',ebayRuName:'HashtagSell__In-HashtagS-e6d2-4-sdojf',ebaySignIn:'https://signin.sandbox.ebay.com/ws/eBayISAPI.dll',fbAppId:'367471540085253',extensionId:'mkmbbnhbbnijlenfebjdmcibglbnajfg',extensionVersion:'0.6',extensionInstallationUrl:'https://chrome.google.com/webstore/detail/ndhgbcgocbakghhnbbdamfpebkfnpkhl'})
 
 .constant('clientTokenPath', 'http://localhost:8081/payments/client_token')
 
@@ -12118,7 +12118,7 @@ htsApp.factory('geoFactory', ['$q', '$http', 'ENV', function ($q, $http, ENV) {
         }).error(function (response) {
 
             var err = {
-                message: 'Whoops.. We can\'t find any results in ' + userLocationObject.freeGeoIp.city,
+                message: 'Whoops.. We can\'t find any results in ' + response.freeGeoIp.city,
                 error: response
             };
 
