@@ -3,8 +3,10 @@ MAINTAINER Joshua Thomas <joshua.thomas@hashtagsell.com>
 
 # Global dependencies
 USER root
-RUN sudo apt-get install imagemagick -y --fix-missing && \
-    sudo apt-get subversion -y && \
+
+RUN sudo apt-get update
+
+RUN sudo apt-get install imagemagick subversion -y && \
 	sudo apt-get autoremove && \
 	sudo npm install -g bower && \
 	sudo npm install -g grunt-cli
